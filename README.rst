@@ -1,9 +1,5 @@
-Template for the Read the Docs tutorial
+RouterOS中文使用文档
 =======================================
+请前往下面地址阅读：
 
-This GitHub template includes fictional Python library
-with some basic Sphinx docs.
-
-Read the tutorial here:
-
-https://docs.readthedocs.io/en/stable/tutorial/
+https://mikrotik-doc-cn.readthedocs.io/zh/latest/
