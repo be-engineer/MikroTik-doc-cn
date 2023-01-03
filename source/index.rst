@@ -55,29 +55,29 @@ RouterOS官网文档章节如下：
 
 翻译进度说明：
 
-=============================================  ===========  ====  ============
-                    章节                         贡献人     进度    完成时间
-=============================================  ===========  ====  ============
-"Getting Started"                              be-engineer  0%    2023/01/03~?
-"Authentication,  Authorization,  Accounting"
-"Bridging and Switching"
-"Diagnostics,monitoring and troubleshooting"
-"Extended features"
-"Firewall and Quality of Service"
-"Hardware"
-"High Availability Solutions"
-"Internet of Things"
-"IPv4 and IPv6 Fundamentals"
-"Management tools"
-"Mobile Networking"
-"Network Management"
-"Routing"
-"Multi Protocol Label Switching (MPLS)"
-"System Information and Utilities"
-"Virtual Private Networks"
-"Wired Connections"
-"Wireless"
-=============================================  ===========  ====  ============
+====  =============================================  ===========  ====  ============
+序号                      章节                         贡献人     进度    完成时间
+====  =============================================  ===========  ====  ============
+1.    "Getting Started"                              be-engineer  0%    2023/01/03~?
+2.    "Authentication,  Authorization,  Accounting"
+3.    "Bridging and Switching"
+4.    "Diagnostics,monitoring and troubleshooting"
+5.    "Extended features"
+6.    "Firewall and Quality of Service"
+7.    "Hardware"
+8.    "High Availability Solutions"
+9.    "Internet of Things"
+10.   "IPv4 and IPv6 Fundamentals"
+11.   "Management tools"
+12.   "Mobile Networking"
+13.   "Network Management"
+14.   "Routing"
+15.   "Multi Protocol Label Switching (MPLS)"
+16.   "System Information and Utilities"
+17.   "Virtual Private Networks"
+18.   "Wired Connections"
+19.   "Wireless"
+====  =============================================  ===========  ====  ============
 
 .. toctree::
    :maxdepth: 3
