@@ -1,4 +1,4 @@
-### 1. 硬件支持
+### 硬件支持
 
 RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，它也可以在第 3 方设备上运行：
 
@@ -13,13 +13,13 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 !!! note 注意：我们不建议在少于 64 MB RAM 的硬件上运行 v7。
 
-### 2. 安装
+### 安装
 
 -   Netinstall：从支持 PXE 或 EtherBoot 的网卡进行基于网络的安装
 -   CHR：用于作为虚拟机运行的 RouterOS 版本
 -   基于 CD 的安装
 
-### 3. 配置
+### 配置
 
 -   用于初始配置基于 MAC 的访问
 -   WinBox – 独立的 Windows GUI 配置工具
@@ -28,12 +28,12 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   具有集成脚本功能的强大命令行配置界面，可通过本地终端、串行控制台、telnet 和 ssh 访问
 -   API - 创建您自己的配置和监控应用程序的方式
 
-### 4. 备份/恢复
+### 备份/恢复
 
 -   二进制配置备份保存和加载
 -   以可读的文本格式导出和导入配置
 
-### 5. 防火墙
+### 防火墙
 
 -   状态过滤
 -   源和目标 NAT
@@ -46,7 +46,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   PCC - 每个连接分类器，用于负载平衡配置
 -   RAW 过滤绕过连接跟踪
 
-### 6. 路由
+### 路由
 
 -   静态路由
 -   虚拟路由和转发 (VRF)
@@ -57,7 +57,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   IPv6动态路由协议：RIPng、OSPFv3、BGP
 -   双向转发检测 (BFD)
 
-### 7. MPLS
+### MPLS
 
 -   IPv4 的静态标签绑定
 -   IIPv4 的标签分发协议
@@ -65,7 +65,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   I基于 VPLS MP-BGP 的自动发现和信令
 -   I基于 MP-BGP 的 MPLS IP VPN
 
-### 8. VPN
+### VPN
 
 -   IPSec – 隧道和传输模式、证书或 PSK、AH 和 ESP 安全协议。
 -   IKEv2 支持
@@ -79,7 +79,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   WireGuard
 -   ZeroTier
 
-### 9. 无线
+### 无线
 
 -   IEEE802.11a/b/g 无线客户端和接入点
 -   完整的 IEEE802.11n 支持
@@ -94,7 +94,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   HWMP+无线MESH协议
 -   MME无线路由协议
 
-### 10. DHCP
+### DHCP
 
 -   按接口 DHCP 服务器
 -   DHCP客户端和中继
@@ -104,20 +104,20 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   DHCPv6 前缀委派 (DHCPv6-PD)
 -   DHCPv6 客户端
 
-### 11. 热点
+### 热点
 
 -   即插即用网络访问
 -   本地网络客户端的身份验证
 -   用户账户
 -   RADIUS 支持身份验证和计费
 
-### 12. QoS
+### QoS
 
 -   具有 CIR、MIR、突发和优先级支持的分层令牌桶 (HTB) QoS 系统
 -   基本 QoS 实施的简单快速解决方案 - 简单队列
 -   动态客户端速率均衡 (PCQ)
 
-### 13. 代理
+### 代理
 
 -   HTTP缓存代理服务器
 -   透明 HTTP 代理
@@ -128,7 +128,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   访问控制列表
 -   缓存列表
 
-### 14. Tools
+### Tools
 
 -   Ping, traceroute
 -   带宽测试, ping flood
@@ -141,7 +141,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   高级流发生器
 -   WoL（局域网唤醒）发送
 
-### 15. 其他特性
+### 其他特性
 
 -   Samba支持
 -   开放流支持
@@ -158,12 +158,12 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   异步——串行 PPP 拨入/拨出，按需拨出
 -   ISDN – 拨入/拨出、128K 捆绑支持、Cisco HDLC、x75i、x75ui、x75bui 线路协议、按需拨号
 
-### 16. 内核版本
+### 内核版本
 
 -   RouterOS version 6.x uses 3.3.5
 -   RouterOS version 7.x uses 5.6.3
 
-### 17. 支持的加密
+### 支持的加密
 
 RouterOS 7 用于网络（电信）设备的管理。
 

@@ -9,17 +9,20 @@
 project = 'RouterOS 中文使用手册'
 copyright = '2023, be-engineer'
 author = 'be-engineer'
-release = '0.1'
+release = '7.x'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    'recommonmark',
+    'sphinx_markdown_tables'
+]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
-root_doc = 'index'
+# root_doc = 'index'
 language = 'cn'
 
 # -- Options for HTML output -------------------------------------------------
