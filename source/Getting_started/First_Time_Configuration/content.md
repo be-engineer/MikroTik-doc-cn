@@ -59,7 +59,7 @@
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_add_ip.png?version=1&modificationDate=1569856045386&api=v2&effects=drop-shadow)
 
-下一步是设置 DHCP 服务器。 我们将运行 **setup** 命令以方便快速地进行配置：
+下一步是设置 DHCP 服务器。 运行 **setup** 命令以方便快速地进行配置：
 
 `[admin@MikroTik]` `/ip dhcp-server` `setup` `[enter]`
 
@@ -258,21 +258,21 @@ Winbox/Webfig 操作：
 
 在 **MAC** **Winbox Server** 选项卡中执行相同的操作以阻止来自 Internet 的 Mac Winbox 连接。
 
-## Neighbor Discovery
+## 邻居发现协议
 
-MikroTik Neighbor discovery protocol is used to show and recognize other MikroTik routers in the network. Disable neighbor discovery on public interfaces:
+MikroTik Neighbor 发现协议用于显示和识别网络中的其他 MikroTik 路由器。可以在公共接口上禁用邻居发现：
 
 `/ip neighbor discovery-settings` `set` `discover-interface-list``=listBridge`
 
-## IP Connectivity Access
+## IP连接访问
 
-Besides the fact that the firewall protects your router from unauthorized access from outer networks, it is possible to restrict username access for the specific IP address
+除了防火墙保护您的路由器免受来自外部网络的未经授权访问之外，还可以限制特定 IP 地址的用户名访问
 
 `/user` `set` `0` `allowed-address``=x.x.x.x/yy`
 
-_x.x.x.x/yy - your IP or network subnet that is allowed to access your router._
+_x.x.x.x/yy - 允许访问路由器的 IP 和子网。_
 
-IP connectivity on the public interface must be limited in the firewall. We will accept only ICMP(ping/traceroute), IP Winbox, and ssh access.
+公共接口上的 IP 连接必须在防火墙中受到限制。 我们将只接受 ICMP(ping/traceroute)、IP Winbox 和 ssh 访问。
 
 `/ip firewall filter`
 
@@ -288,99 +288,99 @@ IP connectivity on the public interface must be limited in the firewall. We will
 
   `add` `chain``=input` `in-interface``=ether1` `action``=drop` `comment``=``"block everything else"``;`
 
-In case if a public interface is a pppoe, then the in-interface should be set to "pppoe-out".
+!!! warning 如果公共接口是 pppoe，则输入接口应设置为“pppoe-out”。
 
-The first two rules accept packets from already established connections, so we assume those are OK to not overload the CPU. The third rule drops any packet which connection tracking thinks is invalid. After that, we set up typical accept rules for specific protocols.
+前两个规则接受来自已建立连接的数据包，因此我们假设这些规则不会使 CPU 过载。 第三条规则丢弃任何连接跟踪认为无效的数据包。 之后，我们为特定协议设置典型的接受规则。
 
-If you are using Winbox/Webfig for configuration, here is an example of how to add an established/related rule:
+如果您使用 Winbox/Webfig 进行配置，这里是如何添加已建立/相关规则的示例：
 
--   Open **Ip -> Firewall** window, click on **Filter rules** tab;
--   Click on the **+** button, a new dialog will open;
--   Select chain input, click on **Connection state,** and select checkboxes for established and related;
--   Click on the **Action** tab and make sure action accept is selected;
--   Click on the **Ok** button to apply settings.
+-   打开 **Ip -> Firewall**窗口, 点击**Filter rules** 标签;
+-   点击**+**按键, 打开一个新的对话框;
+-   选择chain input, 点击**Connection state,** 选择**established** 和**related**复选框;
+-   点击**Action**标签，确保**action accept**被选中;
+-   点击**Ok** 按钮应用设置.
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_fw.png?version=1&modificationDate=1569856324140&api=v2&effects=drop-shadow)
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_fw_add_est.png?version=1&modificationDate=1569856350353&api=v2&effects=drop-shadow)
 
-To add other rules click on **+** for each new rule and fill the same parameters as provided in the console example.
+要添加其他规则，请为每个新规则单击 **+** 并填写控制台示例中提供的相同参数。
 
-## Administrative Services
+## 管理服务
 
-Although the firewall protects the router from the public interface, you may still want to disable RouterOS services.
+虽然防火墙保护路由器不受公共接口的影响，但您可能仍希望禁用 RouterOS 服务。
 
-Most of RouterOS administrative tools are configured at  the /ip service menu
+大多数 RouterOS 管理工具都在 /ip 服务菜单中配置
 
-Keep only secure ones,
+只保留安全的，
 
 `/ip service` `disable` `telnet,ftp,www,api`
 
-Change default service ports, this will immediately stop most of the random SSH brute force login attempts:
+更改默认服务端口，这将立即停止大多数随机 SSH 暴力登录尝试：
 
 `/ip service` `set` `ssh` `port``=2200`
 
-Additionally, each service can be secured by allowed IP address or address range(the address service will reply to), although more preferred method is to block unwanted access in firewall because the firewall will not even allow to open socket
+此外，每个服务都可以通过允许的 IP 地址或地址范围（地址服务将回复的地址）来保护，尽管更优选的方法是在防火墙中阻止不需要的访问，因为防火墙甚至不允许打开套接字
 
 `/ip service` `set` `winbox` `address``=192.168.88.0/24`
 
-## Other Services
+## 其他服务
 
-A bandwidth server is used to test throughput between two MikroTik routers. Disable it in the production environment.
+带宽服务器用于测试两个 MikroTik 路由器之间的吞吐量。 在生产环境中应该禁用它。
 
 `/tool bandwidth-server` `set` `enabled``=no`
 
-A router might have DNS cache enabled, which decreases resolving time for DNS requests from clients to remote servers. In case DNS cache is not required on your router or another router is used for such purposes, disable it.
+路由器可能启用了 DNS 缓存，这减少了从客户端到远程服务器的 DNS 请求的解析时间。 如果您的路由器不需要 DNS 缓存或其他路由器用于此类目的，请禁用它。
 
 `/ip dns` `set` `allow-remote-requests``=no`
 
   
-Some RouterBOARDs have an LCD module for informational purposes, set pin or disable it.
+一些 RouterBOARD 有一个 LCD 模块用于信息显示，可以设置引脚或禁用它。
 
   
-It is good practice to disable all unused interfaces on your router, in order to decrease unauthorized access to your router.
+最好禁用路由器上所有未使用的接口，以减少对路由器的未授权访问。
 
 `/interface` `print`
 
 `/interface` `set` `x` `disabled``=yes`
 
-Where "X" is a number of the unused interfaces.
+其中“X”是一些未使用的接口。
 
-RouterOS utilizes stronger crypto for SSH, most newer programs use it, to turn on SSH strong crypto:
+RouterOS 为 SSH 使用更强的加密，大多数较新的程序都使用它来打开 SSH 强加密：
 
 `/ip ssh` `set` `strong-crypto``=yes`
 
-Following services are disabled by default,  nevertheless, it is better to make sure that none of then were enabled accidentally:
+默认情况下禁用以下服务，最好确保没有意外启用这些服务：
 
--   MikroTik caching proxy,
+- MikroTik 缓存代理，
 
--   MikroTik socks proxy,
+- MikroTik socks代理，
 
--   MikroTik UPNP service,
+- MikroTik UPNP 服务，
 
--   MikroTik dynamic name service or IP cloud,
+- MikroTik 动态名称服务或 IP 云服务，
 
 `/ip cloud` `set` `ddns-enabled``=no` `update-time``=no`
 
-## NAT Configuration
+## NAT配置
 
-At this point, PC is not yet able to access the Internet, because locally used addresses are not routable over the Internet. Remote hosts simply do not know how to correctly reply to your local address.
+此时，PC 还不能访问 Internet，因为本地使用的地址无法通过 Internet 路由。 远程主机根本不知道如何正确回复本地地址。
 
-The solution for this problem is to change the source address for outgoing packets to routers public IP. This can be done with the NAT rule:
+解决办法是将传出数据包的源地址更改为路由器公共 IP。 这可以通过 NAT 规则来完成：
 
 `/ip firewall nat`
 
   `add` `chain``=srcnat` `out-interface``=ether1` `action``=masquerade`
 
-In case if a public interface is a pppoe, then the out-interface should be set to "pppoe-out".
+!!! warning 如果公共接口是 pppoe，则输出接口应设置为“pppoe-out”。
 
-Another benefit of such a setup is that NATed clients behind the router are not directly connected to the Internet, that way additional protection against attacks from outside mostly is not required.
+该设置的另一个好处是路由器后面的 NATed 客户端不直接连接到 Internet，这样就不需要额外的保护来抵御来自外部的攻击。
 
-## Port Forwarding
+＃＃ 转发端口
 
-Some client devices may need direct access to the internet over specific ports. For example, a client with an IP address 192.168.88.254 must be accessible by Remote desktop protocol (RDP).
+某些客户端设备可能需要通过特定端口直接访问互联网。 例如，IP 地址为 192.168.88.254 的客户端必须可通过远程桌面协议 (RDP) 访问。
 
-After a quick search on Google, we find out that RDP runs on TCP port 3389. Now we can add a destination NAT rule to redirect RDP to the client's PC.
+在谷歌上快速搜索后，我们发现 RDP 运行在 TCP 端口 3389 上。现在我们可以添加目标 NAT 规则以将 RDP 重定向到客户端的 PC。
 
 `/ip firewall nat`
 
@@ -388,15 +388,15 @@ After a quick search on Google, we find out that RDP runs on TCP port 3389. Now 
 
     `action``=dst-nat` `to-address``=192.168.88.254`
 
-If you have set up strict firewall rules then RDP protocol must be allowed in the firewall filter forward chain.
+!!! success 如果您设置了严格的防火墙规则，则防火墙过滤器转发链中必须允许 RDP 协议。
 
-## Setting up Wireless
+## 设置无线
 
-For ease of use bridged wireless setup will be made so that your wired hosts are in the same Ethernet broadcast domain as wireless clients.
+为了便于使用，将进行无线桥接设置，以便有线主机与无线客户端位于相同的以太网广播域中。
 
-The important part is to make sure that our wireless is protected, so the first step is the security profile.
+重要的是确保我们的无线网络受到保护，因此第一步是安全配置文件。
 
-Security profiles are configured from `/interface wireless security-profiles` menu in a terminal.
+安全配置文件是从终端中的“/interface wireless security-profiles”菜单配置的。
 
 `/interface wireless security-profiles`
 
@@ -404,15 +404,15 @@ Security profiles are configured from `/interface wireless security-profiles` me
 
     `wpa2-pre-shared-key``=1234567890`
 
-in Winbox/Webfig click on **Wireless** to open wireless windows and choose the **Security Profile** tab.
+在 Winbox/Webfig 中点击 **Wireless** 打开无线窗口并选择 **Security Profile** 选项卡。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_wlan_sec_profile.png?version=1&modificationDate=1569856421347&api=v2&effects=drop-shadow)
 
-If there are legacy devices that do not support WPA2 (like Windows XP), you may also want to allow WPA protocol.
+如果有不支持 WPA2 的旧设备（如 Windows XP），可能还要允许 WPA 协议。
 
-WPA and WPA2 pre-shared keys should not be the same.
+!!! warning WPA 和 WPA2 预共享密钥最好不相同。
 
-Now when the security profile is ready we can enable the wireless interface and set the desired parameters
+现在，当安全配置文件准备好后，就可以启用无线接口并设置所需的参数
 
 `/interface wireless`
 
@@ -426,28 +426,26 @@ Now when the security profile is ready we can enable the wireless interface and 
 
     `set` `country``=latvia` `antenna-gain``=3`
 
-To do the same from Winbox/Webfig:
-
--   Open Wireless window, select wlan1 interface, and click on the _enable_ button;
--   Double click on the wireless interface to open the configuration dialog;
--   In the configuration dialog click on the **Wireless** tab and click the **Advanced mode** button on the right side. When you click on the button additional configuration parameters will appear and the description of the button will change to **Simple mode**;
--   Choose parameters as shown in the screenshot, except for the country settings and SSID. You may want to also choose a different frequency and antenna gain;
--   Next, click on the **HT** tab and make sure both chains are selected;
--   Click on the **OK** button to apply settings.
+- 打开无线窗口，选择 wlan1 接口，然后点击_enable_按钮；
+- 双击无线接口打开配置对话框；
+- 在配置对话框中单击**无线**选项卡，然后单击右侧的**高级模式**按钮。 当您单击该按钮时，将出现其他配置参数，并且该按钮的描述将更改为**简单模式**；
+- 选择屏幕截图中显示的参数，国家设置和 SSID 除外。 可能还要选择不同的频率和天线增益；
+- 接下来，单击 **HT** 选项卡并确保选择了两个chain；
+- 单击**确定**按钮应用设置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_wlan_iface.png?version=1&modificationDate=1569856463320&api=v2&effects=drop-shadow)
 
-The last step is to add a wireless interface to a local bridge, otherwise connected clients will not get an IP address:
+最后一步是将无线接口添加到本地网桥，否则连接的客户端将无法获得 IP 地址：
 
 `/interface bridge port`
 
   `add` `interface``=wlan1` `bridge``=local`
 
-Now wireless should be able to connect to your access point, get an IP address, and access the internet.
+现在无线应该能够连接到您的接入点、获取 IP 地址并访问互联网。
 
-## Protecting the Clients
+## 保护客户
 
-Now it is time to add some protection for clients on our LAN. We will start with a basic set of rules.
+现在是时候为我们 LAN 的客户端添加一些保护了。 我们将从一组基本规则开始。
 
 `/ip firewall filter`
 
@@ -465,17 +463,17 @@ Now it is time to add some protection for clients on our LAN. We will start with
 
     `in-interface``=ether1` `comment``=``"drop access to clients behind NAT from WAN"`
 
-A ruleset is similar to input chain rules (accept established/related and drop invalid), except the first rule with `action=fasttrack-connection`. This rule allows established and related connections to bypass the firewall and significantly reduce CPU usage.
+规则集类似于输入链规则（接受已建立或相关的并丢弃无效的），除了第一个带有“action=fasttrack-connection”的规则。 此规则允许已建立的相关连接绕过防火墙并显著降低 CPU 使用率。
 
-Another difference is the last rule which drops all new connection attempts from the WAN port to our LAN network (unless DstNat is used). Without this rule, if an attacker knows or guesses your local subnet, he/she can establish connections directly to local hosts and cause a security threat.
+另一个区别是最后一条规则会丢弃所有从 WAN 口到 LAN 网络的新连接尝试（除非使用 DstNat）。 如果没有这条规则，如果攻击者知道或猜到您的本地子网，他/她就可以直接与本地主机建立连接并造成安全威胁。
 
-For more detailed examples on how to build firewalls will be discussed in the firewall section, or check directly  [Building Your First Firewall](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) article.
+有关如何构建防火墙的更多详细示例将在防火墙部分讨论，或直接查看 [建立第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 。
 
-## Blocking Unwanted Websites
+## 阻止不需要的网站
 
-Sometimes you may want to block certain websites, for example, deny access to entertainment sites for employees, deny access to porn, and so on. This can be achieved by redirecting HTTP traffic to a proxy server and use an access-list to allow or deny certain websites.
+有时您可能想要阻止某些网站，例如，拒绝员工访问娱乐网站、拒绝访问色情网站等。 这可以通过将 HTTP 流量重定向到代理服务器并使用访问列表来允许或拒绝某些网站来实现。
 
-First, we need to add a NAT rule to redirect HTTP to our proxy. We will use RouterOS built-in proxy server running on port 8080.
+首先，我们需要添加一个 NAT 规则来将 HTTP 重定向到我们的代理。 我们将使用运行在端口 8080 上的 RouterOS 内置代理服务器。
 
 `/ip firewall nat`
 
@@ -483,7 +481,7 @@ First, we need to add a NAT rule to redirect HTTP to our proxy. We will use Rout
 
     `action``=redirect` `to-ports``=8080`
 
-Enable web proxy and drop some websites:
+启用网络代理并删除一些网站：
 
 `/ip proxy` `set` `enabled``=yes`
 
@@ -493,34 +491,34 @@ Enable web proxy and drop some websites:
 
 `/ip proxy access` `add` `dst-host``=:vimeo` `action``=deny`
 
-Using Winbox:
+使用 Winbox：
 
--   On the left menu navigate to IP -> Web Proxy
--   Web proxy settings dialog will appear.
--   Check the "Enable" checkbox and click on the "Apply" button
--   Then click on the "Access" button to open the "Web Proxy Access" dialog
+- 在左侧菜单导航到 IP -> Web Proxy
+- 将出现 Web Proxy设置对话框。
+- 选中“Enable”复选框并单击“Apply”按钮
+- 然后单击“Access”按钮打开“Web Proxy访问”对话框
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_web_proxy.png?version=1&modificationDate=1569856600346&api=v2&effects=drop-shadow)
 
--   In the "Web Proxy Access" dialog click on "+" to add a new Web-proxy rule
--   Enter Dst hostname that you want to block, in this case, "[www.facebook.com](https://www.facebook.com/)", choose the action "deny"
--   Then click on the "Ok" button to apply changes.
--   Repeat the same to add other rules.
+- 在“Web Proxy Access”对话框中单击“+”以添加新的 Web 代理规则
+- 输入您要阻止的 Dst 主机名，在本例中为“[www.facebook.com](https://www.facebook.com/)”，选择action“deny”
+- 然后单击“OK”按钮应用更改。
+- 重复相同的操作以添加其他规则。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_web_proxy_access.png?version=1&modificationDate=1569856640042&api=v2&effects=drop-shadow)
 
-## Troubleshooting
+＃＃ 故障排除
 
-RouterOS has built-in various troubleshooting tools, like ping, traceroute, torch, packet sniffer, bandwidth test, etc.
+RouterOS 内置了各种故障排除工具，如 ping、traceroute、torch、数据包嗅探器、带宽测试等。
 
-We already used the ping tool in this article to [verify internet connectivity](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration#FirstTimeConfiguration-VerifyConnectivity).
+我们已经使用本文中的 ping 工具来 [验证互联网连接](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration#FirstTimeConfiguration-VerifyConnectivity).
 
-## Troubleshoot if ping fails
+## 如果 ping 失败，需要进行故障排除
 
-The problem with the ping tool is that it says only that destination is **unreachable**, but no more detailed information is available. Let's overview the basic mistakes.
+ping 工具的问题是它只说目的地是 **unreachable**，但没有更详细的信息可用。 只是让我们了解基本错误。
 
-You cannot reach [www.google.com](https://www.google.com/) from your computer which is connected to a MikroTik device:
+您无法从连接到 MikroTik 设备的计算机访问 [www.google.com](https://www.google.com/)：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/troubleshoot_if_ping_fails.jpg?version=1&modificationDate=1582275155077&api=v2)
 
-If you are not sure how exactly configure your gateway device, please reach MikroTik's official [consultants](https://mikrotik.com/consultants) for configuration support.
+!!! success 如果不确定如何正确配置您的网关设备，请联系 MikroTik 的官方[顾问](https://mikrotik.com/consultants) 以获得配置支持。

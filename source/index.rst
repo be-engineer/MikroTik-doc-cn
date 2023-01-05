@@ -58,7 +58,7 @@ RouterOS官网文档章节如下：
 ====  =============================================  ===========  ====  ============
 序号                      章节                         贡献人     进度    完成时间
 ====  =============================================  ===========  ====  ============
-1.    "Getting Started"                              be-engineer  0%    2023/01/03~?
+1.    "Getting Started"                              be-engineer  5%    2023/01/03~?
 2.    "Authentication,  Authorization,  Accounting"
 3.    "Bridging and Switching"
 4.    "Diagnostics,monitoring and troubleshooting"
