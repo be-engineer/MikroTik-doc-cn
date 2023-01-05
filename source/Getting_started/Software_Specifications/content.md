@@ -4,12 +4,12 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 -   i386 兼容架构
 -   SMP – 多核和多 CPU 兼容
--   至少 32MB 的 RAM，因为 RouterOS v7 没有更多的最大 RAM。
--   IDE、SATA、USB 和至少 64MB 空间的闪存存储介质
+-   至少32MB的内存，自RouterOS v7以来，不再有最大内存
+-   IDE、SATA、USB 和至少 64MB 空间的存储介质
 -   Linux内核支持的网卡（PCI、PCI-X）
--   开关芯片配置支持
+-   开支持交换关芯片配置
 
-!!! note 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看每个产品手册或框图。
+!!! note 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看产品手册或框图。
 
 !!! note 注意：我们不建议在少于 64 MB RAM 的硬件上运行 v7。
 
