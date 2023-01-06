@@ -41,11 +41,10 @@ Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/dat
 1. 导航至服务器的[设置页面](https://my.vultr.com/)。
 2. 选择 **Custom ISO** 菜单，然后单击 **Remove ISO**。 服务器将重新启动。
 3. 连接到 [网络控制台](https://www.vultr.com/docs/vultr-web-console-faq/)。
-4. 以管理员身份登录。 没有设置密码，所以在出现提示时按 **Enter**。
+4. 以管理员身份登录。 因为没有设置密码，所以出现提示时按 **Enter**。
 5. 查看软件许可证，然后选择一个新的强密码。
 6. 关闭 web 控制台，然后在本地计算机上打开一个终端。
 7. 以管理员身份通过 SSH 访问服务器的 IP 地址。
-    
 8. 输入您在上一步中设置的强密码。
 
 这样就完成了基本安装。 请[保护您的 MicroTik CHR 路由器](https://wiki.mikrotik.com/wiki/Manual:Securing_Your_Router) 并查阅[文档](https://help.mikrotik.com/docs/display/ROS/Getting+started)来配置服务器以供生产使用。

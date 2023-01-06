@@ -26,7 +26,7 @@ qemu-img convert -f raw -O qcow2 chr-6.40.3.img vm-(VM_ID)-disk-1.qcow2
 
 #### Bash 脚本方法
 
-如果您有权访问 ProxMox 主机，则还可以通过 BASH 脚本快速创建 CHR VM。 下面是一个这样的脚本的例子。
+如果您有权访问 ProxMox 主机，还可以通过 BASH 脚本快速创建 CHR VM。 下面是一个这样的脚本例子。
 
 该脚本的作用：
 

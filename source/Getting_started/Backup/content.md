@@ -22,7 +22,7 @@ RouterOS 备份功能允许您保存当前设备的配置，然后可以在相�
 
 `[admin@MikroTik] > system` `/backup/load name=auto-before-reset.backup password=""`
 
-| Property                           | Description        |
+| 特性                               | 说明               |
 | ---------------------------------- | ------------------ |
 | **name** (_string_; Default: )     | 备份文件名         |
 | **password** (_string_; Default: ) | 加密备份文件的密码 |

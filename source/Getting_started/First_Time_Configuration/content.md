@@ -9,11 +9,11 @@
 
 本文档介绍了如何从头开始设置设备,因此我们将要求您清除所有默认值。
 
-首次使用默认用户名**admin**和**no password**(对于某些型号,请检查贴纸上的用户密码)连接到路由器时,系统将要求您重置或保留默认配置(即使默认配置仅具有IP地址)。 由于本文假设路由器上没有配置,因此应在出现提示时按键盘上的“ r”或单击WinBox中的“删除配置”按钮将其删除。
+首次使用默认用户名**admin**和**无密码**(对于某些型号,请检查贴纸上的用户密码)连接到路由器时,系统将要求您重置或保留默认配置(即使默认配置仅具有IP地址)。 由于本文假设路由器上没有配置,因此应在出现提示时按键盘上的“r”或单击WinBox中的“删除配置”按钮将其删除。
 
-## 路由器没有默认配置
+## 路由器无默认配置
 
-如果路由器上没有默认配置，您有多种选择，但在这里我们将使用适合我们需要的一种方法。
+如果路由器上没有默认配置，您有多种选择，这里我们将使用适合我们需要的一种方法。
 
 将路由器的 ether1 端口连接到 WAN 电缆并将您的 PC 连接到 ether2。现在打开 WinBox 并在邻居发现中查找您的路由器。请参阅[Winbox文章](https://help.mikrotik.com/docs/display/ROS/Winbox#Winbox-StartingWinbox)中的详细示例。
 
@@ -43,19 +43,19 @@
 
 `/ip address` `add` `address` `=192.168.88.1/24` `interface` `=local`
 
-如果您更喜欢 WinBox/WeBfig 作为配置工具：
+如果您更喜欢WinBox/WeBfig作为配置工具：
 
-- 打开**Bridge** 窗口，应选择**Bridge** 选项卡；
-- 点击+按钮，将打开一个新对话框，输入网桥名称**local**并点击**OK**；
-- 选择端”选项卡并单+按钮，将打开一个新对话框；
-- 选择接口 **ether2** 和网桥 **local** 形成下拉列表，然后单击 **OK** 按钮应用设置；
-- 您可以关闭桥接对话框。
+- 打开**Bridge** 窗口，选择**Bridge** 选项卡；
+- 点击 **+** 按钮，将打开一个新对话框，输入网桥名称**local**并点击**OK**；
+- 选择 **Port** 选项卡并单 **+** 按钮，将打开一个新对话框；
+- 从i下拉列表选择接口 **ether2** 和网桥 **local** ，然后单击 **OK** 按钮应用设置；
+- 关闭桥接对话框。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_add_bridge.png?version=1&modificationDate=1569855959279&api=v2&effects=drop-shadow)
 
 - 打开 **Ip -> Address** 对话框；
-- 点击**+**按钮，将打开一个新对话框；
-- 输入 IP 地址 **192.168.88.1/24** 从下拉列表中选择接口 **local** 然后点击 **OK** 按钮；
+- 点击 **+** 按钮，打开一个新对话框；
+- 输入 IP 地址 **192.168.88.1/24**， 从下拉列表中选择接口 **local** 然后点击 **OK** 按钮；
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_add_ip.png?version=1&modificationDate=1569856045386&api=v2&effects=drop-shadow)
 
@@ -91,8 +91,8 @@
 
 同样的设置工具也可以在 WinBox/WeBfig 中使用：
 
-- 打开 **Ip -> DHCP 服务器** 窗口，应选择 **DHCP** 选项卡；
-- 点击 **DHCP 设置** 按钮，将打开一个新对话框，输入 DHCP 服务器界面 **本地** 并点击 **下一步** 按钮；
+- 打开 **Ip -> DHCP 服务器** 窗口，选择 **DHCP** 选项卡；
+- 点击 **DHCP 设置** 按钮，将打开一个新对话框，输入 DHCP 服务器接口 **local** 并点击 **Next** 按钮；
 - 按照向导完成设置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_dhcp_setup.png?version=1&modificationDate=1569856096203&api=v2&effects=drop-shadow)
@@ -153,7 +153,7 @@ PPPoE 连接还为您提供动态 IP 地址，并可以动态配置 DNS 和默�
 Winbox/Webfig 操作：
 
 - 打开 **PPP** 窗口，应选择 **Interfaces** 选项卡；
-- 点击**+** 按钮，从下拉列表中选择**PPPoE客户端**，新对话框将打开；
+- 点击 **+** 按钮，从下拉列表中选择**PPPoE客户端**，新对话框将打开；
 - 从下拉列表中选择接口 **ether1**，然后单击 **OK** 按钮应用设置。
   
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_add_pppoe.png?version=1&modificationDate=1569856189121&api=v2&effects=drop-shadow)
@@ -174,7 +174,7 @@ Winbox/Webfig 操作：
 
 `8.8.8.8                                    56  47 21ms`
 
-验证DNSi请求
+验证DNS请求
 
 `[admin@MikroTik] > /ping www.google.com`
 
@@ -250,10 +250,10 @@ Winbox/Webfig 操作：
 
 - 打开 **Interfaces → Interface List → Lists** 窗口并点击“+”添加新列表；
 - 在**Name**字段中输入接口列表名称“listBridge”，然后单击**确定**；
-- 返回**Interfaces →****Interfaces list**部分并点击“+”；
+- 返回**Interfaces →** **Interfaces list**部分并点击“+”；
 - 从下拉**List**选项中选择“listBridge”，然后从下拉**Interfaces **选项中选择“local”，然后单击**OK**；
 - 打开**Tools -> Mac Server** 窗口；
-- 单击**“MAC Telnet Server”**按钮，将打开一个新对话框；
+- 单击 **“MAC Telnet Server”** 按钮，将打开一个新对话框；
 - 从下拉列表中选择新创建的列表“listBridge”，然后单击“**OK**”按钮应用设置。
 
 在 **MAC** **Winbox Server** 选项卡中执行相同的操作以阻止来自 Internet 的 Mac Winbox 连接。
@@ -295,7 +295,7 @@ _x.x.x.x/yy - 允许访问路由器的 IP 和子网。_
 如果您使用 Winbox/Webfig 进行配置，这里是如何添加已建立/相关规则的示例：
 
 -   打开 **Ip -> Firewall**窗口, 点击**Filter rules** 标签;
--   点击**+**按键, 打开一个新的对话框;
+-   点击 **+** 按键, 打开一个新的对话框;
 -   选择chain input, 点击**Connection state,** 选择**established** 和**related**复选框;
 -   点击**Action**标签，确保**action accept**被选中;
 -   点击**Ok** 按钮应用设置.
@@ -376,7 +376,7 @@ RouterOS 为 SSH 使用更强的加密，大多数较新的程序都使用它来
 
 该设置的另一个好处是路由器后面的 NATed 客户端不直接连接到 Internet，这样就不需要额外的保护来抵御来自外部的攻击。
 
-＃＃ 转发端口
+## 转发端口
 
 某些客户端设备可能需要通过特定端口直接访问互联网。 例如，IP 地址为 192.168.88.254 的客户端必须可通过远程桌面协议 (RDP) 访问。
 
@@ -507,7 +507,7 @@ RouterOS 为 SSH 使用更强的加密，大多数较新的程序都使用它来
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_web_proxy_access.png?version=1&modificationDate=1569856640042&api=v2&effects=drop-shadow)
 
-＃＃ 故障排除
+## 故障排除
 
 RouterOS 内置了各种故障排除工具，如 ping、traceroute、torch、数据包嗅探器、带宽测试等。
 

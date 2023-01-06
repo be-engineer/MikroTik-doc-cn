@@ -6,6 +6,9 @@ RouterOS 中文使用手册
 
 原版文档地址为：https://help.mikrotik.com/docs/display/ROS/RouterOS
 
+github地址：https://github.com/be-engineer/MikroTik-doc-cn 喜欢的给我加颗小星星吧
+
+
 
 RouterOS是一种路由操作系统，是基于Linux核心开发 ，兼容x86 PC的路由软件，并通过该软件将标准的PC电脑变成专业路由器，在软件RouterOS 软路由图的开发和应用上不断的更新和发展，软件经历了多次更新和改进，使其功能在不断增强和完善。特别在无线、认证、策略路由、带宽控制和防火墙过滤等功能上有着非常突出的功能，其极高的性价比，受到许多网络人士的青睐。
 
@@ -57,7 +60,7 @@ RouterOS官网文档章节标题如下：
 ====  =============================================  ===========  ====  ============
 序号                      章节                         贡献人     进度    完成时间
 ====  =============================================  ===========  ====  ============
-1.    "Getting Started"                              be-engineer  30%    2023/01/03~?
+1.    "Getting Started"                              be-engineer  70%    2023/01/03~?
 2.    "Authentication,  Authorization,  Accounting"
 3.    "Bridging and Switching"
 4.    "Diagnostics,monitoring and troubleshooting"

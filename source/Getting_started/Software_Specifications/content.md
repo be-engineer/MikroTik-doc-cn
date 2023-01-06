@@ -4,10 +4,10 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 -   i386 兼容架构
 -   SMP – 多核和多 CPU 兼容
--   至少32MB的内存，自RouterOS v7以来，不再有最大内存
+-   至少32MB的内存，自RouterOS v7以后不再有最大内存限制
 -   IDE、SATA、USB 和至少 64MB 空间的存储介质
 -   Linux内核支持的网卡（PCI、PCI-X）
--   开支持交换关芯片配置
+-   支持交换关芯片配置
 
 !!! note 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看产品手册或框图。
 
@@ -37,7 +37,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 -   状态过滤
 -   源和目标 NAT
--   NAT 帮助（h323、pptp、quake3、sip、ftp、irc、tftp）
+-   NAT 助手（h323、pptp、quake3、sip、ftp、irc、tftp）
 -   内部连接、路由和数据包标记
 -   按 IP 地址和地址范围、端口和端口范围、IP 协议、DSCP 等过滤
 -   地址列表
@@ -60,10 +60,10 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 ### MPLS
 
 -   IPv4 的静态标签绑定
--   IIPv4 的标签分发协议
--   IRSVP 流量工程隧道
--   I基于 VPLS MP-BGP 的自动发现和信令
--   I基于 MP-BGP 的 MPLS IP VPN
+-   IPv4 的标签分发协议
+-   RSVP 流量工程隧道
+-   基于 VPLS MP-BGP 的自动发现和信令
+-   基于 MP-BGP 的 MPLS IP VPN
 
 ### VPN
 
@@ -73,7 +73,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   点对点隧道（OpenVPN、PPTP、PPPoE、L2TP、SSTP）
 -   高级 PPP 功能（MLPPP、BCP）
 -   简单隧道（​​IPIP、EoIP） IPv4 和 IPv6 支持
--   6to4 隧道支持（IPv6 over IPv4 网络）
+-   支持6to4 隧道（IPv6 over IPv4 网络）
 -   VLAN – IEEE802.1q 虚拟 LAN 支持，Q-in-Q 支持
 -   基于 MPLS 的 VPN
 -   WireGuard
@@ -82,7 +82,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 ### 无线
 
 -   IEEE802.11a/b/g 无线客户端和接入点
--   完整的 IEEE802.11n 支持
+-   支持完整的 IEEE802.11n 
 -   Nstreme 和 Nstreme2 专有协议
 -   NV2协议
 -   无线分配系统 (WDS)
@@ -96,7 +96,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 ### DHCP
 
--   按接口 DHCP 服务器
+-   按接口的 DHCP 服务器
 -   DHCP客户端和中继
 -   静态和动态 DHCP 租约
 -   RADIUS支持
@@ -106,7 +106,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 ### 热点
 
--   即插即用网络访问
+-   即插即用的网络访问
 -   本地网络客户端的身份验证
 -   用户账户
 -   RADIUS 支持身份验证和计费
@@ -124,7 +124,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   SOCKS 协议支持
 -   DNS 静态条目
 -   支持在单独的驱动器上缓存
--   父代理支持
+-   支持父代理
 -   访问控制列表
 -   缓存列表
 
@@ -139,7 +139,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   CALEA
 -   文件抓取工具
 -   高级流发生器
--   WoL（局域网唤醒）发送
+-   WoL（局域网唤醒）
 
 ### 其他特性
 
@@ -171,7 +171,7 @@ RouterOS 7 用于网络（电信）设备的管理。
 
 -   所有加密功能（组件）都是 RouterOS 7 的组成部分，最终用户无法更改。
 
--   RouterOS 7 旨在供最终用户安装，无需供应商提供大力支持。
+-   RouterOS 7 旨在供最终用户安装，无需供应商提供显著支持。
 
 -   RouterOS 7 使用以下安全协议：
 
