@@ -1,14 +1,14 @@
-## Overview
+＃＃ 概述
 
-The console is used for accessing the MikroTik Router's configuration and management features using text terminals, either remotely using serial port, telnet, SSH or console screen within Winbox, or directly using monitor and keyboard. The console is also used for writing scripts. This manual describes the general console operation principles. Please consult the Scripting Manual on some advanced console commands and on how to write scripts.
+控制台用于使用文本终端访问 MikroTik 路由器的配置和管理功能，可以远程使用串行端口、telnet、SSH 或 Winbox 中的控制台屏幕，也可以直接使用监视器和键盘。 控制台还用于编写脚本。 本手册描述了控制台的一般操作原则。 请参阅脚本手册了解一些高级控制台命令以及如何编写脚本。
 
-## Hierarchy
+＃＃ 菜单分级
 
-The console allows the configuration of the router's settings using text commands. Since there is a lot of available commands, they are split into groups organized in a way of hierarchical menu levels. The name of a menu level reflects the configuration information accessible in the relevant section, eg. **/ip hotspot**.
+控制台允许使用文本命令配置路由器的设置。 由于有很多可用的命令，它们被分成以分层菜单级别的组。 菜单级别的名称反映了相关部分中可访问的配置信息，例如。 **/ip hotspot**。
 
-#### Example
+＃＃＃＃ 示例
 
-For example, you can issue the **/ip route print** command:
+例如，您可以执行 **/ip route print** 命令：
 
 `[admin@MikroTik] > ip route` `print`
 
@@ -30,7 +30,7 @@ For example, you can issue the **/ip route print** command:
 
 `[admin@MikroTik] >`
 
-Instead of typing /**ip route** path before each command, the path can be typed only once to move into this particular branch of menu hierarchy. Thus, the example above could also be executed like this:
+无需在每个命令前输入 /**ip route** 路径，只需输入一次路径即可进入层次结构的这个特定分支。 因此，上面的例子也可以这样执行：
 
 `[admin@MikroTik] > ip route`
 
@@ -56,7 +56,7 @@ Instead of typing /**ip route** path before each command, the path can be typed
 
 `admin@MikroTik] ip route>`
 
-Notice that the prompt changes in order to reflect where you are located in the menu hierarchy at the moment. To move to the top level again, type " **/** "
+请注意，提示会发生变化，以反映您此时在菜单层次结构中所处的位置。 要再次移动到顶层，请输入“**/**”
 
 `[admin@MikroTik] > ip route`
 
@@ -64,15 +64,15 @@ Notice that the prompt changes in order to reflect where you are located in the 
 
 `[admin@MikroTik] >`
 
-To move up one command level, type " **..** "
+要向上移动一级，请键入“**..**”
 
 `[admin@MikroTik] ip route> ..`
 
 `[admin@MikroTik] ip>`
 
-You can also use **/** and **..** to execute commands from other menu levels without changing the current level:
+您还可以使用 **/** 和 **..** 从其他菜单级别执行命令而不更改当前级别：
 
-`[admin@MikroTik] ip route>` `/``ping` `10.0.0.1`
+`[admin@MikroTik] ip route>` `/` `ping` `10.0.0.1`
 
 `10.0.0.1` `ping` `timeout`
 
@@ -96,25 +96,25 @@ You can also use **/** and **..** to execute commands from other menu levels
 
 `[admin@MikroTik] ip firewall nat>`
 
-## Item Names and Numbers
+## 项目名称和编号
 
-Many of the command levels operate with arrays of items: interfaces, routes, users, etc. Such arrays are displayed in similarly looking lists. All items in the list have an item number followed by flags and parameter values.
+许多命令级别使用项目数组进行操作：接口、路由、用户等。此类数组显示在类似的列表中。 列表中的所有项目都有一个项目编号，后接标志和参数值。
 
-To change properties of an item, you have to use **set** command and specify name or number of the item.
+要更改项目的属性，您必须使用 **set** 命令并指定项目的名称或编号。
 
-#### Item Names
+#### 项目名称
 
-Some lists have items with specific names assigned to each of them. Examples are **interface** or **user** levels. There you can use item names instead of item numbers.
+一些列表中的项目具有分配给每个项目的特定名称。 例如***interface**或**user**级别。 那里可以使用项目名称而不是项目编号。
 
-You do not have to use the **print** command before accessing items by their names, which, as opposed to numbers, are not assigned by the console internally, but are properties of the items. Thus, they would not change on their own. However, there are all kinds of obscure situations possible when several users are changing router's configuration at the same time. Generally, item names are more "stable" than the numbers, and also more informative, so you should prefer them to numbers when writing console scripts.
+在按名称访问项目之前，不必使用 **print** 命令，与数字相反，名称不是由控制台内部分配的，而是项目的属性。 因此，他们不会自行改变。 然而，当多个用户同时更改路由器的配置时，可能会出现各种难以理解的情况。 通常，项目名称比数字更“稳定”，也更能提供信息，因此在编写控制台脚本时您应该更喜欢它们而不是数字。
 
-#### Item Numbers
+#### 项目编号
 
-Item numbers are assigned by the print command and are not constant - it is possible that two successive print commands will order items differently. But the results of last print commands are memorized and, thus, once assigned, item numbers can be used even after **add**, **remove** and **move** operations (since version 3, **move** operation does not renumber items). Item numbers are assigned on a per session basis, they will remain the same until you quit the console or until the next print command is executed. Also, numbers are assigned separately for every item list, so the **ip address print** will not change the numbering of the interface list.
+项目编号由打印命令分配并且不是固定的 - 两个连续的打印命令可能会对项目进行不同的排序。 但是最后打印命令的结果会被记住，因此，一旦分配，即使在**添加**、**删除**和**移动**操作之后（自版本 3 起，**移动* * 操作不会对项目重新编号）。 项目编号是在每个会话的基础上分配的，它们将保持不变，直到退出控制台或直到执行下一个打印命令。 此外，会为每个项目列表单独分配编号，因此 **ip address print** 不会更改接口列表的编号。
 
-Since version 3 it is possible to use item numbers without running **print** command. Numbers will be assigned just as if the **print** command was executed.
+从版本 3 开始，无需运行 **print** 命令即可使用项目编号。 就像执行了 **print** 命令一样分配数字。
 
-You can specify multiple items as targets to some commands. Almost everywhere, where you can write the number of item, you can also write a list of numbers.
+您可以将多个项目指定为某些命令的目标。 几乎在任何地方你都可以写项目的数量，也可以写一个数字列表。
 
 `[admin@MikroTik] > interface` `print`
 
@@ -144,19 +144,19 @@ You can specify multiple items as targets to some commands. Almost everywhere, w
 
 `[admin@MikroTik] >`
 
-**Warning:** Do not use Item numbers in scripts, it is not a reliable way to edit items in the **scheduler. scripts**, etc. Instead use find command. More info [here](https://wiki.mikrotik.com/wiki/Manual:Scripting "Manual:Scripting") also look at [scripting examples](https://wiki.mikrotik.com/wiki/Manual:Scripting-examples "Manual:Scripting-examples").
+**警告：**不要在脚本中使用项目编号，例如，这不是**scheduler. scripts**中编辑项目的可靠方法。最好使用查找命令。 更多信息见[此处](https://wiki.mikrotik.com/wiki/Manual:Scripting "Manual:Scripting") 另请参阅[脚本示例](https://wiki.mikrotik.com/wiki/Manual:Scripting -示例“Manual:Scripting-examples”）。
 
-## Quick Typing
+## 快速输入
 
-There are two features in the console that help entering commands much quicker and easier - the \[Tab\] key completions, and abbreviations of command names. Completions work similarly to the bash shell in UNIX. If you press the \[Tab\] key after a part of a word, the console tries to find the command within the current context that begins with this word. If there is only one match, it is automatically appended, followed by a space:
+控制台中有两个功能可以帮助更快更轻松地输入命令 - [Tab] 键完成和命令的缩写。 工作方式类似于 UNIX 中的 bash shell。 如果在单词的一部分后按 [Tab] 键，控制台会尝试在当前上下文中查找以该单词开头的命令。 如果只有一个匹配项，则会自动添加，后跟一个空格：
 
-_/inte_**\[Tab\]\_** becomes **/interface \_**
+_/inte_**[Tab\]\_** 变成 **/interface \_**
 
-If there is more than one match, but they all have a common beginning, which is longer than that what you have typed, then the word is completed to this common part, and no space is appended:
+如果有多个匹配，但它们都有一个相同的开头，比你输入的很长，那么这个词就完成到这个共同的部分，并且不附加空格：
 
-_/interface set e_**\[Tab\]\_** becomes **/interface set ether\_**
+_/interface set e_**[Tab\]\_** 变成 **/interface set ether\_**
 
-If you've typed just the common part, pressing the tab key once has no effect. However, pressing it for the second time shows all possible completions in compact form:
+如果您只输入了公共部分，则按一次 Tab 键无效。 然而，第二次按下它会以紧凑的形式显示所有可能的补全：
 
 `[admin@MikroTik] > interface` `set` `e[Tab]_`
 
@@ -168,17 +168,17 @@ If you've typed just the common part, pressing the tab key once has no effect. H
 
 `[admin@MikroTik] > interface` `set` `ether_`
 
-The **\[Tab\]** key can be used almost in any context where the console might have a clue about possible values - command names, argument names, arguments that have only several possible values (like names of items in some lists or name of protocol in firewall and NAT rules). You cannot complete numbers, IP addresses and similar values.
+**[Tab\]** 键几乎可以在控制台可能有线索的任何上下文中使用 - 命令名称、参数名称、只有几个可能值的参数（例如某些列表中的项目名称或 防火墙和 NAT 规则中的协议名称）。 您不能填写数字、IP 地址和类似值。
 
-Another way to press fewer keys while typing is to abbreviate command and argument names. You can type only beginning of command name, and, if it is not ambiguous, console will accept it as a full name. So typing:
+另一种在键入时减少按键的方法是缩写的命令和参数名称。 您只要键入命令名称的开头，如果它没有歧义，控制台将接受它作为全名。 所以输入：
 
 `[admin@MikroTik] > pi 10.1 c 3 si 100`
 
-equals to:
+等于:
 
 `[admin@MikroTik] >` `ping` `10.0.0.1 count 3 size 100`
 
-It is possible to complete not only the beginning, but also any distinctive substring of a name: if there is no exact match, the console starts looking for words that have string being completed as first letters of a multiple word name, or that simply contain letters of this string in the same order. If single such word is found, it is completed at cursor position. For example:
+不仅可以补全名称的开头，还可以补全名称的任何独特子字符串：如果没有完全匹配，控制台将开始查找将字符串补全为多个单词名称的第一个字母的单词，或者仅包含 此字符串的字母。 如果找到单个这样的词，则在光标位置完成。 例如：
 
 `[admin@MikroTik] > interface x[TAB]_`
 
@@ -188,66 +188,66 @@ It is possible to complete not only the beginning, but also any distinctive subs
 
 `[admin@MikroTik] > interface monitor-traffic _`
 
-## General Commands
+## 常规命令
 
-There are some commands that are common to nearly all menu levels, namely: **print, set, remove, add, find, get, export, enable, disable, comment, move**. These commands have similar behavior throughout different menu levels.
+几乎所有菜单级别都有一些通用命令，即：**print, set, remove, add, find, get, export, enable, disable, comment, move**。 这些命令在不同的菜单级别上具有相似的行为。
 
--   **add** \- this command usually has all the same arguments as **set**, except the item number argument. It adds a new item with the values you have specified, usually at the end of the item list, in places where the order of items is relevant. There are some required properties that you have to supply, such as the interface for a new address, while other properties are set to defaults unless you explicitly specify them.
-    -   Common Parameters
-        -   _copy-from_ \- Copies an existing item. It takes default values of new item's properties from another item. If you do not want to make exact copy, you can specify new values for some properties. When copying items that have names, you will usually have to give a new name to a copy
-        -   _place-before_ \- places a new item before an existing item with specified position. Thus, you do not need to use the move command after adding an item to the list. 
-        -   _disabled_ \- controls disabled/enabled state of the newly added item(-s)
-        -   _comment_ \- holds the description of a newly created item
-    -   Return Values
-        -   add command returns internal number of item it has added
+- **add** \- 通常具有与**set** 相同的所有参数，除了项目编号参数。 它添加一个具有指定值的新项目，通常在项目列表的末尾，在项目相关的地方。 必须提供一些必需的属性，例如新地址的接口，而其他属性将设置为默认值，除非明确指定它们。
+- 通用参数
+         - _copy-from_ \- 复制现有项目。 它从另一个项目中获取新项目属性的默认值。 如果不想进行精确复制，可以为某些属性指定新值。 复制有名称的项目时，通常必须为副本指定一个新名称
+         - _place-before_ \- 将新项目放在具有指定位置的现有项目之前。 不需要在将项目添加到列表后使用移动命令。
+         - _disabled_ \- 控制新添加项目的禁用/启用状态（-s）
+         - _comment_ \- 保存新创建项目的注释
+     - 返回值
+         - 添加命令返回它添加的项目的内部编号
 
--   **edit** \- this command is associated with the **set** command. It can be used to edit values of properties that contain a large amount of text, such as scripts, but it works with all editable properties. Depending on the capabilities of the terminal, either a fullscreen editor, or a single line editor is launched to edit the value of the specified property.
--   **find** \- The find command has the same arguments as set, plus the flag arguments like _disabled_ or _active_ that take values _yes_ or _no_ depending on the value of respective flag. To see all flags and their names, look at the top of **print** command's output. The **find** command returns internal numbers of all items that have the same values of arguments as specified.
--   **move** \- changes the order of items in list.
-    -   Parameters
-        -   first argument specifies the item(-s) being moved.
-        -   the second argument specifies the item before which to place all items being moved (they are placed at the end of the list if the second argument is omitted).
--   **print** \- shows all information that's accessible from particular command level. Thus, **/system clock print** shows system date and time, **/ip route print** shows all routes, etc. If there's a list of items in current level and they are not read-only, i.e. you can change/remove them (example of read-only item list is /system history, which shows a history of executed actions), then print command also assigns numbers that are used by all commands that operate with items in this list.
-    -   Common Parameters
-        -   _from_ \- show only specified items, in the same order in which they are given.
-        -   _where_ \- show only items that match specified criteria. The syntax of _where_ the property is similar to the **find** command.
-        -   _brief_ \- forces the print command to use tabular output form
-        -   _detail_ \- forces the print command to use property=value output form
-        -   _count-only_ \- shows the number of items
-        -   _file_ \- prints the contents of the specific submenu into a file on the router.
-        -   _interval_ \- updates the output from the _print_ command for every interval seconds.
-        -   _oid_ \- prints the OID value for properties that are accessible from SNMP
-        -   _without-paging_ \- prints the output without stopping after each screenful.
--   **remove** \- removes specified item(-s) from a list.
--   **set** \- allows you to change values of general parameters or item parameters. The set command has arguments with names corresponding to values you can change. Use ? or double \[Tab\] to see list of all arguments. If there is a list of items in this command level, then set has one action argument that accepts the number of item (or list of numbers) you wish to set up. This command does not return anything.
--   **reset** - reset parameters to default values
+- **edit** \- 此命令与 **set** 命令相关联。 它可用于编辑包含大量文本的属性值，例如脚本，但它适用于所有可编辑的属性。 根据终端的功能，启动全屏编辑器或单行编辑器来编辑指定属性的值。
+- **find** \- find 命令具有与 set 相同的参数，加上标志参数，如 _disabled_ 或 _active_ 取值 _yes_ 或 _no_ 取决于各自标志的值。 要查看所有标志及其名称，请查看 **print** 命令输出的顶部。 **find** 命令返回具有与指定参数值相同的所有项目的内部编号。
+- **move** \- 更改列表中项目的顺序。
+     -   参数
+         - 第一个参数指定要移动的项目。
+         - 第二个参数指定要放置所有被移动项目的条目（如果省略第二个参数，它们将被放置在列表的末尾）。
+- **print** \- 显示可从特定命令级别访问的所有信息。 因此，**/system clock print** 显示系统日期和时间，**/ip route print** 显示所有路由等。如果当前级别有项目列表并且不是只读的，即你可以更改/删除它们（只读项目列表的示例是 /system history，它显示已执行操作的历史记录），则print 命令还会分配所有操作此列表中项目的命令所使用的编号。
+- 通用参数
+         - _from_ \- 只显示指定的项目，按照给定的顺序。
+         - _where_ \- 仅显示符合指定条件的项目。 _where_ 属性的语法类似于 **find** 命令。
+         - _brief_ \- 强制打印命令使用表格输出形式
+         - _detail_ \- 强制打印命令使用 property=value 输出形式
+         - _count-only_ \- 显示项目数
+         - _file_ \- 将特定子菜单的内容打印到路由器上的文件中。
+         - _interval_ \- 每隔 interval 秒更新 _print_ 命令的输出。
+         - _oid_ \- 打印可从 SNMP 访问的属性的 OID 值
+         - _without-paging_ \- 在每屏之后不停止地打印输出。
+- **remove** \- 从列表中删除指定的项目。
+- **set** \- 允许您更改一般参数或项目参数的值。 set 命令的参数名称与您可以更改的值相对应。 利用 ？ 或双击 \[Tab\] 查看所有参数的列表。 如果此命令级别中有一个项目列表，则 set 有一个操作参数，该参数接受您要设置的项目（或数字列表）的数量。 此命令不返回任何内容。
+- **reset** - 将参数重置为默认值
 
-You can combine commands, here are two variants of the same command that will place a new firewall filter entry, by looking up comment:
+!!! note 您可以组合命令，这里是同一命令的两个变体，它们将通过查找注释来设置新的防火墙过滤器条目：
 
-/ip firewall/filter/add chain=forward place-before=\[find where comment=CommentX\]  
+/ip firewall/filter/add chain=forward place-before=[find where comment=CommentX\]  
 /ip/firewall/filter/add chain=forward place-before="CommentX"
 
-## Modes
+## 模式
 
-Console line editor works either in multiline mode or in single-line mode. In multiline mode line editor displays complete input line, even if it is longer than single terminal line. It also uses a full-screen editor for editing large text values, such as scripts. In single-line mode only one terminal line is used for line editing, and long lines are shown truncated around the cursor. A full-screen editor is not used in this mode.
+控制台编辑器在多行模式或单行模式下工作。 在多行模式编辑器显示完整的输入行，即使它比单个行长。 它还使用全屏编辑器来编辑大文本，例如脚本。 在单行模式下，只有一个终端行用于行编辑，长行在光标周围被截断。 在此模式下不使用全屏编辑器。
 
-Choice of modes depends on detected terminal capabilities.
+模式的选择取决于检测到的终端能力。
 
-## List of keys
+## 键列表
 
-Control-C keyboard interrupt. Control-D log out (if input line is empty)Control-K clear from cursor to the end of lineControl-X toggle safe modeControl-V toggle hotlock mode modeF6 toggle cellarF1 or ? show context sensitive help. If the previous character is \\, then inserts literal ?.Tab perform line completion. When pressed second time, show possible completions.Delete remove character at cursorControl-H or Backspace remove character before cursor and move cursor back one position.Control-\\ split line at cursor. Insert newline at cursor position. Display second of the two resulting lines.Control-B or Left move cursor backwards one characterControl-F or Right move cursor forward one characterControl-P or Up go to previous line. If this is the first line of input then recall previous input from history.Control-N or Down go to next line. If this is the last line of input then recall next input from history.Control-A or Home move cursor to the beginning of the line. If cursor is already at the beginning of the line, then go to the beginning of the first line of current input.Control-E or End move cursor to the end of line. If cursor is already at the end of line, then move it to the end of the last line of current input.Control-L or F5 reset terminal and repaint screen.
+Control-C 键盘中断。 Control-D 注销（如果输入行为空） Control-K 从光标清除到行尾 Control-X 切换安全模式 Control-V 切换热锁模式 modeF6 切换地窖 F1 或？ 显示上下文相关的帮助。 如果前一个字符是 \\，则插入文字 ?.Tab 执行行完成。 第二次按下时，显示可能的完成。Delete 删除光标处的字符Control-H 或 Backspace 删除光标前的字符并将光标移回一个位置。Control-\\ 在光标处分割线。 在光标位置插入换行符。 显示两个结果行中的第二行。Control-B 或向左移动光标向后一个字符Control-F 或向右移动光标向前一个字符Control-P 或向上转到上一行。 如果这是第一行输入，则从历史记录中调用之前的输入。 Control-N 或 Down 转到下一行。 如果这是最后一行输入，则从 历史读取下一条输入。Control-A 或 Home 将光标移动到该行的开头。 如果光标已经在行首，则转到当前输入的第一行的开头。Control-E 或 End 将光标移动到行尾。 如果光标已经在行尾，则将其移动到当前输入的最后一行的末尾。Control-L 或 F5 重置终端并重绘屏幕。
 
-**up**, **down** and **split** keys leave cursor at the end of line.
+**向上**、**向下**和**拆分**键将光标留在行尾。
 
-### Built-in Help
+### 内置帮助
 
-The console has a built-in help, which can be accessed by typing **?**. The general rule is that helps shows what you can type in a position where the **?** was pressed (similarly to pressing **\[Tab\]** key twice, but in verbose form and with explanations).
+控制台有一个内置的帮助，可以通过键入 **?** 来访问。 一般规则是帮助显示您可以在按下 **?** 的位置键入的内容（类似于按两次 **\[Tab\]** 键，但解释更详细）。
 
-### Safe Mode
+＃＃＃ 安全模式
 
-It is sometimes possible to change router configuration in a way that will make the router inaccessible (except from local console). Usually this is done by accident, but there is no way to undo last change when connection to router is already cut. Safe mode can be used to minimize such risk.
+有时可能会以某种方式更改路由器配置，使路由器无法访问（本地控制台除外）。 通常这是意外造成的，但是当与路由器的连接已经断开时，无法撤消上次更改。 安全模式可用于将此类风险降至最低。
 
-Safe mode is entered by pressing **\[CTRL\]+\[X\]**. To save changes and quit safe mode, press **\[CTRL\]+\[X\]** again. To exit without saving the made changes, hit **\[CTRL\]+\[D\]**
+按 **[CTRL]+[X]** 进入安全模式。 要保存更改并退出安全模式，请再次按 **[CTRL]+[X]**。 要退出而不保存所做的更改，请按 **[CTRL]+[D]**
 
 `[admin@MikroTik] ip route>[CTRL]+[X]`
 
@@ -257,7 +257,7 @@ Safe mode is entered by pressing **\[CTRL\]+\[X\]**. To save changes and quit s
 
 [![](https://help.mikrotik.com/docs/download/attachments/8978498/703px-2009-04-06_1317%20%281%29.png?version=1&modificationDate=1602153910731&api=v2)](https://wiki.mikrotik.com/wiki/File:2009-04-06_1317.png)
 
-Message **Safe Mode taken** is displayed and prompt changes to reflect that session is now in safe mode. All configuration changes that are made (also from other login sessions), while router is in safe mode, are automatically undone if safe mode session terminates abnormally. You can see all such changes that will be automatically undone tagged with an **F** flag in system history:
+显示消息**已采用安全模式**并提示更改以反映该会话现在处于安全模式。 当路由器处于安全模式时，如果安全模式会话异常终止，所做的所有配置更改（也来自其他登录会话）将自动撤消。 您可以在系统历史记录中看到所有这些将被自动撤消标记为 **F** 标志的更改：
 
 `[admin@MikroTik] ip route>`
 
@@ -273,40 +273,40 @@ Message **Safe Mode taken** is displayed and prompt changes to reflect that se
 
 `F route added admin write`
 
-Now, if telnet connection (or winbox terminal) is cut, then after a while (TCP timeout is **9** minutes) all changes that were made while in safe mode will be undone. Exiting session by **\[Ctrl\]+\[D\]** also undoes all safe mode changes, while **/quit** does not.
+现在，如果 telnet 连接（或 winbox 终端）被切断，一段时间后（TCP 超时为 **9** 分钟）所有在安全模式下所做的更改都将被撤消。 通过 **[Ctrl]+[D]** 退出会话也会撤消所有安全模式更改，而 **/quit** 则不会。
 
-If another user tries to enter safe mode, he's given following message:
+如果另一个用户试图进入安全模式，他会收到以下消息：
 
 `[admin@MikroTik] >`
 
 `Hijacking Safe Mode from someone - unroll``/release/don't take it [u/r/d]:`
 
--   \[u\] - undoes all safe mode changes, and puts the current session in safe mode.
--   \[r\] - keeps all current safe mode changes, and puts current session in a safe mode. The previous owner of safe mode is notified about this:
+- [u] - 撤消所有安全模式更改，并将当前会话置于安全模式。
+- [r] - 保留所有当前安全模式更改，并将当前会话置于安全模式。 安全模式的前所有者会收到有关此的通知：
 
 `[admin@MikroTik] ip firewall rule input`
 
 `[Safe mode released by another user]`
 
--   \[d\] - leaves everything as-is.
+-   [d] - leaves everything as-is.
 
-If too many changes are made while in safe mode, and there's no room in history to hold them all (currently history keeps up to 100 most recent actions), then session is automatically put out of the safe mode, no changes are automatically undone. Thus, it is best to change configuration in small steps, while in safe mode. Pressing \[Ctrl\]+\[X\] twice is an easy way to empty safe mode action list.
+如果在安全模式下进行了太多更改，并且历史记录中没有空间容纳所有这些更改（当前历史记录最多保留 100 个最近的操作），则会话会自动退出安全模式，不会自动撤消任何更改。 因此，最好在安全模式下小步更改配置。 按 [Ctrl]+[X] 两次是清空安全模式操作列表的简单方法。
 
-### HotLock Mode
+### 热锁模式
 
-When HotLock mode is enabled commands will be auto-completed.
+当启用 HotLock 模式时，命令将自动完成。
 
-To enter/exit HotLock mode press **\[CTRL\]+\[V\]**.
+要进入/exit HotLock 模式，请按 **[CTRL]+[V]**。
 
 `[admin@MikroTik]` `/ip address> [CTRL]+[V]`
 
 `[admin@MikroTik]` `/ip address>>`
 
-Double`>>`is an indication that HotLock mode is enabled. For example, if you type`/in e`, it will be auto-completed to
+Double`>>` 表示已启用 HotLock 模式。 例如，如果您输入`/in e`，它将自动完成为
 
 `[admin@MikroTik]` `/ip address>> /interface ethernet`
 
-F6 key enables a menu at the bottom of the terminal which shows common key combinations and their usage.
+F6 键在终端底部启用一个菜单，其中显示了常用的组合键及其用法。
 
 `[admin@RB493G] >`
 

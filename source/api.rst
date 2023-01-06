@@ -1,7 +1,7 @@
-API
-===
+.. API
+.. ===
 
-.. autosummary::
-   :toctree: generated
+..  .. autosummary::
+..    :toctree: generated
 
-   lumache
+..    lumache
