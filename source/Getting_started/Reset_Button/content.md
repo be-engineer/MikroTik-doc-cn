@@ -8,11 +8,11 @@
 
 - 从图形用户界面中的**System -> Reset Configuration**菜单执行此操作；
 
-## Using Reset Button
+## 使用复位按钮
 
 RouterBOARD 设备配有一个具有多种功能的重置按钮：
 
-- ** RouterBOOT备份加载器**
+- **RouterBOOT备份加载器**
      通电前按住此按钮，通电三秒后松开，以加载备份引导加载程序。 如果设备因 RouterBOOT 升级失败而无法运行，则可能需要这样做。 当您使用备份加载程序启动设备时，您可以在 RouterBOARD 设置中将 RouterOS 设置为_force backup loader_，或者有机会从“.fwf”文件重新安装失败的 RouterBOOT（总共 **3 秒**）
 
 - **重置 RouterOS 配置**
@@ -49,7 +49,7 @@ _注意：按住按钮直到 LED 开始闪烁；_
 
 ## 旧型号的跳线重置
 
-**下面 **的图像显示了 RB133C 等较旧 RouterBOARD 上复位跳线的位置：
+**下面**的图像显示了 RB133C 等较旧 RouterBOARD 上复位跳线的位置：
 
 ![](https://help.mikrotik.com/docs/download/attachments/24805498/CRW_5184.jpg?version=1&modificationDate=1587635093645&api=v2)  
 

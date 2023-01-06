@@ -1,4 +1,4 @@
-＃ 概述
+# 概述
 
 本文描述了一组用于配置管理的命令。
 
@@ -28,7 +28,7 @@
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt; print detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: U - undoable, R - redoable, F - floating-undo</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">/ip firewall filter add action=accept chain=forward disabled=no log=no \</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">log-prefix="" protocol=tcp</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *4 action="filter rule added" by="admin"</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:51:05</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=/ip firewall filter add action=accept chain=forward</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *3 action="filter rule added" by="admin"</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:49:03</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">U redo="" undo="" action="---" by="" policy=write time=sep/27/2019 13:07:35</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt;</code></div></div></td></tr></tbody></table>
 
-＃ 安全模式
+# 安全模式
 
 有时，路由器配置的更改会导致路由器无法访问（本地控制台除外）。 通常，这是意外，但是当与路由器的连接已经断开时，没有办法撤消最后的更改。 安全模式可用于将此类风险降至最低。
 
@@ -98,7 +98,7 @@ Hijacking Safe Mode from someone - unroll/release/don't take it [u/r/d]:
 [admin@MikroTik] > system backup save name=test password=123Configuration backup saved[admin@MikroTik] > file print# NAME TYPE SIZE CREATION-TIME0 test.backup backup 12567 sep/08/2004 21:07:50[admin@MikroTik] >[admin@MikroTik] > system backup load name=test password=123Restore and reboot? [y/N]:yRestoring system configurationSystem configuration restored, rebooting now
 ```
 
-＃ 导入/导出
+# 导入/导出
 
 RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用于在不同设备之间复制配置，例如，将整个防火墙从一台路由器克隆到另一台路由器。
 
@@ -106,7 +106,7 @@ RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用�
 
 接受以下命令参数：
 
-| Property           | Description                                                   |
+| 属性               | 说明                                                          |
 | ------------------ | ------------------------------------------------------------- |
 | **compact**        | 仅输出修改后的配置，默认行为                                  |
 | **file**           | 将配置导出到指定文件。 当未指定文件时，导出信息将打印到终端   |

@@ -5,5 +5,6 @@
    :maxdepth: 3
 
    content.md
+   Feature_support_based_on_architecture.md
 
 
