@@ -128,7 +128,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   访问控制列表
 -   缓存列表
 
-### Tools
+### 工具
 
 -   Ping, traceroute
 -   带宽测试, ping flood

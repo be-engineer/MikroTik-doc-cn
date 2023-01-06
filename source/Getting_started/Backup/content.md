@@ -20,11 +20,11 @@ RouterOS 备份功能允许您保存当前设备的配置，然后可以在相�
 
 载入一个没有密码的备份:
 
-`[admin@MikroTik] > system``/backup/load name=auto-before-reset.backup password=""`
+`[admin@MikroTik] > system` `/backup/load name=auto-before-reset.backup password=""`
 
-|Property | Description
-| --- | --- |
-| **name** (_string_; Default: ) | 备份文件名|
+| Property                           | Description        |
+| ---------------------------------- | ------------------ |
+| **name** (_string_; Default: )     | 备份文件名         |
 | **password** (_string_; Default: ) | 加密备份文件的密码 |
 
 ## 示例
@@ -39,9 +39,9 @@ RouterOS 备份功能允许您保存当前设备的配置，然后可以在相�
 
 查看保存在路由器上的文件:
 
-`[admin@MikroTik] >` `/``file` `print`
+`[admin@MikroTik] >` `/` `file` `print`
 
-`0 test.backup backup 12567 sep``/08/2018 21:07:50`
+`0 test.backup backup 12567 sep` `/08/2018 21:07:50`
 
 `[admin@MikroTik] >`
 
@@ -49,9 +49,9 @@ RouterOS 备份功能允许您保存当前设备的配置，然后可以在相�
 
 `[admin@MikroTik] >` `/system backup load name=test`
 
-`password``: <YOUR_PASSWORD>`
+`password` `: <YOUR_PASSWORD>`
 
-`Restore` `and` `reboot? [y``/N]: y`
+`Restore` `and` `reboot? [y` `/N]: y`
 
 `Restoring system configuration`
 

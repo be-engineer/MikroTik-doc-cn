@@ -12,7 +12,7 @@
 
 `[admin@MikroTik] > ip route` `print`
 
-`Flags``: X - disabled, A - active, D - dynamic,`
+`Flags` `: X - disabled, A - active, D - dynamic,`
 
 `C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,`
 
@@ -36,7 +36,7 @@
 
 `[admin@MikroTik] ip route>` `print`
 
-`Flags``: X - disabled, A - active, D - dynamic,`
+`Flags` `: X - disabled, A - active, D - dynamic,`
 
 `C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,`
 
@@ -80,7 +80,7 @@
 
 `[admin@MikroTik] ip firewall nat> .. service-port print`
 
-`Flags``: X - disabled, I - invalid`
+`Flags` `: X - disabled, I - invalid`
 
 `0 ftp 21`
 
@@ -118,7 +118,7 @@
 
 `[admin@MikroTik] > interface` `print`
 
-`Flags``: X - disabled, D - dynamic, R - running`
+`Flags` `: X - disabled, D - dynamic, R - running`
 
 `0 R ether1 ether 1500`
 
@@ -128,11 +128,11 @@
 
 `3 R ether4 ether 1500`
 
-`[admin@MikroTik] > interface` `set` `0,1,2` `mtu``=1460`
+`[admin@MikroTik] > interface` `set` `0,1,2` `mtu` `=1460`
 
 `[admin@MikroTik] > interface print`
 
- `Flags``: X - disabled, D - dynamic, R - running`
+ `Flags` `: X - disabled, D - dynamic, R - running`
 
 `0 R ether1 ether 1460`
 
@@ -267,7 +267,7 @@ Control-C 键盘中断。 Control-D 注销（如果输入行为空） Control-K 
 
 `[admin@MikroTik] ip route<SAFE>` `/system history` `print`
 
-`Flags``: U - undoable, R - redoable, F - floating-``undo`
+`Flags` `: U - undoable, R - redoable, F - floating-` `undo`
 
 `ACTION BY POLICY`
 
@@ -279,7 +279,7 @@ Control-C 键盘中断。 Control-D 注销（如果输入行为空） Control-K 
 
 `[admin@MikroTik] >`
 
-`Hijacking Safe Mode from someone - unroll``/release/don't take it [u/r/d]:`
+`Hijacking Safe Mode from someone - unroll` `/release/don't take it [u/r/d]:`
 
 - [u] - 撤消所有安全模式更改，并将当前会话置于安全模式。
 - [r] - 保留所有当前安全模式更改，并将当前会话置于安全模式。 安全模式的前所有者会收到有关此的通知：
@@ -292,7 +292,7 @@ Control-C 键盘中断。 Control-D 注销（如果输入行为空） Control-K 
 
 如果在安全模式下进行了太多更改，并且历史记录中没有空间容纳所有这些更改（当前历史记录最多保留 100 个最近的操作），则会话会自动退出安全模式，不会自动撤消任何更改。 因此，最好在安全模式下小步更改配置。 按 [Ctrl]+[X] 两次是清空安全模式操作列表的简单方法。
 
-### 热锁模式
+### HotLokc模式
 
 当启用 HotLock 模式时，命令将自动完成。
 
@@ -302,7 +302,7 @@ Control-C 键盘中断。 Control-D 注销（如果输入行为空） Control-K 
 
 `[admin@MikroTik]` `/ip address>>`
 
-Double`>>` 表示已启用 HotLock 模式。 例如，如果您输入`/in e`，它将自动完成为
+Double`>>` 表示已启用 HotLock 模式。 例如，如果输入`/in e`，它将自动完成为
 
 `[admin@MikroTik]` `/ip address>> /interface ethernet`
 
