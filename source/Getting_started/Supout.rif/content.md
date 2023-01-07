@@ -10,7 +10,7 @@
 
 要在 Winbox 中生成此文件，请单击“Make Supout.rif”。
 
-要将文件保存到您的计算机，请用鼠标右键单击文件并选择“下载”以获取支持输出文件，或者只需将文件拖到桌面即可。
+要将文件保存到您的计算机，请用鼠标右键单击文件并选择“Download”获取文件，或者只需将文件拖到桌面即可。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328106/download.PNG?version=1&modificationDate=1570622754782&api=v2)
 

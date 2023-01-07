@@ -1,24 +1,22 @@
-RouterBOOT is responsible for starting RouterOS in RouterBOARD devices.
+RouterBOOT 负责在 RouterBOARD 设备中启动 RouterOS。
 
-## Main and Backup loaders
+## 主加载器和备份加载器
 
-By default, the main loader is used, but RouterBOARD devices also have a secondary (backup) bootloader, which can be used in case the main doesn't work. It is possible to call the backup loader with a configuration setting in RouterOS:
-
-[?](https://help.mikrotik.com/docs/display/ROS/RouterBOOT#)
+默认情况下，使用主加载程序，但 RouterBOARD 设备还有一个辅助（备份）引导加载程序，可以在主加载程序不工作时使用。 可以使用 RouterOS 中的配置调用备份加载程序：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">system</code><code class="ros constants">/routerboard/settings/</code><code class="ros functions">set </code><code class="ros value">force-backup-booter</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-It is also possible to use the backup booter by turning on the device, with the RESET button pushed. It is only possible to upgrade the main RouterBOOT, so in case of failure, you can use the backup booter to start the device and downgrade the main loader. For upgrade instructions, follow the separate instructions in [RouterBOARD#UpgradingRouterBOOT](https://help.mikrotik.com/docs/display/ROS/RouterBOARD#RouterBOARD-UpgradingRouterBOOT)
+也可以通过按下 RESET 按钮打开设备来使用备份引导程序。 只能升级主RouterBOOT，所以万一失败，可以使用备份启动器启动设备，降级主加载器。 有关升级说明，请按照 [RouterBOARD#UpgradingRouterBOOT](https://help.mikrotik.com/docs/display/ROS/RouterBOARD#RouterBOARD-UpgradingRouterBOOT) 中的说明进行操作
 
-## RouterBOARD reset button
+## RouterBOARD 复位按钮
 
-RouterBOOT reset button has three functions:
+RouterBOOT 复位按钮具有三个功能：
 
--   Hold this button during boot time until the LED light starts flashing, release the button to reset the RouterOS configuration (total 5 seconds)
--   Keep holding for 5 more seconds, LED turns solid, release now to turn on CAPs mode (total 10 seconds)
--   Or Keep holding the button for 5 more seconds until LED turns off, then release it to make the RouterBOARD look for Netinstall servers (total of 15 seconds)
+- 在启动期间按住此按钮直到 LED 灯开始闪烁，松开按钮以复位 RouterOS 配置（总共 5 秒）
+- 再按住 5 秒，LED 变为常亮，现在松开以打开 CAP 模式（总共 10 秒）
+- 或者继续按住按钮 5 秒直到 LED 熄灭，然后松开按钮让 RouterBOARD 寻找 Netinstall 服务器（总共 15 秒）
 
-If you hold the button before applying power, backup RouterBOOT will be used in addition to all the above actions. To do the above actions without loading the backup loader, push the button right after applying power to the device.
+如果在通电之前按住按钮，除了上述所有操作外，还将使用备用 RouterBOOT。 要在不加载备份加载器的情况下执行上述操作，请在设备通电后立即按下按钮。
 
   
 
@@ -26,51 +24,51 @@ If you hold the button before applying power, backup RouterBOOT will be used in 
 
 [https://www.youtube.com/watch?v=6Unz92rABs8](https://www.youtube.com/watch?v=6Unz92rABs8) 
 
-## Configuration Reset For **Wireless Wire** kits
+## 复位**无线**套件的配置
 
-The reset button has the same functionality as on other devices, explained in detail [https://help.mikrotik.com/docs/display/ROS/Reset+Button](https://help.mikrotik.com/docs/display/ROS/Reset+Button)
+复位按钮具有与其他设备相同的功能，详细解释请参考 [https://help.mikrotik.com/docs/display/ROS/Reset+Button](https://help.mikrotik.com/docs/display/ROS/Reset+Button)
 
-5-second button hold on startup (USR LED light starts flashing) - resets to password-protected state.
+启动时按住按钮 5 秒（USR LED 灯开始闪烁）- 重置为密码保护状态。
 
-10-second button hold on startup (USR LED turns solid after flashing) - completely removes configuration.
+启动时按住按钮 10 秒（USR LED 闪烁后常亮）- 完全删除配置。
 
-## Configuration
+## 配置
 
-For RouterBOARD devices that feature a serial console connector, it is possible to access the RouterBOOT loader configuration menu. The required cable is described in the [Serial Console](https://help.mikrotik.com/docs/display/ROS/Serial+Console) manual. RouterBOARD serial port is configured to 115200bit/s, 8 data bits, 1 stop bit, and no parity. We suggest disabling the hardware flow control. 
+对于具有串行控制台连接器的 RouterBOARD 设备，可以访问 RouterBOOT 加载程序配置菜单。 [串行控制台](https://help.mikrotik.com/docs/display/ROS/Serial+Console)手册中描述了所需的电缆。 RouterBOARD串口配置为115200bit/s，8个数据位，1个停止位，无奇偶校验。 我们建议禁用硬件流控。
 
-This example shows the menu which is available in RouterBOOT 7.4beta4:
+此示例显示了 RouterBOOT 7.4beta4 中可用的菜单：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">RouterBOOT booter 7.4beta4</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">CRS328-24P-4S+</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">built by build at Jun</code><code class="ros constants">/15/2022 11:34:09 from revision 73B4521C</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">CPU frequency</code><code class="ros constants">: 800 MHz</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">Memory size</code><code class="ros constants">: 512 MiB</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Storage size</code><code class="ros constants">:&nbsp; 16 MiB</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">Press Ctrl+E to enter etherboot mode</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">Press any key within 2 seconds to enter setup</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">RouterBOOT-7.4beta4</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">What </code><code class="ros functions">do </code><code class="ros plain">you want to configure?</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">d - boot delay</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">k - boot key</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">s - serial console</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">n - silent boot</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">o - boot device</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">z - extra kernel parameters</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">r - </code><code class="ros functions">reset </code><code class="ros plain">booter configuration</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">e - format storage</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">w - repartition nand</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">g - </code><code class="ros functions">upgrade </code><code class="ros plain">firmware</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">i - board info</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">p - boot protocol</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">b - booter options</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">j - boot os</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">t - hardware tests</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">l - erase license</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">x - exit setup</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros plain">your choice</code><code class="ros constants">:</code></div></div></td></tr></tbody></table>
 
-The options are self-explanatory.
+这些选项是不言自明的。
 
 
-| letter | description                | explanation                                                                                                                   |
-| ------ | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| d      | boot delay                 | Delays starting of RouterOS to allow an interface to initialize                                                               |
-| k      | boot key                   | The button that will open the configuration menu                                                                              |
-| s      | serial console             | Sets the baud rate of the serial port                                                                                         |
-| n      | silent boot                | Suppresses all output on the serial port, in case some device is connected to it (like a GPS device or a temperature monitor) |
-| o      | boot device                | Allows to enable Netinstall booting                                                                                           |
-| z      | extra kernel parameters    |
-|        |
-| r      | reset booter configuration | Resets the settings in this menu. **Warning, no confirmation!**                                                               |
-| e      | format storage             | Destroys all data on the NAND, including RouterOS configuration and license                                                   |
-| w      | repartition nand           | Refer to the [Partitions](https://help.mikrotik.com/docs/display/ROS/Partitions) document for more info                       |
-| y      | active partition           | Choose an active partition from which to try to load RouterOS                                                                 |
-| g      | upgrade firmware           | Allows upgrading RouterBOOT version through the network, or the XModem protocol                                               |
-| i      | board info                 |
-|        |
-| p      | boot protocol              |
-|        |
-| b      | booter options             | Select which bootloader to use by default                                                                                     |
-| t      | do memory testing          | booter options                                                                                                                |
-| j      | boot os                    | do memory testing                                                                                                             |
-| t      | hardware tests             |                                                                                                                               |
-| l      | erase license              |                                                                                                                               |
-| x      | exit setup                 |                                                                                                                               |
+| 字母 | 说明           | 含义                                                                                     |
+| ---- | -------------- | ---------------------------------------------------------------------------------------- |
+| d    | 启动延迟       | 延迟RouterOS启动，以初始化接口                                                           |
+| k    | 启动密钥       | 打开配置菜单按钮                                                                         |
+| s    | 串行控制台     | 设置串口波特率                                                                           |
+| n    | 静默启动       | 限制串口上的所有输出，以防某些设备连接到它(如GPS设备或温度监视器)                        |
+| o    | 启动设备       | 允许启用Netinstall引导                                                                   |
+| z    | 额外的内核参数 |
+|      |
+| r    | 重启启动配置   | 重置此菜单中的设置。**警告，没有确认**                                                   |
+| e    | 格式化存储器   | 销毁NAND上的所有数据，包括RouterOS的配置和许可证                                         |
+| w    | nand重新分区   | 请查看[Partitions](https://help.mikrotik.com/docs/display/ROS/Partitions) 文档的更多信息 |
+| y    | 激活分区       | 选择一个活动分区，从中尝试加载RouterOS                                                   |
+| g    | 升级固件       | 支持通过网络或XModem协议升级RouterBOOT版本                                               |
+| i    | 板卡信息       |
+|      |
+| p    | 启动协议       |
+|      |
+| b    | 引导器选项     | 选择默认情况下要使用的引导加载程序                                                       |
+| t    | 执行内存测试   | 引导器选项                                                                               |
+| j    | 启动系统       | 执行内存测试                                                                             |
+| t    | 硬件测试       |                                                                                          |
+| l    | 擦除许可证     |                                                                                          |
+| x    | 退出设置       |                                                                                          |
 
-Hitting the appropriate keyboard letter will give you a list of further options, they are shown below:
+按下相应的键盘字母，你会看到更多的选项，如下所示：
 
 ```
 # d - boot delay:
@@ -207,27 +205,23 @@ Exit bios configuration menu and continues with system startup.
 
   
 
-## Simple Upgrade
+## 简单升级
 
-RouterBOOT can be upgraded from RouterOS by:
+RouterBOOT 可以通过以下方式从 RouterOS 升级：
 
--   Run command _/system routerboard upgrade_
--   Reboot your router to apply the upgrade (_/system reboot_)\]
+- 运行命令 _/system routerboard upgrade_
+- 重新启动路由器以应用升级 (_/system reboot_)]
 
-[?](https://help.mikrotik.com/docs/display/ROS/RouterBOOT#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@admin] &gt; system</code><code class="ros constants">/routerboard/</code><code class="ros functions">upgrade</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Do you really want to </code><code class="ros functions">upgrade </code><code class="ros plain">firmware? [y</code><code class="ros constants">/n]</code></div></div></td></tr></tbody></table>
 
-Every ROS version has a new RouterBoot version included in it, once you perform a ROS upgrade we always recommend upgrading RouterBoot also.
+每个 ROS 版本都包含一个新的 RouterBoot 版本，一旦执行 ROS 升级，建议您也升级 RouterBoot。
 
-## Checking RouterBOOT version
-
-This command shows the current RouterBOOT version of your device and available upgrade which is _either included in routerboard.npk package, or if you uploaded an FWF file_ corresponding to the device model:
-
-[?](https://help.mikrotik.com/docs/display/ROS/RouterBOOT#)
+## 检查RouterBOOT版本
+该命令显示当前设备的RouterBOOT版本，以及包含在routerboard中的可用升级.npk包，或者上传了与设备型号对应的FWF文件
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@admin] &gt;&nbsp; system</code><code class="ros constants">/routerboard/</code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">;;; Firmware upgraded successfully, please reboot </code><code class="ros functions">for </code><code class="ros plain">changes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">to take effect!</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">routerboard</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">board-name</code><code class="ros constants">: hAP ac</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">model</code><code class="ros constants">: RouterBOARD 962UiGS-5HacT2HnT</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">serial-number</code><code class="ros constants">: 6737057562DD</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">firmware-type</code><code class="ros constants">: qca9550L</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">factory-firmware</code><code class="ros constants">: 3.29</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">current-firmware</code><code class="ros constants">: 6.49.5</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">upgrade-firmware</code><code class="ros constants">: 7.4beta5</code></div></div></td></tr></tbody></table>
 
-In this case, you see, there is **a newer version** of the Bootloader firmware available already inside your current RouterOS version and it has been updated and requires a reboot.
+在这种情况下，您会看到在当前的 RouterOS 版本中已经有 **更新版本** 的 Bootloader 固件可用，并且它已经更新并需要重新启动。
 
-A downgrade is also possible by uploading \*.FWF file with an older version may be required for troubleshooting purposes when contacting MikroTik support.
+也可以通过上传 *.FWF 文件进行降级，联系 MikroTik 支持时可能需要使用旧版本进行故障排除。

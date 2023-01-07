@@ -4,6 +4,6 @@
 .. toctree::
    :maxdepth: 3
 
-    content.md
+   content.md
 
 

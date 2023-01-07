@@ -3,11 +3,11 @@
 RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，它也可以在第 3 方设备上运行：
 
 -   i386 兼容架构
--   SMP – 多核和多 CPU 兼容
+-   SMP – 多核和多CPU兼容
 -   至少32MB的内存，自RouterOS v7以后不再有最大内存限制
 -   IDE、SATA、USB 和至少 64MB 空间的存储介质
 -   Linux内核支持的网卡（PCI、PCI-X）
--   支持交换关芯片配置
+-   支持交换芯片配置
 
 !!! note 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看产品手册或框图。
 
@@ -16,8 +16,8 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 ### 安装
 
 -   Netinstall：从支持 PXE 或 EtherBoot 的网卡进行基于网络的安装
--   CHR：用于作为虚拟机运行的 RouterOS 版本
--   基于 CD 的安装
+-   CHR：用于虚拟机运行的 RouterOS 版本
+-   基于 CD 方式安装
 
 ### 配置
 
@@ -30,7 +30,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 ### 备份/恢复
 
--   二进制配置备份保存和加载
+-   二进制格式保存和加载的配置备份
 -   以可读的文本格式导出和导入配置
 
 ### 防火墙
@@ -43,7 +43,7 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 -   地址列表
 -   自定义 Layer7 匹配器
 -   支持 IPv6
--   PCC - 每个连接分类器，用于负载平衡配置
+-   PCC - 按连接分类，用于负载平衡配置
 -   RAW 过滤绕过连接跟踪
 
 ### 路由
@@ -68,13 +68,13 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 ### VPN
 
 -   IPSec – 隧道和传输模式、证书或 PSK、AH 和 ESP 安全协议。
--   IKEv2 支持
--   IPSec 的 AES-NI 硬件加速支持
+-   支持IKEv2 
+-   支持IPSec 的 AES-NI 硬件加速
 -   点对点隧道（OpenVPN、PPTP、PPPoE、L2TP、SSTP）
 -   高级 PPP 功能（MLPPP、BCP）
--   简单隧道（​​IPIP、EoIP） IPv4 和 IPv6 支持
+-   支持简单隧道（​​IPIP、EoIP） IPv4 和 IPv6 
 -   支持6to4 隧道（IPv6 over IPv4 网络）
--   VLAN – IEEE802.1q 虚拟 LAN 支持，Q-in-Q 支持
+-   支持VLAN – IEEE802.1q 虚拟 LAN ，Q-in-Q 
 -   基于 MPLS 的 VPN
 -   WireGuard
 -   ZeroTier
@@ -96,13 +96,13 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 ### DHCP
 
--   按接口的 DHCP 服务器
+-   每个接口的DHCP服务器
 -   DHCP客户端和中继
 -   静态和动态 DHCP 租约
 -   RADIUS支持
 -   自定义 DHCP 选项
--   DHCPv6 前缀委派 (DHCPv6-PD)
--   DHCPv6 客户端
+-   DHCPv6前缀委托 (DHCPv6-PD)
+-   DHCPv6客户端
 
 ### 热点
 
@@ -143,20 +143,20 @@ RouterOS 与预装的 MikroTik 硬件完全兼容。如果满足以下要求，�
 
 ### 其他特性
 
--   Samba支持
--   开放流支持
+-   支持Samba
+-   支持开放流
 -   桥接 – 生成树协议（STP、RSTP）、网桥防火墙和 MAC natting。
 -   动态DNS更新工具
 -   NTP 客户端/服务器并与 GPS 系统同步
--   VRRP v2 和 v3 支持
+-   支持VRRP v2 和 v3 
 -   SNMP
 -   M3P - 用于无线链路和以太网的 MikroTik 数据包打包协议
 -   MNDP - MikroTik 邻居发现协议，支持 CDP（Cisco 发现协议）
 -   RADIUS认证计费
 -   TFTP服务器
--   同步接口支持（仅限 Farsync 卡）（在 v5.x 中删除）
+-   支持同步接口（仅限 Farsync 卡）（在 v5.x 中删除）
 -   异步——串行 PPP 拨入/拨出，按需拨出
--   ISDN – 拨入/拨出、128K 捆绑支持、Cisco HDLC、x75i、x75ui、x75bui 线路协议、按需拨号
+-   支持ISDN – 拨入/拨出、128K 捆绑、Cisco HDLC、x75i、x75ui、x75bui 线路协议、按需拨号
 
 ### 内核版本
 
@@ -171,11 +171,9 @@ RouterOS 7 用于网络（电信）设备的管理。
 
 -   所有加密功能（组件）都是 RouterOS 7 的组成部分，最终用户无法更改。
 
--   RouterOS 7 旨在供最终用户安装，无需供应商提供显著支持。
+-   RouterOS 7 旨在供最终用户安装，无需供应商提供特殊支持。
 
 -   RouterOS 7 使用以下安全协议：
-
-
 
 <table cellspacing="0" border="0">
 	<colgroup width="171"></colgroup>
