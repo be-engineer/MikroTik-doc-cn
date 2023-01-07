@@ -21,7 +21,7 @@ RouterOS是一种路由操作系统，是基于Linux核心开发 ，兼容x86 PC
 
 RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为了方便更多的人学习和了解RouterOS的使用，本人新建了这个项目，把官方文档翻译为中文，希望能对大家有所帮助。
 
-RouterOS官网文档章节标题如下：
+RouterOS官网文档章节内容如下：
 
 1. Getting started
 
