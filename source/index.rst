@@ -15,6 +15,10 @@ github地址：https://github.com/be-engineer/MikroTik-doc-cn 喜欢的请不吝
 
 .. _`pve7.3中文翻译说明`: https://pve-doc-cn.readthedocs.io/zh_CN/latest/
 
+2. RouterOS 7.6修改内容，了解新版本增加了哪些功能。 `What's new in V7.6`_ 
+
+.. _`What's new in V7.6`: https://mikrotik.com/download/changelogs/stable-release-tree
+
 
 
 RouterOS是一种路由操作系统，是基于Linux核心开发 ，兼容x86 PC的路由软件，并通过该软件将标准的PC电脑变成专业路由器，在软件RouterOS 软路由图的开发和应用上不断的更新和发展，软件经历了多次更新和改进，使其功能在不断增强和完善。特别在无线、认证、策略路由、带宽控制和防火墙过滤等功能上有着非常突出的功能，其极高的性价比，受到许多网络人士的青睐。
