@@ -6,7 +6,7 @@ RouterOS 中文使用手册
 
 原版文档地址为：https://help.mikrotik.com/docs/display/ROS/RouterOS
 
-github地址：https://github.com/be-engineer/MikroTik-doc-cn 喜欢的给我加颗小星星吧
+github地址：https://github.com/be-engineer/MikroTik-doc-cn 喜欢的请不吝加颗小星星吧
 
 
 
@@ -60,7 +60,7 @@ RouterOS官网文档章节标题如下：
 ====  =============================================  ===========  ====  ============
 序号                      章节                         贡献人     进度    完成时间
 ====  =============================================  ===========  ====  ============
-1.    "Getting Started"                              be-engineer  70%    2023/01/03~?
+1.    "Getting Started"                              be-engineer  90%    2023/01/03~?
 2.    "Authentication,  Authorization,  Accounting"
 3.    "Bridging and Switching"
 4.    "Diagnostics,monitoring and troubleshooting"
