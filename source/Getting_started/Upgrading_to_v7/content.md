@@ -1,33 +1,33 @@
 ## 介绍
 
-本文档描述了将 RouterOS 升级到 v7 主要版本的推荐步骤以及注意事项。
+本文档描述了把 RouterOS 升级到 v7 主要版本的推荐步骤以及注意事项。
 
-从 v6 升级到 v7 的方式与在 v6 版本内升级的方式完全相同。 请按照[升级手册](https://help.mikrotik.com/docs/display/ROS/Upgrading+and+installation) 了解更多详细步骤。 如果您当前运行的是 RouterOS 版本 6 或更早版本，我们首先建议升级到 v6 中的最新稳定版或长期版（目前为 6.48.6 长期版或 6.49.7 稳定版）。
+从 v6 升级到 v7 的方式和在 v6 版本内升级的方式完全相同。 请按照[升级手册](https://help.mikrotik.com/docs/display/ROS/Upgrading+and+installation) 了解更多详细步骤。 如果您当前运行的是 RouterOS 版本 6 或更早版本，我们首先建议升级到 v6 中的最新稳定版或长期版（目前为 6.48.6 长期版或 6.49.7 稳定版）。
 
-在上述 v6 版本上运行良好的大多数 RouterOS 设置中，不需要额外的步骤。 升级到 v7 将自动转换配置，您的设备将立即运行。
+!!!info 在上述 v6 版本上运行良好的大多数 RouterOS 设置中，不需要额外的步骤。 升级到 v7 将自动转换配置，您的设备将立即运行。
 
 ## 功能列表兼容性
 
 如前所述，几乎所有 RouterOS 系统都可以使用“检查更新”功能并单击几下即可升级到 v7，但有一些功能可能需要额外的步骤：
 
-| 特性             | 状态                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| CAPsMAN          | OK                                                                                                                 |
-| Interfaces       | OK                                                                                                                 |
+| 特性             | 状态                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| CAPsMAN          | OK                                                                                                               |
+| Interfaces       | OK                                                                                                               |
 | Wireless         |
-| Bridge/Switching | OK                                                                                                                 |
-| Tunnels/PPP      | OK                                                                                                                 |
-| IPv6             | OK                                                                                                                 |
-| BGP              | OK, 但需要注意  [\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-bgp)                 |
-| OSPF             | OK, 但需要注意 [\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-ospf)               |
-| MPLS             | OK, 但需要注意 [\*\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-mpls)             |
-| Routing filters  | OK, 但需要注意 [\*\*\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-routingfilters) |
-| Tools            | OK                                                                                                                 |
-| Queues           | OK                                                                                                                 |
-| Firewall         | OK                                                                                                                 |
-| HotSpot          | OK                                                                                                                 |
-| Static Routing   | OK                                                                                                                 |
-| User Manager     | 见[注释](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-usermanager)                     |
+| Bridge/Switching | OK                                                                                                               |
+| Tunnels/PPP      | OK                                                                                                               |
+| IPv6             | OK                                                                                                               |
+| BGP              | OK, 需要注意  [\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-bgp)                 |
+| OSPF             | OK, 需要注意 [\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-ospf)               |
+| MPLS             | OK, 需要注意 [\*\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-mpls)             |
+| Routing filters  | OK, 需要注意 [\*\*\*\*](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-routingfilters) |
+| Tools            | OK                                                                                                               |
+| Queues           | OK                                                                                                               |
+| Firewall         | OK                                                                                                               |
+| HotSpot          | OK                                                                                                               |
+| Static Routing   | OK                                                                                                               |
+| User Manager     | 见[注释](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-usermanager)                   |
 
 ## 注释
 路由协议配置升级只触发一次。 这意味着如果路由器降级到 ROSv6，配置被修改并且路由器升级回 ROSv7，那么生成的配置是降级之前存在的配置。 要重新触发 v6 配置转换，请使用选项“force-v6-to-v7-configuration-upgrade=yes”加载 ROSv6 备份。
@@ -67,7 +67,7 @@ RouterOSv7 使用模板将接口与模板进行匹配，并应用来自匹配模
 
 更多 RouterOSv7 路由过滤器示例在 [此处](https://help.mikrotik.com/docs/display/ROS/ROSv7+Basic+Routing+Examples#ROSv7BasicRoutingExamples-RoutingFilters)。
 
-**User Manager**
+**用户管理**
 
 RouterOSv7 提供了新的和重新设计的用户管理器，配置集成到 RouterOS WinBox 和控制台中，更多信息可在 [此处](https://help.mikrotik.com/docs/display/ROS/User+Manager) 获得。 从旧的用户管理器直接迁移是不可能的，可以从 /user-manager/database/migrate-legacy-db 迁移旧的数据库但是，从头开始配置可能是个好主意。
 
@@ -96,4 +96,4 @@ RouterOSv7 提供了新的和重新设计的用户管理器，配置集成到 Ro
 - 支持 ARM 和 ARM64 设备上的 ZeroTier
 - 全新的替代无线包“wifiwave2”，支持 802.11ac Wave2、WPA3 和 802.11w 管理框架保护（需要 ARM CPU 和 256MB RAM）
 - 支持 RTL8367（RB4011、RB100AHx4）和 MT7621（hEX、hEX S、RBM33G）交换机上的硬件卸载 VLAN 过滤
-- 支持 x86 设备的 CPU 频率缩放
+- 支持 x86 设备的 CPU 频率调整
