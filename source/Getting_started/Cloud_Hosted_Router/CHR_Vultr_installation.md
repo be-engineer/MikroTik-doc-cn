@@ -1,7 +1,7 @@
 Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/datacenter-locations/)，您可以在其中选择部署 MikroTik CHR 以获得最佳[吞吐量和延迟](https:// nj-us-ping.vultr.com/）。
 按照以下步骤在 Vultr 上安装 MikroTik CHR。
 
-## 第 1 步：在救援模式下部署服务器
+## 第一步：在救援模式下部署服务器
 
 在此步骤中，您将使用 SystemRescue（一个可启动的 Linux ISO）在 Vultr 上部署一个新服务器。
 
@@ -36,7 +36,7 @@ Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/dat
 
 这个过程需要几分钟； 完成后继续下一步。
 
-## 第 3 步：连接到 MikroTik CHR
+## 第三步：连接到 MikroTik CHR
 
 1. 导航至服务器的[设置页面](https://my.vultr.com/)。
 2. 选择 **Custom ISO** 菜单，然后单击 **Remove ISO**。 服务器将重新启动。
