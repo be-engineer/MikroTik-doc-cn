@@ -16,14 +16,16 @@ release = '7.x'
 
 extensions = [
     'recommonmark',
+    # 'sphinx.ext.graphviz',
     'sphinx_markdown_tables'
+    # 'sphinxnotes.strike'
 ]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
 # root_doc = 'index'
-language = 'cn'
+language = 'zh_CN'
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
