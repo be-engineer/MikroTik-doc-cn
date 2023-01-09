@@ -1,4 +1,4 @@
-## [Hotspot]
+## 概述
 MikroTik HotSpot Gateway 在访问公共网络之前为客户端提供身份验证。
 
 ## **HotSpot网关功能：**
