@@ -1,6 +1,6 @@
-＃ 概述
+# 概述
 
-RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远程服务器，可为各种网络设备提供身份验证和计费功能。 RADIUS 身份验证和计费使 ISP 或网络管理员能够通过大型网络中的一台服务器管理 PPP 用户访问和计费。 MikroTik RouterOS 有一个 RADIUS 客户端，可以验证 HotSpot，[PPP](https://help.mikrotik.com/docs/display/ROS/PPP)，[PPPoE](https://help.mikrotik.com/ docs/display/ROS/PPPoE), [PPTP](https://help.mikrotik.com/docs/display/ROS/PPTP), [L2TP](https://help.mikrotik.com/docs/display/ ROS/L2TP) 和 ISDN 连接。 从 RADIUS 服务器收到的属性会覆盖默认配置文件中设置的属性，但如果未收到某些参数，则它们会从相应的默认配置文件中获取。
+RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远程服务器，可为各种网络设备提供身份验证和计费功能。 RADIUS 身份验证和计费使 ISP 或网络管理员能够通过大型网络中的一台服务器管理 PPP 用户访问和计费。 MikroTik RouterOS 有一个 RADIUS 客户端，可以验证 HotSpot，[PPP](https://help.mikrotik.com/docs/display/ROS/PPP)，[PPPoE](https://help.mikrotik.com/docs/display/ROS/PPPoE), [PPTP](https://help.mikrotik.com/docs/display/ROS/PPTP), [L2TP](https://help.mikrotik.com/docs/display/ROS/L2TP) 和 ISDN 连接。 从 RADIUS 服务器收到的属性会覆盖默认配置文件中设置的属性，但如果未收到某些参数，则它们会从相应的默认配置文件中获取。
 
 只有在路由器的本地数据库中找不到匹配的用户访问记录时，才会查询 RADIUS 服务器数据库。
 
@@ -66,9 +66,9 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 **子菜单:** `/radius incoming`
 
 
-此工具支持从 RADIUS 服务器发送的未经请求的消息。 未经请求的消息扩展了 RADIUS 协议命令，允许终止已经从 RADIUS 服务器连接的会话。 为此，使用了 DM（断开连接消息）。 Disconnect 消息会导致用户会话立即终止。
+此工具支持从 RADIUS 服务器发送的未经请求的消息。 未经请求的消息扩展了 RADIUS 协议命令，允许终止已经从 RADIUS 服务器连接的会话。 为此，使用了 DM（断开连接消息）。 断开连接消息会导致用户会话立即终止。
 
-!!! warning RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与 Disconnect Messages 类似的功能
+!!! warning RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与断开连接类似的功能
 
 ## 特性
 
