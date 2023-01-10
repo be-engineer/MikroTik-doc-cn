@@ -10,865 +10,509 @@
 
 RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权、信息和配置参数。 用户管理器允许发送在“属性”菜单中定义的自定义属性。 RouterOS 有一组已经存在的预定义属性，但也可以在必要时添加其他属性。 预定义属性：
 
-| 属性                            | 供应商ID                                     | 类型ID | 值类型                                                                                                                       | 包类型                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------------------------- | -------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Framed-IP-Address               | 0 (standard)                                 | 8      | ip地址                                                                                                                       | Access-Accept                   | [RFC2865 section 5.8](https://tools.ietf.org/html/rfc2865#section-5.8)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Framed-IP-Netmask               | 0 (standard)                                 | 9      | ip 地址                                                                                                                      | Access-Accept                   | [RFC2865 section 5.9](https://tools.ietf.org/html/rfc2865#section-5.9)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Session-Timeout                 | 0 (standard)                                 | 27     | integer                                                                                                                      | Access-Accept, Access-Challenge | [RFC2865 section 5.27](https://tools.ietf.org/html/rfc2865#section-5.27)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Idle-Timeout                    | 0 (standard)                                 | 28     | integer                                                                                                                      | Access-Accept, Access-Challenge | [RFC2865 section 5.28](https://tools.ietf.org/html/rfc2865#section-5.28)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Tunnel-Type                     | 0 (standard)                                 | 64     |                                                                                                                              | Access-Accept                   | [RFC2868 section 3.1](https://tools.ietf.org/html/rfc2868#section-3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Tunnel-Medium-Type              | 0 (standard)                                 | 65     |                                                                                                                              | Access-Accept                   | [RFC2868 section 3.2](https://tools.ietf.org/html/rfc2868#section-3.2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Tunnel-Private-Group-ID         | 0 (standard)                                 | 81     | string                                                                                                                       | Access-Accept                   | [RFC2868 section 3.6](https://tools.ietf.org/html/rfc2868#section-3.6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Framed-Pool                     | 0 (standard)                                 | 88     | string                                                                                                                       | Access-Accept                   | [RFC2869 section 5.18](https://tools.ietf.org/html/rfc2869#section-5.18)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Framed-IPv6-Prefix              | 0 (standard)                                 | 97     | ipv6 prefix                                                                                                                  | Access-Accept                   | [RFC3162 section 2.3](https://tools.ietf.org/html/rfc3162#section-2.3)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Framed-IPv6-Pool                | 0 (standard)                                 | 100    | string                                                                                                                       | Access-Accept                   | [RFC3162 section 2.6](https://tools.ietf.org/html/rfc3162#section-2.6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Delegated-IPv6-Prefix           | 0 (standard)                                 | 123    | ipv6 prefix                                                                                                                  | Access-Accept                   | [RFC4818](https://tools.ietf.org/html/rfc4818)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Framed-IPv6-Address             | 0 (standard)                                 | 168    | ip address                                                                                                                   | Access-Accept                   | [RFC6911 section 3.1](https://tools.ietf.org/html/rfc6911#section-3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Mikrotik-Recv-Limit             | 14988 (Mikrotik)                             | 1      | integer                                                                                                                      | Access-Accept                   | 客户端总接收字节数限制。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Mikrotik-Xmit-Limit             | 14988 (Mikrotik)                             | 2      | integer                                                                                                                      | Access-Accept                   | 客户端的总传输限制（以字节为单位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Mikrotik-Group                  | 14988 (Mikrotik)                             | 3      | string                                                                                                                       | Access-Accept                   | User's group for local users.<br>HotSpot profile for HotSpot users.<br>PPP profile for PPP users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Mikrotik-Wireless-Forward       | 14988 (Mikrotik)                             | 4      | integer                                                                                                                      | Access-Accept                   | Not forward the client's frames back to the wireless infrastructure if this attribute is set to "0" (wireless only).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Mikrotik-Wireless-Skip-Dot1x    | 14988 (Mikrotik)                             | 5      | integer                                                                                                                      | Access-Accept                   | Disable 802.1x authentication for the particular wireless client if set to non-zero value (wireless only).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Mikrotik-Wireless-Enc-Algo      | 14988 (Mikrotik)                             | 6      | 值&emsp;   说明<br>0&emsp; 	No-encryption<br>1&emsp; 	40-bit-WEP<br>2&emsp; 	104-bit-WEP<br>3&emsp; 	AES-CCM<br>4&emsp; TKIP | Access-Accept                   | WEP encryption algorithm( wireless only).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Mikrotik-Wireless-Enc-Key       | 14988 (Mikrotik)                             | 7      | string                                                                                                                       | Access-Accept                   | WEP encryption key for the client (wireless only).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Mikrotik-Rate-Limit             | 14988 (Mikrotik)                             | 8      | string                                                                                                                       | Access-Accept                   | Datarate limitation for clients. Format is: rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] \[rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx-burst-time] [priority] [rx-rate-min[/tx-rate-min]]]] from the point of view of the router (so "rx" is client upload, and "tx" is client download). All rates should be numbers with optional 'k' (1,000s) or 'M' (1,000,000s). If tx-rate is not specified, rx-rate is as tx-rate too. Same goes for tx-burst-rate and tx-burst-threshold and tx-burst-time. If both rx-burst-threshold and tx-burst-threshold are not specified (but burst-rate is specified), rx-rate and tx-rate is used as burst thresholds. If both rx-burst-time and tx-burst-time are not specified, 1s is used as default. Priority takes values 1..8, where 1 implies the highest priority, but 8 - the lowest. If rx-rate-min and tx-rate-min are not specified rx-rate and tx-rate values are used. The rx-rate-min and tx-rate-min values can not exceed rx-rate and tx-rate values. |
-| Mikrotik-Realm                  | 14988 (Mikrotik)                             | 9      | string                                                                                                                       | Access-Request                  | If it is set in /radius menu, it is included in every RADIUS request as Mikrotik-Realm attribute. If it is not set, the same value is sent as in MS-CHAP-Domain attribute (if MS-CHAP-Domain is missing, Realm is not included neither).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Mikrotik-Host-IP                | 14988 (Mikrotik)                             | 10     | ip address                                                                                                                   | Access-Request                  | IP address of HotSpot client before Universal Client translation (the original IP address of the client).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Mikrotik-Mark-Id                | 14988 (Mikrotik)                             | 11     | string                                                                                                                       | Access-Accept                   | Firewall mangle chain name (HotSpot only). The MikroTik RADIUS client upon receiving this attribute creates a dynamic firewall mangle rule with action=jump chain=hotspot and jump-target equal to the attribute value. Mangle chain name can have suffixes .in or .out, that will install rule only for incoming or outgoing traffic. Multiple Mark-id attributes can be provided, but only last ones for incoming and outgoing is used.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Mikrotik-Advertise-URL          | 14988 (Mikrotik)                             | 12     | string                                                                                                                       | Access-Accept                   | URL of the page with advertisements that should be displayed to clients. If this attribute is specified, advertisements are enabled automatically, including transparent proxy, even if they were explicitly disabled in the corresponding user profile. Multiple attribute instances may be send by RADIUS server to specify additional URLs which are chosen in round robin fashion.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Mikrotik-Advertise-Interval     | 14988 (Mikrotik)                             | 13     | integer                                                                                                                      | Access-Accept                   | Time interval between two adjacent advertisements. Multiple attribute instances may be send by RADIUS server to specify additional intervals. All interval values are treated as a list and are taken one-by-one for each successful advertisement. If end of list is reached, the last value is continued to be used.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Mikrotik-Recv-Limit-Gigawords   | 14988 (Mikrotik)                             | 14     | integer                                                                                                                      | Access-Accept                   | 4G (2^32) bytes of total receive limit (bits 32..63, when bits 0..31 are delivered in Mikrotik-Recv-Limit).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Mikrotik-Xmit-Limit-Gigawords   | 14988 (Mikrotik)                             | 15     | integer                                                                                                                      | Access-Accept                   | 4G (2^32) bytes of total transmit limit (bits 32..63, when bits 0..31 are delivered in Mikrotik-Recv-Limit).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Mikrotik-Wireless-PSK           | 14988 (Mikrotik)                             | 16     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Total-Limit            | 14988 (Mikrotik)                             | 17     | integer                                                                                                                      | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Total-Limit-Gigawords  | 14988 (Mikrotik)                             | 18     | integer                                                                                                                      | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Address-List           | 14988 (Mikrotik)                             | 19     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Wireless-MPKey         | 14988 (Mikrotik)                             | 20     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Wireless-Comment       | 14988 (Mikrotik)                             | 21     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Delegated-IPv6-Pool    | 14988 (Mikrotik)                             | 22     | string                                                                                                                       | Access-Accept                   | IPv6 pool used for Prefix Delegation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Mikrotik-DHCP-Option-Set        | 14988 (Mikrotik)                             | 23     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-DHCP-Option-Param-STR1 | 14988 (Mikrotik)                             | 24     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-DHCP-Option-Param-STR2 | 14988 (Mikrotik)                             | 25     | string                                                                                                                       | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Mikrotik-Wireless-VLANID        | 14988 (Mikrotik)                             | 26     | integer                                                                                                                      | Access-Accept                   | VLAN ID for the client (Wireless only).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Mikrotik-Wireless-VLANIDtype    | 14988 (Mikrotik)                             | 27     | 值&emsp;      说明<br>0&emsp;     802.1q <br>1 &emsp;   802.1ad                                                              |
-| Access-Accept                   | VLAN ID type for the client (Wireless only). |
-| Mikrotik-Wireless-Minsignal     | 14988 (Mikrotik)                             | 28     | string                                                                                                                       | Access-Accept                   |
+| 属性                            | 供应商ID         | 类型ID | 值类型                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 包类型                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------- | ---------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framed-IP-Address               | 0 (standard)     | 8      | ip地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC2865 section 5.8](https://tools.ietf.org/html/rfc2865#section-5.8)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Framed-IP-Netmask               | 0 (standard)     | 9      | ip 地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | [RFC2865 section 5.9](https://tools.ietf.org/html/rfc2865#section-5.9)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Session-Timeout                 | 0 (standard)     | 27     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept, Access-Challenge | [RFC2865 section 5.27](https://tools.ietf.org/html/rfc2865#section-5.27)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Idle-Timeout                    | 0 (standard)     | 28     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept, Access-Challenge | [RFC2865 section 5.28](https://tools.ietf.org/html/rfc2865#section-5.28)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Tunnel-Type                     | 0 (standard)     | 64     | 值 &emsp;说明<br>1&emsp;	Point-to-Point Tunneling Protocol (PPTP)<br>2&emsp;Layer Two Forwarding (L2F)<br>3&emsp;Layer Two Tunneling Protocol (L2TP)<br>4&emsp;Ascend Tunnel Management Protocol (ATMP<br>5&emsp;Virtual Tunneling Protocol (VTP)<br>6&emsp;IP Authentication Header in the Tunnel-mode (AH)<br>7&emsp;IP-in-IP Encapsulation (IP-IP)<br>8&emsp;Minimal IP-in-IP Encapsulation (MIN-IP-IP)<br>9&emsp;IP Encapsulating Security Payload in the Tunnel-mode (ESP)<br>10&emsp;Generic Route Encapsulation (GRE)<br>11&emsp;Bay Dial Virtual Services (DVS)<br>12&emsp;IP-in-IP Tunneling | Access-Accept                   | [RFC2868 section 3.1](https://tools.ietf.org/html/rfc2868#section-3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Tunnel-Medium-Type              | 0 (standard)     | 65     | 值&emsp; 说明<br>1	IPv4 (IP version 4)<br>2&emsp;IPv6 (IP version 6<br>3&emsp;	NSAP<br>4&emsp;	HDLC (8-bit multidrop)<br>5&emsp;	BBN 1822<br>6&emsp;	802 (includes all 802 media plus Ethernet "canonical format")<br>7&emsp;	E.163 (POTS)<br>8&emsp;	E.164 (SMDS, Frame Relay, ATM)<br>9&emsp;	F.69 (Telex)<br>10&emsp;	X.121 (X.25, Frame Relay)<br>11&emsp;	IPX<br>12&emsp;	Appletalk<br>13&emsp;	Decnet IV<br>14&emsp;	Banyan Vines<br>15&emsp;	E.164 with NSAP format subaddress                                                                                                                 | Access-Accept                   | [RFC2868 section 3.2](https://tools.ietf.org/html/rfc2868#section-3.2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Tunnel-Private-Group-ID         | 0 (standard)     | 81     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC2868 section 3.6](https://tools.ietf.org/html/rfc2868#section-3.6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Framed-Pool                     | 0 (standard)     | 88     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC2869 section 5.18](https://tools.ietf.org/html/rfc2869#section-5.18)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Framed-IPv6-Prefix              | 0 (standard)     | 97     | ipv6 prefix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Access-Accept                   | [RFC3162 section 2.3](https://tools.ietf.org/html/rfc3162#section-2.3)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Framed-IPv6-Pool                | 0 (standard)     | 100    | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC3162 section 2.6](https://tools.ietf.org/html/rfc3162#section-2.6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Delegated-IPv6-Prefix           | 0 (standard)     | 123    | ipv6 prefix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Access-Accept                   | [RFC4818](https://tools.ietf.org/html/rfc4818)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Framed-IPv6-Address             | 0 (standard)     | 168    | ip address                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Access-Accept                   | [RFC6911 section 3.1](https://tools.ietf.org/html/rfc6911#section-3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Mikrotik-Recv-Limit             | 14988 (Mikrotik) | 1      | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 客户端总接收字节数限制。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Mikrotik-Xmit-Limit             | 14988 (Mikrotik) | 2      | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 客户端的总传输限制（以字节为单位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Mikrotik-Group                  | 14988 (Mikrotik) | 3      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 本地用户组。<br>HotSpot 用户的 配置文件。<br>PPP 用户的配置文件。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Mikrotik-Wireless-Forward       | 14988 (Mikrotik) | 4      | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 如果此属性设置为“0”（仅限无线），则不会将客户端的帧转发回无线基础设施。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Mikrotik-Wireless-Skip-Dot1x    | 14988 (Mikrotik) | 5      | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 如果设置为非零值（仅无线），则禁用特定无线客户端的 802.1x 身份验证。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Mikrotik-Wireless-Enc-Algo      | 14988 (Mikrotik) | 6      | 值&emsp;   说明<br>0&emsp; 	不加密<br>1&emsp; 	40-bit-WEP<br>2&emsp; 	104-bit-WEP<br>3&emsp; 	AES-CCM<br>4&emsp; TKIP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Access-Accept                   | WEP 加密算法(仅无线).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Mikrotik-Wireless-Enc-Key       | 14988 (Mikrotik) | 7      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 客户端的 WEP 加密密钥（仅无线）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Mikrotik-Rate-Limit             | 14988 (Mikrotik) | 8      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 客户端的数据速率限制。 格式为：rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] [rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx- burst-time] [priority] [rx-rate-min[/tx-rate-min]]]] 从路由器的角度来看（“rx”是客户端上传，“tx”是客户端下载）。 所有比率都带有可选“k”（1,000s）或“M”（1,000,000s）的数字。 如果未指定 tx-rate，则 rx-rate 也与 tx-rate 相同。 tx-burst-rate 和 tx-burst-threshold 以及 tx-burst-time 也是如此。 如未指定 rx-burst-threshold 和 tx-burst-threshold（但指定了 burst-rate），则使用 rx-rate 和 tx-rate 作为突发阈值。 如果 rx-burst-time 和 tx-burst-time 均未指定，则默认使用 1s。 优先级取值 1..8，其中 1 表示最高优先级，8 - 最低。 如果未指定 rx-rate-min 和 tx-rate-min，则使用 rx-rate 和 tx-rate 值。 rx-rate-min 和 tx-rate-min 值不能超过 rx-rate 和 tx-rate 值。 |
+| Mikrotik-Realm                  | 14988 (Mikrotik) | 9      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Request                  | 如果在 /radius 菜单中设置，它将作为 Mikrotik-Realm 属性包含在每个 RADIUS 请求中。 如果未设置，则发送与 MS-CHAP-Domain 属性中相同的值（如果缺少 MS-CHAP-Domain，则也不包括Realm）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Mikrotik-Host-IP                | 14988 (Mikrotik) | 10     | ip 地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Request                  | Universal Client转换前HotSpot客户端的IP地址（客户端的原始IP地址）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Mikrotik-Mark-Id                | 14988 (Mikrotik) | 11     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 防火墙 mangle 链名称（仅限 HotSpot）。 MikroTik RADIUS 客户端在收到此属性后创建一个动态防火墙mangle规则，其中 action=jump chain=hotspot 和 jump-target 等于属性值。 Mangle 链名称可以有后缀 .in 或 .out，仅为传入或传出流量设置规则。 可以提供多个 Mark-id 属性，但只使用传入和传出的最后一个。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Advertise-URL          | 14988 (Mikrotik) | 12     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 包含向客户显示的广告页面的 URL。 如果指定了此属性，则会自动启用广告，包括透明代理，即使它们在相应的用户配置文件中被明确禁用。 多个属性实例可以由 RADIUS 服务器发送以指定循环方式选择的附加 URL。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Mikrotik-Advertise-Interval     | 14988 (Mikrotik) | 13     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 两个相邻广告之间的时间间隔。 多个属性实例可以由 RADIUS 服务器发送以指定额外的间隔。 所有间隔值都被视为一个列表，并针对每个成功的广告逐一获取。 如果到达列表末尾，则继续使用最后一个值。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Mikrotik-Recv-Limit-Gigawords   | 14988 (Mikrotik) | 14     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 4G (2^32) 字节的总接收限制（当 0..31位在 Mikrotik-Recv-Limit 中传送时使用32..63位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Mikrotik-Xmit-Limit-Gigawords   | 14988 (Mikrotik) | 15     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 4G (2^32) 字节的总接收限制（当 0..31位在 Mikrotik-Recv-Limit 中传送时使用32..63位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Mikrotik-Wireless-PSK           | 14988 (Mikrotik) | 16     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Total-Limit            | 14988 (Mikrotik) | 17     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Total-Limit-Gigawords  | 14988 (Mikrotik) | 18     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Address-List           | 14988 (Mikrotik) | 19     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Wireless-MPKey         | 14988 (Mikrotik) | 20     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Wireless-Comment       | 14988 (Mikrotik) | 21     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Delegated-IPv6-Pool    | 14988 (Mikrotik) | 22     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 用于前缀委派的 IPv6 池。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Mikrotik-DHCP-Option-Set        | 14988 (Mikrotik) | 23     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-DHCP-Option-Param-STR1 | 14988 (Mikrotik) | 24     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-DHCP-Option-Param-STR2 | 14988 (Mikrotik) | 25     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Mikrotik-Wireless-VLANID        | 14988 (Mikrotik) | 26     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept                   | 客户端的 VLAN ID（仅无线）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Mikrotik-Wireless-VLANIDtype    | 14988 (Mikrotik) | 27     | 值&emsp;      说明<br>0&emsp;     802.1q <br>1 &emsp;   802.1ad                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Access-Accept                   | 客户端的 VLAN ID 类型（仅无线）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Mikrotik-Wireless-Minsignal     | 14988 (Mikrotik) | 28     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |
 |                                 |
-| Mikrotik-Wireless-Maxsignal     | 14988 (Mikrotik)                             | 29     | string                                                                                                                       | Access-Accept                   |
-|                                 |
-| Mikrotik-Switching-Filter       | 14988 (Mikrotik)                             | 30     | string                                                                                                                       | Access-Accept                   | Allows to create dynamic switch rules when authenticating clients with dot1x server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Mikrotik-Wireless-Maxsignal     | 14988 (Mikrotik) | 29     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   |
+| Mikrotik-Switching-Filter       | 14988 (Mikrotik) | 30     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | 允许在使用 dot1x 服务器验证客户端时创建动态交换规则。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 **属性**
 
- | 属性                                                    | 说明                                                                                                                                                     |
- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **name** (_string_; Default: )                          | Name of the attribute.                                                                                                                                   |
- | **packet-types** (_string_; Default: **access-accept**) | -   access-accept - use this attribute in RADIUS Access-Accept messages<br>-   access-challenge - use this attribute in RADIUS Access-Challenge messages |
- | **type-id** (_integer:1..255_; Default: )               | Attribute identification number from the specific vendor's attribute database.                                                                           |
- | **value-type** (_string_; Default: )                    | -   hex<br>-   ip-address - IPv4 or IPv6 IP address<br>-   ip6-prefix - IPv6 prefix<br>-   macro<br>-   string<br>-   uint32                             |
+ | 属性                                                    | 说明                                                                                                                           |
+ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+ | **name** (_string_; Default: )                          | 属性名称。                                                                                                                     |
+ | **packet-types** (_string_; Default: **access-accept**) | - access-accept - 在 RADIUS Access-Accept 消息中使用此属性<br>- access-challenge - 在 RADIUS Access-Challenge 消息中使用此属性 |
+ | **type-id** (_integer:1..255_; Default: )               | 来自特定供应商属性数据库的属性标识号。                                                                                         |
+ | **value-type** (_string_; Default: )                    | -   hex<br>-   ip地址 <br>- IPv4 ，IPv6 IP 地址<br>-   ip6-prefix - IPv6 prefix<br>-   macro<br>-   string<br>-   uint32       |
+ | **vendor-id** (_integer_; Default: **0**)               | IANA 分配特定的企业标识号。                                                                                                    |
 
- |
-| **vendor-id** (_integer_; Default: **0**) | IANA allocated specific enterprise identification number. |
-
-## Database
+## 数据库
 
 **子菜单:** `/user-manager database`
 
-All RADIUS related information is stored in a separate User Manager's database configurable under the "database" 子菜单. "Enabled" and "db-path" are the only parameters that are not stored in User Manager's database and are stored in main RouterOS configuration table meaning that these parameters will be affected by RouterOS configuration reset. The rest of the configuration, session and payment data is stored in a separate SQLite database on devices FLASH storage. When performing any actions with databases, it is advised to make backup before and after any activity.
+所有 RADIUS 相关信息都存储在单独的用户管理器数据库中，可配置在“数据库”子菜单下。 “Enabled”和“db-path”是唯一没有存储在用户管理器数据库中的参数，它们存储在主 RouterOS 配置表中，这意味着这些参数将受到 RouterOS 配置重置的影响。 其余配置、会话和支付数据存储在设备闪存上的单独 SQLite 数据库中。 在对数据库进行操作时，建议操作前后都进行备份。
 
-**Properties**
+**属性**
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                   |
+ | 属性                              | 说明                                                  |
  | --------------------------------- | ----------------------------------------------------- |
  | **db-path** (_string_; Default: ) | Path to location where database files will be stored. |
 
 **Read-only properties**
 
-| 
-属性
+| 属性                | 说明                             |
+| ------------------- | -------------------------------- |
+| **db-size**         | 数据库当前大小                   |
+| **free-disk-space** | 存储数据库磁盘上剩余的可用空间。 |
 
- | 
+**命令**
 
-说明
+| 属性                                               | 说明                                                                           |
+| -------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **load** (_name_)                                  | 以 .umb 格式恢复以前创建的备份文件。                                           |
+| **migrate-legacy-db** (_database-path; overwrite_) | 将旧用户管理器（从 RouterOS v6 或更早版本）转换为新标准。 可以覆盖当前数据库。 |
+| **optimize-db** ()                                 |
+| **save** (name; overwrite)                         | 保存用户管理器数据库的当前状态。                                               |
 
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                     |
- | ------------------- | ----------------------------------------------------- |
- | **db-size**         | Current size of the database.                         |
- | **free-disk-space** | Free space left on the disk where database is stored. |
-
-**Commands**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                    |
- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
- | **load** (_name_)                                  | Restore previously created backup file in .umb format.                                                               |
- | **migrate-legacy-db** (_database-path; overwrite_) | Convert old User Manager (from RouterOS v6 or before) to new standard. It is possible to overwrite current database. |
- | **optimize-db** ()                                 |
- |                                                    |
- | **save** (name; overwrite)                         | Save current state of the User Manager database.                                                                     |
-
-## Limitations
+## 限制
 
 **子菜单:** `/user-manager limitation`
 
-Limitations are used by Profiles and are linked together by Profile-Limitations. RADIUS accounting and Interim updates must be enabled to seamlessly switch between multiple limitations or disconnect active sessions when _download-limit_, _upload-limit_ or _uptime-limit_ is reached.
+限制由配置文件使用，并由配置文件限制链接在一起。 必须启用 RADIUS 记帐和临时更新，以便在达到 _download-limit_、_upload-limit_ 或 _uptime-limit_ 时在多个限制之间无缝切换或断开活动会话。
 
-To disconnect already active sessions from User Manager, _accept_ must be set to _yes_ on RADIUS client side. If simultaneous session limits are not unlimited (shared-users) and it has reached maximal allowed number, then router will try to disconnect older user session firstly.
+要从用户管理器断开已激活的会话，必须在 RADIUS 客户端上将_accept_设置为 _yes_。 如果并发会话限制不是无限的（共享用户）并且已达到最大允许数量，则路由器将首先尝试断开旧用户会话。
 
-User-Manager attempts to disconnect active session, before new user will be accepted (when appropriate limit is set), that's why in such setups it is suggested to use 1s for /radius client timeout.
+用户管理器在接受新用户之前尝试断开活动会话（当设置了适当的限制时），这就是为什么在此类设置中建议将 1s 用于/radius client timeout。
 
   
+RouterOS 中的 IPsec 服务不支持速率限制。
 
-IPsec service in RouterOS does not support rate limitations.
+**属性**
 
-**Properties**
+| 属性                                                  | 说明                                                                                                                                      |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **comment** (_string_; Default: )                     | 限制的简短描述。                                                                                                                          |
+| **download-limit** (_integer_; Default: **0**)        | 用户可以下载的总流量（以字节为单位）。                                                                                                    |
+| **name** (_string_; Default: )                        | 限制的唯一名称。                                                                                                                          |
+| **rate-limit-burst-rx** ()                            | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-burst-threshold-rx** ()                  | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-burst-threshold-tx** ()                  | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-burst-time-rx** ()                       | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-burst-time-tx** ()                       | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-burst-tx** ()                            | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-min-rx** ()                              | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-min-tx** ()                              | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-priority** ()                            | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-rx** ()                                  | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **rate-limit-tx** ()                                  | _MT-Rate-Limit_ RADIUS 属性的一部分。 请参阅 [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue)。 |
+| **reset-counters-interval** (_hourly_                 | _daily_                                                                                                                                   | _weekly_ | _monthly_ | _disabled_); Default: **disabled**) | 从 _reset-counters-start-time_ 清除所有相关用户统计信息的时间间隔。 |
+| **reset-counters-start-time** (_datetime_; Default: ) | 计算 _reset-counters-interval_ 的静态日期和时间值。                                                                                       |
+| **transfer-limit** (_integer_; Default: **0**)        | 以字节为单位的聚合（下载+正常运行）总流量。                                                                                               |
+| **upload-limit** (_integer_; Default: **0**)          | 用户可以上传的总流量（以字节为单位）。                                                                                                    |
+| **uptime-limit** (_time_; Default: **00:00:00**)      | 用户可以保持活跃的总正常运行时间。                                                                                                        |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                       |
- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
- | **comment** (_string_; Default: )                     | Short description of the limitation.                                                                                                           |
- | **download-limit** (_integer_; Default: **0**)        | Total amount of traffic a user can download in Bytes.                                                                                          |
- | **name** (_string_; Default: )                        | Unique name of the limitation.                                                                                                                 |
- | **rate-limit-burst-rx** ()                            | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-burst-threshold-rx** ()                  | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-burst-threshold-tx** ()                  | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-burst-time-rx** ()                       | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-burst-time-tx** ()                       | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-burst-tx** ()                            | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-min-rx** ()                              | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-min-tx** ()                              | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-priority** ()                            | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-rx** ()                                  | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **rate-limit-tx** ()                                  | Part of _MT-Rate-Limit_ RADIUS attribute. Refer to [Queues#SimpleQueue](https://help.mikrotik.com/docs/display/ROS/Queues#Queues-SimpleQueue). |
- | **reset-counters-interval** (_hourly_                 | _daily_                                                                                                                                        | _weekly_ | _monthly_ | _disabled_); Default: **disabled**) | Interval from _reset-counters-start-time_ when all associated user statistics are cleared. |
- | **reset-counters-start-time** (_datetime_; Default: ) | Static date and time value from which _reset-counters-interval_ is calculated.                                                                 |
- | **transfer-limit** (_integer_; Default: **0**)        | Total amount of aggregated (download+uptime) traffic in Bytes.                                                                                 |
- | **upload-limit** (_integer_; Default: **0**)          | Total amount of traffic a user can upload in Bytes.                                                                                            |
- | **uptime-limit** (_time_; Default: **00:00:00**)      | Total amount of uptime a user can stay active.                                                                                                 |
-
-## Payments
+## 付费
 
 **子菜单:** `/user-manager payment`
 
-Information about all received payments are available in this section.
+本节提供有关所有已付款的信息。
 
-**Read-only properties**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                        |
- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **currency** (_string_)                | The currency used in the transaction.                                                                                                                                                                      |
- | **method** (_string_)                  | Service used for the transaction (currently PayPal only).                                                                                                                                                  |
- | **price** (_decimal_)                  | Amount paid by the user.                                                                                                                                                                                   |
- | **profile** (_profile_)                | Name of the profile the user purchased.                                                                                                                                                                    |
- | **trans-end** (_datetime_)             | Date and time when the transaction started.                                                                                                                                                                |
- | **trans-start** (_datetime_)           | Date and time when the transaction ended.                                                                                                                                                                  |
- | **trans-status** (_string_)            | Status of the transaction. Possible statuses - _started_, _pending_, _approved_, _declined_, _error_, _timeout_, _aborted_, _user approved_. Only _approved_ should be considered as complete transaction. |
- | **user** (_string_; Default: )         | Name of the user who performed the transaction.                                                                                                                                                            |
+**只读属性**
+ | 属性                                   | 说明                                                                                                                                                          |
+ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | **currency** (_string_)                | 交易中使用的货币。                                                                                                                                            |
+ | **method** (_string_)                  | 用于交易的服务（目前仅限 PayPal）。                                                                                                                           |
+ | **price** (_decimal_)                  | 用户支付的金额。                                                                                                                                              |
+ | **profile** (_profile_)                | 用户购买的配置文件名称。                                                                                                                                      |
+ | **trans-end** (_datetime_)             | 交易开始的日期和时间。                                                                                                                                        |
+ | **trans-start** (_datetime_)           | 交易结束的日期和时间。                                                                                                                                        |
+ | **trans-status** (_string_)            | 交易的状态。 可能的状态 - _started_、_pending_、_approved_、_declined_、_error_、_timeout_、_aborted_、_user approved_。 只有 _approved_ 才被视为完整的交易。 |
+ | **user** (_string_; Default: )         | 执行交易的用户姓名。                                                                                                                                          |
  | **user-message** (_string_; Default: ) |
- |                                        |
 
-## Profiles
+
+## 配置文件
 
 **子菜单:** `/user-manager profile`
 
-**Properties**
+**属性**
+ | 属性                                                                                                                                           | 说明                                                                                                                   |
+ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+ | **comment** (_string_; Default: )                                                                                                              | 条目的短描述。                                                                                                         |
+ | **name** (_string_; Default: )                                                                                                                 | 配置文件的唯一名称。                                                                                                   |
+ | **name-for-users** (_string_; Default: )                                                                                                       | 将在网页上为用户显示的配置文件的名称。                                                                                 |
+ | **override-shared-users** (_decimal      \| off                                                               \| unlimited_; Default: **off**) | 是否允许具有相同用户名的多个会话。 会覆盖 _shared-users_ 设置。                                                        |
+ | **price** (_decimal_; Default: **0.00**)                                                                                                       |
+ | **starts-when** (_assigned_              \| _first-auth_; Default: **assigned**)                                                               | 配置文件何时变为活动状态。 _Assigned_ - 创建用户配置文件条目时立即分配。 _First-auth_ - 根据用户的第一次身份验证请求。 |
+ | **validity** (_time                      \| unlimited_; Default: **unlimited**)                                                                | 用户可以使用此配置文件的总时间。                                                                                       |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                          |
- | ---------------------------------------- | ----------------------------------------------------------------- |
- | **comment** (_string_; Default: )        | Short description of the entry.                                   |
- | **name** (_string_; Default: )           | Unique name of the profile.                                       |
- | **name-for-users** (_string_; Default: ) | Name of the profile that will be shown for users on the Web page. |
- | **override-shared-users** (_decimal      | off                                                               | unlimited_; Default: **off**)                                                                                                                                        | Whether to allow multiple sessions with the same user name. This overrides the _shared-users_ setting. |
- | **price** (_decimal_; Default: **0.00**) |
- |                                          |
- | **starts-when** (_assigned_              | _first-auth_; Default: **assigned**)                              | When does the profile become active. _Assigned_ \- immediately when a User Profile entry is created. _First-auth_ - upon first authentication request from the user. |
- | **validity** (_time                      | unlimited_; Default: **unlimited**)                               | Total amount of time a user can use this profile.                                                                                                                    |
-
-## Profile Limitations
+## 配置文件限制
 
 **子菜单:** `/user-manager profile-limitation`
 
-Profile-Limitations table links Limitations and Profiles together and defines its validity period. When multiple Limitations are assigned to the same Profile, a user must comply with all Limitations for session to establish. This allows more complicated setups to be created, for example, separate monthly and daily bandwidth limits.
+Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其有效期。 当多个限制分配给同一个配置文件时，用户必须遵守所有限制才能建立会话。 这允许创建更复杂的设置，例如，单独的每月和每天带宽限制。
 
-**Properties**
+**属性**
+| 属性                                                                                                      | 说明                     |
+| --------------------------------------------------------------------------------------------------------- | ------------------------ |
+| **comment** (_string_; Default: )                                                                         | 条目的简短描述。         |
+| **from-time** (_time_; Default: **00:00:00**)                                                             | 限制开始的一天中的时间。 |
+| **limitation** (_limitation_; Default: )                                                                  | 已创建的**限制**名称 。  |
+| **profile** (_profile_; Default: )                                                                        | 已创建的**配置文件**名称 |
+| **till-time** (_time_; Default: **23:59:59**)                                                             | 限制结束的时间。         |
+| **weekdays** (_day of week_; Default: **Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday**) | 激活限制的星期。         |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                                                                           |
- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
- | **comment** (_string_; Default: )                                                                         | Short description of the entry.                   |
- | **from-time** (_time_; Default: **00:00:00**)                                                             | Time of day when the limitation should start.     |
- | **limitation** (_limitation_; Default: )                                                                  | Name of already created **Limitation**.           |
- | **profile** (_profile_; Default: )                                                                        | Name of already created **Profile**.              |
- | **till-time** (_time_; Default: **23:59:59**)                                                             | Time of day when the limitation should end.       |
- | **weekdays** (_day of week_; Default: **Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday**) | Day of week when the limitation should be active. |
-
-## Routers
+## 路由器
 
 **子菜单:** `/user-manager router`
 
-Here are defined all NAS devices that can use User Manager as RADIUS server.
+这里定义了所有可使用 User Manager 作为 RADIUS 服务器的 NAS 设备。
 
-**Properties**
+**属性**
 
-| 
-属性
+| 属性                                                                          | 说明                                               |
+| ----------------------------------------------------------------------------- | -------------------------------------------------- |
+| **coa-port** (_integer:1..65535_; Default: **3799**)                          | CoA（授权变更）通信的端口号。                      |
+| **address** (_IP/IPv6_**;** Default: )                                        | RADIUS客户端的IP地址。                             |
+| **comment** (_string_; Default: )                                             | NAS 的简短描述。                                   |
+| **disabled** (_yes                                   \| no_; Default: **no**) | 控制条目当前是否处于活动状态。                     |
+| **name** (_string_; Default: )                                                | RADIUS 客户端的唯一名称。                          |
+| **shared-secret** (_string_; Default: )                                       | 用于保护 RADIUS 服务器和 RADIUS 客户端之间的通信。 |
 
- | 
+**命令**
+| 属性                  | 说明                                   |
+| --------------------- | -------------------------------------- |
+| **reset-counters** () | 清除特定 RADIUS 客户端的所有统计信息。 |
 
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                      |
- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
- | **coa-port** (_integer:1..65535_; Default: **3799**) | Port number of CoA (Change of Authorization) communication.               |
- | **address** (_IP/IPv6_**;** Default: )               | IP address of the RADIUS client.                                          |
- | **comment** (_string_; Default: )                    | Short description of the NAS.                                             |
- | **disabled** (_yes                                   | no_; Default: **no**)                                                     | Controls whether the entry is currently active or not. |
- | **name** (_string_; Default: )                       | Unique name of the RADIUS client.                                         |
- | **shared-secret** (_string_; Default: )              | Used to secure communication between a RADIUS server and a RADIUS client. |
-
-**Commands**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                       |
- | --------------------- | ------------------------------------------------ |
- | **reset-counters** () | Clear all statistics for specific RADIUS client. |
-
-## Sessions
+## 会话
 
 **子菜单:** `/user-manager session`
 
-Sessions are logged only if accounting is enabled on NAS.
+仅当在 NAS 上启用记帐时才会记录会话。
 
-**Read-only properties**
+**只读属性**
+ | 属性                                            | 说明                                                                                                                                                                             |
+ | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | **acct-session-id** (_string_)                  | 计费会话的唯一标识。                                                                                                                                                             |
+ | **active** (_yes                        \| no_) | 当前是否使用会话。                                                                                                                                                               |
+ | **calling-station-id** (_string_)               | 用户的标识符，通常是 IP 地址或 MAC 地址。                                                                                                                                        |
+ | **download** (_Bytes_)                          | 下载的流量。                                                                                                                                                                     |
+ | **ended** (_datetime_)                          | 会话结束的日期和时间。 活动会话为空。                                                                                                                                            |
+ | **last-accounting-packet** (_datetime_)         | 收到最后一次计费更新的日期和时间。                                                                                                                                               |
+ | **nas-ip-address** (_IP address_)               | NAS的IP地址。                                                                                                                                                                    |
+ | **nas-port-id** (_string_)                      | 对用户进行身份验证的 NAS 端口的标识符。                                                                                                                                          |
+ | **nas-port-type** (_string_)                    | 对用户进行身份验证的端口类型（_physical_ 或 _virtual_）。                                                                                                                        |
+ | **started** (_datetime_)                        | 建立会话的日期和时间。                                                                                                                                                           |
+ | **status** (_list of statuses_)                 | 会话的可用状态：_start -_accounting message_Start_已收到，_stop -_accounting message_Stop_已收到，_interim -Interim update_已收到，_close-acked_ - session已成功关闭，_expired._ |
+ | **terminate-cause** (_string_)                  | 会话关闭原因。                                                                                                                                                                   |
+ | **upload** (_Bytes_)                            | 上传的流量。                                                                                                                                                                     |
+ | **uptime** (_time_)                             | 会话中记录的总正常运行时间。                                                                                                                                                     |
+ | **user** (_string_)                             | 用户名                                                                                                                                                                           |
+ | **user-address** (_IP address_)                 | 提供给用户的 IP 地址。                                                                                                                                                           |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                         |
- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **acct-session-id** (_string_)          | Unique identification of the accounting session.                                                                                                                                                                                                                 |
- | **active** (_yes                        | no_)                                                                                                                                                                                                                                                             | Whether the session is currently used. |
- | **calling-station-id** (_string_)       | User's identifier, usually IP address or MAC address.                                                                                                                                                                                                            |
- | **download** (_Bytes_)                  | Amount of traffic downloaded.                                                                                                                                                                                                                                    |
- | **ended** (_datetime_)                  | Date and time when the session was closed. Empty for active sessions.                                                                                                                                                                                            |
- | **last-accounting-packet** (_datetime_) | Date and time when the last accounting update was received.                                                                                                                                                                                                      |
- | **nas-ip-address** (_IP address_)       | IP address of the NAS.                                                                                                                                                                                                                                           |
- | **nas-port-id** (_string_)              | Identifier of the NAS port that is authenticating the user.                                                                                                                                                                                                      |
- | **nas-port-type** (_string_)            | The port type (_physical_ or _virtual_) that is authenticating the user.                                                                                                                                                                                         |
- | **started** (_datetime_)                | Date and time when the session was established.                                                                                                                                                                                                                  |
- | **status** (_list of statuses_)         | Possible available statuses of a session: _start -_ accounting message _Start_ has been received, _stop -_ accounting message _Stop_ has been received, _interim - Interim update_ has been received, _close-acked_ - session is successfully closed, _expired._ |
- | **terminate-cause** (_string_)          | Reason why the session was closed.                                                                                                                                                                                                                               |
- | **upload** (_Bytes_)                    | Amount of traffic uploaded.                                                                                                                                                                                                                                      |
- | **uptime** (_time_)                     | Total logged uptime on the session.                                                                                                                                                                                                                              |
- | **user** (_string_)                     | Name of the user.                                                                                                                                                                                                                                                |
- | **user-address** (_IP address_)         | IP address provided to the user.                                                                                                                                                                                                                                 |
-
-## Settings
+## 设置
 
 **子菜单:** `/user-manager   `
 
-**Properties**
+**属性**
+| 属性                                                                            | 说明                                                                                          |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **accounting-port** (_integer_; Default: **1813**)                              | 监听 RADIUS 记帐请求的端口。                                                                  |
+| **authentication-port** (_integer_; Default: **1812**)                          | 监听 RADIUS 身份验证请求的端口。                                                              |
+| **_certificate_** (_certificate_; Default: )                                    | 用于 EAP TLS 类型身份验证方法的证书。                                                         |
+| **_enabled_** (_yes                                    \| no_; Default: **no**) | 是否启用了用户管理器功能。                                                                    |
+| **use-profiles** (_yes                                 \| no_; Default: **no**) | 是否使用 **配置文件** 和 **限制**。 当设置为 _no 时，_ 只有 **用户** 配置需要运行用户管理器。 |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                        |
- | ------------------------------------------------------ | ----------------------------------------------------------- |
- | **accounting-port** (_integer_; Default: **1813**)     | Port to listen for RADIUS accounting requests.              |
- | **authentication-port** (_integer_; Default: **1812**) | Port to listen for RADIUS authentication requests.          |
- | **_certificate_** (_certificate_; Default: )           | Certificate for use in EAP TLS type authentication methods. |
- | **_enabled_** (_yes                                    | no_; Default: **no**)                                       | Whether the User Manager functionality is enabled.                                                                              |
- | **use-profiles** (_yes                                 | no_; Default: **no**)                                       | Whether to use **Profiles** and **Limitations**. When set to _no,_ only **User** configuration is required to run User Manager. |
-
-## Advanced
+## 高级属性
 
 **子菜单:** `/user-manager advanced`
 
-**Properties**
+**属性**
+| 属性                                                                      | 说明                                         |
+| ------------------------------------------------------------------------- | -------------------------------------------- |
+| **paypal-allow** (_yes                           \| no_; Default: **no**) | 是否为用户管理器启用 PayPal 功能。           |
+| **paypal-currency** (_string_; Default: **USD**)                          | 对用户计费的 _价格_ 设置相关的货币。         |
+| **paypal-password** (_string_; Default: )                                 | 您的 PayPal API 帐户的密码。                 |
+| **paypal-signature** (_string_; Default: )                                | 您的 PayPal API 帐户的签名。                 |
+| **paypal-use-sandbox** (_yes                     \| no_; Default: **no**) | 是否使用 PayPal 的沙盒环境进行测试。         |
+| **paypal-user** (_string_; Default: )                                     | 您的 PayPal API 帐户的用户名。               |
+| **web-private-password** (_string_; Default: )                            | 通过 HTTP 访问 _/um/PRIVATE/_ 部分的密码。   |
+| **web-private-username** (_string_; Default: )                            | 通过 HTTP 访问 _/um/PRIVATE/_ 部分的用户名。 |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                  |
- | ------------------------------------------------ | ---------------------------------------------------------------------- |
- | **paypal-allow** (_yes                           | no_; Default: **no**)                                                  | Whether to enable PayPal functionality for User Manager.          |
- | **paypal-currency** (_string_; Default: **USD**) | The currency related to _price_ setting in which users will be billed. |
- | **paypal-password** (_string_; Default: )        | Password of your PayPal API account.                                   |
- | **paypal-signature** (_string_; Default: )       | Signature of your PayPal API account.                                  |
- | **paypal-use-sandbox** (_yes                     | no_; Default: **no**)                                                  | Whether to use PayPal's sandbox environment for testing purposes. |
- | **paypal-user** (_string_; Default: )            | Username of your PayPal API account.                                   |
- | **web-private-password** (_string_; Default: )   | Password for accessing _/um/PRIVATE/_ section over HTTP.               |
- | **web-private-username** (_string_; Default: )   | Username for accessing _/um/PRIVATE/_ section over HTTP.               |
-
-## Users
+## 用户
 
 **子菜单:** `/user-manager user`
 
-**Properties**
+**属性**
+| 属性                                                                             | 说明                                                        |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **attributes** (_array of attributes_; Default: )                                | 自定义的 **属性** 集和值将另外添加到 Access-Accept 消息中。 |
+| **caller-id** (_string_; Default: )                                              | 允许使用特定的 _Calling-Station-Id_ 值进行用户身份验证。    |
+| **comment** (_string_; Default: )                                                | 用户的简短描述。                                            |
+| **disabled** (_yes                                \| no_; Default: **no**)       | 控制用户是否可以使用。                                      |
+| **group** (_group_; Default: **default**)                                        | 用户关联的**组**名称。                                      |
+| **name** (_string_; Default: )                                                   | 会话验证的用户名。                                          |
+| **otp-secret** (_string_; Default: )                                             | 附加到密码的一次性密码令牌。                                |
+|                                                                                  |
+| **password** (_string_; Default: )                                               | 会话认证的用户密码。                                        |
+| **shared-users** (_integer                        \| unlimited_; Default: **1**) | 用户可以同时建立的会话总数。                                |
 
-| 
-属性
+**命令**
+| 属性                    | 说明                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **add-batch-users** ()  | 该命令可以根据各种参数生成多个用户帐户。                                                                                                         |
+| **generate-voucher** () | 基于可以呈现给最终用户的 _voucher-template_ 生成一个文件。                                                                                       |
+| **monitor** ()          | 显示用户的总统计信息。 统计数据包括_total-uptime_、_total-download_、_total-upload_、_active-sessions_、_actual-profile_、_attributes-details_。 |
 
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                   |
- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
- | **attributes** (_array of attributes_; Default: ) | Custom set of **Attributes** with their values that will additionally be added to Access-Accept messages. |
- | **caller-id** (_string_; Default: )               | Allow user's authentication with a specific _Calling-Station-Id_ value.                                   |
- | **comment** (_string_; Default: )                 | Short description of the user.                                                                            |
- | **disabled** (_yes                                | no_; Default: **no**)                                                                                     | Controls whether the user can be used or not.                   |
- | **group** (_group_; Default: **default**)         | Name of the **Group** the user is associated to.                                                          |
- | **name** (_string_; Default: )                    | Username for session authentication.                                                                      |
- | **otp-secret** (_string_; Default: )              | A one-time password token that is attached to the password.                                               |
- |                                                   |
- | **password** (_string_; Default: )                | Password of the user for session authentication.                                                          |
- | **shared-users** (_integer                        | unlimited_; Default: **1**)                                                                               | Total amount of sessions the user can simultaneously establish. |
-
-**Commands**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                         |
- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **add-batch-users** ()  | The command can generate multiple user accounts based on various parameters.                                                                                  |
- | **generate-voucher** () | Generates a file based on _voucher-template_ that can be presented to the end user.                                                                           |
- | **monitor** ()          | Shows total statistics for a user. Stats include _total-uptime_, _total-download_, _total-upload_, _active-sessions_, _actual-profile_, _attributes-details_. |
-
-## User Groups
+## 用户组
 
 **子菜单:** `/user-manager user group`
 
-User groups defines common characteristics of multiple users such as allowed authentication methods and RADIUS attributes. There are two groups already present in User Manager called _default_ and _default-anonymous_.
+用户组定义了多个用户的共同特征，例如允许的身份验证方法和 RADIUS 属性。 用户管理器中已经存在两个组，称为_default_ 和_default-anonymous_。
 
-**Properties**
+**属性**
+| 属性                                              | 说明                                                                                                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **attributes** (_array of attributes_; Default: ) | 一组自定义的 **属性** 和值将另外添加到该组中用户的 Access-Accept 消息中。                                                                 |
+| **comment** (_string_; Default: )                 | 组的简短描述。                                                                                                                            |
+| **inner-auths** (_list of auths_; Default: )      | 隧道（外部）允许的身份验证方法列表。 支持的内部验证方法 - _ttls-pap_、_ttls-chap_、_ttls-mschap1_、_ttls-mschap2_、_peap-mschap2_。       |
+| **name** (_string_; Default: )                    | 唯一的组名称                                                                                                                              |
+| **outer-auths** (_list of auths_; Default: )      | 允许的身份验证方法列表。 支持的外部身份验证方法 - _pap_、_chap_、_mschap1_、_mschap2_、_eap-tls_、_eap-ttls_、_eap-peap_、_eap-mschap2_。 |
 
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                                                   |
- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **attributes** (_array of attributes_; Default: ) | Custom set of **Attributes** with their values that will additionally be added to Access-Accept messages for users in this group.                                                                     |
- | **comment** (_string_; Default: )                 | Short description of the group.                                                                                                                                                                       |
- | **inner-auths** (_list of auths_; Default: )      | List of allowed authentication methods for tunneled (outer) authentication methods. Supported inner authentication methods - _ttls-pap_, _ttls-chap_, _ttls-mschap1_, _ttls-mschap2_, _peap-mschap2_. |
- | **name** (_string_; Default: )                    | Unique name of the group.                                                                                                                                                                             |
- | **outer-auths** (_list of auths_; Default: )      | List of allowed authentication methods. Supported outer authentication methods - _pap_, _chap_, _mschap1_, _mschap2_, _eap-tls_, _eap-ttls_, _eap-peap_, _eap-mschap2_.                               |
-
-## User Profiles
+## 用户配置文件
 
 **子菜单:** `/user-manager user-profile`
 
-This menu assigns users with a profile and tracks the status of the profile. A single user can have multiple profiles assigned, however only one can be used at the same time. A user will seamlessly be switched to the next profile when currently active profile expires without dropping the user's session.
+此菜单为用户分配配置文件并跟踪配置文件的状态。 单个用户可以分配多个配置文件，但同时只能使用一个。 当前活动配置文件到期时，用户将无缝切换到下一个配置文件，而不会中断用户的会话。
 
-**Properties**
+**属性**
+| 属性                               | 说明                           |
+| ---------------------------------- | ------------------------------ |
+| **profile** (_profile_; Default: ) | 要为用户分配的配置文件的名称。 |
+| **user** (_user_; Default: )       | 使用特定配置文件的用户名。     |
 
-| 
-属性
+**只读属性**
+| 属性                                                                                      | 说明                                                                                                                                            |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **end-time** (_datetime_)                                                                 | **用户配置文件** 到期的日期和时间。                                                                                                             |
+| **state** (_running active_ \| running                                         \| _used_) | **用户配置文件**的当前状态。 _Running active -_ 用户当前使用的配置文件。 _Running_ - 配置文件已准备好使用。 _Used_ - 无法再激活的过期配置文件。 |
 
- | 
+**命令**
+| 属性                         | 说明                             |
+| ---------------------------- | -------------------------------- |
+| **activate-user-profile** () | 立即激活 **用户配置文件** 条目。 |
 
-说明
+## WEB接口
 
- |     |
- | --- ||
- |     |
+每个用户都可以使用 WEB 界面访问他的个人资料。 WEB界面可以通过在路由器的IP或域中添加“/um/”目录来访问，例如[http://example.com/um/](http://router.ip/um/)。 请注意，WEB 界面受 IP 服务“www”和“www-ssl”的影响。 可以使用 CSS、JavaScript 和 HTML 自定义 WEB 界面。
 
-属性
+**可定制的文件参考**
+| 文件                            | 说明                                       |
+| ------------------------------- | ------------------------------------------ |
+| **css/login.css**               | 用于登录页面的级联样式表文件。             |
+| **css/user.css**                | 用户个人资料页面中使用的级联样式表文件。   |
+| **img/PayPal\_mark\_37x23.gif** | PayPal 标志图                              |
+| **img/ajax-loader.gif**         | 在处理页面切换时加载 gif。                 |
+| **img/mikrotik\_logo.png**      | MikroTik 标志显示在所有页面上。            |
+| **js/generic.js**               | 所有页面上使用的 Javascript 文件。         |
+| **js/login.js**                 | 登录页面中使用的 Javascript 文件。         |
+| **js/user.js**                  | 用户个人资料页面中使用的 Javascript 文件。 |
+| **user/login\_dynamic.html**    | 登录页面的布局。                           |
+| **user/user\_dynamic.html**     | 用户个人资料页面的布局。                   |
 
- | 
+## 应用指南
 
-说明
+### 批量创建用户
 
- |                                    |
- | ---------------------------------- | ------------------------------------------- |
- | **profile** (_profile_; Default: ) | Name of the profile to assign for user.     |
- | **user** (_user_; Default: )       | Name of the user to use particular profile. |
-
-**Read-only properties**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                             |
- | --------------------------- | ----------------------------------------------- |
- | **end-time** (_datetime_)   | Date and time the **User Profile** will expire. |
- | **state** (_running active_ | running                                         | _used_) | Current state of the **User Profile**. _Running active -_ currently used profile by the user. _Running_ - a profile is ready to be used. _Used_ \- expired profile that can no longer be activated. |
-
-**Commands**
-
-| 
-属性
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-属性
-
- | 
-
-说明
-
- |                              |
- | ---------------------------- | ------------------------------------------------- |
- | **activate-user-profile** () | Make a **User Profile** entry active immediately. |
-
-## WEB Interface
-
-Each user has access to his personal profile using a WEB interface. The WEB interface can be accessed by adding "/um/" directory to router's IP or domain, for example, [http://example.com/um/](http://router.ip/um/). Note that the WEB interface is affected by IP Services "www" and "www-ssl". The WEB interface can be customized using CSS, JavaScript and HTML.
-
-**Customizable file reference**
-
-| 
-File
-
- | 
-
-说明
-
- |     |
- | --- ||
- |     |
-
-File
-
- | 
-
-说明
-
- |                                 |
- | ------------------------------- | ------------------------------------------------------- |
- | **css/login.css**               | Cascading style sheet file used in login prompt page.   |
- | **css/user.css**                | Cascading style sheet file used in user's profile page. |
- | **img/PayPal\_mark\_37x23.gif** | PayPal logo image.                                      |
- | **img/ajax-loader.gif**         | Loading gif while processing page switching.            |
- | **img/mikrotik\_logo.png**      | MikroTik logo displayed on all pages.                   |
- | **js/generic.js**               | Javascript file used on all pages.                      |
- | **js/login.js**                 | Javascript file used in login prompt page.              |
- | **js/user.js**                  | Javascript file used in user's profile page.            |
- | **user/login\_dynamic.html**    | Layout of the login prompt page.                        |
- | **user/user\_dynamic.html**     | Layout of the user's profile page.                      |
-
-## Application Guides
-
-### Batch user creation
-
-It is possible to create multiple new users with randomly generated username and password. For example, the following command will generate 3 new users with 6 lowercase symbols as the username and 6 lowercase, uppercase and numbers as the password.
+可以使用随机生成的用户名和密码创建多个新用户。 例如，以下命令将生成 3 个新用户，用户名为 6 个小写符号，密码为 6 个小写、大写和数字。
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">add-batch-users </code><code class="ros value">number-of-users</code><code class="ros plain">=3</code> <code class="ros value">password-characters</code><code class="ros plain">=lowercase,numbers,uppercase</code> <code class="ros value">password-length</code><code class="ros plain">=6</code> <code class="ros value">username-characters</code><code class="ros plain">=lowercase</code> <code class="ros value">username-length</code><code class="ros plain">=6</code></div></div></td></tr></tbody></table>
 
-The command generated users can be seen by printing the user's table:
-
+命令生成的用户可以通过打印用户表看到：
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"olsgkl"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"86a6zH"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"lkbwss"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"jaKY5V"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"cwxbwu"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"a62yZd"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
 
-### Providing NAS with custom RADIUS attributes
+### 为 NAS 提供自定义 RADIUS 属性
 
-It is possible to send additional RADIUS attributes during authentication process to provide NAS with custom information about the session, such as what IP address should be assigned to the supplicant or what address pool to use for address assigning.
+可以在身份验证过程中发送额外的 RADIUS 属性，以向 NAS 提供有关会话的自定义信息，例如应将哪个 IP 地址分配给请求者或将哪个地址池用于地址分配。
 
-#### Static IP address for a user
+#### 用户的静态IP地址
 
-To assign end user a static IP address, _Framed-IP-Address_ attribute can be used. When using static IP address allocation, _shared-sessions_ must be set to 1 to prevent cases when a user has multiple simultaneous sessions, but there is only one IP address. For example:
-
-
+要为最终用户分配静态 IP 地址，可以使用 _Framed-IP-Address_ 属性。 使用静态 IP 地址分配时，_shared-sessions_ 必须设置为 1，以防止用户有多个同时会话但只有一个 IP 地址的情况。 例如：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=Framed-IP-Address:192.168.1.4</code></div></div></td></tr></tbody></table>
 
-#### Specifying address pool for group of users
+#### 为用户组指定地址池
 
-We can group up multiple similar users and assign RADIUS attributes to all of them at once. First of all, create a new group:
+我们可以将多个相似的用户分组，并同时为所有这些用户分配 RADIUS 属性。 首先，创建一个新组：
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user group</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=location1</code> <code class="ros value">outer-auths</code><code class="ros plain">=chap,eap-mschap2,eap-peap,eap-tls,eap-ttls,mschap1,mschap2,pap</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">inner-auths</code><code class="ros plain">=peap-mschap2,ttls-chap,ttls-mschap1,ttls-mschap2,ttls-pap</code> <code class="ros value">attributes</code><code class="ros plain">=Framed-Pool:pool1</code></div></div></td></tr></tbody></table>
 
-Next step is to assign a user to the group:
+下一步是将用户分配给该组：
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">group</code><code class="ros plain">=location1</code></div></div></td></tr></tbody></table>
 
-In this case an IP address from _pool1_ will be assigned to the user upon authentication - make sure _pool1_ is created on NAS device.
+在这种情况下，来自 _pool1_ 的 IP 地址将在身份验证时分配给用户 - 确保 _pool1_ 是在 NAS 设备上创建的。
 
-### Using TOTP (time-based one time password) for user authentication
+### 使用 TOTP（基于时间的一次性密码）进行用户身份验证
 
-User Manager supports time based authentication token addition to user's password field that is regenerated every 30 seconds.
+用户管理器支持将基于时间的身份验证令牌添加到每 30 秒重新生成一次的用户密码字段。
 
-OTP depends on clock, so make sure time settings are configured correctly.
+OTP 取决于时钟，因此请确保正确配置时间设置。
 
-TOTP works by having a shared secret on the supplicant (client) and the authentication server (User Manager). To configure TOTP on RouterOS, simply set the _otp-secret_ for the user. For example:
+TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用户管理器）上共享一个秘密。 要在 RouterOS 上配置 TOTP，只需为用户设置 _otp-secret_。 例如：
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">password</code><code class="ros plain">=mypass</code> <code class="ros value">otp-secret</code><code class="ros plain">=mysecret</code></div></div></td></tr></tbody></table>
 
-To calculate TOTP token on supplicant side, many widely available applications can be used, for example, Google Authenticator or [https://totp.app/](https://totp.app/). Adding _mysecret_ to TOTP token generator will provide a new unique 6 digit code that must be added to the users password.
+要在请求方计算 TOTP 令牌，可以使用许多广泛可用的应用程序，例如 Google Authenticator 或 [https://totp.app/](https://totp.app/)。 将 _mysecret_ 添加到 TOTP 令牌生成器将提供一个新的唯一 6 位代码，必须将其添加到用户密码中。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/TOTP_generator.PNG?version=1&modificationDate=1657111279930&api=v2)
 
-The following example will accept user's authentication with calculated TOTP token added to the common password until a new TOTP token is generated, for example,
+以下示例将接受用户的身份验证，并将计算出的 TOTP 令牌添加到通用密码中，直到生成新的 TOTP 令牌为止，例如，
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">User-Name=username</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">User-Password=mypass620872</code></div></div></td></tr></tbody></table>
 
-### Exporting user credentials
+### 导出用户凭据
 
-#### **Printable login credentials for single user**
+#### **单个用户的可打印登录凭据**
 
-To generate a single user's printable voucher card, simply use the _generate-voucher_ command. Specify the RouterOS ID number of the user or use _find_ command to specify a username. A template is already included in User Manager's installation available in Files section of your device. You can customize the template for your needs.
-
+要生成单个用户的可打印凭证卡，只需使用 _generate-voucher_ 命令即可。 指定用户的 RouterOS ID 号或使用 _find_ 命令指定用户名。 模板已包含在用户管理器的安装中，可在设备的“文件”部分找到。 您可以根据需要自定义模板。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-voucher </code><code class="ros value">voucher-template</code><code class="ros plain">=printable_vouchers.html</code> <code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">name</code><code class="ros plain">=username]</code></div></div></td></tr></tbody></table>
 
-The generated voucher card is available by accessing the router using a WEB browser and navigating to _/um/PRIVATE/GENERATED/vouchers/gen\_printable\_vouchers.html_
+通过使用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/vouchers/gen\_printable\_vouchers.html_ 可获得生成的优惠券卡
 
-By default the printable card looks like this:
+默认情况下，可打印卡片如下所示：
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/image.png?version=1&modificationDate=1663149747172&api=v2)
 
-To access the PRIVATE path of the /um/ directory by the WEB browser, _private-username_ and _private-password_ must be configured. See **Settings** section.
+要通过WEB浏览器访问/um/目录的PRIVATE路径，必须配置_private-username_和_private-password_。 请参阅**设置**部分。
 
-It is possible to use different variables when generating vouchers. Currently, supported variables are:
+生成凭证时可以使用不同的变量。 目前支持的变量有：
 
 $(username) - Represents User Manager username  
 $(password) - Password of the username  
 $(userprofname) - Profile that is active for the particular user  
 $(userprofendtime) - Profile validity end time if specified
 
-#### Multiple user credential export
+#### 多用户凭证导出
 
-It is possible to generate a CSV or XML file with multiple or all user credentials at once by using the _export.xml_ or _export.csv_ as _voucher-template_.
+通过使用 _export.xml_ 或 _export.csv_ 作为 _voucher-template_，可以一次生成包含多个或所有用户凭据的 CSV 或 XML 文件。
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-voucher </code><code class="ros value">voucher-template</code><code class="ros plain">=export.xml</code> <code class="ros plain">[find]</code></div></div></td></tr></tbody></table>
 
-The command generates an XML file _um5files/PRIVATE/GENERATED/vouchers/gen\_export.xml_ which can either be accessible by WEB browser or any other file access tools.
+该命令生成一个 XML 文件 _um5files/PRIVATE/GENERATED/vouchers/gen\_export.xml_ 可以通过 WEB 浏览器或任何其他文件访问工具访问。
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">&lt;users&gt;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;olsgkl&lt;/username&gt;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;86a6zH&lt;/password&gt;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;lkbwss&lt;/username&gt;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;jaKY5V&lt;/password&gt;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;cwxbwu&lt;/username&gt;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;a62yZd&lt;/password&gt;</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;username&lt;/username&gt;</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;secretpassword&lt;/password&gt;</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number19 index18 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="text plain">&lt;/users&gt;</code></div></div></td></tr></tbody></table>
 
-### Generating usage report
+### 生成使用报告
 
-In cases where a presentable network usage information is required by companies billing or legal team an automated session export can be created using _generate-report_ command. The command requires an input of report template - an example of the template is available in _um5files/PRIVATE/TEMPLATES/reports/report\_default.html_. Example of the report generation:
+如果公司账单或法律团队需要可呈现的网络使用信息，则可以使用 _generate-report_ 命令创建自动会话导出。 该命令需要输入报告模板 - _um5files/PRIVATE/TEMPLATES/reports/report\_default.html_ 中提供了模板示例。 报告生成示例：
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-report </code><code class="ros value">report-template</code><code class="ros plain">=report_default.html</code> <code class="ros value">columns</code><code class="ros plain">=username,uptime,download,upload</code></div></div></td></tr></tbody></table>
 
-The generated report is available by accessing the router using a WEB browser and navigating to _/um/PRIVATE/GENERATED/reports/gen\_report\_default.html_
+通过使用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/reports/gen\_report\_default.html_ 可获得生成的报告
 
 _![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?version=2&modificationDate=1657102682105&api=v2)_
 
-### Purchasing a profile
+### 购买配置文件
 
-After logging into user's private profile by accessing the router's _/um/_ directory using WEB browser, for example, [http://example.com/um/,](http://example.com/um/,) he will be able to see all available **Profiles** in the respective menu. Profiles that have specified _price_ value will have _Buy this Profile_ button available.
+通过使用 WEB 浏览器访问路由器的 _/um/_ 目录登录到用户的私人配置文件后，例如 [http://example.com/um/,](http://example.com/um/,) 他 将能够在各自的菜单中看到所有可用的**配置文件**。 已指定 _price_ 值的配置文件将具有可用的_购买此配置文件_按钮。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/buy_profile.PNG?version=1&modificationDate=1657107133572&api=v2)
 
-After pressing the _Buy this Profile_ button, the user will be asked to choose from available transaction service providers (currently only PayPal available) and later redirected to PayPal's payment processing page.
+按下_购买此配置文件_按钮后，用户将被要求从可用的交易服务提供商中进行选择（目前只有 PayPal 可用），随后将被重定向到 PayPal 的付款处理页面。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/paypal_purchase.PNG?version=1&modificationDate=1657107263155&api=v2)
 
-When the payment is completed, the User Manager will ask PayPal to approve the transaction. After approval, the profile is assigned to the user and is ready to use.![](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
+付款完成后，用户经理会要求 PayPal 批准交易。 批准后，配置文件将分配给用户使用。！[](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
 
-### Migrating from RouterOS v6
+### 从 RouterOS v6 迁移
+  ## 应用实例
 
-  
-
-## Application Examples
-
-### Basic L2TP/IPsec server with User Manager authentication
+### 具有用户管理器身份验证的基本 L2TP/IPsec 服务器
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/scheme.jpg?version=1&modificationDate=1657282433977&api=v2)
 
-**User Manager configuration**
+**用户管理器配置**
 
-Start off by enabling User Manager functionality.
+首先启用用户管理器功能。
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-Allow receiving RADIUS requests from the localhost (the router itself).
-
+允许从本地主机（路由器本身）接收 RADIUS 请求。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager router</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=127.0.0.1</code> <code class="ros value">comment</code><code class="ros plain">=localhost</code> <code class="ros value">name</code><code class="ros plain">=local</code> <code class="ros value">shared-secret</code><code class="ros plain">=test</code></div></div></td></tr></tbody></table>
 
-Next, add users and their credentials that clients will use to authenticate to the server.
-
+接下来，添加用户及其凭据，客户端将使用这些凭据向服务器进行身份验证。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=user1</code> <code class="ros value">password</code><code class="ros plain">=password</code></div></div></td></tr></tbody></table>
 
-**Configuring RADIUS client**
+**配置 RADIUS 客户端**
 
-For the router to use RADIUS server for user authentication, it is required to add a new RADIUS client that has the same shared secret that we already configured on User Manager.
-
+对于使用 RADIUS 服务器进行用户身份验证的路由器，需要添加一个新的 RADIUS 客户端，该客户端具有我们已经在用户管理器上配置的相同共享密钥。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=127.0.0.1</code> <code class="ros value">secret</code><code class="ros plain">=test</code> <code class="ros value">service</code><code class="ros plain">=ipsec</code></div></div></td></tr></tbody></table>
 
-**L2TP/IPsec server configuration**
+**L2TP/IPsec 服务器配置**
 
-Configure the IP pool from which IP addresses will be assigned to the users and assign it to the PPP Profile.
-
+配置要分配给用户的 IP 池，并将其分配给 PPP 配置文件。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip pool</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vpn-pool</code> <code class="ros value">range</code><code class="ros plain">=192.168.99.2-192.168.99.100</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ppp pro</code><code class="ros plain">file</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">default-encryption </code><code class="ros value">local-address</code><code class="ros plain">=192.168.99.1</code> <code class="ros value">remote-address</code><code class="ros plain">=vpn-pool</code></div></div></td></tr></tbody></table>
 
-Enable the use of RADIUS for PPP authentication.
+允许使用 RADIUS 进行 PPP 身份验证。
 
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ppp aaa</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">use-radius</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-Enable L2TP server with IPsec encryption.
-
+使用 IPsec 加密启用 L2TP 服务器。
 
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-server server</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">use-ipsec</code><code class="ros plain">=required</code> <code class="ros value">ipsec-secret</code><code class="ros plain">=mySecret</code></div></div></td></tr></tbody></table>
 
-That is it. Your router is now ready to accept L2TP/IPsec connections and authenticate them to the internal User Manager
+这就对了。 您的路由器现在已准备好接受 L2TP/IPsec 连接并向内部用户管理器验证它们
