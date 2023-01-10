@@ -1,4 +1,4 @@
-# 概述
+## 概述
 
 RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远程服务器，可为各种网络设备提供身份验证和计费功能。 RADIUS 身份验证和计费使 ISP 或网络管理员能够通过大型网络中的一台服务器管理 PPP 用户访问和计费。 MikroTik RouterOS 有一个 RADIUS 客户端，可以验证 HotSpot，[PPP](https://help.mikrotik.com/docs/display/ROS/PPP)，[PPPoE](https://help.mikrotik.com/docs/display/ROS/PPPoE), [PPTP](https://help.mikrotik.com/docs/display/ROS/PPTP), [L2TP](https://help.mikrotik.com/docs/display/ROS/L2TP) 和 ISDN 连接。 从 RADIUS 服务器收到的属性会覆盖默认配置文件中设置的属性，但如果未收到某些参数，则它们会从相应的默认配置文件中获取。
 
@@ -6,7 +6,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 如果启用 RADIUS 计费，计费信息也会发送到该服务的默认 RADIUS 服务器。
 
-# RADIUS 客户端
+## RADIUS 客户端
 
  **子菜单:** `/radius`
 
@@ -15,7 +15,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 !!! warning 此列表中添加项目的顺序很重要。
 
-## 属性
+### 属性
 
 | 属性                                                                                                                                                                                                                                                                                                                          | 说明                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -40,7 +40,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 如果启用了 RadSec，请确保您的 RADIUS 服务器使用“**radsec**”作为共享密钥，否则，RADIUS 服务器将无法正确解密数据（不可打印的字符）。 使用 RadSec RouterOS 强制将共享机密设置为“radsec”，而不管手动设置的是什么 (RFC6614)。
 
-## 例子
+### 例子
 
 要为将针对 RADIUS 服务器 (10.0.0.3) 进行身份验证的 HotSpot 和 PPP 服务设置 RADIUS 客户端，您需要执行以下操作：
 
@@ -60,7 +60,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ppp aaa </code><code class="ros functions">set </code><code class="ros value">use-radius</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip hotspot pro</code><code class="ros plain">file </code><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">use-radius</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-# 从RADIUS连接终端
+## 从RADIUS连接终端
 
 
 **子菜单:** `/radius incoming`
@@ -70,9 +70,9 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 !!! warning RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与断开连接类似的功能
 
-## 特性
+### 属性
 
-| 特性                                                             | 说明                       |
+| 属性                                                             | 说明                       |
 | ---------------------------------------------------------------- | -------------------------- |
 | **accept** (_yes                        \| no_; Default: **no**) | 是否接受主动消息           |
 | **port** (_integer_; Default: **1700**)                          | 监听请求的端口号           |

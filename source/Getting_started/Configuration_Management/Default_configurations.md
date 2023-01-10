@@ -1,13 +1,5 @@
+# 默认配置
 所有 MikroTik 设备都带有某种默认配置。 根据电路板类型，有几种不同的配置：
-
-- CPE 路由器；
-- LTE CPE AP路由器；
-- AP 路由器（单频或双频）；
-- PTP 桥（AP 或 CPE）；
-- WISP Bridge（AP 处于 ap_bridge 模式）；
-- 交换;
-- 仅 IP；
-- CAP.
 
 您可以运行命令“/system default-configuration print”来查看确切应用的默认配置命令。
 
@@ -23,7 +15,7 @@
 -   SEXTANT
 -   LHG
 -   LDF
--   DISC
+-   DISCl
 -   Groove
 -   Metal
 
@@ -53,7 +45,7 @@
 -   OmniTIK
 -   CRS系列具有无线接口
 
-## PTP 桥
+### PTP 桥
 
 带无线接口的桥接以太网。 桥接接口上设置了默认 IP 地址 192.168.88.1/24。 有两种可能的选择——作为 CPE 和作为 AP。 对于 CPE 无线接口设置为“station-bridge”模式，对于 AP 使用“bridge”模式。
 
@@ -85,7 +77,7 @@
 -   FiberBox
 -   CRS 没有无线接口
 
-## 仅 IP
+## 仅IP
 
 当没有找到具体的配置时，在ether1或combo1或sfp1上设置IP地址192.168.88.1/24。
 

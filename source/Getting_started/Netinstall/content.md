@@ -1,4 +1,4 @@
-# 介绍
+## 介绍
 
 Netinstall 是一个用于安装或重装 RouterOS 的 MikroTik 设备的工具。 如果怀疑设备无法正常工作，请始终尝试使用 Netinstall。 该工具可用于 Windows（带有图形界面）和 Linux（作为命令行工具）。
 
@@ -6,7 +6,7 @@ Netinstall 是一个用于安装或重装 RouterOS 的 MikroTik 设备的工具�
 
 !!! warning 注意。 Netinstall 会格式化系统驱动器，所有配置和保存的文件都将丢失。 Netinstall 不会擦除 RouterOS 许可证密钥，也不会重置 RouterBOOT 相关设置，例如，重装设备后 CPU 频率不会改变。
 
-# 适用于 Windows 的说明
+## 适用于 Windows 的说明
 
 - 从[下载](https://mikrotik.com/download) 页面下载**Netinstall**。 如果不确定需要哪个版本，可以选择标记为**Current**（稳定）的版本；
 - 从[下载](https://mikrotik.com/download) 页面下载 RouterOS **主包**；
@@ -86,7 +86,7 @@ Netinstall 是一个用于安装或重装 RouterOS 的 MikroTik 设备的工具�
 
 !!!success 使用**Configure script**选项时，建议在配置执行前加一个[延迟](https://wiki.mikrotik.com/wiki/Manual:Configuration_Management#Startup_delay)。
 
-# Linux 说明
+## Linux 说明
 
 Linux 版本是一个命令行工具，它提供和 Windows 版本几乎相同的参数。
 
@@ -135,11 +135,11 @@ tar -xzf netinstall-[VERSION].tar.gz
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">admin@ubuntu:~$ sudo ./netinstall-cli -r -a 192.168.88.3 routeros-7.5-mipsbe.npk</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Version: 7.5 (2022-08-30 09:34:59)</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Using server IP: 192.168.88.2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">Use Netmask: 255.255.255.0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">Starting PXE server</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">Waiting for RouterBOARD...</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">PXE client: C4:AD:34::89:10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">Sending image: mips</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">Discovered RouterBOARD...</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">Formatting...</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">Sending package routeros-mipsbe-7.5.npk ...</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text plain">Ready for reboot...</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text plain">Sent reboot command</code></div></div></td></tr></tbody></table>
 
-# Etherboot
+## Etherboot
 
 Etherboot 模式是 MikroTik 设备的一种特殊状态，允许使用 [Netinstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 重新安装设备。 根据使用的设备，有多种方法可以让设备进入 Etherboot 模式。
 
-## 复位按钮
+### 复位按钮
 
 **Reset**按钮可以在所有 MikroTik 设备上找到，此按钮用于将设备置于 Etherboot 模式。 使用 **Reset** 按钮将设备置于 Etherboot 模式的一种简单方法是关闭设备电源，在按住 **Reset** 按钮的同时打开设备并保持按住，直到设备出现在 **Netinstalll** 窗口中。
 
@@ -147,7 +147,7 @@ Etherboot 模式是 MikroTik 设备的一种特殊状态，允许使用 [Netinst
 
 !!!warning 如果您设置了[受保护的引导加载程序](https://help.mikrotik.com/docs/display/ROS/RouterBOARD#RouterBOARD-Protectedbootloader)，则重置按钮的行为会发生变化。 确保记住用于设置受保护引导加载程序的设置，否则您将无法使用 Eterboot 模式，也无法重置您的设备。
 
-## RouterOS
+### RouterOS
 
 如果设备能够启动并且能够登录，则可以轻松地将设备置于 Etherboot 模式。 为此，只需连接到设备并执行以下命令：
 
@@ -156,7 +156,7 @@ Etherboot 模式是 MikroTik 设备的一种特殊状态，允许使用 [Netinst
   
 之后，重新启动设备或对设备重新上电。 下次设备启动时，它将首先尝试进入 Etherboot 模式。 请注意，在**首次**启动后，设备不会尝试进入 Etherboot 模式，而是直接从 NAND 或设备正在使用的存储启动。
 
-## 串行控制台
+### 串行控制台
 
 有些设备带有串行控制台，可用于将设备置于 Etherboot 模式。 为此，请确保已经配置计算机的串行控制台。 所有 MikroTik 设备（RouterBOARD 230 系列除外）所需的参数如下：
 

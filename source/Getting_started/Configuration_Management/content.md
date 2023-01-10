@@ -1,8 +1,8 @@
-# 概述
+## 概述
 
 本文描述了一组用于配置管理的命令。
 
-# 配置 撤消/重做
+## 配置 撤消/重做
 
 在 GUI 中完成的任何操作或从 CLI 执行的任何命令都记录在“/system history”中。 可以通过从 CLI 运行撤消或重做命令或通过单击 GUI 中的撤消和重做按钮来撤消或重做任何操作。
 
@@ -28,7 +28,7 @@
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt; print detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: U - undoable, R - redoable, F - floating-undo</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">/ip firewall filter add action=accept chain=forward disabled=no log=no \</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">log-prefix="" protocol=tcp</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *4 action="filter rule added" by="admin"</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:51:05</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=/ip firewall filter add action=accept chain=forward</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *3 action="filter rule added" by="admin"</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:49:03</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">U redo="" undo="" action="---" by="" policy=write time=sep/27/2019 13:07:35</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt;</code></div></div></td></tr></tbody></table>
 
-# 安全模式
+## 安全模式
 
 有时，路由器配置的更改会导致路由器无法访问（本地控制台除外）。 通常，这是意外，但是当与路由器的连接已经断开时，没有办法撤消最后的更改。 安全模式可用于将此类风险降至最低。
 
@@ -84,7 +84,7 @@ Hijacking Safe Mode from someone - unroll/release/don't take it [u/r/d]:
 
 如果在安全模式下进行了太多更改，并且历史记录中没有空间容纳所有这些更改（当前历史记录最多可保留 100 个最近的操作），则会话会自动退出安全模式，并且不会自动进行任何更改撤消。 因此，最好在安全模式下逐步更改配置。 按 **Ctrl**\-**X** 两次是清空安全模式操作列表的简单方法。
 
-# 系统备份/恢复
+## 系统备份/恢复
 
 系统备份是以二进制格式完全克隆路由器配置的方法。 备份文件不仅包含配置，还包含统计数据、日志等。备份文件最好用在同一台设备上保存和恢复配置，如果要将配置移动到其他设备，请改用导出文件。
 
@@ -98,7 +98,7 @@ Hijacking Safe Mode from someone - unroll/release/don't take it [u/r/d]:
 [admin@MikroTik] > system backup save name=test password=123Configuration backup saved[admin@MikroTik] > file print# NAME TYPE SIZE CREATION-TIME0 test.backup backup 12567 sep/08/2004 21:07:50[admin@MikroTik] >[admin@MikroTik] > system backup load name=test password=123Restore and reboot? [y/N]:yRestoring system configurationSystem configuration restored, rebooting now
 ```
 
-# 导入/导出
+## 导入/导出
 
 RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用于在不同设备之间复制配置，例如，将整个防火墙从一台路由器克隆到另一台路由器。
 
@@ -155,7 +155,7 @@ RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用�
 | **/queue type**                           | "default", "ethernet-default", "wireless-default", "synchronous-default", "hotspot-default", "only-hardware-queue", "multi-queue-ethernet-default", "default-small" |
 
   
-## 配置导入
+### 配置导入
 
 根菜单命令导入允许从指定文件运行配置脚本。 脚本文件（扩展名为“.rsc”）可以包含任何控制台命令，包括复杂的脚本。
 
@@ -173,12 +173,12 @@ RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用�
 | **file-name** | 要执行的脚本 (.rsc) 文件的名称。                               |
 | **verbose**   | 从文件中读取每一行并单独执行，允许更轻松地调试语法或其他错误。 |
 
-## 自动导入
+### 自动导入
 
 也可以使用 FTP 或 SFTP 上传到路由器后**自动**执行脚本。 脚本文件必须以扩展名 \*.auto.rsc 命名。 执行文件中的命令后，将创建一个新的 \*.auto.log 文件，其中包含导入成功或失败的信息。
 
 文件名中的“.auto.rsc”是自动执行文件所必需的。
-# 配置重置
+## 配置重置
 
 RouterOS 允许使用“/system reset-configuration”命令重置配置
 

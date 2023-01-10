@@ -1,4 +1,4 @@
-### 要求
+## 定制要求
 
 -   hotspot
 
@@ -6,7 +6,7 @@
 
 您可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，您需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
 
-**Note:** If "html-override-directory" value path is missing or empty then hotspot server will revert back to default HTML files.
+**注意：** 如果“html-override-directory”值路径丢失或为空，则热点服务器将恢复为默认 HTML 文件。
 
 ### 可用页面
 
