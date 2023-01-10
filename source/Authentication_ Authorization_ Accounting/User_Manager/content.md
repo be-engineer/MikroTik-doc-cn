@@ -17,7 +17,7 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 | Session-Timeout                 | 0 (standard)     | 27     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept, Access-Challenge | [RFC2865 section 5.27](https://tools.ietf.org/html/rfc2865#section-5.27)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Idle-Timeout                    | 0 (standard)     | 28     | integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Access-Accept, Access-Challenge | [RFC2865 section 5.28](https://tools.ietf.org/html/rfc2865#section-5.28)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tunnel-Type                     | 0 (standard)     | 64     | 值 &emsp;说明<br>1&emsp;	Point-to-Point Tunneling Protocol (PPTP)<br>2&emsp;Layer Two Forwarding (L2F)<br>3&emsp;Layer Two Tunneling Protocol (L2TP)<br>4&emsp;Ascend Tunnel Management Protocol (ATMP<br>5&emsp;Virtual Tunneling Protocol (VTP)<br>6&emsp;IP Authentication Header in the Tunnel-mode (AH)<br>7&emsp;IP-in-IP Encapsulation (IP-IP)<br>8&emsp;Minimal IP-in-IP Encapsulation (MIN-IP-IP)<br>9&emsp;IP Encapsulating Security Payload in the Tunnel-mode (ESP)<br>10&emsp;Generic Route Encapsulation (GRE)<br>11&emsp;Bay Dial Virtual Services (DVS)<br>12&emsp;IP-in-IP Tunneling | Access-Accept                   | [RFC2868 section 3.1](https://tools.ietf.org/html/rfc2868#section-3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Tunnel-Medium-Type              | 0 (standard)     | 65     | 值&emsp; 说明<br>1	IPv4 (IP version 4)<br>2&emsp;IPv6 (IP version 6<br>3&emsp;	NSAP<br>4&emsp;	HDLC (8-bit multidrop)<br>5&emsp;	BBN 1822<br>6&emsp;	802 (includes all 802 media plus Ethernet "canonical format")<br>7&emsp;	E.163 (POTS)<br>8&emsp;	E.164 (SMDS, Frame Relay, ATM)<br>9&emsp;	F.69 (Telex)<br>10&emsp;	X.121 (X.25, Frame Relay)<br>11&emsp;	IPX<br>12&emsp;	Appletalk<br>13&emsp;	Decnet IV<br>14&emsp;	Banyan Vines<br>15&emsp;	E.164 with NSAP format subaddress                                                                                                                 | Access-Accept                   | [RFC2868 section 3.2](https://tools.ietf.org/html/rfc2868#section-3.2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Tunnel-Medium-Type              | 0 (standard)     | 65     | 值&emsp; 说明<br>1&emsp;	IPv4 (IP version 4)<br>2&emsp;IPv6 (IP version 6<br>3&emsp;	NSAP<br>4&emsp;	HDLC (8-bit multidrop)<br>5&emsp;	BBN 1822<br>6&emsp;	802 (includes all 802 media plus Ethernet "canonical format")<br>7&emsp;	E.163 (POTS)<br>8&emsp;	E.164 (SMDS, Frame Relay, ATM)<br>9&emsp;	F.69 (Telex)<br>10&emsp;	X.121 (X.25, Frame Relay)<br>11&emsp;	IPX<br>12&emsp;	Appletalk<br>13&emsp;	Decnet IV<br>14&emsp;	Banyan Vines<br>15&emsp;	E.164 with NSAP format subaddress                                                                                                           | Access-Accept                   | [RFC2868 section 3.2](https://tools.ietf.org/html/rfc2868#section-3.2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Tunnel-Private-Group-ID         | 0 (standard)     | 81     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC2868 section 3.6](https://tools.ietf.org/html/rfc2868#section-3.6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Framed-Pool                     | 0 (standard)     | 88     | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Access-Accept                   | [RFC2869 section 5.18](https://tools.ietf.org/html/rfc2869#section-5.18)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Framed-IPv6-Prefix              | 0 (standard)     | 97     | ipv6 prefix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Access-Accept                   | [RFC3162 section 2.3](https://tools.ietf.org/html/rfc3162#section-2.3)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -78,11 +78,11 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
  | --------------------------------- | ----------------------------------------------------- |
  | **db-path** (_string_; Default: ) | Path to location where database files will be stored. |
 
-**Read-only properties**
+**只读属性**
 
 | 属性                | 说明                             |
 | ------------------- | -------------------------------- |
-| **db-size**         | 数据库当前大小                   |
+| **db-size**         | 当前数据库大小                   |
 | **free-disk-space** | 存储数据库磁盘上剩余的可用空间。 |
 
 **命令**
@@ -138,6 +138,7 @@ RouterOS 中的 IPsec 服务不支持速率限制。
 本节提供有关所有已付款的信息。
 
 **只读属性**
+
  | 属性                                   | 说明                                                                                                                                                          |
  | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
  | **currency** (_string_)                | 交易中使用的货币。                                                                                                                                            |
@@ -156,6 +157,7 @@ RouterOS 中的 IPsec 服务不支持速率限制。
 **子菜单:** `/user-manager profile`
 
 **属性**
+
  | 属性                                                                                                                                           | 说明                                                                                                                   |
  | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
  | **comment** (_string_; Default: )                                                                                                              | 条目的短描述。                                                                                                         |
@@ -173,6 +175,7 @@ RouterOS 中的 IPsec 服务不支持速率限制。
 Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其有效期。 当多个限制分配给同一个配置文件时，用户必须遵守所有限制才能建立会话。 这允许创建更复杂的设置，例如，单独的每月和每天带宽限制。
 
 **属性**
+
 | 属性                                                                                                      | 说明                     |
 | --------------------------------------------------------------------------------------------------------- | ------------------------ |
 | **comment** (_string_; Default: )                                                                         | 条目的简短描述。         |
@@ -211,6 +214,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 仅当在 NAS 上启用记帐时才会记录会话。
 
 **只读属性**
+
  | 属性                                            | 说明                                                                                                                                                                             |
  | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
  | **acct-session-id** (_string_)                  | 计费会话的唯一标识。                                                                                                                                                             |
@@ -235,6 +239,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 **子菜单:** `/user-manager   `
 
 **属性**
+
 | 属性                                                                            | 说明                                                                                          |
 | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **accounting-port** (_integer_; Default: **1813**)                              | 监听 RADIUS 记帐请求的端口。                                                                  |
@@ -248,6 +253,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 **子菜单:** `/user-manager advanced`
 
 **属性**
+
 | 属性                                                                      | 说明                                         |
 | ------------------------------------------------------------------------- | -------------------------------------------- |
 | **paypal-allow** (_yes                           \| no_; Default: **no**) | 是否为用户管理器启用 PayPal 功能。           |
@@ -264,6 +270,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 **子菜单:** `/user-manager user`
 
 **属性**
+
 | 属性                                                                             | 说明                                                        |
 | -------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | **attributes** (_array of attributes_; Default: )                                | 自定义的 **属性** 集和值将另外添加到 Access-Accept 消息中。 |
@@ -278,6 +285,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 | **shared-users** (_integer                        \| unlimited_; Default: **1**) | 用户可以同时建立的会话总数。                                |
 
 **命令**
+
 | 属性                    | 说明                                                                                                                                             |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **add-batch-users** ()  | 该命令可以根据各种参数生成多个用户帐户。                                                                                                         |
@@ -291,6 +299,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 用户组定义了多个用户的共同特征，例如允许的身份验证方法和 RADIUS 属性。 用户管理器中已经存在两个组，称为_default_ 和_default-anonymous_。
 
 **属性**
+
 | 属性                                              | 说明                                                                                                                                      |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **attributes** (_array of attributes_; Default: ) | 一组自定义的 **属性** 和值将另外添加到该组中用户的 Access-Accept 消息中。                                                                 |
@@ -306,18 +315,21 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 此菜单为用户分配配置文件并跟踪配置文件的状态。 单个用户可以分配多个配置文件，但同时只能使用一个。 当前活动配置文件到期时，用户将无缝切换到下一个配置文件，而不会中断用户的会话。
 
 **属性**
+
 | 属性                               | 说明                           |
 | ---------------------------------- | ------------------------------ |
 | **profile** (_profile_; Default: ) | 要为用户分配的配置文件的名称。 |
 | **user** (_user_; Default: )       | 使用特定配置文件的用户名。     |
 
 **只读属性**
+
 | 属性                                                                                      | 说明                                                                                                                                            |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **end-time** (_datetime_)                                                                 | **用户配置文件** 到期的日期和时间。                                                                                                             |
 | **state** (_running active_ \| running                                         \| _used_) | **用户配置文件**的当前状态。 _Running active -_ 用户当前使用的配置文件。 _Running_ - 配置文件已准备好使用。 _Used_ - 无法再激活的过期配置文件。 |
 
 **命令**
+
 | 属性                         | 说明                             |
 | ---------------------------- | -------------------------------- |
 | **activate-user-profile** () | 立即激活 **用户配置文件** 条目。 |
@@ -327,6 +339,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 每个用户都可以使用 WEB 界面访问他的个人资料。 WEB界面可以通过在路由器的IP或域中添加“/um/”目录来访问，例如[http://example.com/um/](http://router.ip/um/)。 请注意，WEB 界面受 IP 服务“www”和“www-ssl”的影响。 可以使用 CSS、JavaScript 和 HTML 自定义 WEB 界面。
 
 **可定制的文件参考**
+
 | 文件                            | 说明                                       |
 | ------------------------------- | ------------------------------------------ |
 | **css/login.css**               | 用于登录页面的级联样式表文件。             |
