@@ -1,32 +1,32 @@
 ## 定制要求
 
--   hotspot
+- hotspot强制门户
 
-### 介绍
+## 介绍
 
 您可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，您需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
 
 **注意：** 如果“html-override-directory”值路径丢失或为空，则热点服务器将恢复为默认 HTML 文件。
 
-### 可用页面
+## 可用页面
 
 向用户显示的主要 HTML 小服务程序页面：
 
 - **redirect.html** - 将用户重定向到另一个 url（例如，登录页面）
 - **login.html** - 向用户显示的登录页面要求用户名和密码。 该页面可能采用以下参数：
-     - **username** - 用户名
-     - **password** - 纯文本密码（ PAP 身份验证）或 chap-id 变量、密码和 CHAP 质询的 MD5 哈希（ CHAP 身份验证）。 该值用作试用用户的电子邮件地址
-     - **dst** - 重定向前请求的原始 URL。 这将在成功登录时打开
-     - **popup** - 是否在成功登录时弹出状态窗口
-     - **radius<id>** - 以文本字符串形式把用 <id> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
-     - **radius<id>u** - 以无符号整数形式把用 <id> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
-     - **radius<id>-<vnd-id>** - 把用 <id> 和供应商 ID <vnd-id> 标识的属性以文本字符串形式发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失 )
-     - **radius<id>-<vnd-id>u** - 以无符号整数形式向 RADIUS 服务器发送由 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则会丢失）
+  - **username** - 用户名
+  - **password** - 纯文本密码（ PAP 身份验证）或 chap-id 变量、密码和 CHAP 质询的 MD5 哈希（ CHAP 身份验证）。 该值用作试用用户的电子邮件地址
+  - **dst** - 重定向前请求的原始 URL。 这将在成功登录时打开
+  - **popup** - 是否在成功登录时弹出状态窗口
+  - **radius\<id\>** - 以文本字符串形式把用 \<id\> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
+  - **radius\<id\>u** - 以无符号整数形式把用 \<id\> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
+  - **radius\<id\>-\<vnd-id\>** - 把用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性以文本字符串形式发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失 )
+  - **radius\<id\>-\<vnd-id\>u** - 以无符号整数形式向 RADIUS 服务器发送由 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则会丢失）
 - **md5.js** - MD5 密码散列的 JavaScript。 与http-chap登录方式配合使用
 - **alogin.html** - 客户端登录后显示的页面。它弹出状态页面并将浏览器重定向到最初请求的页面（在被重定向到 HotSpot 登录页面之前）
 - **status.html** - 状态页面，显示客户端的统计信息。 可以自动显示广告
 - **logout.html** - 注销页面，在用户注销后显示。 显示有关已完成会话的最终统计信息。 此页面可能采用以下附加参数：
-     - **erase-cookie** - 是否在注销时从 HotSpot 服务器中删除 cookie（使得下次无法从同一浏览器使用 cookie 登录，可能在多用户环境中有用）
+  - **erase-cookie** - 是否在注销时从 HotSpot 服务器中删除 cookie（使得下次无法从同一浏览器使用 cookie 登录，可能在多用户环境中有用）
 - **error.html** - 错误页面，仅在出现致命错误时显示
 
 如果需要更多控制，还可以使用其他一些页面：
@@ -38,29 +38,38 @@
 - **fstatus.html** - 如果请求状态页面，但客户端未登录则显示而不是重定向
 - **flogout.html** - 如果请求注销页面但客户端未登录则显示而不是重定向
 
-### Serving Servlet Pages
+### Serving 小服务程序页面
 
 HotSpot 小服务程序识别 5 种不同的请求类型：
 
 1. **request for a remote host**
-     - 如果用户已登录并且要显示广告，则显示 radvert.html。 此页面重定向到预定的广告页面
-     - 如果用户已登录且没有为该用户安排广告，则提供请求的页面
-     - 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
-     - 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
-2. **在HotSpot主机上请求“/”**
-     - 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
-     - 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
-3. **请求“/login”页面**
-     - 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
-     - 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
-     - 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
-     - 如果出现致命错误，则显示 error.html
-4. **请求“/status”页面**
-     - 如果用户已登录，则显示 status.html
-     - 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
-5. **请求“/logout”页面**
-     - 如果用户已登录，则显示 logout.html
-     - 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面
+
+- 如果用户已登录并且要显示广告，则显示 radvert.html。 此页面重定向到预定的广告页面
+- 如果用户已登录且没有为该用户安排广告，则提供请求的页面
+- 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
+- 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
+
+1. **在HotSpot主机上请求“/”**
+
+- 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
+- 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
+  
+1. **请求“/login”页面**
+
+- 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
+- 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
+- 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
+- 如果出现致命错误，则显示 error.html
+
+1. **请求“/status”页面**
+
+- 如果用户已登录，则显示 status.html
+- 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
+
+1. **请求“/logout”页面**
+
+- 如果用户已登录，则显示 logout.html
+- 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面
 
 **注意：** 如果使用存储在路由器 FTP 服务器上的页面无法满足请求，则会显示错误 404
 
@@ -97,11 +106,11 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 **链接:**
 
--   **link-login** -链接到登录页，包括请求的原始 URL("[http://10.5.50.1/login?dst=http://www.example.com/](http://10.5.50.1/login?dst=http://www.example.com/)")
--   **link-login-only** - 链接到登录页，不包括请求的原始 URL ("[http://10.5.50.1/login](http://10.5.50.1/login)")
--   **link-logout** - 链接到退出页 ("[http://10.5.50.1/logout](http://10.5.50.1/logout)")
--   **link-status** - 链接到状态页 ("[http://10.5.50.1/status](http://10.5.50.1/status)")
--   **link-orig** - 已请求的原始URL("[http://www.example.com/](http://www.example.com/)")
+- **link-login** -链接到登录页，包括请求的原始 URL("[http://10.5.50.1/login?dst=http://www.example.com/](http://10.5.50.1/login?dst=http://www.example.com/)")
+- **link-login-only** - 链接到登录页，不包括请求的原始 URL ("[http://10.5.50.1/login](http://10.5.50.1/login)")
+- **link-logout** - 链接到退出页 ("[http://10.5.50.1/logout](http://10.5.50.1/logout)")
+- **link-status** - 链接到状态页 ("[http://10.5.50.1/status](http://10.5.50.1/status)")
+- **link-orig** - 已请求的原始URL("[http://www.example.com/](http://www.example.com/)")
 
 **一般客户信息：**
 
@@ -156,16 +165,16 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 **RADIUS 相关变量：**
 
-- **radius<id>** - 以文本字符串形式显示用 <id> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
-- **radius<id>u** - 以无符号整数形式显示用 <id> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
-- **radius<id>-<vnd-id>** - 以文本字符串形式显示用 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
-- **radius<id>-<vnd-id>u** - 以无符号整数形式显示用 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
+- **radius\<id\>** - 以文本字符串形式显示用 \<id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
+- **radius\<id\>u** - 以无符号整数形式显示用 \<id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
+- **radius\<id\>-\<vnd-id\>** - 以文本字符串形式显示用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
+- **radius\<id\>-\<vnd-id\>u** - 以无符号整数形式显示用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
 
 #### 使用变量
 
-$(if <var\_name>) 语句可以在这些页面中使用。 如果 <var\_name> 的值不是空字符串，则将包含以下内容。 它等价于 $(if <var\_name> != "") 也可以进行等价比较： $(if <var\_name> == <value>) 这些语句在 $(elif <var\_name>)、$(else) 或 $(endif)。 在一般情况下，它看起来像这样：
+\$(if <var_name>) 语句可以在这些页面中使用。 如果 \<var_name\> 的值不是空字符串，则将包含以下内容。 它等价于 \$(if \<var_name\> != "") 也可以进行等价比较： \$(if \<var_name\> == \<value\>) 这些语句在 \$(elif \<var_name\>)、\$(else) 或 \$(endif)。 在一般情况下，它看起来像这样：
 
-```
+```shell
 some content, which will always be displayed
 $(if username == john)
 Hey, your username is john
@@ -186,7 +195,7 @@ other content, which will always be displayed
 
 #### 重定向和自定义标头
 
-```
+```shell
 $(if http-status == 302)Hotspot login required$(endif)
 $(if http-header == "Location")$(link-redirect)$(endif)
 
@@ -194,7 +203,7 @@ $(if http-header == "Location")$(link-redirect)$(endif)
 
 **注意：** 虽然上面使用了条件表达式“if”，但实际上是将“http-status”设置为“302”而不是对其进行测试。 变量“http-header”也是如此。 即使它使用“if”，它实际上是将变量设置为“Location”，然后从变量“link-redirect”设置的 url。
 
-例如。 在 $(link-redirect) 评估为“[http://192.168.88.1/login](http://192.168.88.1/login)”的情况下，返回给客户端的 HTTP 响应将更改为：
+例如。 在 \$(link-redirect) 评估为“[http://192.168.88.1/login](http://192.168.88.1/login)”的情况下，返回给客户端的 HTTP 响应将更改为：
 
 ```
 HTTP/1.0 302 Hotspot login required
@@ -202,7 +211,6 @@ HTTP/1.0 302 Hotspot login required
 Location: http://192.168.88.1/login
 
 ```
-
   
 **http-status 语法**:
 
@@ -220,7 +228,6 @@ $(if http-status == XYZ)HTTP_STATUS_MESSAGE$(endif)
 HTTP/1.0 XYZ HTTP_STATUS_MESSAGE
 
 ```
-
   
 **http-header syntax:**
 
@@ -238,7 +245,6 @@ HTTP 响应将显示为：
 HTTP_HEADER_NAME: HTTP_HEADER_VALUE
 
 ```
-
   
 HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达式都照常处理。
 
@@ -252,7 +258,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 支持同一 HotSpot 服务器的多个 HotSpot 页面集。 它们可以由用户选择（选择语言）或由 JavaScript 自动选择（选择 PDA/HTML 页面的常规版本）。
 
-要利用此功能，请在 HotSpot HTML 目录中创建子目录，并将那些不同的 HTML 文件放在该子目录中。 例如，要翻译拉脱维亚语的所有内容，可以创建子目录“lv”，其中包含翻译成拉脱维亚语的 login.html、logout.html、status.html、alogin.html、radvert.html 和 errors.txt 文件。 如果在请求的子目录中找不到请求的 HTML 页面，将使用主目录中相应的 HTML 文件。 然后主 login.html 文件将包含指向“/lv/login?dst=$(link-orig-esc)”的链接，然后显示拉脱维亚版本的登录页面：<a href="/lv/login?dst=$ (link-orig-esc)">拉脱维亚语</a> . 拉脱维亚版本将包含指向英文版本的链接：<a href="/login?dst=$(link-orig-esc)">English</a>
+要利用此功能，请在 HotSpot HTML 目录中创建子目录，并将那些不同的 HTML 文件放在该子目录中。 例如，要翻译拉脱维亚语的所有内容，可以创建子目录“lv”，其中包含翻译成拉脱维亚语的 login.html、logout.html、status.html、alogin.html、radvert.html 和 errors.txt 文件。 如果在请求的子目录中找不到请求的 HTML 页面，将使用主目录中相应的 HTML 文件。 然后主 login.html 文件将包含指向“/lv/login?dst=\$(link-orig-esc)”的链接，然后显示拉脱维亚版本的登录页面：<a href="/lv/login?dst=\$ (link-orig-esc)">拉脱维亚语</a> . 拉脱维亚版本将包含指向英文版本的链接：<a href="/login?dst=$(link-orig-esc)">English</a>
 
 引用目录的另一种方法是指定“目标”变量：
 
@@ -264,13 +270,13 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，$(link-status) = "[http://hotspot.mt.lv/lv/ 状态](http://hotspot.mt.lv/lv/status)”)。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
 
-###杂项
+### 杂项
 
 如果您想使用 HTTP-CHAP 身份验证方法，则应该在 **提交** 之前包含 **doLogin()** 函数（它引用必须已经加载的 **md5.js**） 登录表单的操作。 否则，CHAP 登录将失败。
 
 在 HTTP-CHAP 方法的情况下，要发送到 HotSpot 网关的结果密码由以下内容的 MD5 散列连接组成：chap-id、用户密码和 chap-challenge（按给定顺序）
 
-如果要直接在链接中使用变量，则必须相应地对它们进行转义。 例如，登录页面，**<a href="https://login.example.com/login?mac=$(mac)&user=$(username)">link</a\>** 如果用户名是“123&456=1 2”，不会 按预期工作。 因此，必须使用其转义版本而不是 $(user)：$(user-esc): **<a href="https://login.server.serv/login?mac=$(mac-esc )&user=$(user-esc)">link</a\>**。 现在相同的用户名将转换为“123%26456%3D1+2”，这是 URL 中“123&456=1 2”的有效表示。 这个技巧可以用于任何变量，而不仅仅是 $(username)。
+如果要直接在链接中使用变量，则必须相应地对它们进行转义。 例如，登录页面**\<a href="https://login.example.com/login?mac=\$(mac)&user=\$(username)"\>link\</a\>** 如果用户名是“123\&456=1 2”，不会 按预期工作。 因此，必须使用其转义版本而不是 \$(user)：\$(user-esc): **\<a href="https://login.server.serv/login?mac=\$(mac-esc )\&user=\$(user-esc)"\>link\</a\>**。 现在相同的用户名将转换为“123%26456%3D1+2”，这是 URL 中“123&456=1 2”的有效表示。 这个技巧可以用于任何变量，而不仅仅是 $(username)。
 
 注销页面有一个布尔参数“erase-cookie”，它可以是“on”或“true”以在注销时删除用户cookie（这样用户在打开浏览器时就不会自动登录 )。
 
@@ -378,7 +384,7 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
-#### External authentication\[[edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section: External authentication")\]
+External authentication[[edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section: External authentication")]
 
 另一个例子是让 HotSpot 在远程服务器上进行身份验证（例如，可以执行信用卡收费）：
 
@@ -387,7 +393,7 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 这是放置在 HotSpot 路由器上的此类登录页面的示例（它重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php) ，替换为外部认证服务器的实际地址）：
 
-```
+```html
 <html>
 <title>...</title>
 <body>
@@ -414,7 +420,7 @@ document.redirect.submit();
 
 下面是这样一个页面的示例（它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login)，替换为 HotSpot 路由器的实际地址； 此外，它在成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/)，替换为需要的内容：
 
-```
+```html
 <html>
 <title>Hotspot login page</title>
 <body>
@@ -441,7 +447,7 @@ Hotspot 登录页面可以使用 **$(http-header-name);** 访问 HTTP 标头
 
 例如，要为特定 Firefox 移动版本的用户输出“SUCCESS”，而不是登录页面，您可以在热点目录中的 **rlogin.html** 页面顶部添加以下行：
 
-```
+```html
 $(if user-agent == "Mozilla/5.0 (Android; Mobile; rv:40.0) Gecko/40.0 Firefox/40.0" ) 
 <HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML> 
 $(else)
@@ -462,11 +468,11 @@ $(endif)
 - 将此用户分配给允许特定/无限数量的同时活动用户的用户配置文件。
 - 复制已在根级别的路由器文件菜单中生成的原始热点目录。
 - 修改此副本目录内容的内容。
-     - 只有一个文件需要修改，即“login.html”。
+  - 只有一个文件需要修改，即“login.html”。
 
 原始内容：
 
-```
+```html
 <table width="100" style="background-color: #ffffff">
   <tr><td align="right">login</td>
       <td><input style="width: 80px" name="username" type="text" value="$(username)"/></td>
@@ -483,7 +489,7 @@ $(endif)
 
 修改为:
 
-```
+```html
 <table width="100" style="background-color: #ffffff">
   <tr style="display:none;"><td align="right">login</td>
     <td><input style="width: 80px" name="username" type="text" value="notsosecretuser"/></td>
@@ -500,14 +506,14 @@ $(endif)
 
 发生了什么：
 
-- - - 用户和密码“”字段被隐藏。
-         - 用户和密码字段值都包含预定义值。
-         - 将“确定”按钮值（名称）更改为更合适的值。
+- 用户和密码“”字段被隐藏。
+- 用户和密码字段值都包含预定义值。
+- 将“确定”按钮值（名称）更改为更合适的值。
 
 - 现在将这个新的hotspot文件夹上传回路由器，最好使用不同的名称。
 - 更改热点服务器配置文件中的设置以使用这个新的 html 目录。
 
-```
+```shell
 /ip hotspot profile set (profile number or name) html-directory-override=(dir path/name)
 
 ```
@@ -609,14 +615,14 @@ HTTPS 代理监听64875端口.
 
 ```
 
-也可以在 HotSpot 配置中定义 SMTP 协议的重定向。 如果是，重定向规则将被放入 hs-smtp 链中。 这样做是为了让具有未知 SMTP 配置的用户能够通过服务提供商的（您的）SMTP 服务器发送邮件，而不是转到用户在其计算机上配置的\[possibly unavailable outside their network of origin\] SMTP 服务器 . 默认情况下链为空，因此跳转规则无效。
+也可以在 HotSpot 配置中定义 SMTP 协议的重定向。 如果是，重定向规则将被放入 hs-smtp 链中。 这样做是为了让具有未知 SMTP 配置的用户能够通过服务提供商的（您的）SMTP 服务器发送邮件，而不是转到用户在其计算机上配置的[possibly unavailable outside their network of origin] SMTP 服务器 . 默认情况下链为空，因此跳转规则无效。
 
 ```
 14 D chain=hs-auth action=redirect to-ports=64874 hotspot=http protocol=tcp
 
 ```
 
-为授权用户提供HTTP代理服务。 经过身份验证的用户请求可能需要接受透明代理（“通用代理”技术和广告功能）。 此 http 标记自动放置在 HotSpot HTTP 代理（侦听 64874 端口的代理）检测到的服务器的 HTTP 代理请求上，作为对未知代理服务器的 HTTP 代理请求。 这样做是为了让具有某些代理设置的用户可以使用 HotSpot 网关，而不是用户在其计算机中配置的\[可能在其原始网络之外不可用\] 代理服务器。 当广告应该显示给用户，以及从配置文件配置为透明代理其请求的用户发出的任何 HTTP 请求上，也会应用此标记。
+为授权用户提供HTTP代理服务。 经过身份验证的用户请求可能需要接受透明代理（“通用代理”技术和广告功能）。 此 http 标记自动放置在 HotSpot HTTP 代理（侦听 64874 端口的代理）检测到的服务器的 HTTP 代理请求上，作为对未知代理服务器的 HTTP 代理请求。 这样做是为了让具有某些代理设置的用户可以使用 HotSpot 网关，而不是用户在其计算机中配置的[可能在其原始网络之外不可用] 代理服务器。 当广告应该显示给用户，以及从配置文件配置为透明代理其请求的用户发出的任何 HTTP 请求上，也会应用此标记。
 
 ```
 15 I chain=hs-auth action=jump jump-target=hs-smtp dst-port=25 protocol=tcp
@@ -655,7 +661,7 @@ HTTPS 代理监听64875端口.
 
 ```
 
-在继续执行 \[predefined\] 动态规则之前，数据包到达管理控制的 **pre-hs-input** 链，默认情况下该链为空，因此跳转规则处于无效状态。
+在继续执行[predefined] 动态规则之前，数据包到达管理控制的 **pre-hs-input** 链，默认情况下该链为空，因此跳转规则处于无效状态。
 
 ```
  4 D chain=hs-input action=accept dst-port=64872 protocol=udp 

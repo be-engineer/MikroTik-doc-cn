@@ -1,7 +1,7 @@
 ## 概述
 MikroTik HotSpot Gateway 在访问公共网络之前为客户端提供身份验证。
 
-## **HotSpot网关功能：**
+### HotSpot网关功能:
 
 - 使用路由器或远程 RADIUS 服务器上的本地客户端数据库的客户端的不同身份验证方法；
 - 在路由器或远程 RADIUS 服务器上的本地数据库中记账的用户；
@@ -12,87 +12,69 @@ MikroTik HotSpot Gateway 在访问公共网络之前为客户端提供身份验�
 
 HotSpot只有在使用 IPv4 时才能可靠地工作。依赖于防火墙 NAT 规则的HotSpot当前不支持IPv6。
 
-## 示例
+### 示例
 
-`[admin@MikroTik]` `/ip hotspot>` `setup`
+```shell
+[admin@MikroTik] /ip hotspot> setup
+Select interface to run HotSpot on
+ 
+hotspot interface: ether3
+Set HotSpot address for interface
+ 
+local address of network: 10.5.50.1/24
+masquerade network: yes
+Set pool for HotSpot addresses
+ 
+address pool of network: 10.5.50.2-10.5.50.254
+Select hotspot SSL certificate
+ 
+select certificate: none
+Select SMTP server
+ 
+ip address of smtp server: 0.0.0.0
+Setup DNS configuration
+ 
+dns servers: 10.1.101.1
+DNS name of local hotspot server
+ 
+dns name: myhotspot
+Create local hotspot user
+ 
+name of local hotspot user: admin
+password for the user:
+[admin@MikroTik] /ip hotspot>
 
-`Select interface to run HotSpot on`
-
-`hotspot interface``: ether3`
-
-`Set HotSpot address` `for` `interface`
-
-`local` `address of network``: 10.5.50.1/24`
-
-`masquerade network``: yes`
-
-`Set pool` `for` `HotSpot addresses`
-
-`address pool of network``: 10.5.50.2-10.5.50.254`
-
-`Select hotspot SSL certificate`
-
-`select certificate``: none`
-
-`Select SMTP server`
-
-`ip address of smtp server``: 0.0.0.0`
-
-`Setup DNS configuration`
-
-`dns servers``: 10.1.101.1`
-
-`DNS name of` `local` `hotspot server`
-
-`dns name``: myhotspot`
-
-`Create` `local` `hotspot user`
-
-`name of` `local` `hotspot user``: admin`
-
-`password` `for` `the user``:`
-
-`[admin@MikroTik]` `/ip hotspot>`
+```
 
 校验HotSpot配置:
 
-`[admin@MikroTik]` `/ip hotspot>` `print`
+```shell
+[admin@MikroTik] /ip hotspot> print
+Flags: X - disabled, I - invalid, S - HTTPS
+# NAME INTERFACE ADDRESS-POOL PROFILE IDLE-TIMEOUT
+0 hotspot1 ether3 hs-pool-3 hsprof1 5m
+[admin@MikroTik] /ip hotspot>
+[admin@MikroTik] /ip pool> print
+# NAME RANGES
+0 hs-pool-3 10.5.50.2-10.5.50.254
+[admin@MikroTik] /ip pool> /ip dhcp-server
+[admin@MikroTik] /ip dhcp-server> print
+Flags: X - disabled, I - invalid
+# NAME INTERFACE RELAY ADDRESS-POOL LEASE-TIME ADD-ARP
+0 dhcp1 ether3 hs-pool-3 1h
+[admin@MikroTik] /ip dhcp-server> /ip firewall nat
+[admin@MikroTik] /ip firewall nat> print
+Flags: X - disabled, I - invalid, D - dynamic
+0 X ;;; place hotspot rules here
+chain=unused-hs-chain action=passthrough
+ 
+1 ;;; masquerade hotspot network
+chain=srcnat action=masquerade src-address=10.5.50.0/24
+[admin@MikroTik] /ip firewall nat>
 
-`Flags``: X - disabled, I - invalid, S - HTTPS`
+```
 
-`0 hotspot1 ether3 hs-pool-3 hsprof1 5m`
-
-`[admin@MikroTik]` `/ip hotspot>`
-
-`[admin@MikroTik]` `/ip pool>` `print`
-
-`0 hs-pool-3 10.5.50.2-10.5.50.254`
-
-`[admin@MikroTik]` `/ip pool> /ip dhcp-server`
-
-`[admin@MikroTik]` `/ip dhcp-server>` `print`
-
-`Flags``: X - disabled, I - invalid`
-
-`0 dhcp1 ether3 hs-pool-3 1h`
-
-`[admin@MikroTik]` `/ip dhcp-server> /ip firewall nat`
-
-`[admin@MikroTik]` `/ip firewall nat>` `print`
-
-`Flags``: X - disabled, I - invalid, D - dynamic`
-
-`0 X ;;; place hotspot rules here`
-
-`chain``=unused-hs-chain` `action``=passthrough`
-
-`1 ;;; masquerade hotspot network`
-
-`chain``=srcnat` `action``=masquerade` `src-address``=10.5.50.0/24`
-
-`[admin@MikroTik]` `/ip firewall nat>`
-
-## **Parameters asked during the setup process**
+### 设置过程中询问的参数
 
 | 参数                                                                                                     | 说明                                                                                                       |
 | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -107,7 +89,11 @@ HotSpot只有在使用 IPv4 时才能可靠地工作。依赖于防火墙 NAT �
 | **name of local hotspot user** (_string_; Default: **"admin"**)                                          | 自动创建的 HotSpot 用户的用户名，添加到 _/ip hotspot user_                                                 |
 | **password for the user'** (_string_; Default: )                                                         | 自动创建的 HotSpot 用户密码                                                                                |
 
-该菜单用于管理路由器的 HotSpot 服务器。 可以在以太网、无线、VLAN 和网桥接口上运行 HotSpot。 每个接口允许一个 HotSpot 服务器。 在桥接接口上配置HotSpot时，将HotSpot接口设置为桥接接口，而不是桥接端口，不要将公共接口添加到桥接端口。 您可以手动将 HotSpot 服务器添加到 _/ip/hotspot menu，但建议运行 _/ip/hotspot/setup_，这会添加所有必要的设置。
+### IP HotSpot
+
+`/ip/hotspot`
+
+该菜单用于管理路由器的 HotSpot 服务器。 可以在以太网、无线、VLAN 和网桥接口上运行 HotSpot。 每个接口允许一个 HotSpot 服务器。 在桥接接口上配置HotSpot时，将HotSpot接口设置为桥接接口，而不是桥接端口，不要将公共接口添加到桥接端口。 您可以手动将 HotSpot 服务器添加到 _/ip/hotspot_ 菜单，但建议运行 _/ip/hotspot/setup_，这会添加所有必要的设置。
 
 | 参数                                                      | 说明                                                                                                                                                           |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -120,13 +106,13 @@ HotSpot只有在使用 IPv4 时才能可靠地工作。依赖于防火墙 NAT �
 | **addresses-per-mac** (integer**/**unlimited; default: 2) | 当多个 HotSpot 客户端连接一个 MAC 地址时，允许与 MAC 地址绑定的 IP 地址数                                                                                      |
 | **profile** (name; default: **_default_)**                | HotSpot 服务器默认的 HotSpot 配置文件，位于 _/ip/hotspot/profile_                                                                                              |
 
-只读
+只读参数
 
 | 参数                            | 说明                                                                        |
 | ------------------------------- | --------------------------------------------------------------------------- |
 | keepalive-timeout（只读；时间） | 用户 keepalive-timeout 的准确值。 值显示主机保持多长时间才从 HotSpot 中删除 |
 
-## IP HotSpot激活
+### IP HotSpot激活
 
 HotSpot 活动菜单显示所有在 HotSpot 中验证的客户端，该菜单只是信息（只读），无法更改任何内容。
 
@@ -147,7 +133,9 @@ HotSpot 活动菜单显示所有在 HotSpot 中验证的客户端，该菜单只
 | **limit-bytes-out** (read-only; integer)                                                                                            | 显示发送到客户端的字节数，为 HotSpot 用户配置适当的参数时，选项处于活动状态        |
 | **limit-bytes-total** (read-only; integer)                                                                                          | 显示从客户端发送/接收的总字节数，为 HotSpot 用户配置适当的参数时，选项处于活动状态 |
 
-## IP HotSpot主机
+### IP HotSpot主机
+
+`/ip/hotspot/host`
 
 列出了连接到 HotSpot 服务器的所有计算机。 主机表只是信息，无法更改任何值：
 
@@ -169,6 +157,8 @@ HotSpot 活动菜单显示所有在 HotSpot 中验证的客户端，该菜单只
 
 ## IP绑定
 
+`/ip/hotspot/ip-binding`
+
 IP 绑定 HotSpot 菜单允许设置静态一对一 NAT 转换，允许绕过特定的 HotSpot 客户端而无需任何身份验证，还允许从 HotSpot 网络中阻止特定的主机和子网
 
 | 属性                                                                   | 说明                                                                                                                                                                                                                |
@@ -183,6 +173,8 @@ IP 绑定 HotSpot 菜单允许设置静态一对一 NAT 转换，允许绕过特
 ## Cookies
 
 菜单包含所有发送给 HotSpot 客户端的 cookie，这些 cookie 是通过 cookie 方法授权的，所有条目都是只读的。
+
+`/ip/hotspot/cookie`
 
 | 属性                    | 说明                       |
 | ----------------------- | -------------------------- |
@@ -201,24 +193,17 @@ IP 绑定 HotSpot 菜单允许设置静态一对一 NAT 转换，允许绕过特
 
 `https://<dns-name-of-hotspot>/api` 的内容如下：
 
-`{`
+```shell
+{
+"captive": $(if logged-in == 'yes')false$(else)true$(endif),
+"user-portal-url": "$(link-login-only)",
+$(if session-timeout-secs != 0)
+"seconds-remaining": $(session-timeout-secs),
+$(endif)
+$(if remain-bytes-total)
+"bytes-remaining": $(remain-bytes-total),
+$(endif)
+"can-extend-session": true
+}
 
-`"captive"``: $(``if` `logged-``in` `==` `'yes'``)``false``$(``else``)``true``$(endif),`
-
-`"user-portal-url"``:` `"$(link-login-only)"``,`
-
-`$(``if` `session-timeout-secs !=` `0``)`
-
-`"seconds-remaining"``: $(session-timeout-secs),`
-
-`$(endif)`
-
-`$(``if` `remain-bytes-total)`
-
-`"bytes-remaining"``: $(remain-bytes-total),`
-
-`$(endif)`
-
-`"can-extend-session"``:` `true`
-
-`}`
+```

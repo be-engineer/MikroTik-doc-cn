@@ -103,7 +103,6 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 要从用户管理器断开已激活的会话，必须在 RADIUS 客户端上将_accept_设置为 _yes_。 如果并发会话限制不是无限的（共享用户）并且已达到最大允许数量，则路由器将首先尝试断开旧用户会话。
 
 用户管理器在接受新用户之前尝试断开活动会话（当设置了适当的限制时），这就是为什么在此类设置中建议将 1s 用于/radius client timeout。
-
   
 RouterOS 中的 IPsec 服务不支持速率限制。
 
@@ -150,7 +149,6 @@ RouterOS 中的 IPsec 服务不支持速率限制。
  | **trans-status** (_string_)            | 交易的状态。 可能的状态 - _started_、_pending_、_approved_、_declined_、_error_、_timeout_、_aborted_、_user approved_。 只有 _approved_ 才被视为完整的交易。 |
  | **user** (_string_; Default: )         | 执行交易的用户姓名。                                                                                                                                          |
  | **user-message** (_string_; Default: ) |
-
 
 ## 配置文件
 
@@ -236,7 +234,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 ## 设置
 
-**子菜单:** `/user-manager   `
+**子菜单:** `/user-manager`
 
 **属性**
 
@@ -359,14 +357,24 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 可以使用随机生成的用户名和密码创建多个新用户。 例如，以下命令将生成 3 个新用户，用户名为 6 个小写符号，密码为 6 个小写、大写和数字。
 
+```shell
+/user-manager user
+add-batch-users number-of-users=3 password-characters=lowercase,numbers,uppercase password-length=6 username-characters=lowercase username-length=6
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">add-batch-users </code><code class="ros value">number-of-users</code><code class="ros plain">=3</code> <code class="ros value">password-characters</code><code class="ros plain">=lowercase,numbers,uppercase</code> <code class="ros value">password-length</code><code class="ros plain">=6</code> <code class="ros value">username-characters</code><code class="ros plain">=lowercase</code> <code class="ros value">username-length</code><code class="ros plain">=6</code></div></div></td></tr></tbody></table>
+```
 
 命令生成的用户可以通过打印用户表看到：
 
+```shell
+/user-manager user print
+Flags: X - disabled
+ 0   name="olsgkl" password="86a6zH" otp-secret="" group=default shared-users=1 attributes=""
+ 
+ 1   name="lkbwss" password="jaKY5V" otp-secret="" group=default shared-users=1 attributes=""
+ 
+ 2   name="cwxbwu" password="a62yZd" otp-secret="" group=default shared-users=1 attributes=""
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"olsgkl"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"86a6zH"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"lkbwss"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"jaKY5V"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"cwxbwu"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"a62yZd"</code> <code class="ros value">otp-secret</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+```
 
 ### 为 NAS 提供自定义 RADIUS 属性
 
@@ -376,21 +384,30 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 要为最终用户分配静态 IP 地址，可以使用 _Framed-IP-Address_ 属性。 使用静态 IP 地址分配时，_shared-sessions_ 必须设置为 1，以防止用户有多个同时会话但只有一个 IP 地址的情况。 例如：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">shared-users</code><code class="ros plain">=1</code> <code class="ros value">attributes</code><code class="ros plain">=Framed-IP-Address:192.168.1.4</code></div></div></td></tr></tbody></table>
+```shell
+/user-manager user
+set [find name=username] shared-users=1 attributes=Framed-IP-Address:192.168.1.4
+
+```
 
 #### 为用户组指定地址池
 
 我们可以将多个相似的用户分组，并同时为所有这些用户分配 RADIUS 属性。 首先，创建一个新组：
 
+```shell
+/user-manager user group
+add name=location1 outer-auths=chap,eap-mschap2,eap-peap,eap-tls,eap-ttls,mschap1,mschap2,pap \
+inner-auths=peap-mschap2,ttls-chap,ttls-mschap1,ttls-mschap2,ttls-pap attributes=Framed-Pool:pool1
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user group</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=location1</code> <code class="ros value">outer-auths</code><code class="ros plain">=chap,eap-mschap2,eap-peap,eap-tls,eap-ttls,mschap1,mschap2,pap</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">inner-auths</code><code class="ros plain">=peap-mschap2,ttls-chap,ttls-mschap1,ttls-mschap2,ttls-pap</code> <code class="ros value">attributes</code><code class="ros plain">=Framed-Pool:pool1</code></div></div></td></tr></tbody></table>
+```
 
 下一步是将用户分配给该组：
 
+```shell
+/user-manager user
+ set [find name=username] group=location1
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">group</code><code class="ros plain">=location1</code></div></div></td></tr></tbody></table>
+```
 
 在这种情况下，来自 _pool1_ 的 IP 地址将在身份验证时分配给用户 - 确保 _pool1_ 是在 NAS 设备上创建的。
 
@@ -402,9 +419,11 @@ OTP 取决于时钟，因此请确保正确配置时间设置。
 
 TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用户管理器）上共享一个秘密。 要在 RouterOS 上配置 TOTP，只需为用户设置 _otp-secret_。 例如：
 
+```shell
+/user-manager user
+set [find name=username] password=mypass otp-secret=mysecret
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=username]</code> <code class="ros value">password</code><code class="ros plain">=mypass</code> <code class="ros value">otp-secret</code><code class="ros plain">=mysecret</code></div></div></td></tr></tbody></table>
+```
 
 要在请求方计算 TOTP 令牌，可以使用许多广泛可用的应用程序，例如 Google Authenticator 或 [https://totp.app/](https://totp.app/)。 将 _mysecret_ 添加到 TOTP 令牌生成器将提供一个新的唯一 6 位代码，必须将其添加到用户密码中。
 
@@ -412,18 +431,23 @@ TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用
 
 以下示例将接受用户的身份验证，并将计算出的 TOTP 令牌添加到通用密码中，直到生成新的 TOTP 令牌为止，例如，
 
+```
+User-Name=username
+User-Password=mypass620872
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">User-Name=username</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">User-Password=mypass620872</code></div></div></td></tr></tbody></table>
+```
 
 ### 导出用户凭据
 
-#### **单个用户的可打印登录凭据**
+#### 单个用户的可打印登录凭据
 
 要生成单个用户的可打印凭证卡，只需使用 _generate-voucher_ 命令即可。 指定用户的 RouterOS ID 号或使用 _find_ 命令指定用户名。 模板已包含在用户管理器的安装中，可在设备的“文件”部分找到。 您可以根据需要自定义模板。
 
+```shell
+/user-manager user
+generate-voucher voucher-template=printable_vouchers.html [find where name=username]
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-voucher </code><code class="ros value">voucher-template</code><code class="ros plain">=printable_vouchers.html</code> <code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">name</code><code class="ros plain">=username]</code></div></div></td></tr></tbody></table>
+```
 
 通过使用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/vouchers/gen\_printable\_vouchers.html_ 可获得生成的优惠券卡
 
@@ -435,32 +459,56 @@ TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用
 
 生成凭证时可以使用不同的变量。 目前支持的变量有：
 
-$(username) - Represents User Manager username  
-$(password) - Password of the username  
-$(userprofname) - Profile that is active for the particular user  
-$(userprofendtime) - Profile validity end time if specified
+\$(username) - Represents User Manager username  
+\$(password) - Password of the username  
+\$(userprofname) - Profile that is active for the particular user  
+\$(userprofendtime) - Profile validity end time if specified
 
 #### 多用户凭证导出
 
 通过使用 _export.xml_ 或 _export.csv_ 作为 _voucher-template_，可以一次生成包含多个或所有用户凭据的 CSV 或 XML 文件。
 
+```shell
+/user-manager user
+generate-voucher voucher-template=export.xml [find]
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-voucher </code><code class="ros value">voucher-template</code><code class="ros plain">=export.xml</code> <code class="ros plain">[find]</code></div></div></td></tr></tbody></table>
+```
 
 该命令生成一个 XML 文件 _um5files/PRIVATE/GENERATED/vouchers/gen\_export.xml_ 可以通过 WEB 浏览器或任何其他文件访问工具访问。
 
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user>
+        <username>olsgkl</username>
+        <password>86a6zH</password>
+    </user>
+    <user>
+        <username>lkbwss</username>
+        <password>jaKY5V</password>
+    </user>
+    <user>
+        <username>cwxbwu</username>
+        <password>a62yZd</password>
+    </user>
+    <user>
+        <username>username</username>
+        <password>secretpassword</password>
+    </user>
+ 
+</users>
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">&lt;users&gt;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;olsgkl&lt;/username&gt;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;86a6zH&lt;/password&gt;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;lkbwss&lt;/username&gt;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;jaKY5V&lt;/password&gt;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;cwxbwu&lt;/username&gt;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;a62yZd&lt;/password&gt;</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;user&gt;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;username&gt;username&lt;/username&gt;</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;password&gt;secretpassword&lt;/password&gt;</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">&lt;/user&gt;</code></div><div class="line number19 index18 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="text plain">&lt;/users&gt;</code></div></div></td></tr></tbody></table>
+```
 
 ### 生成使用报告
 
 如果公司账单或法律团队需要可呈现的网络使用信息，则可以使用 _generate-report_ 命令创建自动会话导出。 该命令需要输入报告模板 - _um5files/PRIVATE/TEMPLATES/reports/report\_default.html_ 中提供了模板示例。 报告生成示例：
 
+```shell
+/user-manager
+generate-report report-template=report_default.html columns=username,uptime,download,upload
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">generate-report </code><code class="ros value">report-template</code><code class="ros plain">=report_default.html</code> <code class="ros value">columns</code><code class="ros plain">=username,uptime,download,upload</code></div></div></td></tr></tbody></table>
+```
 
 通过使用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/reports/gen\_report\_default.html_ 可获得生成的报告
 
@@ -478,8 +526,9 @@ _![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?ver
 
 付款完成后，用户经理会要求 PayPal 批准交易。 批准后，配置文件将分配给用户使用。！[](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
 
-### 从 RouterOS v6 迁移
-  ## 应用实例
+### 从RouterOS v6 迁移
+
+## 应用实例
 
 ### 具有用户管理器身份验证的基本 L2TP/IPsec 服务器
 
@@ -489,43 +538,65 @@ _![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?ver
 
 首先启用用户管理器功能。
 
+```shell
+/user-manager
+set enabled=yes
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```
 
 允许从本地主机（路由器本身）接收 RADIUS 请求。
 
+```shell
+/user-manager router
+add address=127.0.0.1 comment=localhost name=local shared-secret=test
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager router</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=127.0.0.1</code> <code class="ros value">comment</code><code class="ros plain">=localhost</code> <code class="ros value">name</code><code class="ros plain">=local</code> <code class="ros value">shared-secret</code><code class="ros plain">=test</code></div></div></td></tr></tbody></table>
+```
 
 接下来，添加用户及其凭据，客户端将使用这些凭据向服务器进行身份验证。
 
+```shell
+/user-manager user
+add name=user1 password=password
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=user1</code> <code class="ros value">password</code><code class="ros plain">=password</code></div></div></td></tr></tbody></table>
+```
 
 **配置 RADIUS 客户端**
 
 对于使用 RADIUS 服务器进行用户身份验证的路由器，需要添加一个新的 RADIUS 客户端，该客户端具有我们已经在用户管理器上配置的相同共享密钥。
 
+```shell
+/radius
+add address=127.0.0.1 secret=test service=ipsec
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=127.0.0.1</code> <code class="ros value">secret</code><code class="ros plain">=test</code> <code class="ros value">service</code><code class="ros plain">=ipsec</code></div></div></td></tr></tbody></table>
+```
 
 **L2TP/IPsec 服务器配置**
 
 配置要分配给用户的 IP 池，并将其分配给 PPP 配置文件。
 
+```shell
+/ip pool
+add name=vpn-pool range=192.168.99.2-192.168.99.100
+ 
+/ppp profile
+set default-encryption local-address=192.168.99.1 remote-address=vpn-pool
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip pool</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vpn-pool</code> <code class="ros value">range</code><code class="ros plain">=192.168.99.2-192.168.99.100</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ppp pro</code><code class="ros plain">file</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">default-encryption </code><code class="ros value">local-address</code><code class="ros plain">=192.168.99.1</code> <code class="ros value">remote-address</code><code class="ros plain">=vpn-pool</code></div></div></td></tr></tbody></table>
+```
 
 允许使用 RADIUS 进行 PPP 身份验证。
 
+```shell
+/ppp aaa
+set use-radius=yes
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ppp aaa</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">use-radius</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```
 
 使用 IPsec 加密启用 L2TP 服务器。
 
+```shell
+/interface l2tp-server server
+set enabled=yes use-ipsec=required ipsec-secret=mySecret
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-server server</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">use-ipsec</code><code class="ros plain">=required</code> <code class="ros value">ipsec-secret</code><code class="ros plain">=mySecret</code></div></div></td></tr></tbody></table>
+```
 
 这就对了。 您的路由器现在已准备好接受 L2TP/IPsec 连接并向内部用户管理器验证它们

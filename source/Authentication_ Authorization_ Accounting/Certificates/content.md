@@ -8,7 +8,7 @@
 
 从 RouterOS 版本 6 开始，证书有效性使用本地时区偏移显示。 在以前的版本中，它是 UTF。
 
-  ## 通用菜单
+## 通用菜单
 
 `/certificate`
 
@@ -18,7 +18,7 @@
 
 执行证书颁发或证书申请命令后，证书模板立即被删除：
 
-```
+```shell
 /certificate
 add name=CA-Template common-name=CAtemp key-usage=key-cert-sign,crl-sign 
 add name=Server common-name=server
@@ -27,7 +27,7 @@ add name=Client common-name=client
 
 打印出证书：
 
-```
+```shell
 [admin@4k11] /certificate> print detail 
 Flags: K - private-key; L - crl; C - smart-card-key; A - authority; I - issued, R - revoked; E - expired; T - trusted 
  0         name="CA-Template" key-type=rsa common-name="CAtemp" key-size=2048 subject-alt-name="" days-valid=365 key-usage=key-cert-sign,crl-sign 
@@ -45,7 +45,7 @@ Flags: K - private-key; L - crl; C - smart-card-key; A - authority; I - issued, 
 
 证书应签名。 在以下示例中，我们将签署证书并为服务器证书添加 CRL URL：
 
-```
+```shell
 /certificate 
 sign CA-Template 
 sign Client      
@@ -55,7 +55,7 @@ sign Server ca-crl-host=192.168.88.1 name=ServerCA
 
 检查证书是否已签名：
 
-```
+```shell
 [admin@MikroTik] /certificate> print
 Flags: K - private-key; L - crl; A - authority; T - trusted
 Columns: NAME, COMMON-name, FINGERPRINT
@@ -73,7 +73,7 @@ Columns: NAME, COMMON-name, FINGERPRINT
 
 可以使用密钥和 CA 证书导出客户端证书：
 
-```
+```shell
 /certificate 
 export-certificate CA-Template 
 export-certificate ServerCA export-passphrase=yourpassphrase
@@ -82,7 +82,7 @@ export-certificate Client export-passphrase=yourpassphrase
 
 导出的证书在 _/file_ 下可用：
 
-```
+```shell
 [admin@MikroTik] > file print
 Columns: NAME, TYPE, SIZE, CREATION-TIME
 #  NAME                         TYPE        SIZE  CREATION-TIME       
@@ -104,8 +104,8 @@ Columns: NAME, TYPE, SIZE, CREATION-TIME
 
 RouterOS v7 为“www-ssl”服务提供 Let's Encrypt (letsencrypt) 证书支持。 要通过自动证书续订启用 Let's Encrypt 证书服务，请使用“enable-ssl-certificate”命令：
 
-```
+```shell
 /certificate enable-ssl-certificate dns-name=my.domain.com
 ```
 
-请注意，DNS 名称必须指向路由器并且端口 TCP/80 必须可从 WAN 获得。 如果未指定 dns-name，它将默认为自动生成的 _ip cloud_ 名称（即 [http://example.sn.mynetname.net](http://example.sn.mynetname.net/)）
+请注意，DNS 名称必须指向路由器并且端口 TCP/80 必须可从 WAN 获取。 如果未指定 dns-name，它将默认为自动生成的 _ip cloud_ 名称（即 [http://example.sn.mynetname.net](http://example.sn.mynetname.net/)）

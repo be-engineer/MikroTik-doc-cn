@@ -20,12 +20,19 @@ MikroTik RouterOS 路由器用户管理从任何 [管理工具](https://help.mik
 
 无法删除的系统组有以下三种：
 
+```shell
+[admin@MikroTik] > /user group print
+0 name="read" policy=local,telnet,ssh,reboot,read,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!ftp,!write,!policy,!dude skin=default
+ 
+1 name="write" policy=local,telnet,ssh,reboot,read,write,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!ftp,!policy,!dude skin=default
+ 
+2 name="full" policy=local,telnet,ssh,ftp,reboot,read,write,policy,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!dude skin=default
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/user group </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"read"</code> <code class="ros value">policy</code><code class="ros plain">=local,telnet,ssh,reboot,read,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!ftp,!write,!policy,!dude</code> <code class="ros value">skin</code><code class="ros plain">=default</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">1 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"write"</code> <code class="ros value">policy</code><code class="ros plain">=local,telnet,ssh,reboot,read,write,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!ftp,!policy,!dude</code> <code class="ros value">skin</code><code class="ros plain">=default</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"full"</code> <code class="ros value">policy</code><code class="ros plain">=local,telnet,ssh,ftp,reboot,read,write,policy,test,winbox,password,web,sniff,sensitive,api,romon,tikapp,!dude</code> <code class="ros value">skin</code><code class="ros plain">=default</code></div></div></td></tr></tbody></table>
+```
 
 请注意，即使是“_read_”组也包含_sensitive_、_reboot、_和其他重要策略，这意味着不应将此组提供给不受信任的用户。 对于真正有限的组，创建一个自定义组，定义特定的策略。 所有组都可以访问文件操作。 感叹号 '!' 在策略项名称之前意味着 NOT。
 
-# 路由器用户
+## 路由器用户
 
 路由器用户数据库存储路由器管理人员的用户名、密码、允许访问的地址、所属组等信息。
 
@@ -39,15 +46,22 @@ MikroTik RouterOS 路由器用户管理从任何 [管理工具](https://help.mik
 | **name** (_string_; Default: )                                                    | 用户名。 必须以字母数字字符开头，但它可以包含“\*”、“\_”、“.” 和“@”符号。                                           |
 | **password** (_string_; Default: )                                                | 用户密码。 如果未指定，则留空（登录时按 [Enter]）。 它符合标准的Unix密码特性，可以包含字母、数字、“\*”和“\_”符号。 |
 
-## 注释
+### 注释
 
 有一个具有完全访问权限的预定义用户：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] user&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># NAME GROUP ADDRESS LAST-LOGGED-IN</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 ;;; system default user</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">admin full </code><code class="ros color1">0.0.0.0/0</code> <code class="ros plain">dec/08/2010 16:19:24</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] user> print
+Flags: X - disabled
+# NAME GROUP ADDRESS LAST-LOGGED-IN
+0 ;;; system default user
+admin full 0.0.0.0/0 dec/08/2010 16:19:24
+
+```
 
 至少应该有一个用户具有完全访问权限。 如果具有完全访问权限的用户是唯一一个，则无法将其删除。
 
-# 监控活跃用户
+## 监控活跃用户
 
   
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user active </code><code class="ros functions">print</code></div></div></td></tr></tbody></table>
@@ -67,7 +81,7 @@ MikroTik RouterOS 路由器用户管理从任何 [管理工具](https://help.mik
 | **via** (_local                 \| telnet                                                                                                             \| ssh                                                   \| winbox \| api \| web \| tikapp \| ftp \| dude_) | 用户访问方式                                                  |
 | **when** (_time_)                                                                                                                                                                                                                                                 | 用户登录的时间和日期。                                        |
 
-# 远程 AAA
+## 远程 AAA
 
 路由器用户远程 AAA 通过 RADIUS 服务器启用路由器用户身份验证和计费。 只有在本地用户数据库中找不到所需的用户名时，才会查询 RADIUS 用户数据库。
 

@@ -1,5 +1,4 @@
-##  概述
-
+## 概述
 ___
 
 Dot1X 是 IEEE 802.1X 标准在 RouterOS 中的实现。 主要目的是使用 EAP over LAN（也称为 EAPOL）提供基于端口的网络访问控制。 802.1X 由请求者（客户端）、认证者（服务器）和认证服务器（RADIUS 服务器）组成。 目前，RouterOS 支持验证方和请求方。 请求者支持的 EAP 方法是 EAP-TLS、EAP-TTLS、EAP-MSCHAPv2 和 PEAPv0/EAP-MSCHAPv2。
@@ -27,19 +26,9 @@ ___
 
 **只读属性**
 
-
-<table cellspacing="0" border="0">
-	<colgroup width="179"></colgroup>
-	<colgroup width="334"></colgroup>
-	<tr>
-		<td height="17" align="left"><font face="Liberation Serif">属性</font></td>
-		<td align="left"><font face="Liberation Serif">说明</font></td>
-	</tr>
-	<tr>
-		<td height="160" align="left"><font face="Liberation Serif">status ( authenticated | authenticating | disabled )</font></td>
-		<td align="left"><font face="Liberation Serif">可能的状态： <br>authenticated - 客户端已成功通过身份验证； <br>authenticated without server - 无需与服务器通信即可授予对端口的访问权限； <br>authenticating - 已到达服务器并且身份验证过程正在进行中； <br>connecting - 身份验证过程的初始阶段； <br>disabled - 客户端被禁用； <br>error - 发生内部错误； <br>interface is down-父接口没有运行； <br>rejected - 服务器拒绝身份验证。</font></td>
-	</tr>
-</table>
+| 属性                                                   | 说明                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status ( authenticated \| authenticating \| disabled ) | 可能状态： <br>authenticated - 客户端已成功通过身份验证； <br>authenticated without server - 无需与服务器通信即可授予对端口的访问权限； <br>authenticating - 已到达服务器并且身份验证过程正在进行中； <br>connecting - 身份验证过程的初始阶段； <br>disabled - 客户端被禁用； <br>error - 发生内部错误； <br>interface is down-父接口没有运行； <br>rejected - 服务器拒绝身份验证。 |
 
 ## 服务端
 
@@ -68,7 +57,6 @@ RouterOS dot1x 服务器充当身份验证器。 启用 dot1x 服务器的接口
 | **retrans-timeout** (_time_; Default: **30s**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 如果未收到请求方的响应，重传消息之间的时间间隔。                                                                                                                                                                                                                                                              |
 | **server-fail-vlan-id** (i_nteger: 1..4094_; Default: **!server-fail-vlan-id**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | 当 RADIUS 服务器未响应且请求超时已过时分配的 VLAN。 设置仅在 RouterOS 7.2 版本后可用，并且在启用网桥`vlan-filtering`时有效。 默认情况下，服务器故障 VLAN 处于禁用状态。                                                                                                                                       |
 
-  
 当前经过身份验证的客户端列在活动菜单中（只读属性）。
 
 **子菜单:** `/interface dot1x server active`
@@ -103,21 +91,22 @@ ___
 
 首先添加一个新的 RADIUS 客户端。 身份验证服务器 (RADIUS) 不必与身份验证器位于同一 LAN 中，但它必须可以从身份验证器访问，因此必须考虑防火墙限制。
 
-`/radius`
+```shell
+/radius
+add address=10.1.2.3 secret=radiussecret service=dot1x
 
-`add` `address``=10.1.2.3` `secret``=radiussecret` `service``=dot1x`
-
-  
+```
 
 !!!info 如果通过公网进行RADIUS通信，建议使用RadSec进行RADIUS通信。 更多信息请见：[RADIUS](https://help.mikrotik.com/docs/display/ROS/RADIUS)
 
 添加新的 dot1x 服务器实例。
 
-`/interface dot1x server`
+```shell
+/interface dot1x server
+add interface=ether2 interim-update=30s comment=accounted
+add interface=ether12 accounting=no comment=notaccounted
 
-`add` `interface``=ether2` `interim-update``=30s` `comment``=accounted`
-
-`add` `interface``=ether12` `accounting``=no` `comment``=notaccounted`
+```
 
 ### 基于端口的 VLAN ID 分配
 
@@ -125,57 +114,55 @@ ___
 
 首先，确保将接口添加到启用了 VLAN 过滤的网桥。
 
-`/interface bridge`
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=ether1
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=ether12
 
-`add` `name``=bridge1` `vlan-filtering``=yes`
-
-`/interface bridge port`
-
-`add` `bridge``=bridge1` `interface``=ether1`
-
-`add` `bridge``=bridge1` `interface``=ether2`
-
-`add` `bridge``=bridge1` `interface``=ether12`
+```
 
 有必要为要通过 ether1 接口发送的标记 VLAN 流量添加静态 VLAN 配置。
 
-`/interface bridge vlan`
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 vlan-ids=2
+add bridge=bridge1 tagged=ether1 vlan-ids=12
 
-`add` `bridge``=bridge1` `tagged``=ether1` `vlan-ids``=2`
-
-`add` `bridge``=bridge1` `tagged``=ether1` `vlan-ids``=12`
+```
 
 用 RADIUS 调试日志，可以看到具有所有属性的完整 RADIUS 消息包。 在我们的示例中，隧道属性是在来自 RADIUS 服务器的 Access-Accept 消息中接收到的：
 
-`09:51:45 radius,debug,packet received Access-Accept with id 64 from 10.1.2.3:1812`
+```shell
+09:51:45 radius,debug,packet received Access-Accept with id 64 from 10.1.2.3:1812
+09:51:45 radius,debug,packet     Tunnel-Type = 13
+09:51:45 radius,debug,packet     Tunnel-Medium-Type = 6
+09:51:45 radius,debug,packet     Tunnel-Private-Group-ID = "12"
+(..)
+09:51:45 radius,debug,packet     User-Name = "dot1x-user"
 
-`09:51:45 radius,debug,packet     Tunnel-Type = 13`
-
-`09:51:45 radius,debug,packet     Tunnel-Medium-Type = 6`
-
-`09:51:45 radius,debug,packet     Tunnel-Private-Group-ID = "12"`
-
-`(..)`
-
-`09:51:45 radius,debug,packet     User-Name = "dot1x-user"`
+```
 
 VLAN ID 现在出现在活动会话列表中，并且未标记的端口被添加到先前创建的静态 VLAN 配置中。
 
-`/interface dot1x server active` `print`
+```shell
+/interface dot1x server active print
+ 0 interface=ether12 username="dot1x-user" user-mac=00:0C:42:EB:71:F6 session-id="86b00006" vlan=12
 
- `0` `interface``=ether12` `username``=``"dot1x-user"` `user-mac``=00:0C:42:EB:71:F6` `session-id``=``"86b00006"` `vlan``=12`
+```
 
-  
+```shell
+/interface bridge vlan print detail
+Flags: X - disabled, D - dynamic
+ 0 D bridge=bridge1 vlan-ids=1 tagged="" untagged="" current-tagged="" current-untagged=bridge1,ether3
+ 
+ 1   bridge=bridge1 vlan-ids=2 tagged=ether1 untagged="" current-tagged=ether1 current-untagged=ether2
+ 
+ 2   bridge=bridge1 vlan-ids=12 tagged=ether1 untagged="" current-tagged=ether1 current-untagged=ether12
 
-`/interface bridge vlan` `print` `detail`
-
-`Flags``: X - disabled, D - dynamic`
-
- `0 D` `bridge``=bridge1` `vlan-ids``=1` `tagged``=``""` `untagged``=``""` `current-tagged``=``""` `current-untagged``=bridge1,ether3`
-
- `1`   `bridge``=bridge1` `vlan-ids``=2` `tagged``=ether1` `untagged``=``""` `current-tagged``=ether1` `current-untagged``=ether2`
-
- `2`   `bridge``=bridge1` `vlan-ids``=12` `tagged``=ether1` `untagged``=``""` `current-tagged``=ether1` `current-untagged``=ether12`
+```
 
 ### 动态交换规则配置
 
@@ -191,82 +178,72 @@ VLAN ID 现在出现在活动会话列表中，并且未标记的端口被添加
 
 下面是 Mikrotik-Switching-Filter 属性和它们创建的动态切换规则的一些示例：
 
-`Mikrotik-Switching-Filter` `=` `"mac-protocol 2054 action drop"`
+```shell
+# Drop ARP frames (EtherType: 0x0806 or 2054)
+Mikrotik-Switching-Filter = "mac-protocol 2054 action drop"
+ 
+/interface ethernet switch rule print
+Flags: X - disabled, I - invalid, D - dynamic
+ 0  D ;;; dot1x dynamic
+      switch=switch1 ports=ether1 src-mac-address=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF mac-protocol=arp copy-to-cpu=no redirect-to-cpu=no mirror=no new-dst-ports=""
+ 
+# Allow UDP (IP protocol: 0x11 or 17) destination port 100 and drop all other packets
+Mikrotik-Switching-Filter = "protocol 17 dst-port 100 action allow, action drop"
+ 
+/interface ethernet switch rule print
+Flags: X - disabled, I - invalid, D - dynamic
+ 0  D ;;; dot1x dynamic
+      switch=switch1 ports=ether1 src-mac-address=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF protocol=udp dst-port=100 copy-to-cpu=no redirect-to-cpu=no mirror=no
+ 
+ 1  D ;;; dot1x dynamic
+      switch=switch1 ports=ether1 src-mac-address=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF copy-to-cpu=no redirect-to-cpu=no mirror=no new-dst-ports=""
+ 
+# Allow only authenticated source MAC address, drop all other packets
+Mikrotik-Switching-Filter = "action allow, src-mac-address none action drop"
+ 
+/interface ethernet switch rule print
+Flags: X - disabled, I - invalid; D - dynamic
+ 0  D ;;; dot1x dynamic
+      switch=switch1 ports=ether1 src-mac-address=CC:2D:E0:01:6D:EB/FF:FF:FF:FF:FF:FF copy-to-cpu=no redirect-to-cpu=no mirror=no
+ 
+ 1  D ;;; dot1x dynamic
+      switch=switch1 ports=ether1 copy-to-cpu=no redirect-to-cpu=no mirror=no new-dst-ports=""
 
-`/interface ethernet switch rule` `print`
-
-`Flags``: X - disabled, I - invalid, D - dynamic`
-
- `0  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether1` `src-mac-address``=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF` `mac-protocol``=arp` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no` `new-dst-ports``=``""`
-
-`Mikrotik-Switching-Filter` `=` `"protocol 17 dst-port 100 action allow, action drop"`
-
-`/interface ethernet switch rule` `print`
-
-`Flags``: X - disabled, I - invalid, D - dynamic`
-
- `0  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether1` `src-mac-address``=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF` `protocol``=udp` `dst-port``=100` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no`
-
- `1  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether1` `src-mac-address``=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no` `new-dst-ports``=``""`
-
-`Mikrotik-Switching-Filter` `=` `"action allow, src-mac-address none action drop"`
-
-`/interface ethernet switch rule` `print`
-
-`Flags``: X - disabled, I - invalid; D - dynamic`
-
- `0  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether1` `src-mac-address``=CC:2D:E0:01:6D:EB/FF:FF:FF:FF:FF:FF` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no`
-
- `1  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether1` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no` `new-dst-ports``=``""`
-
+```
   
 在我们的示例中，ether2 上的 Supplicant2 仅允许访问具有 UDP 目标端口 50 的 192.168.50.0/24 网络，应丢弃所有其他流量。 首先，确保硬件卸载在桥接端口上正常工作，否则交换规则可能无法正常工作。
 
-`/interface bridge port` `print`
+```shell
+/interface bridge port print
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
+ #     INTERFACE                   BRIDGE                   HW  PVID PRIORITY  PATH-COST INTERNAL-PATH-COST    HORIZON
+ 0   H ether1                      bridge1                  yes    1     0x80         10                 10       none
+ 1   H ether2                      bridge1                  yes    1     0x80         10                 10       none
+ 2   H ether12                     bridge1                  yes    1     0x80         10                 10       none
 
-`Flags``: X - disabled, I - inactive, D - dynamic, H - hw-offload`
-
- `0   H ether1                      bridge1                  yes    1     0x80         10                 10       none`
-
- `1   H ether2                      bridge1                  yes    1     0x80         10                 10       none`
-
- `2   H ether12                     bridge1                  yes    1     0x80         10                 10       none`
-
+```
   
 使用 RADIUS 调试日志，可以看到具有所有属性的完整 RADIUS 消息包。 在我们的示例中，Mikrotik-Switching-Filter 属性是在来自 Radius 服务器的 Access-Accept 消息中接收到的：
 
-`02:35:38 radius,debug,packet received Access-Accept with id 121 from 10.1.2.3:1812`
+```shell
+02:35:38 radius,debug,packet received Access-Accept with id 121 from 10.1.2.3:1812
+(..)
+02:35:38 radius,debug,packet     MT-Switching-Filter = "mac-protocol 2048 dst-address 192.168.50.0/24 dst-port 50 protocol 17 action allow,action drop"
 
-`(..)`
-
-`02:35:38 radius,debug,packet     MT-Switching-Filter = "mac-protocol 2048 dst-address 192.168.50.0/24 dst-port 50 protocol 17 action allow,action drop"`
-
+```
   
 动态交换规则在交换菜单下：
 
-`/interface ethernet switch rule` `print`
+```shell
+/interface ethernet switch rule print
+Flags: X - disabled, I - invalid, D - dynamic
+ 0  D ;;; dot1x dynamic
+      switch=switch1 ports=ether2 src-mac-address=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF mac-protocol=ip dst-address=192.168.50.0/24 protocol=udp dst-port=50 copy-to-cpu=no redirect-to-cpu=no mirror=no
+ 
+ 1  D ;;; dot1x dynamic
+      switch=switch1 ports=ether2 src-mac-address=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF copy-to-cpu=no redirect-to-cpu=no mirror=no new-dst-ports=""
 
-`Flags``: X - disabled, I - invalid, D - dynamic`
-
- `0  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether2` `src-mac-address``=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF` `mac-protocol``=ip` `dst-address``=192.168.50.0/24` `protocol``=udp` `dst-port``=50` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no`
-
- `1  D ;;; dot1x dynamic`
-
-      `switch``=switch1` `ports``=ether2` `src-mac-address``=CC:2D:E0:11:22:33/FF:FF:FF:FF:FF:FF` `copy-to-cpu``=no` `redirect-to-cpu``=no` `mirror``=no` `new-dst-ports``=``""`
-
-  
+```
 
 !!! info 动态交换规则仅适用于支持交换规则的路由器板——CRS3xx、CRS5xx 系列交换机、CCR2116、CCR2216 以及带有 QCA8337、Atheros8327 和 Atheros8316 交换芯片的设备。 CRS1xx/2xx 系列交换机不支持此功能。 每个设备的最大规则数，请参阅[CRS3xx、CRS5xx、CCR2116、CCR2216 表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)和[基本交换芯片表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#heading-Introduction)
 
@@ -274,24 +251,28 @@ VLAN ID 现在出现在活动会话列表中，并且未标记的端口被添加
 
 `eap-tls、eap-ttls` 和 `eap-peap` 身份验证方法需要 CA 证书。 `eap-tls` 方法需要客户端证书。此示例我们已经导入了一个包含自签名客户端和 CA 证书的 P12 证书包。 有关如何在 RouterOS 中导入证书的更多信息，请访问 [System/Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates)。
 
-`/certificate` `print`
+```shell
+/certificate print
+Flags: K - private-key, L - crl, C - smart-card-key, A - authority, I - issued, R - revoked, E - expired, T - trusted
+ #         NAME                                            COMMON-NAME                                         SUBJECT-ALT-NAME                             FINGERPRINT                                       
+ 0 K  A  T dot1x-client                                    ez_dot1x-client                                     IP:10.1.2.34
+ 1  L A  T dot1x CA                                        ca
 
-`Flags``: K - private-key, L - crl, C - smart-card-key, A - authority, I - issued, R - revoked, E - expired, T - trusted`
-
- `0 K  A  T dot1x-client                                    ez_dot1x-client                                     IP``:10.1.2.34`
-
- `1  L A  T dot1x CA                                        ca`
+```
 
 只需添加一个新的 dot1x 客户端实例即可启动身份验证过程。
 
-`/interface dot1x client`
+```shell
+/interface dot1x client
+add anon-identity=anonymous client-certificate=dot1x-client eap-methods=eap-tls identity=dot1x-user interface=ether1 password=dot1xtest
 
-`add` `anon-identity``=anonymous` `client-certificate``=dot1x-client` `eap-methods``=eap-tls` `identity``=dot1x-user` `interface``=ether1` `password``=dot1xtest`
+```
 
 如果身份验证成功，接口的状态应为已验证。
 
-`/interface dot1x client` `print`
+```shell
+/interface dot1x client print
+Flags: I - inactive, X - disabled
+ 0   interface=ether1 eap-methods=eap-peap identity="dot1x-user" password="dot1xtest" anon-identity="anonymous" client-certificate=dot1x-client status="authenticated"
 
-`Flags``: I - inactive, X - disab``led`
-
- `0`   `interface``=ether1` `eap-methods``=eap-peap` `identity``=``"dot1x-user"` `password``=``"dot1xtest"` `anon-identity``=``"anonymous"` `client-certificate``=dot1x-client` `status``=``"authenticated"`
+```
