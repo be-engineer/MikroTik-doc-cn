@@ -15,8 +15,9 @@ release = '7.x'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'recommonmark',
-    # 'sphinx.ext.graphviz',
+    # 'myst_parser',
+    # 'recommonmark',
+    'sphinx_mdinclude',
     'sphinx_markdown_tables'
     # 'sphinxnotes.strike'
 ]
