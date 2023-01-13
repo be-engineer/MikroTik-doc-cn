@@ -29,10 +29,11 @@
 | Static Routing   | OK                                                                                                               |
 | User Manager     | 见[注释](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-usermanager)                   |
 
-## 注释
-路由协议配置升级只触发一次。 这意味着如果路由器降级到 ROSv6，配置被修改并且路由器升级回 ROSv7，那么生成的配置是降级之前存在的配置。 要重新触发 v6 配置转换，请使用选项“force-v6-to-v7-configuration-upgrade=yes”加载 ROSv6 备份。
+### 注释
 
-## **BGP**
+!!!warning 路由协议配置升级只触发一次。 这意味着如果路由器降级到 ROSv6，配置被修改并且路由器升级回 ROSv7，那么生成的配置是降级之前存在的配置。 要重新触发 v6 配置转换，请使用选项“force-v6-to-v7-configuration-upgrade=yes”加载 ROSv6 备份。
+
+### BGP
 
 所有已知配置都将成功从 6.x 升级到 7.x。 但请记住，配置已完全重新设计。 v7 BGP 实现提供了 **`connection`**、**`template`** 和 **`session`** 菜单。
 
@@ -46,18 +47,18 @@ BGP **`connection`** 最小参数集是 `remote.address`、`template、 connect`
 
 网络被添加到防火墙地址列表中，并在 BGP **`connection`** 配置中被引用。
 
-**OSPF**
+### OSPF
 
 所有已知配置都将成功从 6.x 升级到 7.x。
 OSPFv2 和 OSPFv3 现在合并到一个菜单“/routing ospf”中。 目前没有默认实例和区域。 要启动 OSPF，您需要创建一个实例，然后将 are 添加到该实例。
 
 RouterOSv7 使用模板将接口与模板进行匹配，并应用来自匹配模板的配置。 OSPF 菜单“interface”和“neighbor”包含用于状态监控的只读条目。
 
-**MPLS**
+### MPLS
 
 谨慎升级 MPLS 设置，并确保在升级前备份配置。
 
-**Routing filters**
+### Routing filters
 
 所有支持的选项都可以毫无问题地升级，如果是不支持的选项 - 将创建一个空条目。 路由过滤器配置更改为类似脚本的配置。
 
@@ -67,7 +68,7 @@ RouterOSv7 使用模板将接口与模板进行匹配，并应用来自匹配模
 
 更多 RouterOSv7 路由过滤器示例在 [此处](https://help.mikrotik.com/docs/display/ROS/ROSv7+Basic+Routing+Examples#ROSv7BasicRoutingExamples-RoutingFilters)。
 
-**用户管理**
+### 用户管理
 
 RouterOSv7 提供了新的和重新设计的用户管理器，配置集成到 RouterOS WinBox 和控制台中，更多信息可在 [此处](https://help.mikrotik.com/docs/display/ROS/User+Manager) 获得。 从旧的用户管理器直接迁移是不可能的，可以从 /user-manager/database/migrate-legacy-db 迁移旧的数据库但是，从头开始配置可能是个好主意。
 

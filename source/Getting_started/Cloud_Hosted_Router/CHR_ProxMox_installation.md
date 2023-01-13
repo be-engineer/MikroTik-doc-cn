@@ -1,3 +1,5 @@
+## CHR ProxMox安装
+
 - 根据需要使用系统盘和其他设备创建新的guest。
 
 - 然后你必须在 ProxMox 主机上手动上传 CHR 磁盘（qcow 格式）。
@@ -35,7 +37,7 @@ qemu-img convert -f raw -O qcow2 chr-6.40.3.img vm-(VM_ID)-disk-1.qcow2
 - 将映像文件转换为 qcow 格式。
 - 创建依附到 MGMT 网桥的基本 VM。
 
-```
+```shell
 #!/bin/bash
 
 #vars
@@ -109,6 +111,6 @@ echo "############## End of Script ##############"
 
 - 用于从 Windows 格式中清除 BASH 脚本的有用片段，如果在 Windows 工作站上编辑它可能会干扰脚本：
 
-```
+```shell
 sed -i -e 's/\r$//' *.sh
 ```

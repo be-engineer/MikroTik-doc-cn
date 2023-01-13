@@ -2,7 +2,9 @@
 
 MikroTik 设备预装了 RouterOS，因此通常不需要安装，除非在 x86 PC 上安装 RouterOS。 已安装设备的升级过程非常简单。
 
-## 版本编号说明
+## 升级
+
+### 版本编号说明
 
 RouterOS版本是按顺序编号的，当用句号来分隔序列时，它不代表小数点，而且序列没有位置意义。例如，2.5的标识符不是 "两个半 "或 "第三个版本的一半"，它是第二个一级版本的第五个二级版本。因此，v5.2比v5.18要老，而v5.18要新。
 
@@ -14,13 +16,13 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 
 ![](https://help.mikrotik.com/docs/download/attachments/328142/Metro-systemv2.png?version=1&modificationDate=1570173132346&api=v2)
 
-## 标准升级
+### 标准升级
 
 软件包升级功能连接到 MikroTik 下载服务器，并检查是否有适用于您的设备的新 RouterOS 版本。
 
 单击 QuickSet 或软件包菜单中的升级按钮后，升级窗口将打开，其中包含当前更新日志（如果存在更新版本）以及下载和安装最新版本的按钮。
 
-通过单击“Download & Upgrade”开始下载，下载成功后将重新启动以安装下载的软件包。 即使安装了自定义包，下载程序也会下载所有必要的包。
+通过单击“Download & Upgrade”开始下载，下载成功后设备将重新启动以安装下载的软件包。 即使安装了自定义包，下载程序也会下载所有必要的包。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328142/Quickset-upgrade.jpg?version=1&modificationDate=1570170624131&api=v2)
 
@@ -28,7 +30,7 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 
 ![](https://help.mikrotik.com/docs/download/attachments/328142/Changelog-upgrade.png?version=1&modificationDate=1570170774194&api=v2)
 
-## 手动升级
+### 手动升级
 
 您可以通过以下方式升级 RouterOS：
 
@@ -39,12 +41,12 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 
 !!! info RouterOS 不能通过串口线升级。 只有 [RouterBOOT](https://wiki.mikrotik.com/index.php?title=Bootloader_upgrade&action=edit&redlink=1 "Bootloader upgrade (page does not exist)") 可使用此方法升级。
 
-### 手动升级过程
+#### 手动升级过程
 
 - 第一步 - 访问 [www.mikrotik.com](https://www.mikrotik.com/) 并前往下载页面，选择安装 RouterOS 的系统类型。
 - 下载**Combined package**，它包括 RouterOS 的所有功能
 
-#### 使用 Winbox
+##### 使用 Winbox
 
 选择您的系统类型，并下载升级包。 使用 Winbox 连接到路由器，用鼠标选择下载的文件，然后将其拖到**File**菜单。 如果已经存在一些文件，请确保将包放在根菜单中，而不是热点文件夹中！ 开始上传。
 
@@ -52,56 +54,49 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 
 完成后 - 重新启动设备。 新版本号将显示在 Winbox 标题和包菜单中
 
-#### 使用 FTP
+##### 使用 FTP
 
 - 打开您最喜欢的 FTP 程序（在本例中为 [Filezilla](https://filezilla.sourceforge.net/)），选择升级包上传到路由器 ( [demo2.mt.lv](https://demo2.mt.lv/) 是本例中我的路由器的地址。请注意，图片中正在上传多个包，在您的情况下 - 将只有一个包含所有包的文件
 - 可以检查文件是否已成功传输到路由器上（可选）：
 
-`[normis@Demo_v2.9] >``file` `print`
+`10 supout.rif             .rif file             285942     nov/24/2005 15:21:54`
 
- `0 supout.rif             .rif` `file`             `285942     nov``/24/2005 15:21:54`
+`11 dhcp-2.9.8.npk         package               138846     nov/29/2005 09:55:42`
 
- `1 dhcp-2.9.8.npk         package               138846     nov``/29/2005 09:55:42`
+`12 ppp-2.9.8.npk          package               328636     nov/29/2005 09:55:43`
 
- `2 ppp-2.9.8.npk          package               328636     nov``/29/2005 09:55:43`
+`13 advanced-tools-2.9.... package               142820     nov/29/2005 09:55:42`
 
- `3 advanced-tools-2.9.... package               142820     nov``/29/2005 09:55:42`
+`14 web-proxy-2.9.8.npk    package               377837     nov/29/2005 09:55:43`
 
- `4 web-proxy-2.9.8.npk    package               377837     nov``/29/2005 09:55:43`
+`15 wireless-2.9.8.npk     package               534052     nov/29/2005 09:55:43`
 
- `5 wireless-2.9.8.npk     package               534052     nov``/29/2005 09:55:43`
+`16 routerboard-2.9.8.npk  package               192628     nov/29/2005 09:55:45`
 
- `6 routerboard-2.9.8.npk  package               192628     nov``/29/2005 09:55:45`
+`17 system-2.9.8.npk       package               5826498    nov/29/2005 09:55:54`
 
- `7 system-2.9.8.npk       package               5826498    nov``/29/2005 09:55:54`
 
-```
+- 重启路由器后升级过程开始:
 
-```
-
--   重启路由器后升级过程开始:
-
-```
+```shell
 [normis@Demo_v2.9] > system reboot
 Reboot, yes? [y/N]: y
 
 ```
 
--   重启后，您的路由器将是最新的，您可以在此菜单中查看：
+- 重启后，您的路由器将是最新的，您可以在此菜单中查看：
 
-```
+```shell
 /system package print
-
 ```
 
--   如果您的路由器未正确升级，请检查 **log**信息
+- 如果您的路由器未正确升级，请检查 **log**信息
 
-```
+```shell
 /log print without-paging
-
 ```
 
-## RouterOS 批量升级
+### RouterOS 批量升级
 
 您只需点击几下即可升级多个 MikroTik 路由器。 让我们看一下具有 3 个路由器的简单网络（同样的方法适用于具有无限数量路由器的网络）
 
@@ -120,7 +115,6 @@ Reboot, yes? [y/N]: y
 `:` `if` `( [` `get` `status]` `=` `"New version is available"` `)` `do` `=` `{` `install` `}`
 
 ___
-
   
 RouterOS 可以从远程 MikroTik 路由器下载软件包。
 
@@ -143,25 +137,25 @@ Dude 应用程序可以帮助您通过单击每个路由器来升级整个 Route
 
 - 选择组并单击升级（或强制升级）
 
-## 许可证问题
+### 许可证问题
 
-从旧版本升级时，您的许可证密钥可能会出现问题。 可能的场景：
+从旧版本升级时，您的许可证密钥可能会出现问题。 可能的情况：
 
-- 从 RouterOS v2.8 或更早版本升级时，系统可能会抱怨升级时间已过。 请使用 Netinstall 进行升级。 Netinstall 将忽略旧的许可证限制并升级
+- 从 RouterOS v2.8 或更早版本升级时，系统可能会抱怨升级时间已过期。 请使用 Netinstall 进行升级。 Netinstall 将忽略旧的许可证限制并升级
 
-- 升级到 RouterOS v4 或更新版本时，系统会要求您将许可证更新为新格式。 为此，请确保您的 Winbox PC（而非路由器）具有有效的互联网连接，并且没有任何限制访问 [www.mikrotik.com](https://www.mikrotik.com/)，然后在许可证菜单中单击“update license” 。
+- 升级到 RouterOS v4 或更新版本时，系统会要求您将许可证更新为新格式。 为此，请确保您的 Winbox PC（而非路由器）有可用的互联网连接，并且没有限制访问 [www.mikrotik.com](https://www.mikrotik.com/)，然后在许可证菜单中单击“update license” 。
 
-## 建议
+### 建议
 
 使用 RouterBOARD 设备时，始终建议在升级 RouterOS 后升级其 RouterBOOT 引导加载程序。 为此，请用命令“_/system routerboard upgrade_”
 
-## 网络安装
+### NetInstall
 
-[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall)是最常用的安装工具。 它可以在Windows 机器或带有 Wine 的 Linux 上运行（需要超级用户权限）。
+[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall)是最常用的安装工具。 它可以在Windows 或带有 Wine 的 Linux 上运行（需要超级用户权限）。
 
 您可以在 [www.mikrotik.com](https://www.mikrotik.com/download) 下载 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall)。
 
-[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 也用于在先前安装失败、损坏或访问密码丢失的情况下重新安装 RouterOS。
+[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 也用于先前安装失败、损坏或访问密码丢失的情况下重新安装 RouterOS。
 
 您的设备必须支持从以太网启动，并且必须有从 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 计算机到目标设备的直接以太网连接。 所有 RouterBOARD 都要支持 PXE 网络启动，如果 RouterOS 可操作，则必须在 RouterOS“routerboard”菜单中启用，或者在引导加载程序设置中启用。 为此，您需要一根串口线。
 **注意：**对于没有串口，没有RouterOS接入的RouterBOARD设备，reset键也可以启动PXE启动模式。 有关详细信息，请参阅 RouterBOARD 手册。
@@ -184,20 +178,19 @@ Dude 应用程序可以帮助您通过单击每个路由器来升级整个 Route
 - **IP 地址/掩码** - 以 CIDR 表示法输入 IP 地址和网络掩码以在路由器中进行预配置。
 - **网关** - 在路由器中预配置的默认网关。
 - **波特率** - 在路由器中预先配置的默认串口波特率。
-- **配置脚本文件** - 包含直接配置路由器的 RouterOS CLI 命令的文件（例如，由 export 命令生成的命令）。 用于应用默认配置。
+- **配置脚本文件** - 包含直接配置路由器的 RouterOS CLI 命令的文件（例如，由 export 命令产生的命令）。 用于应用默认配置。
 
-  
 **注意！** 不要尝试在您的系统驱动器上安装 RouterOS。 这样会格式化您的硬盘驱动器并清除现有的操作系统。
 
-## 光盘安装
+### 光盘安装
 
-## RouterOS 安装包类型
+#### RouterOS 安装包类型
 
 RouterOS 支持许多不同的功能，并且由于每个安装都需要支持一组特定的功能，因此可以使用包系统添加或删除某些功能组。 因此，用户能够控制可用的功能和安装的大小。 安装包仅由 MikroTik 提供，不允许第 3 方制作。
 
-#### 包列表
+##### 软件包列表
 
- | 包名               | 说明                                                                                            |
+ | 软件包名称         | 说明                                                                                            |
  | ------------------ | ----------------------------------------------------------------------------------------------- |
  | **advanced tools** | 软件包包含高级工具，如 netwatch、ip 扫描、局域网唤醒等。                                        |
  | **calea**          | 由美国“执法通信援助法”通过的特定用途的数据收集工具。                                            |
@@ -221,7 +214,7 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要支持�
  | **kvm**            | 启用 KVM 虚拟化                                                                                 |
  | **routeros**       | 组合 RouterOS 包。包括系统、热点、无线、ppp、安全、mpls、高级工具、dhcp、路由器板、ipv6、路由。 |
 
-#### 使用包
+##### 使用包
 
 已执行命令的操作将仅在重新启动时应用。 在此之前，用户可以自由安排或恢复设置的操作。
 
@@ -236,7 +229,7 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要支持�
 
 可用包列表示例
 
-```
+```shell
   [admin@rack1_b3] /system package> print
   Flags: X - disabled
   #   NAME                    VERSION                 SCHEDULED
@@ -256,4 +249,4 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要支持�
       
 ```
 
-注意，我们已禁用 wireless-fp 包并计划禁用 mpls 包
+注意，我们已禁用 wireless-fp 包并计划禁用 mpls 软件包

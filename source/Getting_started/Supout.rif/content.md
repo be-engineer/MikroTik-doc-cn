@@ -6,7 +6,7 @@
 
 ## 创建支持输出文件
 
-## Winbox
+### Winbox
 
 要在 Winbox 中生成此文件，请单击“Make Supout.rif”。
 
@@ -14,7 +14,7 @@
 
 ![](https://help.mikrotik.com/docs/download/attachments/328106/download.PNG?version=1&modificationDate=1570622754782&api=v2)
 
-## Webfig
+### Webfig
 
 要在 Webfig 中生成此文件，请单击“制作 Supout.rif”，然后单击“Download”下载到您的计算机。
 
@@ -22,7 +22,7 @@
 
 ![](https://help.mikrotik.com/docs/download/attachments/328106/webfig.PNG?version=1&modificationDate=1570622962040&api=v2)
 
-## 控制台
+### 控制台
 
 要生成此文件，请在命令行中键入：
 

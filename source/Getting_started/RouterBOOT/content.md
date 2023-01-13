@@ -4,9 +4,9 @@ RouterBOOT 负责在 RouterBOARD 设备中启动 RouterOS。
 
 默认情况下，使用主加载程序，但 RouterBOARD 设备还有一个辅助（备份）引导加载程序，可以在主加载程序不工作时使用。 可以使用 RouterOS 中的配置调用备份加载程序：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">system</code><code class="ros constants">/routerboard/settings/</code><code class="ros functions">set </code><code class="ros value">force-backup-booter</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`system/routerboard/settings/set force-backup-booter=yes`
 
-也可以通过按下 RESET 按钮打开设备来使用备份引导程序。 只能升级主RouterBOOT，所以万一失败，可以使用备份启动器启动设备，降级主加载器。 有关升级说明，请按照 [RouterBOARD#UpgradingRouterBOOT](https://help.mikrotik.com/docs/display/ROS/RouterBOARD#RouterBOARD-UpgradingRouterBOOT) 中的说明进行操作
+也可以通过按下 RESET 按钮打开设备来使用备份引导程序。 只能升级主RouterBOOT，万一失败，可以使用备份启动器启动设备，降级主加载器。 有关升级说明，请按照 [RouterBOARD#UpgradingRouterBOOT](https://help.mikrotik.com/docs/display/ROS/RouterBOARD#RouterBOARD-UpgradingRouterBOOT) 中的说明进行操作
 
 ## RouterBOARD 复位按钮
 
@@ -17,14 +17,12 @@ RouterBOOT 复位按钮具有三个功能：
 - 或者继续按住按钮 5 秒直到 LED 熄灭，然后松开按钮让 RouterBOARD 寻找 Netinstall 服务器（总共 15 秒）
 
 如果在通电之前按住按钮，除了上述所有操作外，还将使用备用 RouterBOOT。 要在不加载备份加载器的情况下执行上述操作，请在设备通电后立即按下按钮。
-
   
-
 [Reset the password](https://help.mikrotik.com/docs/display/RKB/Reset+the+password)
 
 [https://www.youtube.com/watch?v=6Unz92rABs8](https://www.youtube.com/watch?v=6Unz92rABs8) 
 
-## 复位**无线**套件的配置
+## 复位 _无线_ 套件的配置
 
 复位按钮具有与其他设备相同的功能，详细解释请参考 [https://help.mikrotik.com/docs/display/ROS/Reset+Button](https://help.mikrotik.com/docs/display/ROS/Reset+Button)
 
@@ -38,10 +36,45 @@ RouterBOOT 复位按钮具有三个功能：
 
 此示例显示了 RouterBOOT 7.4beta4 中可用的菜单：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">RouterBOOT booter 7.4beta4</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">CRS328-24P-4S+</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">built by build at Jun</code><code class="ros constants">/15/2022 11:34:09 from revision 73B4521C</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">CPU frequency</code><code class="ros constants">: 800 MHz</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">Memory size</code><code class="ros constants">: 512 MiB</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Storage size</code><code class="ros constants">:&nbsp; 16 MiB</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">Press Ctrl+E to enter etherboot mode</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">Press any key within 2 seconds to enter setup</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">RouterBOOT-7.4beta4</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">What </code><code class="ros functions">do </code><code class="ros plain">you want to configure?</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">d - boot delay</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">k - boot key</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">s - serial console</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">n - silent boot</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">o - boot device</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">z - extra kernel parameters</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">r - </code><code class="ros functions">reset </code><code class="ros plain">booter configuration</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">e - format storage</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">w - repartition nand</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">g - </code><code class="ros functions">upgrade </code><code class="ros plain">firmware</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">i - board info</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">p - boot protocol</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">b - booter options</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">j - boot os</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">t - hardware tests</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">l - erase license</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">x - exit setup</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros plain">your choice</code><code class="ros constants">:</code></div></div></td></tr></tbody></table>
+```shell
+RouterBOOT booter 7.4beta4
+ 
+CRS328-24P-4S+
+ 
+built by build at Jun/15/2022 11:34:09 from revision 73B4521C
+ 
+CPU frequency: 800 MHz
+  Memory size: 512 MiB
+ Storage size:  16 MiB
+ 
+Press Ctrl+E to enter etherboot mode
+Press any key within 2 seconds to enter setup
+ 
+ 
+RouterBOOT-7.4beta4
+What do you want to configure?
+   d - boot delay
+   k - boot key
+   s - serial console
+   n - silent boot
+   o - boot device
+   z - extra kernel parameters
+   r - reset booter configuration
+   e - format storage
+   w - repartition nand
+   g - upgrade firmware
+   i - board info
+   p - boot protocol
+   b - booter options
+   j - boot os
+   t - hardware tests
+   l - erase license
+   x - exit setup
+your choice:
+
+```
 
 这些选项是不言自明的。
-
 
 | 字母 | 说明           | 含义                                                                                     |
 | ---- | -------------- | ---------------------------------------------------------------------------------------- |
@@ -70,7 +103,7 @@ RouterBOOT 复位按钮具有三个功能：
 
 按下相应的键盘字母，你会看到更多的选项，如下所示：
 
-```
+```shell
 # d - boot delay:
 
 Select boot delay:
@@ -203,8 +236,6 @@ Exit bios configuration menu and continues with system startup.
 
 ```
 
-  
-
 ## 简单升级
 
 RouterBOOT 可以通过以下方式从 RouterOS 升级：
@@ -212,15 +243,32 @@ RouterBOOT 可以通过以下方式从 RouterOS 升级：
 - 运行命令 _/system routerboard upgrade_
 - 重新启动路由器以应用升级 (_/system reboot_)]
 
+```shell
+[admin@admin] > system/routerboard/upgrade
+Do you really want to upgrade firmware? [y/n]
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@admin] &gt; system</code><code class="ros constants">/routerboard/</code><code class="ros functions">upgrade</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Do you really want to </code><code class="ros functions">upgrade </code><code class="ros plain">firmware? [y</code><code class="ros constants">/n]</code></div></div></td></tr></tbody></table>
+```
 
-每个 ROS 版本都包含一个新的 RouterBoot 版本，一旦执行 ROS 升级，建议您也升级 RouterBoot。
+!!!warning 每个 ROS 版本都包含一个新的 RouterBoot 版本，一旦执行 ROS 升级，建议您也升级 RouterBoot。
 
 ## 检查RouterBOOT版本
+
 该命令显示当前设备的RouterBOOT版本，以及包含在routerboard中的可用升级.npk包，或者上传了与设备型号对应的FWF文件
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@admin] &gt;&nbsp; system</code><code class="ros constants">/routerboard/</code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">;;; Firmware upgraded successfully, please reboot </code><code class="ros functions">for </code><code class="ros plain">changes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">to take effect!</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">routerboard</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">board-name</code><code class="ros constants">: hAP ac</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">model</code><code class="ros constants">: RouterBOARD 962UiGS-5HacT2HnT</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">serial-number</code><code class="ros constants">: 6737057562DD</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">firmware-type</code><code class="ros constants">: qca9550L</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">factory-firmware</code><code class="ros constants">: 3.29</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">current-firmware</code><code class="ros constants">: 6.49.5</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">upgrade-firmware</code><code class="ros constants">: 7.4beta5</code></div></div></td></tr></tbody></table>
+```shell
+[admin@admin] >  system/routerboard/print
+                ;;; Firmware upgraded successfully, please reboot for changes
+                    to take effect!
+       routerboard: yes
+        board-name: hAP ac
+             model: RouterBOARD 962UiGS-5HacT2HnT
+     serial-number: 6737057562DD
+     firmware-type: qca9550L
+  factory-firmware: 3.29
+  current-firmware: 6.49.5
+  upgrade-firmware: 7.4beta5
+
+```
 
 在这种情况下，您会看到在当前的 RouterOS 版本中已经有 **更新版本** 的 Bootloader 固件可用，并且它已经更新并需要重新启动。
 

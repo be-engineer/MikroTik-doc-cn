@@ -6,18 +6,22 @@
 
 许可证密钥是一个符号块，需要从您的 [mikrotik.com](https://mikrotik.com) 帐户或您收到的电子邮件中复制，然后将其粘贴到路由器中。 您可以将密钥粘贴到终端中的任意位置，或者单击 Winbox 许可证菜单中的“粘贴密钥”。 密钥需要重新启动才能生效。
 
-RouterOS 许可方案基于软件 ID / 系统 ID，其中：
+![](https://help.mikrotik.com/docs/download/attachments/328149/licence.png?version=1&modificationDate=1574161824111&api=v2)
 
-- RouterBOARD software-id 绑定到存储介质（HDD、NAND）。
-- x86 软件 ID 绑定到 MBR
-- CHR system-id 绑定到 MBR 和 UUID
+!!!warning RouterOS 许可方案基于软件 ID / 系统 ID，其中：<br>- RouterBOARD software-id 绑定到存储介质（HDD、NAND）。<br>- x86 软件 ID 绑定到 MBR<br>- CHR system-id 绑定到 MBR 和 UUID
 
 可以从 CLI 系统控制台查看许可信息：
 
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@RB1100] &gt; /system license print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">software-id: "43NU-NLT9"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">nlevel: 6</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">features:</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">[admin@RB1100] &gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@RB1100] > /system license print
+    software-id: "43NU-NLT9"
+         nlevel: 6
+       features:
+[admin@RB1100] >
+```
 
 或者从[WinBox](https://help.mikrotik.com/docs/display/ROS7/Winbox),  [WebFig](https://help.mikrotik.com/docs/display/ROS7/Webfig)菜单查看.
+
 ## 许可证等级
 
 安装后 RouterOS 以**试用模式**运行。 您有 24 小时的时间注册 Level1（免费演示）或购买 Level 4,5 或 6 许可证并粘贴有效密钥。
@@ -57,11 +61,7 @@ Perpetual 是终身许可证（一次购买，永久使用）。 可以将永久
 
 要申请试用许可证，必须从 CHR 设备命令行运行命令“/system license renew”。 系统将要求提供 mikrotik.com 帐户的用户名和密码。</p></td></tr></tbody></table>
 
-!!!warning **警告：**如果您计划使用多个相同类型的虚拟系统，下一台机器可能具有与原始机器相同的 SystemID。 这可能会发生在某些云提供商身上，例如 Linode。 为避免这种情况，请在首次启动后运行命令“`/system license generate-new-id`”，然后再申请试用许可证。 请注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果您已经获得付费或试用许可证，请不要使用该功能，因为无法再更新当前密钥
-
-要使用多个虚拟机，请从我们的网页下载磁盘映像，并根据您需要的虚拟机制作尽可能多的副本。 然后从每个虚拟磁盘映像制作新的虚拟机系统。
-
-确保在运行或注册下载的文件之前制作磁盘映像的副本。
+!!!warning **警告：**如果您计划使用多个相同类型的虚拟系统，下一台机器可能具有与原始机器相同的 SystemID。 这可能会发生在某些云提供商身上，例如 Linode。 为避免这种情况，请在首次启动后运行命令“`/system license generate-new-id`”，然后再申请试用许可证。 请注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果您已经获得付费或试用许可证，请不要使用该功能，因为无法再更新当前密钥。<br>要使用多个虚拟机，请从我们的网页下载磁盘映像，并根据您需要的虚拟机制作尽可能多的副本。 然后从每个虚拟磁盘映像制作新的虚拟机系统。<br>确保在运行或注册下载的文件之前制作磁盘映像的副本。
 
 ___
 
