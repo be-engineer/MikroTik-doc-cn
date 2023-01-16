@@ -1,10 +1,10 @@
-# Introduction
+＃ 介绍
 
-**Layer 3 Hardware Offloading** (**L3HW**, otherwise known as IP switching or HW routing) allows to offload some router features onto the switch chip. This allows reaching wire speeds when routing packets, which simply would not be possible with the CPU. 
+**第 3 层硬件卸载**（**L3HW**，也称为 IP 交换或硬件路由）允许将某些路由器功能卸载到交换芯片上。 允许路由数据包时达到线速，这对于 CPU 来说是不可能的。
 
-# Switch Configuration
+# 交换配置
 
-To enable Layer 3 Hardware Offloading, set **l3-hw-offloading=yes** for the switch:
+要启用第 3 层硬件卸载，请为交换机设置 **l3-hw-offloading=yes**：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
@@ -374,7 +374,7 @@ Comments
 Release
 
  |     |
- | --- |  ||  |
+ | --- |||  |
  | IPv4 Unicast Routing | **HW** |
  | 7.1                  |
  | IPv6 Unicast Routing | **HW** |

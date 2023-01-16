@@ -9,7 +9,7 @@ RouterOS 与 MikroTik 硬件预装的完全兼容。如果满足以下要求，�
 -   Linux内核支持的网卡（PCI、PCI-X）
 -   支持交换芯片配置
 
-!!! note 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看产品手册或框图。
+> :warning: 注意：NVMe 存储仅支持 CHR、x86、Tile 和 MMIPS 架构。有关具体信息，请查看产品手册或框图。
 
 !!! note 注意：不建议在少于 64 MB RAM 的硬件上运行 v7。
 
