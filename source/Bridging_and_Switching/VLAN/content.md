@@ -2,174 +2,121 @@
 
 **标准:** `IEEE 802.1Q, IEEE 802.1ad`
 
-Virtual Local Area Network (VLAN) is a Layer 2 method that allows multiple Virtual LANs on a single physical interface (ethernet, wireless, etc.), giving the ability to segregate LANs efficiently.
+虚拟局域网（VLAN）是一种第2层的方法，它允许在一个物理接口（以太网、无线等）上有多个虚拟局域网，可以有效隔离局域网的能力。
 
-You can use MikroTik RouterOS (as well as Cisco IOS, Linux, and other router systems) to mark these packets as well as to accept and route marked ones.
+你可以使用MikroTik RouterOS（以及Cisco IOS、Linux和其他路由器系统）来标记这些数据包，以及接受和路由标记的数据包。
 
-As VLAN works on OSI Layer 2, it can be used just like any other network interface without any restrictions. VLAN successfully passes through regular Ethernet bridges.
+由于VLAN在OSI第二层工作，它可以像任何其他网络接口一样使用，没有任何限制。VLAN成功地通过普通的以太网桥。
 
-You can also transport VLANs over wireless links and put multiple VLAN interfaces on a single wireless interface. Note that as VLAN is not a full tunnel protocol (i.e., it does not have additional fields to transport MAC addresses of sender and recipient), the same limitation applies to bridging over VLAN as to bridging plain wireless interfaces. In other words, while wireless clients may participate in VLANs put on wireless interfaces, it is not possible to have VLAN put on a wireless interface in station mode bridged with any other interface.
+你也可以通过无线链路传输VLAN，把多个VLAN接口放在一个无线接口上。请注意，由于VLAN不是一个完整的隧道协议（即它没有额外的字段来传输发送方和接收方的MAC地址），在VLAN上桥接和在普通无线接口上桥接的限制相同。换句话说，虽然无线客户端可以参与放在无线接口上的VLAN，但不可能让VLAN放在与任何其他接口桥接的站点模式的无线接口上。
 
 # 802.1Q
 
-The most commonly used protocol for Virtual LANs (VLANs) is IEEE 802.1Q. It is a standardized encapsulation protocol that defines how to insert a four-byte VLAN identifier into the Ethernet header.
+虚拟局域网（VLAN）最常用的协议是IEEE 802.1Q。它是一个标准化的封装协议，定义了如何在以太网头中插入一个四字节的VLAN标识。
 
-Each VLAN is treated as a separate subnet. It means that by default, a host in a specific VLAN cannot communicate with a host that is a member of another VLAN, although they are connected in the same switch. So if you want inter-VLAN communication you need a router. RouterOS supports up to 4095 VLAN interfaces, each with a unique VLAN ID, per interface. VLAN priorities may also be used and manipulated.
+每个VLAN被视为一个独立的子网。这意味着在默认情况下，一个特定VLAN中的主机不能与另一个VLAN成员的主机通信，尽管它们连接在同一个交换机中。因此，如果你想进行VLAN间的通信，你需要一个路由器。RouterOS支持多达4095个VLAN接口，每个接口都有一个独特的VLAN ID。VLAN的优先级也可以被使用和操作。
 
-When the VLAN extends over more than one switch, the inter-switch link has to become a 'trunk', where packets are tagged to indicate which VLAN they belong to. A trunk carries the traffic of multiple VLANs; it is like a point-to-point link that carries tagged packets between switches or between a switch and router.
+当VLAN延伸到一个以上的交换机上时，交换机之间的链接必须成为 "聚合"，数据包被标记以表明它们属于哪个VLAN。聚合承载多个VLAN的流量；它就像一条点对点的链路，在交换机之间或在交换机和路由器之间承载标记的数据包。
 
-The IEEE 802.1Q standard has reserved VLAN IDs with special use cases, the following VLAN IDs should not be used in generic VLAN setups: 0, 1, 4095
+IEEE 802.1Q标准保留了有特殊用途的VLAN ID，以下VLAN ID不应该用于通用VLAN设置。0, 1, 4095
 
 # Q-in-Q
 
-Original 802.1Q allows only one VLAN header, Q-in-Q on the other hand allows two or more VLAN headers. In RouterOS, Q-in-Q can be configured by adding one VLAN interface over another. Example:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
+原始的802.1Q只允许一个VLAN头，Q-in-Q允许两个或更多的VLAN头。在RouterOS中，Q-in-Q可以通过在另一个VLAN接口上添加一个VLAN接口来进行配置。例子。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan1</code> <code class="ros value">vlan-id</code><code class="ros plain">=11</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan2</code> <code class="ros value">vlan-id</code><code class="ros plain">=12</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code></div></div></td></tr></tbody></table>
-
   
+如果任何数据包通过'vlan2'接口发送，两个VLAN标签将被添加到以太网头中 - '11'和'12'。
 
-If any packet is sent over the 'vlan2' interface, two VLAN tags will be added to the Ethernet header - '11' and '12'.
+# 属性
 
-# Properties
+| 属性                                                                                                | 说明                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **arp** (_disabled \| enabled \| local-proxy-arp \| proxy-arp \| reply-only_; Default: **enabled**) | 地址解析协议设置<br>- `disabled`- 接口将不使用ARP<br>-  `enabled` - 该接口将使用ARP<br>- `local-proxy-arp`- 路由器在接口上执行代理ARP，并向同一接口发送回复。<br>- `proxy-arp`- 路由器在该接口上执行代理ARP，并向其他接口发送回复。<br>- `reply-only `- 接口将只回复来自匹配的IP地址/MAC地址组合的请求，这些组合在IP/ARP表中被输入为静态项。动态项不会自动存储在IP/ARP表中。因此，要使通信成功，必须已经存在一个有效的静态项。 |
+| **arp-timeout** (_auto \| integer_; Default: **auto**)                                              | 在没有收到IP的数据包时，ARP记录在ARP表中保留多长时间。值`auto`等于IP/Settings中`arp-timeout`的值，默认为30s。                                                                                                                                                                                                                                                                                                                  |
+| **disabled** (_yes \| no_; Default: **no**)                                                         | 改变网桥是否被禁用。                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **interface** (_name_; Default: )                                                                   | 接口名称，VLAN将在该接口上工作。                                                                                                                                                                                                                                                                                                                                                                                               |
+| **mtu** (_integer_; Default: **1500**)                                                              | 第三层 最大传输单位                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **name** (_string_; Default: )                                                                      | 接口名称                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **use-service-tag** (_yes \| no_; Default: )                                                        | 兼容IEEE 802.1ad的服务标签                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **vlan-id** (_integer: 4095_; Default: **1**)                                                       | 用于区分VLAN的虚拟LAN标识符或标签。对于属于同一VLAN的所有计算机必须是相同的。                                                                                                                                                                                                                                                                                                                                                  |
 
-| 
-Property
+MTU应该设置为1500字节，与以太网接口一样。但是，这可能不适合某些以太网卡，它们不支持接收/发送添加了VLAN头的全尺寸以太网数据包（1500字节数据+4字节VLAN头+14字节以太网头）。在这种情况下，可以使用MTU 1496，但要注意，如果要在接口上发送较大的数据包，这将导致数据包碎片化。同时要记住，如果源和目的地之间的路径MTU发现工作不正常，MTU 1496可能会引起问题。
 
- | 
+#设置实例
 
-Description
+##第二层VLAN实例
 
- |     |
- | --- ||
- |     |
+可以使用多种可能的配置，但每种配置类型都是为一组特殊的设备设计的，因为有些配置方法会让你获得内置交换芯片的好处，获得更大的吞吐量。请查看[Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南，看看每种类型的设备应该使用哪种配置，以获得最大可能的吞吐量和兼容性，该指南显示了如何设置一个非常基本的VLAN中继/接入端口配置。
 
-Property
+还有一些其他的方法来设置VLAN标记或VLAN交换，但推荐的方法是使用[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。确保你没有使用任何[已知的第二层错误配置](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration)。
 
- | 
+## 第三层VLAN实例
 
-Description
+###简单的VLAN路由
 
- |                    |
- | ------------------ | ------- |
- | **arp** (_disabled | enabled | local-proxy-arp | proxy-arp | reply-only_; Default: **enabled**) | Address Resolution Protocol setting |
+假设我们有几个MikroTik路由器连接到一个集线器。集线器是一个OSI物理层的设备（如果在路由器之间有一个集线器，那么从L3的角度来看，它与路由器之间的以太网电缆连接是一样的）。为简化起见，假设所有的路由器都使用ether1接口与集线器连接，并分配了IP地址，如下图所示。然后在每个路由器上创建VLAN接口。
 
--   `disabled` \- the interface will not use ARP
--   `enabled` \- the interface will use ARP
--   `local-proxy-arp` \-  the router performs proxy ARP on the interface and sends replies to the same interface
--   `proxy-arp` \- the router performs proxy ARP on the interface and sends replies to other interfaces
--   `reply-only` \- the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the IP/ARP table. No dynamic entries will be automatically stored in the IP/ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-
- |
-| **arp-timeout** (_auto | integer_; Default: **auto**) | How long the ARP record is kept in the ARP table after no packets are received from IP. Value `auto` equals to the value of `arp-timeout` in IP/Settings, default is 30s. |
-| **disabled** (_yes | no_; Default: **no**) | Changes whether the bridge is disabled. |
-| **interface** (_name_; Default: ) | Name of the interface on top of which VLAN will work |
-| **mtu** (_integer_; Default: **1500**) | Layer3 Maximum transmission unit |
-| **name** (_string_; Default: ) | Interface name |
-| **use-service-tag** (_yes | no_; Default: ) | IEEE 802.1ad compatible Service Tag |
-| **vlan-id** (_integer: 4095_; Default: **1**) | Virtual LAN identifier or tag that is used to distinguish VLANs. Must be equal for all computers that belong to the same VLAN. |
-
-MTU should be set to 1500 bytes same as on Ethernet interfaces. But this may not work with some Ethernet cards that do not support receiving/transmitting of full-size Ethernet packets with VLAN header added (1500 bytes data + 4 bytes VLAN header + 14 bytes Ethernet header). In this situation, MTU 1496 can be used, but note that this will cause packet fragmentation if larger packets have to be sent over the interface. At the same time remember that MTU 1496 may cause problems if path MTU discovery is not working properly between source and destination.
-
-# Setup examples
-
-## Layer2 VLAN examples
-
-There are multiple possible configurations that you can use, but each configuration type is designed for a special set of devices since some configuration methods will give you the benefits of the built-in switch chip and gain larger throughput. Check the [Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) guide to see which configuration to use for each type of device to gain maximum possible throughput and compatibility, the guide shows how to setup a very basic VLAN trunk/access port configuration.
-
-There are some other ways to setup VLAN tagging or VLAN switching, but the recommended way is to use [Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering). Make sure you have not used any [known Layer2 misconfigurations](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration).
-
-## Layer3 VLAN examples
-
-### Simple VLAN routing
-
-Let us assume that we have several MikroTik routers connected to a hub. Remember that a hub is an OSI physical layer device (if there is a hub between routers, then from the L3 point of view it is the same as an Ethernet cable connection between them). For simplification assume that all routers are connected to the hub using the ether1 interface and have assigned IP addresses as illustrated in the figure below. Then on each of them the VLAN interface is created.
-
-Configuration for R2 and R4 is shown below:
+R2和R4的配置如下所示。
 
 R2:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running, S - slave</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MTU&nbsp;&nbsp; ARP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-ID INTERFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 R&nbsp; VLAN2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1500&nbsp; enabled&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div></div></td></tr></tbody></table>
 
 R4:
 
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running, S - slave</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MTU&nbsp;&nbsp; ARP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-ID INTERFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 R&nbsp; VLAN2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1500&nbsp; enabled&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div></div></td></tr></tbody></table>
 
-The next step is to assign IP addresses to the VLAN interfaces.
+下一步是为VLAN接口分配IP地址。
 
 R2:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.10.3/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid, D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NETWORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BROADCAST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros color1">10.0.1.4/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.0.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.0.1.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros color1">10.20.0.1/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.20.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.20.0.255&nbsp;&nbsp;&nbsp;&nbsp; pc1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros color1">10.10.10.3/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.10.10.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.10.10.255&nbsp;&nbsp;&nbsp; vlan2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt;</code></div></div></td></tr></tbody></table>
 
 R4:
 
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.10.5/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">[admin@MikroTik] ip address&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid, D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NETWORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BROADCAST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros color1">10.0.1.5/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.0.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.0.1.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros color1">10.30.0.1/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.30.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.30.0.255&nbsp;&nbsp;&nbsp;&nbsp; pc2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros color1">10.10.10.5/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.10.10.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.10.10.255&nbsp;&nbsp;&nbsp; vlan2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt;</code></div></div></td></tr></tbody></table>
 
-At this point it should be possible to ping router R4 from router R2 and vice versa:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
+在这点上，应该可以从R2路由器ping到R4路由器，反之亦然。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros string">"Ping from R2 to R4:"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.5</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.5 64 byte ping</code><code class="ros constants">: ttl=255 time=4 ms</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.5 64 byte ping</code><code class="ros constants">: ttl=255 time=1 ms</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">2 packets transmitted, 2 packets received, 0% packet loss</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 1/2.5/4 ms</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros string">"From R4 to R2:"</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.3</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.3 64 byte ping</code><code class="ros constants">: ttl=255 time=6 ms</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">10.10.10.3 64 byte ping</code><code class="ros constants">: ttl=255 time=1 ms</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">2 packets transmitted, 2 packets received, 0% packet loss</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 1/3.5/6 ms</code></div></div></td></tr></tbody></table>
-
   
-
-To make sure if the VLAN setup is working properly, try to ping R1 from R2. If pings are timing out then VLANs are successfully isolated.
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
+为了确定VLAN设置是否正常工作，尝试从R2 ping R1。如果ping是超时的，那么VLAN就成功隔离了。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros string">"From R2 to R1:"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">10.10.10.2 </code><code class="ros functions">ping </code><code class="ros plain">timeout</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.2 </code><code class="ros functions">ping </code><code class="ros plain">timeout</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">3 packets transmitted, 0 packets received, 100% packet loss</code></div></div></td></tr></tbody></table>
 
-### InterVLAN routing
+### VLAN间的路由
 
-If separate VLANs are implemented on a switch, then a router is required to provide communication between VLANs. A switch works at OSI layer 2 so it uses only Ethernet header to forward and does not check IP header. For this reason, we must use the router that is working as a gateway for each VLAN. Without a router, a host is unable to communicate outside of its own VLAN. The routing process between VLANs described above is called inter-VLAN communication.
+如果在交换机上实现了独立的VLAN，那么就需要一个路由器来提供VLAN之间的通信。交换机工作在OSI第二层，所以它只使用以太网头进行转发，不检查IP头。由于这个原因，我们必须使用作为每个VLAN的网关的路由器。没有路由器，主机就无法在自己的VLAN之外进行通信。上述VLAN之间的路由过程被称为VLAN间通信。
 
-To illustrate inter-VLAN communication, we will create a trunk that will carry traffic from three VLANs (VLAN2 and VLAN3, VLAN4) across a single link between a Mikrotik router and a manageable switch that supports VLAN trunking.
+为了说明VLAN间的通信，我们将创建一个聚合，在Mikrotik路由器和支持VLAN聚合的可管理交换机之间的一条链路上传输来自三个VLAN（VLAN2和VLAN3、VLAN4）的流量。
 
-Each VLAN has its own separate subnet (broadcast domain) as we see in figure above:
+如上图所示，每个VLAN都有自己独立的子网（广播域）。
 
--   VLAN 2 – 10.10.20.0/24;
--   VLAN 3 – 10.10.30.0/24;
--   VLAN 4 – 10.10.40.0./24.
+- VLAN 2 – 10.10.20.0/24;
+- VLAN 3 – 10.10.30.0/24;
+- VLAN 4 – 10.10.40.0./24.
 
-VLAN configuration on most switches is straightforward, basically, we need to define which ports are members of the VLANs and define a 'trunk' port that can carry tagged frames between the switch and the router.
+大多数交换机上的VLAN配置很简单，我们需要定义哪些端口是VLAN的成员，并定义一个 "聚合 "端口，该端口可以在交换机和路由器之间传输标记帧。
 
-Create VLAN interfaces:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
+创建VLAN接口。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN3</code> <code class="ros value">vlan-id</code><code class="ros plain">=3</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN4</code> <code class="ros value">vlan-id</code><code class="ros plain">=4</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
-
   
-
-Add IP addresses to VLANs:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
+添加IP地址到VLAN:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.30.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.40.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN4</code></div></div></td></tr></tbody></table>
 
-### RouterOS /32 and IP unnumbered addresses
+### RouterOS /32和IP非数字地址
 
-In RouterOS, to create a point-to-point tunnel with addresses you have to use the address with a network mask of '/32' that effectively brings you the same features as some vendors unnumbered IP address.
+在RouterOS中，要用地址创建一个点对点的隧道，必须使用带有网络掩码'/32'的地址，这实际上带来了与一些供应商的无编号IP地址一样的功能。
 
-There are 2 routers RouterA and RouterB where each is part of networks 10.22.0.0/24 and 10.23.0.0/24 respectively and to connect these routers using VLANs as a carrier with the following configuration:
+有2个路由器RouterA和RouterB，其中每个都是网络10.22.0.0/24和10.23.0.0/24的一部分，要使用VLAN作为载体连接这些路由器，配置如下。
 
 RouterA:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.22.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=1</code> <code class="ros value">name</code><code class="ros plain">=vlan1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.22.0.1/32</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code> <code class="ros value">network</code><code class="ros plain">=10.23.0.1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=10.23.0.1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.23.0.0/24</code></div></div></td></tr></tbody></table>
 
 RouterB:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VLAN#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.23.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=1</code> <code class="ros value">name</code><code class="ros plain">=vlan1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.23.0.1/32</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code> <code class="ros value">network</code><code class="ros plain">=10.22.0.1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=10.22.0.1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.22.0.0/24</code></div></div></td></tr></tbody></table>

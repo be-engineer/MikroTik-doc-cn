@@ -1,165 +1,59 @@
-# Introduction
+# 介绍
 
 ___
 
-Virtual eXtensible Local Area Network (VXLAN) is a tunneling protocol designed to solve the problem of limited VLAN IDs (4096) in IEEE 802.1Q, and it is described by IETF RFC 7348. With VXLAN the size of the identifier is expanded to 24 bits (16777216). It creates a Layer 2 overlay scheme on a Layer 3 network and the protocol runs over UDP. RouterOS VXLAN interface supports IPv4 or IPv6 (since version 7.6), but dual-stack is not supported.
+虚拟可扩展局域网（VXLAN）是一个隧道协议，用来解决IEEE 802.1Q中有限的VLAN ID（4096）的问题，它由IETF RFC 7348描述。通过VXLAN，标识符的大小被扩展到24位（16777216）。它在第三层网络上创建了一个第二层覆盖方案，该协议通过UDP运行。RouterOS VXLAN接口支持IPv4或IPv6（从7.6版开始），但不支持双堆栈。
 
-VXLAN creates a 50-byte overhead for IPv4 and a 70-byte overhead for IPv6. When configuring VXLAN, it is recommended to ensure that the size of the encapsulated Ethernet frame does not exceed the MTU of the underlying network, by configuring the MTU accordingly or by limiting the size of the Ethernet frames.
+VXLAN为IPv4创建一个50字节的开销，为IPv6创建一个70字节的开销。在配置VXLAN时，建议通过相应配置MTU或限制以太网帧的大小，确保封装的以太网帧的大小不超过基础网络的MTU。
 
-Only devices within the same VXLAN segment can communicate with each other.  Each VXLAN segment is identified through a 24-bit segment ID, termed the VXLAN Network Identifier (VNI). Unlike most tunnels, a VXLAN is a 1 to N network, not just point to point. A VXLAN device can learn the IP address of the other endpoint dynamically in a manner similar to a learning bridge. Multicast or unicast is used to flood broadcast, unknown unicast, and multicast traffic. VXLAN endpoints, which terminate VXLAN tunnels are known as VXLAN tunnel endpoints (VTEPs). 
+只有同一VXLAN网段内的设备才能相互通信。 每个VXLAN网段通过一个24位的网段ID来识别，称为VXLAN网络标识符（VNI）。与大多数隧道不同，VXLAN是一个1到N的网络，而不仅仅是点到点。一个VXLAN设备可以以类似于学习网桥的方式动态地学习另一个端点的IP地址。多播或单播是用来泛滥广播、未知单播和多播流量。终止VXLAN隧道的VXLAN端点被称为VXLAN隧道端点（VTEPs）。
 
-# Configuration options
+# 配置选项
 
 ___
 
-This section describes the VXLAN interface and VTEP configuration options.
+本节介绍VXLAN接口和VTEP配置选项。
 
-**Sub-menu:** `/interface vxlan`
+**子菜单:** `/interface vxlan`
 
-| 
-Property
-
-
-
- | 
-
-Description
-
-
-
- |     |
- | --- |  |
- |     |
-
-Property
-
-
-
- | 
-
-Description
-
-
-
- |                    |
- | ------------------ | ------- |
- | **arp** (_disabled | enabled | local-proxy-arp | proxy-arp | reply-only_; Default: **enabled**) | Address Resolution Protocol setting |
-
--   `disabled` \- the interface will not use ARP
--   `enabled` \- the interface will use ARP
--   `local-proxy-arp` \-  the router performs proxy ARP on the interface and sends replies to the same interface
--   `proxy-arp` \- the router performs proxy ARP on the interface and sends replies to other interfaces
--   `reply-only` \- the interface will only reply to requests originating from matching IP address/MAC address combinations which are entered as static entries in the IP/ARP table. No dynamic entries will be automatically stored in the IP/ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-
- |
-| **arp-timeout** (_auto | integer_; Default: **auto**) | How long the ARP record is kept in the ARP table after no packets are received from IP. Value `auto` equals to the value of `arp-timeout` in IP/Settings, default is the 30s. |
-| **comment** (_string_; Default: ) | Short description of the interface. |
-| **disabled** (_yes | no_; Default: **no**) | Changes whether the interface is disabled. |
-| **dont-fragment** (_disabled | enabled | inherit_; Default: **disabled**) | 
-
-The Don't Fragment (DF) flag controls whether a packet can be broken into smaller packets, called fragments, before being sent over a network. When configuring VXLAN, this setting determines the presence of the DF flag on the outer IPv4 header and can control packet fragmentation if the encapsulated packet exceeds the outgoing interface MTU. This setting has three options:
-
--   `disabled` \- the DF flag is not set on the outer IPv4 header, which means that packets can be fragmented if they are too large to be sent over the outgoing interface. This also allows packet fragmentation when VXLAN uses IPv6 underlay.
--   `enabled` \- the DF flag is always set on the outer IPv4 header, which means that packets will not be fragmented and will be dropped if they exceed the outgoing interface's MTU. This also avoids packet fragmentation when VXLAN uses IPv6 underlay.
--   `inherit` \- The DF flag on the outer IPv4 header is based on the inner IPv4 DF flag. If the inner IPv4 header has the DF flag set, the outer IPv4 header will also have it set. If the packet exceeds the outgoing interface's MTU and DF is set, it will be dropped. If the inner packet is non-IP, the outer IPv4 header will not have the DF flag set and packets can be fragmented. If the inner packet is IPv6, the outer IPv4 header will always set the DF flag and packets cannot be fragmented. Note that when VXLAN uses IPv6 underlay, this setting does not have any effect and is treated the same as `disabled`.
-
-The setting is available since RouterOS version 7.8.
-
- |
-| **group** (_IPv4 | IPv6_; Default: ) | When specified, a multicast group address can be used to forward broadcast, unknown unicast, and multicast traffic between VTEPs. This property requires specifying the `interface` setting. The interface will use IGMP or MLD to join the specified multicast group, make sure to add the necessary PIM and IGMP/MDL configuration. When this property is set, the `vteps-ip-version` automatically gets updated to the used multicast IP version. |
-| **interface** (_name_; Default: ) | Interface name used for multicast forwarding. This property requires specifying the `group` setting. |
-| **local-address** (_IPv4 | IPv6_; Default: ) | Specifies the local source address for the VXLAN interface. If not set, one IP address of the egress interface will be selected as a source address for VXLAN packets. When the property is set, the `vteps-ip-version` automatically gets updated to the used local IP version. The setting is available since RouterOS version 7.7. |
-| **mac-address** (_read-only,_ Default: ) | 
-
-Automatically assigned interface MAC address. This setting cannot be changed.
-
- |
-| **mtu** (_integer_; Default: **1500**) | 
-
-For the maximum transmission unit, the VXLAN interface will set MTU to 1500 by default. The `l2mtu` will be set automatically according to the associated `interface` (subtracting 50 bytes corresponding to the VXLAN header). If no interface is specified, the `l2mtu` value of 65535 is used. The `l2mtu` cannot be changed.
-
- |
-| **name** (_text_; Default: **vxlan1**) | Name of the interface. |
-| **port** (_integer: 1_..65535__; Default: **8472**) | 
-
-Used UDP port number.
-
- |
-| **vni** (_integer: 1..16777216_; Default: ) | 
-
-VXLAN Network Identifier (VNI).
-
- |
-| 
-
-**vrf** (_name_; Default: **main**)
-
- | Set VRF for the VXLAN interface on which the VTEPs listen and make connections. VRF is not supported when using `interface` and multicast `group` settings. The setting is available since RouterOS version 7.7. |
-| **vteps-ip-version** (_ipv4 | ipv6_; Default: **ipv4**) | 
-
-Used IP protocol version for statically configured VTEPs. RouterOS VXLAN interface does not support dual-stack, any configured remote VTEPs with the opposite IP version will be ignored. When multicast `group` or `local-address` properties are set, the `vteps-ip-version` automatically gets updated to the used IP version. The setting is available since RouterOS version 7.6.
-
- |
-
+| 属性                                                                                                | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **arp** (_disabled \| enabled \| local-proxy-arp \| proxy-arp \| reply-only_; Default: **enabled**) | 地址解析协议设置 <br>- `disabled`- 接口不使用ARP<br>- `enabled` - 该接口使用ARP<br>- `local-proxy-arp`- 路由器在接口上执行代理ARP，并向同一接口发送回复。<br>- `proxy-arp`- 路由器在该接口上执行代理ARP，并向其他接口发送回复。<br>- `reply-only `- 接口将只回复来自匹配的IP地址/MAC地址组合的请求，这些组合在IP/ARP表中被输入为静态项。动态项不会自动存储在IP/ARP表中。因此，要使通信成功，必须已经存在一个有效的静态项。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **arp-timeout** (_auto \| integer_; Default: **auto**)                                              | 如果没有收到IP的数据包，ARP记录会在ARP表中保留多长时间。值`auto`等于IP/Settings中`arp-timeout`的值，默认为30s。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **comment** (_string_; Default: )                                                                   | 界面的简短说明。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **disabled** (_yes \| no_; Default: **no**)                                                         | 接口是否被禁用。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **dont-fragment** (_disabled \| enabled \| inherit_; Default: **disabled**)                         | Don't Fragment (DF)标志控制一个数据包在通过网络发送之前是否可以被分解成更小的数据包，称为片段。当配置VXLAN时，这个设置决定了IPv4外部头的DF标志的存在，如果封装的数据包超过了出站接口MTU，可以控制数据包的碎片化。这个设置有三个选项。<br>- `disabled`- DF标志不在外层IPv4头上设置，这意味着如果数据包太大，无法通过出站接口发送，可以进行分片。当VXLAN使用IPv6底层时，这也允许数据包碎片化。<br>- `enabled`- DF标志总是在外层IPv4头上设置，这意味着数据包不会被分割，如果超过出站接口的MTU就会被放弃。这也避免了VXLAN使用IPv6底层时的数据包分片。<br>- `inherit`- 外层IPv4头的DF标志是基于内部IPv4的DF标志。如果内部IPv4头设置了DF标志，外部IPv4头也会设置。如果数据包超过了出站接口的MTU，并且DF被设置，它将被丢弃。如果内部数据包是非IP的，外部IPv4头将没有DF标志设置，数据包可以被分片。如果内部数据包是IPv6，外部IPv4头将始终设置DF标志，数据包不能被分片。注意，当VXLAN使用IPv6底层时，这个设置没有任何作用，与`disabled`的处理方式相同。<br>该设置从RouterOS 7.8版本开始可用。 |
+| **group** (_IPv4 \| IPv6_; Default: )                                                               | 当指定时，多播组地址可用于在VTEP之间转发广播、未知单播和多播流量。这个属性需要指定`interface`设置。该接口将使用IGMP或MLD来加入指定的组播组，请确保添加必要的PIM和IGMP/MDL配置。当这个属性被设置时，`vteps-ip-version`会自动更新为使用的组播IP版本。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **interface** (_name_; Default: )                                                                   | 用于多播转发的接口名称。这个属性需要指定 "group "设置。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **local-address** (_IPv4 \| IPv6_; Default: )                                                       | 指定VXLAN接口的本地源地址。如果不设置，出站接口的一个IP地址将被选作VXLAN数据包的源地址。当设置了属性后，`vteps-ip-version`会自动更新为使用的本地IP版本。该设置从RouterOS 7.7版本开始可用。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **mac-address** (_read-only,_ Default: )                                                            | 自动分配接口MAC地址。此设置不能改变。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **mtu** (_integer_; Default: **1500**)                                                              | 对于最大传输单元，VXLAN接口将默认设置MTU为1500。`l2mtu`将根据相关的`接口`自动设置（减去对应于VXLAN头的50字节）。如果没有指定接口，则使用`l2mtu`值65535。不能改变 "l2mtu"。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **name** (_text_; Default: **vxlan1**)                                                              | 接口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **port** (_integer: 1_..65535__; Default: **8472**)                                                 | 使用的UDP端口号。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **vni** (_integer: 1..16777216_; Default: )                                                         | VXLAN网络标识符（VNI）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **vrf** (_name_; Default: **main**)                                                                 | 为VTEP监听和进行连接的VXLAN接口设置VRF。当使用 "接口 "和多播 "组 "设置时，不支持VRF。该设置从RouterOS 7.7版本开始可用。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **vteps-ip-version** (_ipv4 \| ipv6_; Default: **ipv4**)                                            | 用于静态配置的VTEPs的IP协议版本。RouterOS VXLAN接口不支持双栈，任何配置了相反IP版本的远程VTEP将被忽略。当组播`组`或`本地地址`属性被设置时，`vteps-ip-version`自动更新为使用的IP版本。该设置从RouterOS 7.6版本开始可用。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
   
+**子菜单:** `/interface vxlan vteps`
 
-**Sub-menu:** `/interface vxlan vteps`
+| 属性                                                                     | 说明                           |
+| ------------------------------------------------------------------------ | ------------------------------ |
+| **interface** (_name_; Default: )                                        | VXLAN接口名称                  |
+| **port** (_integer: 1_..65535__; Default: **8472**)                      | 使用的UDP端口号。              |
+| **remote-ip** (_IPv4                                \| IPv6_; Default: ) | 远程VTEP的IPv4或IPv6目标地址。 |
 
-| 
-Property
-
-
-
- | 
-
-Description
-
-
-
- |     |
- | --- |  |
- |     |
-
-Property
-
-
-
- | 
-
-Description
-
-
-
- |                                                     |
- | --------------------------------------------------- | ---------------------------- |
- | **interface** (_name_; Default: )                   | Name of the VXLAN interface. |
- | **port** (_integer: 1_..65535__; Default: **8472**) |
-
-Used UDP port number.
-
- |
-| **remote-ip** (_IPv4 | IPv6_; Default: ) | 
-
-The IPv4 or IPv6 destination address of remote VTEP.
-
- |
-
-# Configuration example
+# 配置示例
 
 ___
 
-This configuration example creates a single VXLAN tunnel between two statically configured VTEP endpoints.
+这个配置示例在两个静态配置的VTEP端点之间创建了一个单一的VXLAN隧道。
 
-First, create VXLAN interfaces on both routers.
-
-[?](https://help.mikrotik.com/docs/display/ROS/VXLAN#)
+首先，在两个路由器上创建VXLAN接口。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vxlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vxlan1</code> <code class="ros value">port</code><code class="ros plain">=8472</code> <code class="ros value">vni</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
 
-Then configure VTEPs on both routers with respective IPv4 destination addresses. Both devices should have an active route toward the destination address.
-
-[?](https://help.mikrotik.com/docs/display/ROS/VXLAN#)
+然后在两台路由器上配置VTEP，分别配置IPv4目标地址。两台设备都应该有一条通往目的地址的有效路由。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Router1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vxlan vteps</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=vxlan1</code> <code class="ros value">remote-ip</code><code class="ros plain">=192.168.10.10</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># Router2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface vxlan vteps</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=vxlan1</code> <code class="ros value">remote-ip</code><code class="ros plain">=192.168.20.20</code></div></div></td></tr></tbody></table>
 
-Configuration is complete. It is possible to include the VXLAN interface into a bridge with other Ethernet interfaces.
+配置完成。可以将VXLAN接口纳入与其他以太网接口组成的网桥。
