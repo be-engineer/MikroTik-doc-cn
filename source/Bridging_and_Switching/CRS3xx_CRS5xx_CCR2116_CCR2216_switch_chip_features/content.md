@@ -20,7 +20,7 @@ CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成
 | **Port isolation**         | -适用于私有VLAN                                                                                                                                                                                                                                     |
 | **Access Control List**    | - 入口 ACL 表<br>- 基于端口、L2、L3、L4协议头分类<br>- ACL动作包括协议头字段的过滤、转发和修改                                                                                                                                                      |
 
-## Models
+## 型号
 
 下表说明了 Cloud Router Switch 型号和 CCR 路由器之间的主要区别。
 
@@ -112,9 +112,9 @@ VLAN设置示例
 
 带有Marvell-98DX3257交换芯片的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8` 和 `0x9100`）进行 VLAN 过滤。
 
-## 入口 VLAN 转换
+## 入站VLAN转换
 
-可以使用入口端口上的 ACL 规则将某个 VLAN ID 转换为不同的 VLAN ID。 在这个例子中，我们创建了两个 ACL 规则，允许双向通信。 这可以通过执行以下操作来完成。
+可以使用入站端口上的 ACL 规则将某个 VLAN ID 转换为不同的 VLAN ID。 在这个例子中，我们创建了两个 ACL 规则，允许双向通信。 这可以通过执行以下操作来完成。
 
 创建一个新网桥并通过硬件卸载向其添加端口：
 
@@ -453,7 +453,7 @@ ___
 
 升级命令将自动安装最新可用的 SwOS 版本，确保设备可以访问 Internet，以便升级过程正常进行。 当设备启动进入 SwOS 时，版本号将包含字母“p”，表示主版本。 然后，您可以从 SwOS“升级”菜单安装最新可用的 SwOS 二级主版本。
 
-| 属性                                                                                                        | 说明       l                                                                                                                                                                                                                              |
+| 属性                                                                                                        | 说明                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **address-acquisition-mode** (_dhcp-only \| dhcp-with-fallback \| static_; Default: **dhcp-with-fallback**) | 更改地址获取方式：<br>dhcp-only \- 仅使用 DHCP 客户端获取地址<br>dhcp-with-fallback \- 前 10 秒将尝试使用 DHCP 客户端获取地址。 如果请求不成功，地址将回退到静态，如静态 IP 地址属性所定义<br>static \- 地址由 static-ip-address 属性定义 |
 | **allow-from** (_IP/Mask_; Default: **0.0.0.0/0**)                                                          | 可访问交换机的 IP 地址或网络。 默认情况下，任何 IP 地址都可以访问交换机。                                                                                                                                                                 |
@@ -462,7 +462,7 @@ ___
 | **identity** (_name_; Default: **Mikrotik**)                                                                | 交换机名称（用于 Mikrotik 邻居发现协议）                                                                                                                                                                                                  |
 | **static-ip-address** (_IP_; Default: **192.168.88.1**)                                                     | 交换机的 IP 地址获取模式设置为 dhcp-with-fallback 或静态。 通过设置静态IP地址，地址获取过程不会改变，默认为DHCP with fallback。 这意味着只有当同一广播域中没有 DHCP 服务器时，配置的静态 IP 地址才会变为活动状态                          |
 
-# 参见
+# 另见
 
 [CRS Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router")
 
