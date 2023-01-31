@@ -4,7 +4,7 @@
 | ---- | ------------------------------------------- | ----------- | ---- | --------------------- |
 | 1.   | Getting Started                             | be-engineer | 100% | 2023/01/03~2023/01/08 |
 | 2.   | Authentication,  Authorization,  Accounting | be-engineer | 100% | 2023/01/08-2023/01/15 |
-| 3.   | Bridging and Switching                      | be-engineer | 10%  | 2023/01/15～？        |
+| 3.   | Bridging and Switching                      | be-engineer | 90%  | 2023/01/15～？        |
 | 4.   | Diagnostics,monitoring and troubleshooting  | be-engineer | 0%   | ?                     |
 | 5.   | Extended features                           | be-engineer | 0%   | ?                     |
 | 6.   | Firewall and Quality of Service             | be-engineer | 0%   | ?                     |

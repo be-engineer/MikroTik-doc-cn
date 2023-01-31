@@ -405,198 +405,198 @@ ___
 
 ___
 
-Consider the following scenario, you have multiple devices in your network, most of them are used as a switch/bridge in your network and there are certain endpoints that are supposed to receive and process traffic. To decrease the overhead in your network, you have decided to increase the MTU size so you set a larger MTU size on both endpoints, but you start to notice that some packets are being dropped.
+考虑以下情况，网络中有多个设备，它们中的大多数被用作网络中的交换机/桥接器，有一些端点接收和处理流量。为了减少网络开销，你决定增加MTU大小，所以你在两个端点上都设置了一个较大的MTU大小，但你注意到有些数据包被丢弃了。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/MTU.png?version=2&modificationDate=1618319477879&api=v2)
 
-## Configuration
+## 配置
 
-In this case, both endpoints can be any type of device, we will assume that they are both Linux servers that are supposed to transfer a large amount of data. In such a scenario, you would have probably set interface MTU to 9000 on **ServerA** and **ServerB a**nd on your **Switch** you have probably have set something similar to this:
+在此情况下，两个端点可以是任何类型的设备，假设它们都是Linux服务器，用于传输大量数据。在这种情况下，你可能会在**服务器A**和**服务器B**上设置接口MTU为9000，在**交换机**上，你可能已经设置了类似的东西。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-This is a very simplified problem, but in larger networks, this might not be very easy to detect. For instance, ping might be working since a generic ping packet will be 70 bytes long (14 bytes for Ethernet header, 20 bytes for IPv4 header, 8 bytes for ICMP header, 28 bytes for ICMP payload), but data transfer might not work properly. The reason why some packets might not get forwarded is that MikroTik devices running RouterOS by default has MTU set to 1500 and L2MTU set to something around 1580 bytes (depends on the device), but the Ethernet interface will silently drop anything that does not fit into the L2MTU size. Note that the L2MTU parameter is not relevant to x86 or CHR devices. For a device that is only supposed to forward packets, there is no need to increase the MTU size, it is only required to increase the L2MTU size, RouterOS will not allow you to increase the MTU size that is larger than the L2MTU size. If you require the packet to be received on the interface and the device needs to process this packet rather than just forwarding it, for example, in the case of routing, then it is required to increase the L2MTU and the MTU size, but you can leave the MTU size on the interface to the default value if you are using only IP traffic (that supports packet fragmentation) and don't mind that packets are being fragmented. You can use the ping utility to make sure that all devices are able to forward jumbo frames:
+T这是一个简化的问题，在更大的网络中，可能不是很容易发现。例如，ping可能是有效的，因为一般的ping数据包会有70个字节长（以太网头14个字节，IPv4头20个字节，ICMP头8个字节，ICMP有效载荷28个字节），但数据传输可能无法正常工作。一些数据包无法转发的原因是，运行RouterOS的MikroTik设备默认将MTU设置为1500，L2MTU设置为1580字节左右（取决于设备），但以太网接口会默默地丢弃任何不适合L2MTU大小的数据。注意，L2MTU参数与x86或CHR设备无关。对于一个只转发数据包的设备，没有必要增加MTU大小，只需要增加L2MTU大小，RouterOS不允许大于L2MTU大小的MTU。如果要求在接口上接收数据包，并且设备需要处理这个数据包，而不仅仅是转发，例如在路由的情况下，那么就需要增加L2MTU和MTU大小，但是如果你只使用IP流量（支持数据包分片），并且不介意数据包被分片，那么你可以把接口上的MTU大小保持为默认值。你可以使用ping工具来确保所有设备都能转发巨量帧。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">192.168.88.1 </code><code class="ros value">size</code><code class="ros plain">=9000</code> <code class="ros plain">do-not-fragment</code></div></div></td></tr></tbody></table>
 
-Remember that the L2MTU and MTU size needs to be larger or equal to the ping packet size on the device from which and to which you are sending a ping packet since ping (ICMP) is IP traffic that is sent out from an interface over Layer3.
+记住，L2MTU和MTU要大于或等于你发送ping包的设备上的ping包大小，因为ping（ICMP）是通过第三层的接口发出的IP流量。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是这种错误配置造成的症状。
 
-- Web pages are not able to load up, but ping works properly;
-- Tunnels dropping traffic;
-- Specific protocols are broken;
-- Large packet loss;
+- 网页无法加载，但ping工作正常。
+- 隧道丢掉流量。
+- 特定的协议被破坏。
+- 大量数据包丢失。
 
-## Solution
+## 解决方案
 
-Increase the L2MTU size on your **Switch**:
+增加你的**交换机**的L2MTU大小。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2 </code><code class="ros value">l2mtu</code><code class="ros plain">=9000</code></div></div></td></tr></tbody></table>
 
-In case your traffic is encapsulated (VLAN, VPN, MPLS, VPLS, or other), then you might need to consider setting an even larger L2MTU size. In this scenario, it is not needed to increase the MTU size for the reason described above.
+如果流量被封装了（VLAN、VPN、MPLS、VPLS或其他），那么可能需要考虑设置一个更大的L2MTU大小。在这种情况下，不需要增加MTU大小，原因如上所述。
 
-Full frame MTU is not the same as L2MTU. L2MTU size does not include the Ethernet header (14 bytes) and the CRC checksum (FCS) field. The FCS field is stripped by the Ethernet's driver and RouterOS will never show the extra 4 bytes to any packet. For example, if you set MTU and L2MTU to 9000, then the full-frame MTU is 9014 bytes long, this can also be observed when sniffing packets with "`/tool sniffer quick"` command.
+全帧MTU与L2MTU不一样。L2MTU大小不包括以太网头（14字节）和CRC校验（FCS）字段。FCS字段是由以太网的驱动程序剥离的，RouterOS不会向任何数据包显示额外的4字节。例如，如果把MTU和L2MTU设置为9000，那么全帧MTU为9014字节，这在用"`/tool sniffer quick"`命令嗅探数据包时也可以观察到。
 
-# Bridge and reserved MAC addresses
+# 桥接和保留的MAC地址
 
 ___
 
-Consider the following scenario, you want to transparently bridge two network segments together, either those are tunnel interfaces like EoIP, Wireless interfaces, Ethernet interface, or any other kind of interfaces that can be added to a bridge. Such a setup allows you to seamlessly connect two devices together like there was only a physical cable between them, this is sometimes called a **transparent bridge** from **DeviceA** to **DeviceB**.
+考虑以下情况，你想把两个网段透明地桥接在一起，这些网段可以是隧道接口，如EoIP，无线接口，以太网接口，或任何其他类型的接口，可以添加到一个网桥上。这样的设置允许将两台设备无缝连接在一起，就像它们之间只有一条物理电缆一样，这有时被称为**透明网桥**，从**设备A**到**设备B**。
 
-## Configuration
+## 配置
 
-For both devices **DeviceA** and **DeviceB** there should be a very similar configuration.
+对于**设备A**和**设备B**，应该有一个非常相似的配置。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">protocol-mode</code><code class="ros plain">=rstp</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=eoip1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-Both devices are able to communicate with each other, but some protocols do not work properly. The reason is that as soon as you use any STP variant (STP, RSTP, MSTP), you make the bridge compliant with IEEE 802.1D and IEEE 802.1Q, these standards recommend that packets that are destined to **01:80:C2:00:00:0X** should **NOT** be forwarded. In cases where there are only 2 ports added to a bridge (R/M)STP should not be used since a loop cannot occur from 2 interfaces and if a loop does occur, the cause is elsewhere and should be fixed on a different bridge. Since (R/M)STP is not needed in transparent bridge setups, it can be disabled. As soon as (R/M)STP is disabled, the RouterOS bridge is not compliant with IEEE 802.1D and IEEE 802.1Q and therefore will forward packets that are destined to **01:80:C2:00:00:0X**.
+两台设备能相互通信，但有些协议不能正常工作。原因是，只要使用任何STP变体（STP、RSTP、MSTP），就会使网桥符合IEEE 802.1D和IEEE 802.1Q，这些标准建议，以**01:80:C2:00:00:0X**为目的地的数据包应该**不转发。在一个网桥上只添加了 2 个端口时，不应该使用 (R/M)STP，因为 2 个接口不可能发生环路，如果真的发生环路，原因在其他地方，应该在另一个网桥上解决。由于 (R/M)STP 在透明网桥的设置中是不需要的，因此可以禁用它。一旦 (R/M)STP 被禁用，RouterOS 网桥就不符合 IEEE 802.1D 和 IEEE 802.1Q，因此会转发以 **01:80:C2:00:00:0X 为目的地的数据包。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是错误配置造成的症状。
 
-- LLDP neighbors not showing up;
-- 802.1x authentication (dot1x) not working;
-- LACP interface not passing traffic;
+- LLDP邻居不显示。
+- 802.1x认证（dot1x）不工作。
+- LACP接口不能通过流量。
 
-## Solution
+## 解决方案
 
-Since RouterOS v6.43 it is possible to partly disable compliance with IEEE 802.1D and IEEE 802.1Q, this can be done by changing the bridge protocol mode.
+从RouterOS v6.43开始，可以部分禁用IEEE 802.1D和IEEE 802.1Q，这可以通过改变网桥协议模式实现。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">protocol-mode</code><code class="ros plain">=none</code></div></div></td></tr></tbody></table>
 
-The IEEE 802.1x standard is meant to be used between a switch and a client directly. If it is possible to connect a device between the switch and the client, then this creates a security threat. For this reason, it is not recommended to disable the compliance with IEEE 802.1D and IEEE 802.1Q, but rather design a proper network topology.
+IEEE 802.1x标准是为了在交换机和客户端之间直接使用。如果有可能在交换机和客户端之间连接一个设备，那么就会产生安全威胁。出于这个原因，不建议禁用符合IEEE 802.1D和IEEE 802.1Q的标准，而是要设计一个适当的网络拓扑结构。
 
-# Bonding between Wireless links
+# 无线链接之间的绑定
 
 ___
 
-Consider the following scenario, you have set up multiple Wireless links and to achieve maximum throughput and yet to achieve redundancy you have decided to place Ethernet interfaces into a bond and depending on the traffic that is being forwarded you have chosen a certain bonding mode. This scenario can be applied to any case, where a bonding interface is created between links, that are not directly connected to each other.
+考虑以下情况，你已经建立了多个无线链路，为了实现最大的吞吐量，同时也为了实现冗余，你决定把以太网接口放到一个绑定中，根据转发的流量，你选择了某种绑定模式。这个方案适用于任何情况，在没有直接连接的链路之间创建一个绑定接口。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/Lacp_wlan.png?version=2&modificationDate=1618319504857&api=v2)
 
-## Configuration
+## 配置
 
-The following configuration is relevant to **R1** and **R2**:
+以下配置与**R1**和**R2**有关。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">transmit-hash-policy</code><code class="ros plain">=layer-2-and-3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.X/24</code> <code class="ros value">interface</code><code class="ros plain">=bond1</code></div></div></td></tr></tbody></table>
 
-While the following configuration is relevant to **AP1**, **AP2**, **ST1,** and **ST2**, where **X** corresponds to an IP address for each device.
+以下配置与**AP1**、**AP2**、**ST1、**和**ST2**有关，其中**X**对应于每个设备的IP地址。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">protocol-mode</code><code class="ros plain">=none</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=wlan1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.X/24</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-While traffic is being forwarded properly between **R1** and **R2**, load balancing, link failover is working properly as well, but devices between **R1** and **R2** are not always accessible or some of them are completely inaccessible (in most cases **AP2** and **ST2** are inaccessible). After examining the problem you might notice that packets do not always get forwarded over the required bonding slave and as a result, never is received by the device you are trying to access. This is a network design and bonding protocol limitation. As soon as a packet needs to be sent out through a bonding interface (in this case you might be trying to send ICMP packets to **AP2** or **ST2**), the bonding interface will create a hash based on the selected bonding mode and transmit-hash-policy and will select an interface, through which to send the packet out, regardless of the destination is only reachable through a certain interface. Some devices will be accessible because the generated hash matches the interface, on which the device is located on, but it might not choose the needed interface as well, which will result in inaccessible device. Only broadcast bonding mode does not have this kind of protocol limitation, but this bonding mode has a very limited use case.
+虽然流量在**R1**和**R2**之间正常转发，负载均衡、链路故障切换也正常工作，但**R1**和**R2**之间的设备并不总是可以访问，或者有些设备完全无法访问（大多数情况下，**AP2**和**ST2**无法访问）。在检查了这个问题后，你可能会注意到，数据包并不总是在所需的绑定从属设备上转发，因此，从来没有被你试图访问的设备收到。这是一个网络设计和绑定协议的限制。一旦有数据包需要通过绑定接口发送出去（在这种情况下，你可能试图发送ICMP数据包到**AP2**或**ST2**），绑定接口会根据选择的绑定模式和发送哈希政策创建一个哈希，并选择一个接口，通过该接口将数据包发送出去，无论目的地是否只能通过某一个接口到达。有些设备可以访问，因为生成的哈希值与设备所在的接口相匹配，但它可能不会选择所需的接口，导致设备无法访问。只有广播绑定模式没有这种协议限制，但这种绑定模式的使用情况非常有限。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是错误配置结果的症状。
 
-- Limited connectivity
-- Unstable links (in case of balance-rr)
+- 有限的连接
+- 不稳定的链接（在平衡-rrr的情况下）。
 
-## Solution
+## 解决方案
 
-Bonding interfaces are not supposed to be connected using in-direct links, but it is still possible to create a workaround. The idea behind this workaround is to find a way to bypass packets being sent out using the bonding interface. There are multiple ways to force a packet not to be sent out using the bonding interface, but essentially the solution is to create new interfaces on top of physical interfaces and add these newly created interfaces to a bond instead of the physical interfaces. One way to achieve this is to create EoIP tunnels on each physical interface, but that creates a huge overhead and will reduce overall throughput. You should create a VLAN interface on top of each physical interface instead, this creates a much smaller overhead and will not impact overall performance noticeably. Here is an example of how **R1** and **R2** should be reconfigured:
+绑定接口不该使用直接链接来连接，但仍有可能创建一个变通方法。这个解决方法是找到一种方法来绕过正在使用绑定接口发送的数据包。有多种方法可以迫使数据包不使用绑定接口发送出去，但基本上解决方案是在物理接口的基础上创建新的接口，并将这些新创建的接口添加到绑定中，而不是物理接口。实现这一目标的方法之一是在每个物理接口上创建EoIP隧道，但这将产生巨大的开销，并将降低总吞吐量。应该在每个物理接口上创建一个VLAN接口，这会产生更小的开销，且不会明显影响整体性能。下面是**R1**和**R2**重新配置的一个例子：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=VLAN_ether1</code> <code class="ros value">vlan-id</code><code class="ros plain">=999</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">name</code><code class="ros plain">=VLAN_ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=999</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=balance-xor</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=VLAN_ether1,VLAN_ether2</code> <code class="ros value">transmit-hash-policy</code><code class="ros plain">=layer-2-and-3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.X/24</code> <code class="ros value">interface</code><code class="ros plain">=bond1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.11.X/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.22.X/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
 
-**AP1** and **ST1** only need updated IP addresses to the correct subnet:
+**AP1**和**ST1**只需要更新IP地址到正确的子网：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.11.X/24</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
 
-Same changes must be applied to **AP2** and **ST2** (make sure to use the correct subnet):
+同样的变更要用于**AP2**和**ST2**（确保使用正确的子网）。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.22.X/24</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
 
-With this approach, you create the least overhead and the least configuration changes are required.
+使用这种方法，产生最少的开销，需要最少的配置改动。
 
-LACP (802.3ad) is not mean to be used in setups, where devices bonding slaves are not directly connected, in this case, it is not recommended to use LACP if there are Wireless links between both routers. LACP requires both bonding slaves to be at the same link speeds, Wireless links can change their rates at any time, which will decrease overall performance and stability. Other bonding modes should be used instead.
+LACP（802.3ad）并不意味着可以在设备绑定从属设备不直接连接的情况下使用，在这种情况下，如果两个路由器之间有无线链接，不建议使用LACP。LACP要求两个绑定从属设备处于相同的链路速度，无线链路可以随时改变其速率，这将降低整体性能和稳定性。应该使用其他粘合模式。
 
-# Bandwidth testing
+# 带宽测试
 
 ___
 
-Consider the following scenario, you set up a link between two devices, this can be any link, an Ethernet cable, a wireless link, a tunnel or any other connection. You decide that you want to test the link's bandwidth, but for convenience reasons, you decide to start testing the link with the same devices that are running the link.
+考虑以下情况，在两个设备之间建立了一个链路，这可以是任何链路，以太网电缆、无线链路、隧道或任何其他连接。要测试该链路的带宽，为了方便起见，你决定用运行该链路的相同设备开始测试。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/Bandwidth_bad.png?version=2&modificationDate=1618319523215&api=v2)
 
-## Problem
+## 问题
 
-As soon as you start [Bandwidth test](https://help.mikrotik.com/docs/display/ROS/Bandwidth+Test) or [Traffic generator](https://wiki.mikrotik.com/wiki/Manual:Tools/Traffic_Generator "Manual:Tools/Traffic Generator") you notice that the throughput is much smaller than expected. For very powerful routers, which should be able to forward many Gigabits per second (Gbps) you notice that only a few Gigabits per second gets forwarded. The reason why this is happening is because of the testing method you are using, you should never test throughput on a router while using the same router for generating traffic because you are adding an additional load on the CPU that reduces the total throughput.
+当你启动[带宽测试](https://help.mikrotik.com/docs/display/ROS/Bandwidth+Test)或[流量发生器](https://wiki.mikrotik.com/wiki/Manual:Tools/Traffic_Generator "Manual:Tools/Traffic Generator")时，会发现吞吐量比预期的小很多。对于非常强大的路由器，应该能够每秒转发很多Gbps，但实际每秒只转发了几Gbps。该原因是你使用的测试方法，不能在使用同一台路由器产生流量的同时测试路由器的吞吐量，因为你在CPU上增加了额外的负载，降低了总吞吐量。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是错误配置结果的症状。
 
-- Low throughput;
-- High CPU usage;
+- 吞吐量低。
+- CPU使用率高。
 
-## Solution
+##解决方案
 
-Use a proper testing method. Don't use Bandwidth-test to test large capacity links and don't run any tool that generates traffic on the same device you are testing. Design your network properly so you can attach devices that will generate and receive traffic on both ends. If you are familiar with **Iperf**, then this concept should be clear. Remember that in real-world a router or a switch does not generate large amounts of traffic (at least it shouldn't, otherwise, it might indicate an existing security issue), a server/client generates the traffic while a router/switch forwards the traffic (and does some manipulations to the traffic in appropriate cases).
+使用适当的测试方法。不要用Bandwidth-test来测试大容量链路，也不要在你测试的同一设备上运行任何生成流量的工具。正确设计你的网络，这样就可以在两端产生和接收流量。如果你熟悉**Iperf**，这个概念会很清楚。记住，在现实世界中，路由器或交换机不会产生大量的流量（至少不应该，否则可能表明存在安全问题），服务器/客户端产生流量，而路由器/交换机转发流量（并在适当情况下对流量做一些处理）。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/Bandwidth_good.png?version=2&modificationDate=1618319534552&api=v2)
 
-# Bridge split-horizon usage
+# 网桥split-horizon用法
 
 ___
 
-Consider the following scenario, you have a bridge and you need to isolate certain bridge ports from each other. There are options to use a built-in switch chip to isolate certain ports on certain switch chips, you can use bridge firewall rules to prevent certain ports to be able to send any traffic to other ports, you can isolate ports in a PVLAN type of setup using port isolation, but there is also a software-based solution to use bridge split-horizon (which disables hardware offloading on all switch chips).
+考虑以下情况，有一个网桥，需要将某些网桥端口相互隔离。可以选择使用内置的交换芯片来隔离某些端口，可以使用网桥防火墙规则来阻止某些端口向其他端口发送任何流量，可以在PVLAN类型的设置中使用端口隔离，但也有一种基于软件的解决方案，即用网桥split-horizon（在所有交换芯片上禁用硬件offloading）。
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">horizon</code><code class="ros plain">=1</code> <code class="ros value">hw</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">horizon</code><code class="ros plain">=2</code> <code class="ros value">hw</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">horizon</code><code class="ros plain">=3</code> <code class="ros value">hw</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">horizon</code><code class="ros plain">=4</code> <code class="ros value">hw</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-After setting the bridge split-horizon on each port, you start to notice that each port is still able to send data between each other. The reason for this is the misuse of bridge split-horizon. A bridge port is only not able to communicate with ports that are in the same horizon, for example, horizon=1 is not able to communicate with horizon=1, but is able to communicate with horizon=2, horizon=3, and so on.
+在每个端口上设置了网桥split-horizon后，可能每个端口仍然能够在彼此之间发送数据。其原因是误用了网桥split-horizon。一个网桥端口只能与处于同一水平线的端口通信，例如，horizon=1不能与horizon=1通信，但能与horizon=2、horizon=3通信，以此类推。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+下面列出了可能是错误配置导致的症状。
 
-- Traffic is being forwarded on different bridge split-horizons
+- 流量被转发到不同的网桥split-horizons
 
-## Solution
+## 解决方案
 
-Set a proper value as the bridge split-horizon. In case you want to isolate each port from each other (a common scenario for PPPoE setups) and each port is only able to communicate with the bridge itself, then all ports must be in the same bridge split-horizon.
+设置一个适当的值作为网桥split-horizons。如果想把每个端口相互隔离(这是PPPoE设置的常见情况)，并且每个端口只能与网桥本身通信，那么所有端口都必须在同一个网桥split-horizons。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[f] </code><code class="ros value">horizon</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
 
   
 
-Setting all bridge ports in the same bridge split-horizon will result in traffic being only able to reach the bridge interface itself, then packets can only be routed. This is useful when you want other devices to filter out certain traffic. Similar behavior can be achieved using bridge filter rules.
+将所有网桥端口设置在同一网桥的split-horizon中，会导致流量只能到达网桥接口本身，然后数据包只能被路由。如果你希望其他设备过滤掉某些流量时， 这很有用。类似的行为也可以用网桥过滤规则来实现。
 
-# Unsupported SFP modules
+# 不支持的 SFP 模块
 
 ___
 
-Consider the following scenario, you have decided to use optical fiber cables to connect your devices together by using SFP or SFP+ optical modules, but for convenience reasons, you have decided to use SFP optical modules that were available.
+考虑以下情况，你决定用SFP或SFP+光模块把你的设备连接在一起，但为了方便，你决定用现有的SFP光模块。
 
-## Problem
+## 问题
 
-As soon as you configure your devices to have connectivity on the ports that are using these SFP optical modules, you might notice that either the link is working properly or experiencing random connectivity issues. There are many vendors that manufacture SFP optical modules, but not all vendors strictly follow SFP MSA, SFF, and IEEE 802.3 standards, which can lead to unpredictable compatibility issues, which is a very common issue when using not well known or unsupported SFP optical modules in MikroTik devices.
+当你把设备配置成使用这些SFP光模块的端口连接后，可能链接工作正常，也可能遇到随机连接问题。有许多厂商生产SFP光模块并非都严格遵循SFP MSA、SFF和IEEE 802.3标准，这可能会导致不可预测的兼容性问题，当在MikroTik设备中使用不知名或不支持的SFP光模块时，这是一个很常见的问题。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是错误配置造成的症状。
 
-- SFP interface does not link up
-- Random packet drop
-- Unstable link (flapping)
-- SFP module not running after a reboot
-- SFP module not running after power-cycle
-- SFP module running only on one side
+- SFP接口没有连接起来
+- 随机丢包
+- 不稳定的链接（抖动）。
+- 重启后SFP模块不运行
+- 断电后SFP模块不运行
+- SFP模块只在一侧运行
 
-## Solution
+## 解决方案
 
-You should only use supported SFP modules. Always check the [SFP compatibility table](https://wiki.mikrotik.com/wiki/MikroTik_SFP_module_compatibility_table "MikroTik SFP module compatibility table") if you are intending to use SFP modules manufactured by MikroTik. There are other SFP modules that do work with MikroTik devices as well, check the [Supported peripherals table](https://help.mikrotik.com/docs/display/ROS/Peripherals#Peripherals-SFPmodules) to find other SFP modules that have been confirmed to work with MikroTik devices. Some unsupported modules might not be working properly at certain speeds and with auto-negotiation, you might want to try to disable it and manually set a link speed.
+你应该使用支持的SFP模块。如果你打算使用MikroTik生产的SFP模块，一定要查看[SFP兼容性表](https://wiki.mikrotik.com/wiki/MikroTik_SFP_module_compatibility_table "MikroTik SFP模块兼容性表")。其他的SFP模块也可以和MikroTik设备一起使用，请查看[支持的外围设备表](https://help.mikrotik.com/docs/display/ROS/Peripherals#Peripherals-SFPmodules)，找到其他已确认可以和MikroTik设备一起使用的SFP模块。不受支持的模块可能在某些速度下不能正常工作，而且有自动协商功能，你可以尝试禁用它并手动设置一个链接速度。

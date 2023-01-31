@@ -52,65 +52,63 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan2</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros comments"># translates WMM priority to VLAN priority</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code> <code class="ros value">out-interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
 
-The same situation applies when wireless packets are VLAN tagged by the wireless interface using the `vlan-mode=use-tag` and `vlan-id` settings. You still need to use the same bridge filter rule to translate WMM priority to VLAN priority:
+当无线数据包被无线接口用 `vlan-mode=use-tag` 和 `vlan-id` 打上 VLAN 标签时，情况也是如此。仍然需要使用相同的网桥过滤规则来将 WMM 优先级转换为 VLAN 优先级。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros value">default-name</code><code class="ros plain">=wlan2</code> <code class="ros plain">] </code><code class="ros value">vlan-mode</code><code class="ros plain">=use-tag</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan2</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># translates WMM priority to VLAN priority</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code> <code class="ros value">out-interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
 
-The same principles apply in the other direction. RouterOS does not automatically translate VLAN priority to WMM priority. The same rule `new-priority=from-ingress` can be used to translate VLAN priority to WMM priority. 
+同样的原则也适用于另一个方向。RouterOS不会自动将VLAN优先级转换为WMM优先级。同样的规则`new-priority=from-ingress`可以用来将VLAN优先级转换为WMM优先级。 
 
-RouterOS bridge forwards VLAN tagged packets unaltered, which means that received VLAN tagged packets with a certain VLAN priority will leave the bridge with the same VLAN priority. The only exception is when the bridge untags the packet, in this situation VLAN priority is not preserved due to the missing VLAN header. 
+RouterOS 网桥转发 VLAN 标记的数据包时，不作任何改变，这意味着收到的具有一定 VLAN 优先级的 VLAN 标记的数据包将以相同的 VLAN 优先级离开网桥。唯一的例外是当网桥取消了数据包的标记，在这种情况下，由于VLAN头的缺失，VLAN优先级不会被保留。
 
-# Priority from DSCP
+# 来自DSCP的优先级
 
 ___
 
-Another way of setting VLAN or WMM priority is by using the DSCP field in the IP header, this can only be done by the IP firewall mangle rule with `new-priority=``from-dscp` or `new-priority=from-dscp-high-3-bits` settings and `set-priority` action property. Note that DSCP in IP header can have values 0-63, but priority only 0-7. When using the `new-priority=``from-dscp` setting, the priority will be 3 low bits of the DSCP value, but when using `new-priority=from-dscp-high-3-bits` the priority will be 3 high bits of DSCP value.
+另一种设置VLAN或WMM优先级的方法是使用IP头中的DSCP字段，这只能由IP防火墙的mangle规则来完成，该规则有`new-priority=`from-dscp`或`new-priority=from-dscp-high-3-bits`设置和`set-priority`动作属性。注意，IP头中的DSCP可以有0-63的值，但优先级只有0-7。当使用`new-priority=`from-dscp`设置时，优先级将是DSCP值的3个低位，但当使用`new-priority=from-dscp-high-3-bits`时，优先级将是DSCP值的3个高位。
 
-Remember that DSCP can only be accessed on IP packets and DSCP value in IP header should be set somewhere (either by client devices or IP mangle rules).
+请记住，DSCP只能在IP数据包上访问，IP头中的DSCP值应该在某处设置（由客户端设备或IP混合规则）。
 
-It is best to set the DSCP value in the IP header of packets on some border router (e.g. main router used for connection to the Internet), based on traffic type e.g. set DSCP value for packets coming from the Internet belonging to SIP connections to 7, and 0 for the rest. This way packets must be marked only in one place. Then all APs on the network can set packet priority from DSCP value with just one rule.
+最好是在一些边界路由器（例如用于连接互联网的主路由器）上，根据流量类型，在数据包的IP头中设置DSCP值，例如，将来自互联网的属于SIP连接的数据包的DSCP值设置为7，其余为0。这样，数据包只在一个地方被标记。然后，网络上的所有AP都可以通过DSCP值设置数据包的优先级，只需一条规则。
 
-## Set VLAN or WMM priority from DSCP
+## 从DSCP设置VLAN或WMM优先级
 
-In this example, the AP device will set WMM priority from DSCP when packets are routed through the wireless interface.
+在这个例子中，当数据包通过无线接口路由时，AP设备将从DSCP设置WMM优先级。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-dscp</code> <code class="ros value">out-interface</code><code class="ros plain">=wlan2</code></div></div></td></tr></tbody></table>
-
   
+当数据包通过网桥转发时，可以通过网桥设置下的 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 
-When packets are forwarded through a bridge, it is possible to pass packets through IP mangle rules with `use-ip-firewall=yes` under the bridge settings.
-
-# DSCP from Priority
+# DSCP 从优先级
 
 ___
 
-Similarly, the DSCP value can be set if the received packet contains VLAN or WMM priority. This can be achieved with IP mangle rules with `new-dscp=from-priority` or `new-dscp=from-priority-to-high-3-bits` settings and `change-dscp` action property. Note that priority in VLAN or WMM packets can have values 0-7, but DSCP in IP headers are 0-63. When using the `new-dscp=from-priority` setting, the value of priority will set the 3 low bits of the DSCP, but when using `new-dscp=from-priority-to-high-3-bits`  the value of priority will set the 3 high bits of the DSCP. 
+同样，如果收到的数据包包含 VLAN 或 WMM 优先级，也可以设置 DSCP 值。这可以通过 IP mangle 规则来实现，该规则具有 `new-dscp=from-priority` 或 `new-dscp=from-priority-to-high-3-bits` 设置和 `change-dscp` 动作属性。注意，VLAN或WMM数据包中的优先级可以有0-7的值，但IP头中的DSCP是0-63。当使用`new-dscp=from-priority`设置时，优先级的值将设置DSCP的3个低位，但当使用`new-dscp=from-priority-to-high-3-bits`，优先级的值将设置DSCP的3个高位。
 
-However, this setting cannot directly use ingress priority from received VLAN or WMM packets. You first need to set priority using IP mangle or bridge filter/nat rules (ingress priority can be used in this case), and only then apply the DSCP rule.
+然而，这种设置不能直接使用从收到的VLAN或WMM数据包中的入口优先级。首先需要使用IP mangle或网桥过滤/nat规则设置优先级（在此情况下可以使用入口优先级），然后才能应用DSCP规则。
 
-## Set DSCP from VLAN or WMM priority
+## 从VLAN或WMM优先级设置DSCP
 
-In this example, the AP device needs to set DSCP from WMM priority when packets are routed. First, add a rule to set priority, it will be needed for the DSCP rule in order to correctly change the DSCP value. This rule can take priority from ingress. Then add the DSCP rule to change its value.
+在这个例子中，当数据包被路由时，AP设备需要从WMM优先级设置DSCP。首先，添加一个规则来设置优先级，为了正确改变DSCP值，DSCP规则需要它。这个规则可以从入口处获得优先权。然后添加DSCP规则来改变其值。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">in-interface</code><code class="ros plain">=wlan2</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=change-dscp</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">in-interface</code><code class="ros plain">=wlan2</code> <code class="ros value">new-dscp</code><code class="ros plain">=from-priority</code></div></div></td></tr></tbody></table>
 
-When packets are forwarded through a bridge, it is possible to pass packets through IP mangle rules with `use-ip-firewall=yes` under the bridge settings.
+当数据包通过网桥转发时，可以通过网桥设置下 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 
-# Combining priority setting and handling solutions
-
-___
-
-Complex networks and different situations can be handled by combining different approaches of carrying priority information to ensure QoS and optimize the use of resources, based on the "building blocks" described above. Several suggestions:
-
--   The fewer number of filter rules in the whole network, the better (faster). Try classifying packets only when necessary, prefer to do that on fast routers as most probably connection tracking will be required.
--   Use DSCP to carry priority information in IP packets forwarded in your network, this way you can use it when needed.
--   Use VLANs where necessary, as they also carry priority information, make sure Ethernet bridges and switches in the way are not clearing priority information in the VLAN tag.
--   Remember that QoS does not improve the throughput of links, it just treats different packets differently, and also that WMM traffic over the wireless link will discriminate regular traffic in the air.
-
-# See also
+# 结合优先级设置和处理的方案
 
 ___
 
--   [Packet Flow in RouterOS](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS)
--   [IP mangle](https://help.mikrotik.com/docs/display/ROS/Mangle)
--   [Bridge firewall](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeFirewall)
+复杂的网络和不同的情况可以通过结合不同的承载优先级信息的方法来处理，以确保QoS和优化资源的使用，基于上述的 "构建模块"。有几个建议。
+
+- 整个网络中的过滤规则数量越少越好（越快）。只在必要时对数据包进行分类，最好在快速路由器上这样做，因为很可能需要进行连接跟踪。
+- 在网络中转发的IP数据包中使用DSCP来携带优先级信息，这样就可以在需要时使用它。
+- 必要时使用VLAN，因为它们也携带优先级信息，确保碍事的以太网桥和交换机不清除VLAN标签中的优先级信息。
+- 记住，QoS并不能提高链路的吞吐量，它只是对不同的数据包进行不同的处理，另外，无线链路上的WMM流量会对空中的常规流量进行判别。
+
+# 另见
+
+___
+
+- [Packet Flow in RouterOS](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS)
+- [IP mangle](https://help.mikrotik.com/docs/display/ROS/Mangle)
+- [Bridge firewall](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeFirewall)

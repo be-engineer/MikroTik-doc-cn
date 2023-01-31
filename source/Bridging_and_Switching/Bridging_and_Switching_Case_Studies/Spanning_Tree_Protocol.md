@@ -1,420 +1,346 @@
-# Summary
+# 概述
 
 ___
 
-The purpose of spanning tree protocol is to provide the ability to create loop-free Layer 2 topologies while having redundant links. While connecting multiple bridges or just cross-connecting bridge ports, it's possible to create network loops that can severely impact the stability of the network. Spanning tree protocol aims to resolve this problem by introducing the concept of the root bridge, all bridges in the same Layer 2 domain will exchange information about the shortest path to the root bridge. Afterward, each bridge will negotiate which ports to use to reach the root bridge. This information exchange is done with the help of Bridge Protocol Data Units (BPDUs). STP will disable certain ports for each bridge in order to avoid loops, while still ensuring that all bridges can communicate with each other. For an in-depth description of protocol please refer to 802.1Q.
+生成树协议的目的是提供创建无环路第二层拓扑的能力，同时拥有冗余链接。在连接多个网桥或是交叉连接网桥端口时，有可能产生网络环路，严重影响网络的稳定性。生成树协议旨在通过引入根桥的概念来解决这个问题，二层的所有网桥将交换到根桥最短路径的信息。之后，每个网桥将协商使用哪些端口来到达根桥。这种信息交换是在网桥协议数据单元（BPDU）的帮助下完成的。STP将禁用每个网桥的某些端口，避免环路，同时仍然确保所有网桥能够相互通信。关于协议的深入描述，请参考802.1Q。
 
-As a best practice, it is always recommended to manually set up each bridge's priority, port priority, and port path cost to ensure proper Layer2 functionality at all times. Leaving STP related values to defaults are acceptable for a network that consists of 1 to 2 bridges running with (R/M)STP enabled, but it is highly recommended to manually set these values for larger networks. Since STP elects a root bridge and root ports by checking STP related values from bridges over the network, then leaving STP settings to automatic may elect an undesired root bridge and root ports and in case of a hardware failure can result in an inaccessible network.
+作为一个最佳实践，建议手动设置每个网桥的优先级、端口优先级和端口路径开销，以确保在任何时候都有正确的二层功能。对于由 1 到 2 个启用了 (R/M)STP 的网桥组成的网络来说，将 STP 的相关值保留为默认值是可以接受的，但对于更大的网络，强烈建议手动设置这些值。由于 STP 是通过检查网络上网桥的 STP 相关值来选择根桥和根端口的，如果将 STP 设置为自动，可能会选出一个不想要的根桥和根端口，在硬件故障的情况下，会导致网络无法访问。
 
-# Monitoring
+#监测
 
 ___
 
-You can check the STP status of a bridge by using the `/interface bridge monitor`  command, for example:
+可以使用`/interface bridge monitor`命令来检查网桥的STP状态，例如：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">monitor </code><code class="ros plain">bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 64:D1:54:D9:27:E6</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0x3000.64:D1:54:D9:27:E6</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: none</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 5</code></div></div></td></tr></tbody></table>
 
-Note that the root bridge doesn't have any root ports, only designated ports.
+注意，根桥没有任何根端口，只有指定端口。
 
-You can check the STP status of a bridge port by using the `/interface bridge port monitor` command, for example:
+可以使用 `/interface bridge port monitor` 命令来检查某个网桥端口的 STP 状态，例如：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">monitor </code><code class="ros plain">2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">interface</code><code class="ros constants">: ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: in-bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-number</code><code class="ros constants">: 3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">role</code><code class="ros constants">: root-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">edge-port</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">edge-port-discovery</code><code class="ros constants">: yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">point-to-point-port</code><code class="ros constants">: yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">external-fdb</code><code class="ros constants">: no</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">sending-rstp</code><code class="ros constants">: yes</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: yes</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 10</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-bridge</code><code class="ros constants">: 0x3000.64:D1:54:D9:27:E6</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-cost</code><code class="ros constants">: 0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-port-number</code><code class="ros constants">: 4</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">hw-offload-group</code><code class="ros constants">: switch1</code></div></div></td></tr></tbody></table>
 
-Note that `root-bridge-id` consists of the bridge priority and the bridge's MAC address, for non-root bridges the root bridge will be shown as `designated-bridge`. One port can have one role in an STP enabled network, below is a list of possible port roles:
+注意，"根桥ID "由网桥优先级和网桥的MAC地址组成，对于非根桥，根桥将显示为 "指定桥"。在启用STP的网络中，一个端口可以有一个角色，下面是端口角色列表。
 
--   **root-port** \- port that is facing towards the root bridge and will be used to forward traffic from/to the root bridge.
--   **alternate-port** \- port that is facing towards root bridge, but is not going to forward traffic (a backup for root port).
--   **backup-port** \- port that is facing away from the root bridge, but is not going to forward traffic (a backup for non-root port).
--   **designated-port** \- port that is facing away from the root bridge and is going to forward traffic.
--   **disabled-port** \- disabled or inactive port.
+- **root-port** - 端口面向根桥，用于转发根桥的流量。
+- **alternate-port** - 面向根桥的端口，但不用来转发流量（根桥的备份）。
+- **backup-port** - 面向根桥的端口，但不转发流量（非根端口的备用端口）。
+- **designated-port** -（--远离根桥的端口，将转发流量。
+- **disabled-port** - 禁用或不活跃的端口。
 
-When using bridges that are set to use 802.1Q as EtherType, they will send out BPDUs to 01:80:C2:00:00:00, which are used by MSTP, RSTP, and STP. When using 802.1ad as bridge VLAN protocol, the BPDUs are not compatible with 802.1Q bridges and they are sent to 01:80:C2:00:00:08. (R/M)STP will not function properly if there are different bridge VLAN protocols across the Layer2 network.
+当用 802.1Q 作为 EtherType 的网桥时，它们会向 01:80:C2:00:00:00 发送 BPDUs，这被 MSTP、RSTP 和 STP 使用。当使用802.1ad作为网桥VLAN协议时，BPDUs与802.1Q网桥不兼容，它们会被发送到01:80:C2:00:00:08。 如果整个二层网络有不同的网桥VLAN协议，(R/M)STP将不能正常工作。
 
-# STP and RSTP
+# STP和RSTP
 
 ___
 
-STP and Rapid STP are used widely across many networks, but almost all networks have switched over using only RSTP since of its benefits. STP is a very old protocol and has a convergence time (the time needed to fully learn network topology changes and to continue properly forwarding traffic) of up to 50 seconds. RSTP has a lot of smaller convergence time, a few seconds or even a few milliseconds. It is recommended to use RSTP instead of STP since it is a lot faster and is also backward compatible with STP. One of the reasons why RSTP is faster is because of reduced possible port states, below is a list of possible STP port states:
+STP和Rapid STP在许多网络中广泛使用，但几乎所有的网络都只使用RSTP，因为它有很多好处。STP是一个非常古老的协议，它的收敛时间（完全了解网络拓扑结构变化并继续正确转发流量所需的时间）长达50秒。RSTP的收敛时间小很多，几秒甚至几毫秒。建议使用RSTP而不是STP，因为它的速度要快得多，而且还能向后兼容STP。RSTP更快的原因之一是减少了可能的端口状态，下面是STP端口状态列表：
 
--   **Forwarding** \- port participates in traffic forwarding and is learning MAC addresses, is receiving BPDUs.
--   **Listening** \- port does not participate in traffic forwarding and is not learning MAC addresses, is receiving BPDUs.
--   **Learning** \- port does not participate in traffic forwarding but is learning MAC addresses.
--   **Blocking** \- port is blocked since it is causing loops but is receiving BPDUs.
--   **Disabled** \- port is disabled or inactive.
+- **Forwarding** - 端口参与流量转发，正在学习MAC地址，正在接收BPDU。
+- Listening** - 端口不参与流量转发，不学习MAC地址，正在接收BPDU。
+- **Learning** - 端口不参与流量转发，但正在学习MAC地址。
+- **Blocking**  -- 端口被阻断，因为它造成环路，但正在接收BPDUs。
+- **Disabled** - 端口被禁用或不活跃。
 
-In RSTP the disabled, listening and blocking port states are replaced with just one state called the **Discarding** state:
+在RSTP中，禁用、监听和阻塞的端口状态被一个称为**丢弃**的状态所取代。
 
--   **Forwarding** \- port participates in traffic forwarding and is learning MAC addresses, is receiving BPDUs (forwarding=yes).
--   **Learning** \- port does not participate in traffic forwarding but is learning MAC addresses (learning=yes).
--   **Discarding** \- port does not participate in traffic forwarding and is not learning MAC addresses, is receiving BPDUs (forwarding=no).
+- **Forwarding** - 端口参与流量转发，正在学习MAC地址，正在接收BPDUs（forwarding=yes）。
+- **Learning** - 端口不参与流量转发，但正在学习MAC地址（learning=yes）。
+- Discarding** - 端口不参与流量转发，不学习MAC地址，正在接收BPDUs（forwarding=no）。
 
-In STP connectivity between bridges is determined by sending and receiving BPDUs between neighbor bridges. Designated ports are sending BPDUs to root ports. If a BPDU is not received 3 times the **HelloTime** in a row, then the connection is considered as unavailable and network topology convergence will commence. It is possible for STP to reduce the convergence time in certain scenarios by reducing the `forward-delay` timer, which is responsible for how long can the port be in the learning/listening state.
+在STP中，网桥之间的连接是由邻居网桥之间发送和接收BPDU决定的。指定的端口正在向根端口发送BPDU。如果连续3次没有收到BPDU的**HelloTime**，那么连接被认为是不可用的，网络拓扑收敛将开始。在某些情况下，STP有可能通过减少 "转发延迟 "计时器来减少收敛时间，该计时器负责端口在学习/监听状态的时间。
 
-In RouterOS, it is possible to specify which bridge ports are edge ports. Edge ports are ports that are not supposed to receive any BPDUs, this is beneficial since this allows STP to skip the learning and the listening state and directly go to the forwarding state. This feature is sometimes called **PortFast**· You can leave this parameter to the default value, which is **auto**, but you can also manually specify it, you can set a port as edge port manually for ports that should not have any more bridges behind it, usually these are access ports.
+在RouterOS中，可以指定哪些网桥端口是边缘端口。边缘端口是指不接收任何BPDU的端口，这很有好处，因为这允许STP跳过学习和监听状态，直接进入转发状态。这个功能有时被称为**PortFast**，你可以把这个参数保留为默认值，也就是**auto**，但也可以手动指定，可以为那些后面不应该有任何网桥的端口手动设置为边缘端口，通常这些端口是接入端口。
 
-Additionally, bridge port `point-to-point` , specifies if a bridge port is connected to a bridge using a point-to-point link for faster convergence in case of failure. By setting this property to `yes`, you are forcing the link to be a point-to-point link, which will skip the checking mechanism, which detects and waits for BPDUs from other devices from this single link, by setting this property to `no`, you are implying that a link can receive BPDUs from multiple devices. By setting the property to `yes`, you are significantly improving (R/M)STP convergence time. In general, you should only set this property to `no` , if it is possible that another device can be connected between a link, this is mostly relevant to Wireless mediums and Ethernet hubs. If the Ethernet link is full-duplex, `auto` enables point-to-point functionality. This property has no effect when protocol-mode is set to `none`.
+此外，桥接端口 `point-to-point` ，指定了一个桥接端口是否使用点对点链路连接到一个网桥，以便在发生故障时更快地收敛。将此属性设置为`yes'就等于强制为点对点链接，会跳过检查机制，即检测并等待来自该单一链接的其他设备的BPDU，将此属性设置为`no'就意味着一个链接可以接收来自多个设备的BPDU。通过将该属性设置为 "yes"，将大大改善（R/M）STP收敛时间。一般来说，只应该把这个属性设置为 "no"，如果一个链路之间有可能连接另一个设备，这主要和无线媒介和以太网集线器有关。如果以太网链路是全双工的，`auto`会启用点对点功能。当协议模式设置为 "none "时，该属性没有影响。
 
-## Default values
+## 默认值
 
-When creating a bridge or adding a port to the bridge the following are the default values that are assigned by RouterOS:
+在创建网桥或向网桥添加端口时， 以下是 RouterOS 分配的默认值。
 
--   Default bridge priority: **32768** / **0x8000**
--   Default bridge port path cost: **10**
--   Default bridge port priority: **0x80**
--   BPDU message age increment: **1**
--   HelloTime: **2**
--   Default max message age: **20**
+- 默认的网桥优先级。 **32768** / **0x8000**
+- 默认的网桥端口路径开销。 **10**
+- 默认的网桥端口优先级。 **0x80**
+- BPDU信息寿命增量。 **1**
+- HelloTime。 **2**
+- 默认最大报文寿命。 **20**
 
-RouterOS does not change port path cost based on the link speed, for 10M, 100M, 1000M, and 10000M link speeds the default path cost value when a port is added to a bridge are always **10**. The age of a BPDU is determined by how many bridges have the BPDU passed times the message age since RouterOS uses **1** as the message age increment, then the BPDU packet can pass as many bridges as specified in the `max-message-age` parameter. By default this value is set to **20**, this means that after the 20th bridge the BPDU packet will be discarded and the next bridge will become a root bridge, note that if `max-message-age=20`on is set, then it is hard to predict which ports will be the designated port on the 21st bridge and may result in traffic not being able to be forwarded properly.
+RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、1000M和10000M的链路速度，当一个端口添加到网桥时，默认的路径开销值总是**10**。BPDU的寿命由BPDU通过的网桥数乘以消息寿命决定，因为RouterOS使用**1**作为消息寿命的增量，那么BPDU数据包可以通过多少个网桥，就可以在`max-message-age`参数中指定。默认情况下，这个值被设置为**20**，这意味着在第20个网桥之后，BPDU数据包将被丢弃，下一个网桥将成为根桥。注意，如果设置了`max-message-age=20`，那么就很难预测哪些端口将成为第21个网桥的指定端口，可能导致流量无法正常转发。
 
-In case bridge filter rules are used, make sure you allow packets with DST-MAC address **01:80:C2:00:00:00** since these packets carry BPDUs that are crucial for STP to work properly.
+如果使用网桥过滤规则，请确保允许带有 DST-MAC 地址 **01:80:C2:00:00:00** 的数据包，因为这些数据包携带 BPDU，对 STP 的正常工作至关重要。
 
-## Election process
+## 选举过程
 
-To properly configure STP in your network you need to understand the election process and which parameters are involved in which order. In RouterOS the root bridge will be elected based on the smallest priority and the smallest MAC address in this particular order:
+要在网络中正确配置 STP，需要了解选举过程，以及哪些参数以何种顺序参与。在RouterOS中，根桥会根据最小的优先级和最小的MAC地址以这种特定的顺序被选出。
 
-1.  Bridge priority (lowest)
-2.  Bridge MAC address (lowest)
+1. 网桥优先级（最低）
+2. 网桥MAC地址（最低）
 
-In RouterOS root ports are elected based on lowest Root port path cost, lowest bridge identifier, and lowest bridge port ID in this particular order:
+在RouterOS中，根端口的选择是基于最低的根端口路径开销、最低的网桥标识符和最低的网桥端口ID，具体顺序如下。
 
-1.  Root port path cost (lowest)
-2.  Bridge identifier (lowest)
-3.  Bridge port ID (lowest)
+1. 根端口的路径开销(最低)
+2. 网桥标识符(最低)
+3. 网桥端口ID（最低）
 
-First, when the device considers which of its ports to elect as the root port, it will check the **root path cost** seen by its ports. If root path cost is the same for two or more ports then the **Bridge identifier** of the **upstream** device will be checked and port connected to the lowest bridge identifier will become the root port. If the same bridge identifier is seen on two or more ports, then the **Bridge port ID** of the **upstream** device will be checked.
+首先，当设备考虑选择哪个端口作为根端口时，它会检查其端口看到的**根路径开销**。如果两个或多个端口的根路径开销相同，那么会检查**上游**设备的**桥标识符**，与最低网桥标识符相连的端口将成为根端口。如果在两个或多个端口上看到相同的网桥标识符，那么将检查**上游**设备的**网桥端口标识符**。
 
-Explanation of attributes:
+属性的说明。
 
-Root path cost, all bridges have a Root Path Cost. Root bridge has a root path cost of 0. For all other Bridges, it is the sum of the Port Path Costs on the least-cost path to the Root Bridge. You can modify local port path cost under "/interface bridge port".
+根路径成本，所有网桥都有一个根路径开销。根桥的根路径开销为0，对于所有其他桥，它是到根桥的最小成本路径上的端口路径开销之和。可以在"/interface bridge port "下修改本地端口路径开销。
 
-Bridge identifier is a combination of "bridge priority" and "bridge MAC", configurable under "/interface bridge"
+网桥标识符是 "网桥优先级 "和 "网桥MAC "的组合，可在"/interface bridge "下配置。
 
-Bridge port ID is a combination of "unique ID" and "bridge port priority", the unique ID is automatically assigned to bridge port upon adding it to the bridge, it cannot be edited. It can be seen in WinBox under "Bridge Port" "Port Number" column, or with "/interface bridge port monitor", as "port-number".
+网桥端口 ID 是 "唯一 ID "和 "网桥端口优先级 "的组合，唯一 ID 在添加到网桥时自动分配给网桥端口，不能编辑。可以在 WinBox 的 "桥接端口""端口号 "栏下看到，或者用"/interface bridge port monitor"，作为 "端口号"。
 
-Make sure you are using path cost and priority on the right ports. For example, setting path cost on ports that are in a root bridge has no effect, only port priority has an effect on them. Root path cost has an effect on ports that are facing towards the root bridge and port priority has an effect on ports that are facing away from the root bridge. And bridge identifier doesn’t impact the device's own root port election, instead, it affects the root port election for downstream devices.
+确保在正确的端口上使用了路径开销和优先级。例如，对处于根桥中的端口设置路径开销是没有影响的，只有端口优先级对它们有影响。根路径开销对面向根桥的端口有影响，而端口优先级对远离根桥的端口有影响。网桥标识符并不影响设备自身的根端口选举，相反，它会影响下游设备的根端口选举。
 
-In RouterOS it is possible to set any value for bridge priority between 0 and 65535, the IEEE 802.1W standard states that the bridge priority must be in steps of 4096. This can cause incompatibility issues between devices that do not support such values. To avoid incompatibility issues, it is recommended to use only these priorities: 0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440.
+在RouterOS中，可以为网桥优先级设置0到65535之间的任何数值，IEEE 802.1W标准规定，网桥优先级必须以4096为单位。这可能会导致不支持这种值的设备之间的不兼容问题。为了避免不兼容的问题，建议只使用这些优先级。0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440.
 
-## Examples
+## 示例
 
-### Root path cost example
+### 根路径开销示例
 
 ![](https://help.mikrotik.com/docs/download/attachments/21725254/RootPath.png?version=3&modificationDate=1585736384808&api=v2)
 
-This example outlines how the root path cost works. SW1 will be the root bridge, due to it having the lowest priority of 0x1000, as the root bridge. Each bridge will calculate the path cost to the root bridge. When calculating root path cost bridges take into account configured path cost on their ports + root path cost advertised by neighboring bridges. 
+这个例子概述了根路径开销是如何工作的。由于SW1的优先级最低，为0x1000，因此它将成为根桥。每个网桥都会计算到根桥的路径开销。在计算根路径开销时，网桥会考虑到其端口上配置的路径开销 + 邻近网桥公布的根路径开销。 
 
-**SW1**: due to it being the root bridge, it advertises root path cost of 0 to its neighbors, even though it has a configured path cost of 10. 
+**SW1**：由于它是根桥，它向邻居公布的根路径成本是0，尽管它的配置路径成本是10。 
 
-**SW2:**  **ether1**. has root path cost of 0 + 25=**25**. On the **ether2** path cost will be 10+10+10+0=**30**
+**SW2:** **ether1**的根路径开销为0+25=**25**。在**ether2**的路径开销将是10+10+10+0=**30**。
 
-**SW3:**  **ether2**, has root path cost of 0 + 25=**25**. On the **ether4** path cost will be 10+5+25+0=**40**
+**SW3:** **ether2**，根路径开销为0+25=**25**。在**ether4**的路径开销将是10+5+25+0=**40**。
 
-**SW4:**  **ether1**, has root path cost of 0+25+5=**30**. On **ether4** path cost will be 10+10+0=**20**
+**SW4:** **ether1**, 根路径开销为0+25+5=**30**. 在**ether4**上的路径开销将是10+10+0=**20**。
 
-Port with the lowest path cost will be elected as the root port. Every bridge in STP topology needs a path to root bridge, after the best path has been found, the redundant path will be blocked, in this case, path between SW2 and SW4.
+路径成本最低的端口将被选为根端口。STP拓扑中的每个网桥都需要一条通往根桥的路径，在找到最佳路径后，多余的路径将被阻断，本例中是SW2和SW4之间的路径。
 
-You can configure path cost on the root bridge, but it will only be taken into account when the bridge loses its root status. 
+可以在根桥上配置路径开销，但只有在该桥失去根桥地位时才会被考虑。 
 
-### STP example
+### STP示例
 
 ![](https://help.mikrotik.com/docs/download/attachments/21725254/STPexample1.png?version=1&modificationDate=1585739167256&api=v2)
 
-In this example, we want to ensure Layer2 redundancy for connections from ServerA to ServerB. If a port is connected to a device that is not a bridge and not running (R)STP, then this port is considered as an edge port, in this case ServerA and ServerB is connected to an edge port. This is possible by using STP in a network. Below are configuration examples for each switch.
+在这个例子中，要确保从ServerA到ServerB的连接有二层的冗余。如果一个端口连接到一个不是网桥且没有运行(R)STP的设备上，那么这个端口就被认为是一个边缘端口，在这个例子中，ServerA和ServerB被连接到一个边缘端口。这可以通过在网络中使用STP来实现。下面是每个交换机的配置例子。
 
--   Configuration for SW1:
+- SW1的配置。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">priority</code><code class="ros plain">=0x60</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">priority</code><code class="ros plain">=0x50</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">priority</code><code class="ros plain">=0x40</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">priority</code><code class="ros plain">=0x30</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code></div></div></td></tr></tbody></table>
 
--   Configuration for SW2:
+- SW2配置:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
 
--   Configuration for SW3:
+- SW3配置:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
 
--   Configuration for SW4:
+- SW4配置:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x4000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
 
-In this example, **SW1** is the root bridge since it has the lowest bridge priority. **SW2** and **SW3** have ether1,ether2 connected to the root bridge and ether3 is connected to **SW4**. When all switches are working properly, the traffic will be flowing from ServerA through SW1\_ether2, through SW2, through SW4 to ServerB. In the case of **SW1** failure, the **SW2** becomes the root bridge because of the next lowest priority, indicated by the dotted line in the diagram. Below is a list of ports and their role for each switch:
+在这个例子中，**SW1**是根桥，因为它有最低的网桥优先级。 **SW2**和**SW3**的ether1,ether2连接到根桥，ether3连接到**SW4**。当所有的交换机都正常工作时，流量将从服务器A通过SW1/ether2，通过SW2，通过SW4流向服务器B。在**SW1**故障的情况下，**SW2**成为根桥，因为它的优先级次之，由图中虚线表示。下面是每个交换机的端口及其作用的列表。
 
--   **root-port** \- SW2\_ether2, SW3\_ether2, SW4\_ether1
--   **alternate-port** \- SW2\_ether1, SW3\_ether1, SW4\_ether2
--   **designated-port** \- SW1\_ether1, SW1\_ether2, SW1\_ether3, SW1\_ether4, SW1\_ether5, SW2\_ether3, SW2\_ether3, SW4\_ether3
+- **root-port** - SW2\_ether2, SW3\_ether2, SW4\_ether1
+- **alternate-port** - SW2/ether1, SW3/ether1, SW4/ether2
+- **designated-port** - SW1_ether1, SW1_ether2, SW1_ether3, SW1_ether4, SW1_ether5, SW2_ether3, SW2_ether3, SW4_ether3
 
-**Note:** By the 802.1Q recommendations, you should use bridge priorities in steps of 4096. To set a recommended priority it is more convenient to use hexadecimal notation, for example, 0 is 0x0000, 4096 is 0x1000, 8192 is 0x2000 and so on (0..F).
+**注意：**根据802.1Q的建议，应该以4096为单位使用网桥优先级。要设置推荐的优先级，使用十六进制的符号更方便，例如，0是0x0000，4096是0x1000，8192是0x2000，以此类推（0...F）。
 
-# Multiple Spanning Tree Protocol
+# 多重生成树协议
 
 ___
 
-Multiple Spanning Tree Protocol (MSTP) is used on a bridge interface to ensure loop-free topology across multiple VLANs, MSTP can also provide Layer2 redundancy and can be used as a load balancing technique for VLANs since it has the ability to have different paths across different VLANs. MSTP is operating very similarly to (R)STP and many concepts from (R)STP can be applied to MSTP and it is highly recommended to understand the principles behind (R)STP before using MSTP, but there are some differences that must be taken into account when designing an MSTP enabled network.
+多重生成树协议(MSTP)用于网桥接口，确保多个VLAN之间的无环路拓扑，MSTP还可以提供二层的冗余，还可以作为VLAN的负载均衡技术，因为它有能力在不同的VLAN之间有不同的路径。MSTP的操作与(R)STP非常相似，(R)STP的许多概念可以应用于MSTP，强烈建议在使用MSTP之前了解(R)STP的原理，但在设计启用MSTP的网络时必须考虑到一些差异。
 
-In case (R)STP is used, the BPDUs are sent across all physical interfaces in a bridge to determine loops and stop ports from being able to forward traffic if it causes a loop. In case there is a loop inside a certain VLAN, (R)STP might not be able to detect it. Some STP variants solve this problem by running an STP instance on every single VLAN (PVST), but this has been proven to be inefficient and some STP variants solve this problem by running a single STP instance across all VLANs (CST), but it lacks the possibility to do load balancing for each VLAN or VLAN group. MSTP tends to solve both problems by using MST instances that can define a group of VLANs (VLAN mapping) that can be used for load balancing and redundancy, this means that each VLAN group can have a different root bridge and a different path. Note that it is beneficial to group multiple VLANs in a single instance to reduce the amount of CPU cycles for each network topology change.
+在使用 (R)STP 时，BPDUs 会在网桥的所有物理接口上发送，以确定是否有环路，并在造成环路的情况下阻止端口转发流量。如果在某个VLAN内有一个环路，(R)STP可能无法发现它。一些STP变种通过在每个VLAN上运行一个STP实例来解决这个问题（PVST），但这已被证明是低效的；一些STP变种通过在所有VLAN上运行一个STP实例来解决这个问题（CST），但它缺乏为每个VLAN或VLAN组做负载均衡的可能性。MSTP倾向于通过使用MST实例来解决这两个问题，MST实例可以定义一组VLAN（VLAN映射），用于负载均衡和冗余，这意味着每个VLAN组可以有一个不同的根桥和不同的路径。注意，将多个VLAN分组在一个实例中是有益的，可以减少每次网络拓扑变化的CPU周期量。
 
- In RouterOS with MSTP enabled the bridge priority is the CIST's root bridge priority, as stated in the IEEE 802.1Q standard the bridge priority must be in steps of 4096, the 12 lowest bits are ignored. These are valid bridge priorities: 0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440. When setting an invalid bridge priority, RouterOS will warn you about it and trunk the value to a valid value, but will save the original value in the configuration since invalid bridge priority values can still be used in (R)STP between devices running RouterOS, though it is recommended to use valid a bridge priority instead.
+ 在启用了 MSTP 的 RouterOS 中， 网桥优先级是 CIST 的根桥优先级， 按照 IEEE 802.1Q 标准， 网桥优先级必须以 4096 为单位， 最低的 12 位被忽略。这些是有效的网桥优先级。0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440. 当设置一个无效的网桥优先级时，RouterOS 会警告，并将该值转为有效值，但会在配置中保存原来的值，因为无效的网桥优先级仍然可以在运行 RouterOS 的设备之间用于 (R)STP，尽管建议使用有效的网桥优先级。
 
-## MSTP Regions
+## MSTP区域
 
-MSTP works in groups called regions, for each region there will be a regional root bridge and between regions, there will be a root bridge elected. MSTP will use Internal Spanning Tree (IST) to build the network topology inside a region and Common Spanning Tree (CST) outside a region to build the network topology between multiple regions, MSTP combines these two protocols into Common and Internal Spanning Tree (CIST), which holds information about topology inside a region and between regions. From CST's perspective, a region will seemingly be as a single virtual bridge, because of this MSTP is considered very scalable for large networks. In order for bridges to be in the same region, their configuration must match, BPDUs will not include VLAN mappings since they can be large, rather a computed hash is being transmitted. If a bridge receives a BPDU through a port and the configuration does not match, then MSTP will consider that port as a boundary port and that it can be used to reach other regions. Below is a list of parameters that need to match in order for MSTP to consider a BPDU from the same region:
+MSTP以区域为单位工作，每个区域都有一个区域根桥，区域之间也会有一个根桥。MSTP将使用内部生成树（IST）来构建区域内的网络拓扑结构，在区域外使用普通生成树（CST）来构建多个区域间的网络拓扑结构，MSTP将这两个协议合并为普通和内部生成树（CIST），它拥有区域内和区域间拓扑结构的信息。从CST的角度来看，一个区域似乎将作为一个单一的虚拟网桥，正因为如此，MSTP被认为对大型网络有很好的扩展性。为了使网桥处于同一区域，它们的配置必须匹配，BPDU不包括VLAN映射，因为它们可能很大，而是传输一个计算的哈希。如果一个网桥通过一个端口收到BPDU，而配置不匹配，那么MSTP将认为该端口是一个边界端口，它可以被用来到达其他区域。下面是需要匹配的参数列表，以便MSTP考虑来自同一区域的BPDU。
 
--   Region name
--   Region revision
--   VLAN mappings to MST Instance IDs (computed hash)
+- 区域名称
+- 区域修订
+- VLAN 与 MST 实例 ID 的映射（计算的哈希）。
 
-It is possible to create MSTP enabled network without regions, though to be able to do load balancing per VLAN group it is required for a bridge to receive a BPDU from a bridge that is connected to it with the same parameters mentioned above. In RouterOS the default region name is empty and region revision is 0, which are valid values, but you must make sure that they match in order to get multiple bridges in a single MSTP region. A region cannot exist if their bridges are scattered over the network, these bridges must be connected at least in one way, in which they can send and receive BPDUs without leaving the region, for example, if a bridge with different region related parameters is between two bridges that have the same region related parameters, then there will exist at least 3 different MSTP regions.
+在没有区域的情况下，也可以创建启用了 MSTP 的网络，不过为了能够对每个 VLAN 组进行负载均衡，需要一个网桥从与之相连的网桥上接收 BPDU，其参数与上面提到的相同。在RouterOS中，默认的区域名称是空的，区域修订是0，这些都是有效的值，但必须确保它们是匹配的，以便在一个MSTP区域中获得多个网桥。如果一个区域的网桥分散在网络上，那这个区域就不可能存在，这些网桥必须至少以一种方式连接在一起，在这种情况下，它们可以发送和接收BPDU而不离开这个区域，例如，如果一个具有不同区域相关参数的网桥在两个具有相同区域相关参数的网桥之间，那么至少会存在3个不同的MSTP区域。
 
 ![](https://help.mikrotik.com/docs/download/attachments/21725254/MSTPtopology.png?version=1&modificationDate=1585743773949&api=v2)
 
-The downside of running every single bridge in a single MSTP region is the excess CPU cycles. In comparison, PVST(+) creates a Spanning Tree Instance for each VLAN ID that exists on the network, since there will be very limited paths that can exist in a network, then this approach creates a lot of overhead and unnecessary CPU cycles, this also means that this approach does not scale very well and can overload switches with not very powerful CPUs. MSTP solves this problem by dividing the network into MSTP regions, where each bridge inside this region will exchange and process information about VLANs that exist inside the same region, but will run a single instance of Spanning Tree Protocol in the background to maintain the network topology between regions. This approach has been proven to be much more effective and much more scalable, this means that regions should be used for larger networks to reduce CPU cycles.
+在一个MSTP区域内运行每一个网桥的缺点是多余的CPU周期。相比之下，PVST(+)为网络上存在的每个VLAN ID创建一个生成树实例，由于网络中能存在的路径会非常有限，那么这种方法会有大量的开销和不必要的CPU周期，意味着这种方法的扩展性不是很好，会使CPU不强大的交换机过载。MSTP解决了这个问题，它将网络划分为MSTP区域，这个区域内的每个网桥将交换和处理存在于同一区域内的VLAN的信息，但会在后台运行单一的生成树协议实例来维护区域间的网络拓扑结构。这种方法已经证明更有效，而且更具有可扩展性，这意味着区域应该用于更大的网络，以减少CPU周期。
 
-In regions, you can define MST Instances, which are used to configure load balancing per VLAN group and to elect the regional root bridge. It is worth mentioning that in each region there exists a pre-defined MST Instance, in most documentations, this is called as **MSTI0**· This MST Instance is considered as the default MST Instance, there are certain parameters that apply to this special MST Instance. When traffic is passing through an MSTP enabled bridge, MSTP will look for an MST Instance that has a matching VLAN mapping, but if a VLAN mapping does not exist for a certain VLAN ID, then traffic will fall under **MSTI0**.
+在区域中，可以定义 MST 实例，用于配置每个 VLAN 组的负载均衡和选举区域根桥。值得一提的是，在每个区域都有一个预定义的 MST 实例，在大多数文档中，它被称为 **MSTI0**- 这个 MST 实例被认为是默认的 MST 实例，有一些参数适用于这个特殊的 MST 实例。当流量通过一个启用了MSTP的网桥时，MSTP会寻找一个有匹配的VLAN映射的MST实例，但如果某个VLAN ID不存在VLAN映射，那么流量将落在**MSTI0**。
 
-Since MSTP requires VLAN filtering on the bridge interface to be enabled, then make sure that you have allowed all required VLAN IDs in `/interface bridge vlan`, otherwise, the traffic will not be forwarded and it might seem as MSTP misconfigured, although this is a VLAN filtering misconfiguration.
+由于 MSTP 需要在网桥接口上启用 VLAN 过滤，那么请确保在 `/interface bridge vlan` 中允许所有需要的 VLAN ID，否则，流量将不会被转发，并且可能看起来是 MSTP 配置错误，尽管这是一个 VLAN 过滤的错误配置。
 
-## Election process
+## 选举过程
 
-The election process in MSTP can be divided into two sections, intra-region and inter-region. For MSTP to work properly there will always need to be a regional root, that is the root bridge inside a region, and a CIST root, that is the root bridge between regions. A regional root is the root bridge inside a region, regional root bridge will be needed to properly set up load balancing for VLAN groups inside a region. CIST root will be used to configure which ports will be alternate/backups ports (inactive) and which ports will be root ports (active).
+MSTP的选举过程可以分为两个部分，即区域内和区域间。为了使MSTP正常工作，总是需要有一个区域根，即区域内的根桥，和一个CIST根，即区域间的根桥。区域根是区域内的根桥，区域根桥需要为区域内的VLAN组正确设置负载平衡。CIST 根将被用来配置哪些端口是备用/备份端口（非活动），哪些端口是根端口（活动）。
 
-Between regions, there is no load balancing per VLAN group, root port election process and port blocking between MSTP regions is done the same way as in (R)STP. If CIST has blocked a port that is inside an MSTP region to prevent traffic loops between MSTP regions, then this port can still be active for IST to do load balancing per VLAN group inside an MSTP region.
+在区域之间，每个VLAN组没有负载均衡，MSTP区域之间的根端口选举过程和端口阻塞的方式与(R)STP相同。如果CIST封锁了一个MSTP区域内的端口，以防止MSTP区域之间的流量循环，那么这个端口仍然可以为IST激活，以便在MSTP区域内的每个VLAN组做负载均衡。
 
--   The following parameters are involved to elect a regional root bridge or root ports inside a MSTP region:
+- 在MSTP区域内选举一个区域根桥或根端口时，需要用到以下参数：
 
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                                                            |
- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
- | **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | /interface bridge msti, MST Instance priority, used to elect a regional root inside a MSTP region.                                       |
- | **internal-path-cost** (_integer: 1..4294967295_; Default: **10**)                                         | /interface bridge port, path cost to the regional root for unknown VLAN IDs (MSTI0), used on a root port inside a MSTP region.           |
- | **priority** (_integer: 0..240_; Default: **128**)                                                         | /interface bridge port mst-override, MST port priority for a defined MST Instance, used on a bridge port on the regional root bridge.    |
- | **internal-path-cost** (_integer: 1..200000000_; Default: **10**)                                          | /interface bridge port mst-override, MST port path cost for a defined MST Instance, used on a non-root bridge port inside a MSTP region. |
-
+| 特性                                                                                                       | 说明                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | /interface bridge msti，MST实例优先级，用于在MSTP区域内选出区域根。                                         |
+| **internal-path-cost** (_integer: 1..4294967295_; Default: **10**)                                         | /interface桥接端口，未知VLAN ID（MSTI0）的区域根的路径开销，用于MSTP区域内的根端口。                        |
+| **priority** (_integer: 0..240_; Default: **128**)                                                         | /interface bridge port mst-override, 定义的 MST 实例的 MST 端口优先级，用于区域根桥上的桥口。               |
+| **internal-path-cost** (_integer: 1..200000000_; Default: **10**)                                          | /interface bridge port mst-override, 定义的 MST 实例的 MST 端口路径开销，在 MSTP 区域内的非根桥端口上使用。 |
   
+- 选举 CIST 根桥或 CIST 根端口时涉及以下参数：
 
--   The following parameters are involved to elect a CIST root bridge or CIST root ports:
+| 特性                                                                                                       | 说明                                                                                    |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | /interface bridge，CIST网桥优先级，用于选举CIST根桥。                                   |
+| **priority** (_integer: 0..240_; Default: **128**)                                                         | /interface bridge port, CIST port priority, 在CIST根桥上用于选举CIST根端口。            |
+| **path-cost** (_integer: 1..4294967295_; Default: **10**)                                                  | /interface bridge port, CIST port path cost, 用在CIST非根桥端口上，用于选举CIST根端口。 |
 
-| 
-Property
+ MSTP检查选举根桥/端口的参数顺序与(R)STP相同，您可以在(R)STP选举过程部分阅读更多信息。
 
- | 
+## MST实例
 
-Description
+**子菜单:** `/interface bridge msti'.
 
- |     |
- | --- |  |
- |     |
+本节用于将多个 VLAN ID 分成一个实例，以便在 MSTP 区域内为每个 VLAN 组创建不同的根桥。
 
-Property
+| 特性                                                                                                       | 说明                                                                                                                 |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **bridge** (_text_; Default: )                                                                             | 为其分配MST实例网桥。                                                                                                |
+| **identifier** (_integer: 1..31_; Default: )                                                               | MST实例标识符。                                                                                                      |
+| **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | MST实例优先级，用于确定MSTP区域内一组VLAN的根桥。                                                                    |
+| **vlan-mapping** (_integer: 1..4094_; Default: )                                                           | 要分配给MST实例的VLAN ID的列表。此设置接受VLAN ID范围，以及逗号分隔的值。例如 `vlan-mapping=100-115,120,122,128-130` |
 
- | 
+## MST 覆盖
 
-Description
+**子菜单：** `/interface bridge port mst-override`。
 
- |                                                                                                            |
- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
- | **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | /interface bridge, CIST bridge priority, used to elect a CIST root bridge.                                 |
- | **priority** (_integer: 0..240_; Default: **128**)                                                         | /interface bridge port, CIST port priority, used on a CIST root bridge to elect CIST root ports.           |
- | **path-cost** (_integer: 1..4294967295_; Default: **10**)                                                  | /interface bridge port, CIST port path cost, used on a CIST non-root bridge port to elect CIST root ports. |
+本节用于为MSTP区域内的每个VLAN映射选择所需路径。
 
- The sequence of parameters in which MSTP checks to elect root bridge/ports are the same as in (R)STP, you can read more about it at the (R)STP Election Process section.
+| 特性                                                                                       | 说明                                                                                      |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| **disabled** (_yes                                                \| no_; Default: **no**) | 入口是否被禁用。                                                                          |
+| **internal-path-cost** (_integer: 1..200000000_; Default: **10**)                          | MST实例的VLAN映射的路径成本，用于面向根桥的VLAN上，以操纵路径选择，较低的路径成本是首选。 |
+| **identifier** (_integer: 1..31_; Default: )                                               | MST实例标识符。                                                                           |
+| **priority** (_integer: 0..240_; Default: **128**)                                         | MST实例的VLAN的优先级，用于远离根桥的VLAN上，以操纵路径选择，优先级越低越好。             |
+| **interface** (_name_; Default: )                                                          | 使用配置的MST实例的VLAN映射和定义的路径成本和优先级的端口的名称。                         |
 
-## MST Instance
+## 监控
 
-**Sub-menu:** `/interface bridge msti`
-
-This section is used to group multiple VLAN IDs to a single instance to create a different root bridge for each VLAN group inside an MSTP region.
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                                                            |
- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **bridge** (_text_; Default: )                                                                             | Bridge to which assign an MST instance.                                                                                                                                 |
- | **identifier** (_integer: 1..31_; Default: )                                                               | MST instance identifier.                                                                                                                                                |
- | **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | MST instance priority, used to determine the root bridge for a group of VLANs in an MSTP region.                                                                        |
- | **vlan-mapping** (_integer: 1..4094_; Default: )                                                           | The list of VLAN IDs to assign to MST instance. This setting accepts the VLAN ID range, as well as comma, separated values. E.g. `vlan-mapping=100-115,120,122,128-130` |
-
-## MST Override
-
-**Sub-menu:** `/interface bridge port mst-override`
-
-This section is used to select the desired path for each VLAN mapping inside an MSTP region.
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                   |
- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **disabled** (_yes                                                | no_; Default: **no**)                                                                                                                                           | Whether entry is disabled. |
- | **internal-path-cost** (_integer: 1..200000000_; Default: **10**) | Path cost for an MST instance's VLAN mapping, used on VLANs that are facing towards the root bridge to manipulate path selection, lower path cost is preferred. |
- | **identifier** (_integer: 1..31_; Default: )                      | MST instance identifier.                                                                                                                                        |
- | **priority** (_integer: 0..240_; Default: **128**)                | The priority an MST instance's VLAN, used on VLANs that are facing away from the root bridge to manipulate path selection, lower priority is preferred.         |
- | **interface** (_name_; Default: )                                 | Name of the port on which use configured MST instance's VLAN mappings and defined path cost and priority.                                                       |
-
-## Monitoring
-
-Similarly to (R)STP, it is also possible to monitor MSTP status. By monitoring the bridge interface itself it possible to see the current CIST root bridge and the current regional root bridge for MSTI0, it is also possible to see the computed hash of MST Instance identifiers and VLAN mappings, this is useful when making sure that certain bridges are in the same MSTP region. Below you can find an example to monitoring an MSTP bridge:
+与(R)STP类似，也可以监控MSTP状态。通过监控网桥接口本身，可以看到当前的 CIST 根桥和当前的 MSTI0 区域根桥，也可以看到 MST 实例标识符和 VLAN 映射的计算哈希值，这在确保某些网桥处于同一 MSTP 区域时很有用。下面是一个监控MSTP网桥的例子。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">monitor </code><code class="ros plain">bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 6C:3B:6B:7B:F0:AA</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0x1000.64:D1:54:24:23:72</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">regional-root-bridge-id</code><code class="ros constants">: 0x4000.6C:3B:6B:7B:F0:AA</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: ether4</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 3</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">mst-config-digest</code><code class="ros constants">: 74edbeefdbf82cf63a70cf60e43a56f3</code></div></div></td></tr></tbody></table>
 
-In MSTP it is possible to monitor the MST Instance, this is useful to determine the current regional root bridge for a certain MST Instance and VLAN group, below you can find an example to monitor an MST Instance:
+在MSTP中，可以对MST实例进行监控，这对于确定某个MST实例和VLAN组的当前区域根桥是很有用的，下面是一个监控MST实例的例子。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti </code><code class="ros functions">monitor </code><code class="ros plain">1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">identifier</code><code class="ros constants">: 2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 6C:3B:6B:7B:F0:AA</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0.00:00:00:00:00:00</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">regional-root-bridge-id</code><code class="ros constants">: 0x1002.6C:3B:6B:7B:F9:08</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: ether2</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 1</code></div></div></td></tr></tbody></table>
 
-It is also possible to monitor a certain MST Override entry, this is useful to determine the port role for a certain MST Instance when configuring root ports and alternate/backup ports in an MSTP region, below you can find an example to monitor an MST Override entry:
+也可以监控某个MST覆盖条目，这对于在MSTP区域配置根端口和备用/后备端口时确定某个MST实例的端口角色很有用，下面是一个监控MST覆盖条目的例子。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override </code><code class="ros functions">monitor </code><code class="ros plain">1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: active</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">identifier</code><code class="ros constants">: 2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">role</code><code class="ros constants">: alternate-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">internal-root-path-cost</code><code class="ros constants">: 15</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-bridge</code><code class="ros constants">: 0x1002.6C:3B:6B:7B:F9:08</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-internal-cost</code><code class="ros constants">: 0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-number</code><code class="ros constants">: 130</code></div></div></td></tr></tbody></table>
 
-## MSTP example
+## MSTP例子
 
-Let's say that we need to design topology and configure MSTP in a way that VLAN 10,20 will be forwarded in one path, but VLAN 30,40 will be forwarded in a different path, while all other VLAN IDs will be forwarded in one of those paths. This can easily be done by setting up MST Instances and assigning port path costs, below you can find a network topology that needs to do load balancing per VLAN group with 3 separate regions as an example:
+假设我们需要设计拓扑结构并配置MSTP，使VLAN 10,20在一个路径中转发，但VLAN 30,40在另一个路径中转发，而所有其他VLAN ID将在其中一个路径中转发。可以通过设置MST实例和分配端口路径开销来轻松实现，下面是一个网络拓扑结构，在3个独立的区域内对每个VLAN组进行负载均衡的例子。
 
-![](https://help.mikrotik.com/docs/download/attachments/21725254/MSTPexample.png?version=3&modificationDate=1585822305765&api=v2) The topology of an MSTP enabled network with load balancing per VLAN group
+![](https://help.mikrotik.com/docs/download/attachments/21725254/MSTPexample.png?version=3&modificationDate=1585822305765&api=v2) 
+一个启用了MSTP的网络的拓扑结构，每个VLAN组的负载均衡。
 
-Start by adding each interface to a bridge, initially, you should create a (R)STP bridge without VLAN filtering enabled, this is to prevent losing access to the CPU. Each device in this example is named by the region that it is in (Rx) and a device number (\_x). For larger networks configuring MSTP can be confusing because of the number of links and devices, we recommend using The Dude to monitor and design a network topology.
+首先将每个接口添加到一个网桥中，最初应该创建一个没有启用 VLAN 过滤的 (R)STP 网桥，这是为了防止失去对 CPU 的访问。这个例子中的每个设备都是由它所在的区域(Rx)和设备编号(\_x)命名的。对于较大的网络，由于链接和设备的数量，配置MSTP可能会很混乱，我们建议使用The Dude来监控和设计网络拓扑结构。
 
--   Use the following commands on **R1\_1**, **R1\_3**, **R2\_1**, **R2\_3**, **R3\_1**, **R3\_3**:
+- 在**R1_1**, **R1_3**, **R2_1**, **R2_3**, **R3_3**上使用以下命令。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">protocol-mode</code><code class="ros plain">=rstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_2**, **R2\_2**, **R3\_2**:
+- 在**R1_2**、**R2_2**、**R3_2**上使用以下命令：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">protocol-mode</code><code class="ros plain">=rstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
 
--   Make sure you allow the required VLAN IDs on these devices, here we will consider that each device will receive tagged traffic that needs to be load balanced per VLAN group, use these commands on **R1\_1**, **R1\_3**, **R2\_1**, **R2\_3**, **R3\_1**, **R3\_3**:
+- 确保在这些设备上允许所需的VLAN ID，这里我们将考虑每个设备将接收需要按VLAN组进行负载均衡的标记流量，在**R1_1**, **R1_3**, **R2_1**, **R2_3**, **R3_3**上使用这些命令。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2,ether3,ether4</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20,30,40</code></div></div></td></tr></tbody></table>
-
   
-
--   Use the following commands on **R1\_2**, **R2\_2**, **R3\_2**:
+- 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20,30,40</code></div></div></td></tr></tbody></table>
 
- Make sure you add all the needed VLAN IDs and ports to the bridge VLAN table, otherwise your device will not forward all required VLANs and/or you will lose access to the device.
+ 确保将所有需要的 VLAN ID 和端口添加到网桥 VLAN 表中，否则设备将无法转发所有需要的 VLAN，并且将失去对设备的访问。
 
-We need to assign a region name for each bridge that we want to be in a single MSTP region, you can also specify the region revision, but it is optional, though they need to match. In this example, if all bridges will have the same region name, then they will all be in a single MSTP bridge. In this case, we want to separate a group of 3 bridges in a different MSTP region to do load balancing per VLAN group and to create diversity and scalability.
+我们需要为每个需要在一个 MSTP 区域内的网桥指定一个区域名称，也可以指定区域的修订，但这是可选的，不过它们需要匹配。在这个例子中，如果所有网桥有相同的区域名称，那么它们都会在一个MSTP网桥中。在这个例子中，我们想把一组3个网桥分开在不同的MSTP区域中，做每个VLAN组的负载均衡，并创造多样性和可扩展性。
 
--   Set appropriate region name (and region revision) for each bridge, use the following commands on each device (**change the region name!**):
+- 为每个网桥设置合适的区域名称（和区域修订），在每个设备上使用以下命令（**修改区域名称！**）。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">region-name</code><code class="ros plain">=Rx</code> <code class="ros value">region-revision</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
 
-After we have created 3 different MSTP regions, we need to decide which device is going to be a regional root for each VLAN group. For consistency, we are going to set the first device (\_1) in each region as the regional root for VLAN 10,20 and the third device (\_3) in each region as the regional root for VLAN 30,40. This can be done by creating an MST Instance for each VLAN group and assigning a bridge priority to it. The MST Instance identifier is only relevant inside an MSTP region, outside an MSTP region these identifiers can be different and mapped to a different VLAN group.
+在创建了3个不同的MSTP区域后，需要确定哪个设备将成为每个VLAN组的区域根。为了保持一致性，要把每个区域的第一个设备（ \_1 ）设置为VLAN 10,20的区域根，把每个区域的第三个设备（ \_3 ）设置为VLAN 30,40的区域根。可以通过为每个 VLAN 组创建一个 MST 实例并为其分配网桥优先级来实现。MST实例的标识符只在 MSTP 区域内相关， 在 MSTP 区域外， 这些标识符可以是不同的， 并映射到不同的 VLAN 组。
 
--   Use the following commands on **R1\_1**, **R2\_1**, **R3\_1**:
+- 在 **R1_1**, **R2_1**, **R3_1** 上使用以下命令。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_3**, **R2\_3**, **R3\_3**:
+- 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
-
   
-
--   Use the following commands on **R1\_2**, **R2\_2**, **R3\_2**:
+- 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
 
-Now we need to override the port path-cost and/or port priority for each MST Instance. This can be done by adding a MST-Override entry for each port and each MST Instance. To achieve that for a certain MST Instance the traffic flow path is different, we simply need to make sure that the port path cost and/or priority is larger. We can either increase the port path cost or either decrease the port path cost to ports that are facing towards the regional root bridge. It doesn't matter if you increase or decrease all values, it is important that at the end one port's path cost is larger than the other's.
+现在我们需要覆盖每个MST实例端口路径开销和端口优先级。可以通过为每个端口和每个MST实例添加一个MST-Override条目来完成。为了实现某一MST实例的流量路径不同，只需要确保端口的路径开销和优先级更大。我们可以增加端口路径开销，或者减少端口路径开销，使其面向区域根桥的端口。增加或减少数值并不重要，重要的是最后一个端口的路径开销要比另一个大。
 
--   Use the following commands on **R1\_1**, **R2\_1**, **R3\_1**:
+- 在**R1_1**, **R2_1**, **R3_1**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=15</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_2**, **R2\_2**, **R3\_2**:
+- 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=9</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_3**, **R2\_3**, **R3\_3**:
+- 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=9</code></div></div></td></tr></tbody></table>
 
-In this case for VLAN 10,20 to reach the third device from the first device, it would choose between ether1 and ether2, one port will be blocked and set as an alternate port, ether1 will have path cost as `5+9=14` and ether2 will have path cost as `10`, ether2 will be elected as the root port for MSTI1 on the third device. In case for VLAN 30,40 to reach the first device from the third device, ether1 will have path cost as `5+9=14` and ether2 will have path cost as `15`, ether1 will be elected as the root port for MSTI2 on the third device.
+对于VLAN 10,20从第一台设备到达第三台设备，它会在ether1和ether2之间选择，一个端口将被封锁并被设置为备用端口，ether1的路径开销为`5+9=14`，ether2的路径开销为`10`，ether2将被选为第三台设备上MSTI1的根端口。在VLAN 30,40从第三台设备到达第一台设备的情况下，ether1的路径开销为`5+9=14`，ether2的路径开销为`15`， ether1将被选为第三台设备上MSTI2的根端口。
 
-Now we can configure the root ports for **MSTI0**, in which will fall under all VLANs that are not assigned to a specific MST Instance, like in our example VLAN 10,20 and VLAN 30,40. To configure this special MST Instance, you will need to specify `internal-path-cost` to a bridge port. This value is only relevant to MSTP regions, it does not have any effect outside an MSTP region. In this example will choose that all unknown VLANs will be forwarded over the same path as VLAN 30,40, we will simply increase the path cost on one of the ports.
+现在我们可以为**MSTI0**配置根端口，其中将属于所有未分配给特定MST实例的VLAN，如在我们的例子中，VLAN 10,20和VLAN 30,40。要配置这个特殊的 MST 实例，需要为网桥端口指定 `internal-path-cost`。这个值只与 MSTP 区域有关，在 MSTP 区域外没有任何影响。在这个例子中，我们将选择所有未知的 VLAN 与 VLAN 30,40 在同一路径上转发，我们将简单地增加其中一个端口的路径开销。
 
--   Use the following commands on **R1\_3**, **R2\_3**, **R3\_3**:
+- 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=25</code></div></div></td></tr></tbody></table>
 
-At this point, a single region MSTP can be considered as configured and in general, MSTP is fully functional. It is highly recommended to configure the CIST part, but for testing purposes, it can be left with the default values. Before doing any tests, you need to enable MSTP on all bridges.
+至此，一个单一区域的MSTP可以认为是配置好的，一般来说，MSTP完全可以运行。强烈建议配置CIST部分，但为了测试的目的，可以保留默认值。在做任何测试之前，需要在所有网桥上启用MSTP。
 
--   Use the following commands on **all** devices:
+- 在**所有**设备上使用以下命令：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">protocol-mode</code><code class="ros plain">=mstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-When MSTP regions have been configured, you can check if they are properly configured by forwarding traffic, for example, send tagged traffic from the first device to the third device and change the VLAN ID for the tagged traffic to observe different paths based on VLAN ID. When this is working as expected, then you can continue to configure CIST related parameters to elect a CIST root bridge and CIST root ports. For consistency we will choose the first device in the first region to be the CIST root bridge and to ensure the consistency in case of failure we can set a higher priority to all other bridges.
+当 MSTP 区域配置完成后，可以通过转发流量来检查它们是否配置正确，例如，从第一台设备向第三台设备发送带标签的流量，并改变标签流量的 VLAN ID，观察基于 VLAN ID 的不同路径。当这一切都按预期进行时，就可以继续配置 CIST 相关参数，选出 CIST 根桥和 CIST 根端口。为了保持一致性，我们将选择第一个区域的第一台设备作为 CIST 根桥，为了确保故障时的一致性，我们可以给所有其他桥设置一个更高的优先级。
 
--   Use the following commands on **R1\_1:**
+- 在**R1_1**上使用以下命令：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x1000</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_2**:
+- 在**R1_2**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x2000</code></div></div></td></tr></tbody></table>
 
--   ...
+- ...
 
--   Use the following commands on **R3\_3**:
+- 在**R3_3**上使用以下命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x9000</code></div></div></td></tr></tbody></table>
 
-We also need to elect a root port on each bridge, for simplicity we will choose the port that is closest to **Ŗ1\_1** as the root port and has the least hops. At this point the procedure to elect root ports is the same as the procedure in (R)STP.
+我们还需要在每个网桥上选出一个根端口，为了简单起见，我们将选择离**Ŗ1_1**最近的端口作为根端口，并且跳数最少。这样选举根端口的程序与(R)STP的程序相同。
 
--   Use the following commands on **R3\_3:**
+- 在**R3_3**上使用以下命令：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">path-cost</code><code class="ros plain">=30</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">path-cost</code><code class="ros plain">=40</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether4]</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_3** and **R2\_3:**
+- 在**R1\_3** 和**R2\_3**上使用下面的命令：
     
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">path-cost</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
 
--   Use the following commands on **R1\_2**:
+- 在**R1\_2**上使用下面的命令:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether1]</code> <code class="ros value">path-cost=30</code></div></div></td></tr></tbody></table>
