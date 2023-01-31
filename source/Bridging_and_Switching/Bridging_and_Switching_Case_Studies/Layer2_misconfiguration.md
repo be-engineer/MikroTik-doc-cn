@@ -202,209 +202,206 @@ ___
 
   
 
-By enabling `vlan-filtering` you will be filtering out traffic destined to the CPU, before enabling VLAN filtering you should make sure that you set up a [Management port](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration).
+多达28个共有配置文件通过`vlan-filtering`启用，将过滤掉以CPU为目的地的流量，在启用VLAN过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration) 。
 
-# Bridged VLAN on physical interfaces
+# 物理接口上的桥接VLAN
 
 ___
 
-A very similar case to [VLAN on a bridge in a bridge](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANonabridgeinabridge), consider the following scenario, you have a couple of switches in your network and you are using VLANs to isolate certain Layer2 domains and connect these switches to a router that assigns addresses and routes the traffic to the world. For redundancy, you connect all switches directly to the router and have enabled RSTP, but to be able to setup DHCP Server you decide that you can create a VLAN interface for each VLAN on each physical interface that is connected to a switch and add these VLAN interfaces in a bridge. A network diagram can be found below:
+和[桥中桥VLAN](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANonabridgeinabridge)非常相似的情况，考虑以下情况，网络中有几台交换机，需要用VLAN来隔离某些第二层域，并将这些交换机连接到一个分配地址的路由器，并将流量路由到全世界。为了实现冗余，将所有的交换机直接连接到路由器上，并启用了RSTP，但是为了能够设置DHCP服务器，你决定在连接到交换机的每个物理接口上为每个VLAN创建一个VLAN接口，并将这些VLAN接口添加到一个网桥中。下面是一张网络图。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/Bridged_vlans.png?version=2&modificationDate=1618319386972&api=v2)
 
-## Configuration
+## 配置
 
-Only the router part is relevant to this case, switch configuration doesn't really matter as long as ports are switched. Router configuration can be found below:
+只有路由器部分与本案例有关，交换机的配置其实并不重要，只要端口是交换的。路由器的配置可以在下面找到。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=ether1_v10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=ether1_v20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">name</code><code class="ros plain">=ether2_v10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">name</code><code class="ros plain">=ether2_v20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge10</code> <code class="ros value">interface</code><code class="ros plain">=ether1_v10</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge10</code> <code class="ros value">interface</code><code class="ros plain">=ether2_v10</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge20</code> <code class="ros value">interface</code><code class="ros plain">=ether1_v20</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge20</code> <code class="ros value">interface</code><code class="ros plain">=ether2_v20</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-You might notice that the network is having some weird delays or even the network is unresponsive, you might notice that there is a loop detected (packet received with own MAC address) and some traffic is being generated out of nowhere. The problem occurs because a broadcast packet that is coming from either one of the VLAN interface created on the **Router** will be sent out the physical interface, packet will be forwarded through the physical interface, through a switch and will be received back on a different physical interface, in this case, broadcast packets sent out **ether1\_v10** will be received on **ether2**, packet will be captured by **ether2\_v10**, which is bridged with **ether1\_v10** and will get forwarded again the same path (loop). (R)STP might not always detect this loop since (R)STP is not aware of any VLANs, a loop does not exist with untagged traffic, but exists with tagged traffic. In this scenario, it is quite obvious to spot the loop, but in more complex setups it is not always easy to detect the network design flaw. Sometimes this network design flaw might get unnoticed for a very long time if your network does not use broadcast traffic, usually, [Neighbor Discovery Protocol](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery) is broadcasting packets from the VLAN interface and will usually trigger a loop detection in such a setup. Sometimes it is useful to capture the packet that triggered a loop detection, this can by using sniffer and analyzing the packet capture file:
+可能网络会有一些奇怪的延迟，甚至网络没有反应，可能会检测到有一个环路（用自己的MAC地址接收的数据包），有些流量不知从哪里产生。这个问题的出现是因为来自**路由器上创建的VLAN接口之一的广播数据包将被送出物理接口，数据包将通过物理接口被转发。在这种情况下，从**ether1_v10**发出的广播数据包将在**ether2**上收到，数据包将被**ether2_v10**捕获，它与**ether1_v10**桥接，并将在同一路径上再次转发（循环）。(R)STP不一定能发现这个环路，因为(R)STP不知道任何VLAN，环路不存在于无标签的流量，但存在于有标签的流量。因此，发现环路是非常明显的，但在更复杂的设置中，发现网络设计缺陷并不容易。有时，如果你的网络不使用广播流量，这种网络设计缺陷可能会在很长一段时间内被忽视，通常，[邻居发现协议](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery)从VLAN接口广播数据包，在这种设置中通常会触发环路检测。有时捕获触发环路检测的数据包是很有用的，可以通过嗅探器和分析数据包捕获文件:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool sniffer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">filter-mac-address</code><code class="ros plain">=4C:5E:0C:4D:12:44/FF:FF:FF:FF:FF:FF</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">filter-interface</code><code class="ros plain">=ether1</code> <code class="ros value">filter-direction</code><code class="ros plain">=rx</code> <code class="ros value">file-name</code><code class="ros plain">=loop_packet.pcap</code></div></div></td></tr></tbody></table>
 
-Or a more convenient way using logging:
+或者使用更方便的记录方式。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=log</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">src-mac-address</code><code class="ros plain">=4C:5E:0C:4D:12:44/FF:FF:FF:FF:FF:FF</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=log</code> <code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">src-mac-address</code><code class="ros plain">=4C:5E:0C:4D:12:44/FF:FF:FF:FF:FF:FF</code></div></div></td></tr></tbody></table>
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是这种错误配置结果的症状列表。
 
-- Port blocked by (R)STP;
-- Loops in network;
-- Low throughput;
-- Port flapping;
-- Network inaccessible;
+- 端口被(R)STP封锁。
+- 网络中的环路。
+- 吞吐量低。
+- 端口跳动。
+- 网络无法访问。
 
-## Solution
+## 解决方案
 
-A solution is to use bridge VLAN filtering in order to make all bridges compatible with IEEE 802.1W and IEEE 802.1Q.
+一个解决方案是使用网桥VLAN过滤，以使所有网桥与IEEE 802.1W和IEEE 802.1Q兼容。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2,bridge</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2,bridge</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan10</code> <code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan20</code> <code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
 
   
 
-By enabling `vlan-filtering` you will be filtering out traffic destined to the CPU, before enabling VLAN filtering you should make sure that you set up a [Management port](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration).
+通过启用`vlan-filtering`，将过滤掉以CPU为目的地的流量，在启用VLAN过滤之前，要确保设置了一个[管理端口]（https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration）。
 
-# Bridged VLAN
+# 网桥VLAN
 
 ___
 
-A more simplified scenario of [Bridged VLAN on physical interfaces](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-BridgedVLANonphysicalinterfaces), but in this case, you simply want to bridge two or more VLANs together that are created on different physical interfaces. This is a very common type of setup that deserves a separate article since misconfiguring this type of setup has caused multiple network failures. This type of setup is also used for VLAN translation.
+[物理接口上的网桥VLAN](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-BridgedVLANonphysicalinterfaces)的更简化方案，这种情况下，你只是想把创建在不同物理接口上的两个或多个VLAN桥接起来。这是一种常见的设置，值得单独写一篇文章，因为错误配置这种类型的设置已经造成了多个网络故障。这种类型的设置也被用于VLAN转换。
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=ether1_v10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">name</code><code class="ros plain">=ether2_v10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1_v10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2_v10</code></div></div></td></tr></tbody></table>
 
-Problem
+问题
 
-You may notice that certain parts of the network are not accessible and/or certain links keep flapping. This is due to (R)STP, this type of configuration forces the device to send out tagged BPDUs, that might not be supported by other devices, including RouterOS. Since a device receives a malformed packet (tagged BPDUs should not exist in your network when running (R)STP, this violates IEEE 802.1W and IEEE 802.1Q), the device will not interpret the packet correctly and can have unexpected behavior.
+你可能会注意到，网络的某些部分无法访问或某些链接一直在跳动。这是由于(R)STP这种类型的配置迫使设备发送标记的BPDU，这可能不被其他设备支持，包括RouterOS。设备收到一个畸形的数据包（运行(R)STP时，网络中不应该存在标记的BPDU，这违反了IEEE 802.1W和IEEE 802.1Q），设备将不能正确解释数据包，并可能出现意外的行为。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是这种错误配置结果的症状列表。
 
-- Port blocked by (R)STP;
-- Port flapping;
-- Network inaccessible;
+- 端口被(R)STP封锁。
+- 端口跳动。
+- 网络无法访问。
 
-## Solution
+## 解决方案
 
-The easiest solution is to simply disable (R)STP on the bridge:
+最简单的解决办法是在网桥上禁用(R)STP。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">protocol-mode</code><code class="ros plain">=none</code></div></div></td></tr></tbody></table>
-
   
-
-though it is still recommended to rewrite your configuration to use bridge VLAN filtering:
+建议重写你的配置，以使用网桥VLAN过滤。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
-
   
 
-By enabling `vlan-filtering` you will be filtering out traffic destined to the CPU, before enabling VLAN filtering you should make sure that you set up a [Management port](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration).
+通过启用`vlan-filtering`，将过滤掉以CPU为目的的流量，在启用VLAN过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。
 
-# Bridge VLAN filtering on non-CRS3xx
+# non-CRS3xx上的网桥VLAN过滤
 
 ___
 
-Consider the following scenario, you found out the new bridge VLAN filtering feature and you decided to change the configuration on your device, you have a very simple trunk/access port setup and you like the concept of bridge VLAN filtering.
+考虑以下情况，你发现了新的网桥VLAN过滤功能，你决定改变你设备上的配置，你有一个非常简单的聚合/接入端口设置，你喜欢网桥VLAN过滤的概念。
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">pvid</code><code class="ros plain">=40</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether4</code> <code class="ros value">vlan-ids</code><code class="ros plain">=40</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-For example, you use this configuration on a CRS1xx/CRS2xx series device and you started to notice that the CPU usage is very high and when running a performance test to check the network's throughput you notice that the total throughput is only a fraction of the wire-speed performance that it should easily reach. The cause of the problem is that not all devices support bridge VLAN filtering on a hardware level. All devices are able to be configured with bridge VLAN filtering, but only a few of them will be able to offload the traffic to the switch chip. If an improper configuration method is used on a device with a built-in switch chip, then the CPU will be used to forward the traffic.
+例如，在CRS1xx/CRS2xx系列设备上使用这种配置，你注意到CPU的使用率非常高，当运行性能测试检查网络的吞吐量时，总的吞吐量只有线速的一小部分。问题的原因是，并非所有设备都在硬件层面上支持桥接VLAN过滤。所有的设备都能够被配置成桥接VLAN过滤，但只有少数设备能够将流量卸载到交换芯片上。如果在有内置交换芯片的设备上使用不恰当的配置方法，那么CPU将被用来转发流量。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+下面列出了可能是这种错误配置造成的症状。
 
-- Missing "H" flag on bridge ports
-- Low throughput
-- High CPU usage
+- 在桥接端口上缺少 "H "标志
+- 吞吐量低
+- CPU使用率高
 
-## Solution
+## 解决方案
 
-Before using bridge VLAN filtering check if your device supports it at the hardware level, a table with compatibility can be found at the [Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) section. Each type of device currently requires a different configuration method, below is a list of which configuration should be used on a device in order to use the benefits of hardware offloading:
+在使用网桥VLAN过滤之前，请检查设备是否在硬件层面上支持它，在[Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分可以找到一个兼容性表格。每种类型的设备都需要不同的配置方法，下面列出使用硬件卸载的好处，应该在设备上使用哪些配置。
 
 - [CRS3xx series devices](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)
 - [CRS1xx/CRS2xx series devices](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN)
 - [Other devices with a switch chip](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-SetupExamples)
 
-# VLAN filtering with multiple switch chips
+# VLAN过滤与多个交换芯片
 
 ___
 
-Consider the following scenario, you have a device with two or more switch chips and you have decided to use a single bridge and set up VLAN filtering (by using the `/interface ethernet switch` menu) on a hardware level to be able to reach wire-speed performance on your network. This is very relevant for RB2011 and RB3011 series devices. In this example, let's assume that you want to have a single trunk port and all other ports are access ports, for example, **ether10** is our trunk port and **ether1-ether9** are our access ports.
+考虑以下情况，设备有两个或更多的交换芯片，你决定使用一个单网桥，并在硬件层面设置VLAN过滤（通过使用`/interface ethernet switch`菜单），以便能够在网络上达到线速性能。这对于RB2011和RB3011系列设备来说是非常重要的。在这个例子中，假设你想有一个聚合端口，其他端口都是接入端口，例如，**ether10**是我们的聚合端口，**ether1-ether9**是我们的接入端口。
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3,ether4,ether5,ether6,ether7,ether8,ether9 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=10</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether10 </code><code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu,switch2-cpu </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2,ether3,ether4,ether5,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6,ether7,ether8,ether9,ether10,switch2-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch2</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-After running a few tests you might notice that packets from **ether6-ether10** are forwarded as expected, but packets from **ether1-ether5** are not always forwarded correctly (especially through the trunk port). The most noticeable issue would be that packets from **ether1-ether5** through **ether10** are simply dropped, this is because these ports are located on different switch chip, this means that VLAN filtering is not possible on a hardware level since the switch chip is not aware of the VLAN table's contents on a different switch chip. Packets that are being forwarded between ports that are located on different switch chips are also processed by the CPU, which means you won't be able to achieve wire-speed performance.
+在进行了一些测试后，可能会注意到，来自**ether6-ether10**的数据包被如期转发，但来自**ether1-ether5**的数据包并不总是被正确转发（特别是通过聚合端口）。最明显的问题是来自**ether1-ether5**到**ether10**的数据包被简单地丢弃，这是因为这些端口位于不同的交换芯片上，这意味着VLAN过滤在硬件层面上是不行的，因为交换芯片不知道不同交换芯片上的VLAN表的内容。位于不同交换芯片上的端口之间转发的数据包也由CPU处理，意味着你将无法实现线速性能。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+以下可能是错误配置结果的症状列表。
 
-- Packets being dropped;
-- Low throughput;
+- 数据包被丢弃。
+- 吞吐量低。
 
-## Solution
+##解决方案
 
-The proper solution is to take into account this hardware design and plan your network topology accordingly. To solve this issue you must create two separate bridges and configure VLAN filtering on each switch chip, this limits the possibility to forward packets between switch chip, though it is possible to configure routing between both bridges (if devices that are connected on each switch chip are using different network subnets).
+正确的解决方案是考虑到硬件设计，相应地规划网络拓扑结构。为了解决这个问题，必须创建两个独立的网桥，并在每个交换芯片上配置VLAN过滤，这就限制了在交换芯片之间转发数据包的可能性，不过也可以在两个网桥之间配置路由（如果连接在每个交换芯片上的设备使用不同的网络子网）。
 
-There is a way to configure the device to have all ports switch together and yet be able to use VLAN filtering on a hardware level, though this solution has some caveats. The idea is to sacrifice a single Ethernet port on each switch chip that will act as a trunk port to forward packets between switch chip, this can be done by plugging an Ethernet cable between both switch chip, for example, lets plug in an Ethernet cable between **ether5** and **ether6** then reconfigure your device assuming that these ports are trunk ports:
+有一种方法可以将设备配置成所有的端口一起交换，但又能在硬件层面上使用VLAN过滤，不过这个方案有一些注意事项。这个想法是在每个交换芯片上牺牲一个单一的以太网端口，作为聚合端口在交换芯片之间转发数据包，这可以通过在两个交换芯片之间插入以太网线来实现，例如，在**ether5**和**ether6**之间插入一根以太网线，然后重新配置你的设备，假设这些端口是聚合端口。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge2</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge2</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge2</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge2</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge2</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3,ether4,ether7,ether8,ether9 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=10</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5,ether6,ether10 </code><code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=auto</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu,switch2-cpu </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2,ether3,ether4,ether5,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6,ether7,ether8,ether9,ether10,switch2-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch2</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
 
   
 
-For 100Mbps switch chips, use `default-vlan-id=0` instead of `default-vlan-id=auto`
+对于100Mbps交换芯片，使用`default-vlan-id=0`而不是`default-vlan-id=auto`。
 
-# VLAN filtering with simplified bridge VLAN table
+# 用简化的网桥VLAN表进行VLAN过滤
 
 ___
 
-You need to create a network setup where multiple clients are connected to separate access ports and isolated by different VLANs, this traffic should be tagged and sent to the appropriate trunk port. Access ports are configured using a pvid property. As the trunk port is used on both VLANs, you decided to simplify configuration by adding a single bridge VLAN table entry and separate VLANs by a comma. This is especially useful when tagged trunk ports are used across large numbers of VLANs or even certain VLAN ranges (e.g. vlan-id=100-200). See a network diagram and configuration below.
+需要创建一个网络设置，其中多个客户连接到不同的接入端口，并通过不同的VLAN进行隔离，这些流量要被标记并发送到相应的聚合端口。接入端口是使用pvid属性来配置的。由于聚合端口在两个VLAN上都使用，要通过添加一个桥接VLAN表项来简化配置，并用逗号来分隔VLAN。当在大量的 VLAN 或某些 VLAN 范围内使用标记的聚合端口时（例如 vlan-id=100-200），这一点特别有用。请看下面的网络图和配置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/19136718/Switch_multiple_untagged.png?version=4&modificationDate=1583336457386&api=v2)
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-Traffic is correctly forwarded and tagged from access ports to trunk port, but you might notice that some broadcast or multicast packets are actually flooded between both untagged access ports, although they should be on different VLANs. Furthermore, broadcast and multicast traffic from the tagged port is also flooded to both access ports. This might raise some security concerns as traffic from different networks can be sniffed. When you look at the bridge VLAN table, you notice that a single entry has been created for VLANs 10 and 20, and both untagged ports are part of the same VLAN group.
+从接入端口到聚合端口的流量被正确地转发和标记，但一些广播或组播数据包实际上在两个未标记的接入端口之间被转发，尽管它们应该在不同的VLAN上。此外，来自标记端口的广播和组播流量也被转发到两个接入端口。这可能会引起一些安全问题，因为来自不同网络的流量可以被嗅探到。当你查看网桥VLAN表时，为VLAN 10和20创建了一个条目，而且这两个无标记的端口都属于同一个VLAN组。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@SW1] </code><code class="ros constants">/interface bridge vlan </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">tagged</code><code class="ros plain">=ether2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: BRIDGE, VLAN-IDS, CURRENT-TAGGED, CURRENT-UNTAGGED</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># BRIDGE&nbsp;&nbsp; VLAN-IDS&nbsp; CURRENT-TAGGED&nbsp; CURRENT-UNTAGGED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">;;; port with pvid added to untagged group which might cause problems, consider adding a separate VLAN entry</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether4</code></div></div></td></tr></tbody></table>
 
-## Symptoms
+## 症状
 
-- Traffic is flooded between different VLANs
-- Red warning: `port with pvid added to untagged group which might cause problems, consider adding a separate VLAN entry`
+- 流量在不同的VLAN之间被转发
+- 红色警告："有pvid的端口被添加到无标记组，可能会导致问题，考虑添加一个单独的VLAN条目"。
 
-## Solution 
+## 解决方案 
 
-When access ports have been configured using the pvid property, they get dynamically added to the appropriate VLAN entry. After creating a static VLAN entry with multiple VLANs or VLAN range, the untagged access port with a matching pvid also gets included in the same VLAN group or range. It might be useful to define a large number of VLANs using a single configuration line, but extra caution should be taken when access ports are configured. For this example, separate VLAN entries should be created:
+当使用 pvid 属性配置了访问端口时，它们会被动态地添加到适当的 VLAN 条目中。在创建一个具有多个VLAN或VLAN范围的静态VLAN条目后，具有匹配的pvid的无标记访问端口也被包括在同一VLAN组或范围内。使用一个配置行定义大量的VLAN可能是有用的，但在配置接入端口时应格外小心。对于这个例子，应该创建单独的VLAN条目。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether4</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
 
-# MTU on the master interface
+# 主接口的MTU
 
 ___
 
-Consider the following scenario, you have created a bridge, added a few interfaces to it and have created a VLAN interface on top of the bridge interface, but you need to increase the MTU size on the VLAN interface in order to receive larger packets.
+考虑以下情况， 你创建了一个网桥， 并向其添加了一些接口， 还在网桥接口之上创建了一个 VLAN 接口， 但你需要增加 VLAN 接口的 MTU 大小， 以便接收更大的数据包。
 
-## Configuration
+## 配置
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN99</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
 
-## Problem
+## 问题
 
-As soon as you try to increase the MTU size on the VLAN interface, you receive an error that RouterOS **Could not set MTU**. This can happen when you are trying to set MTU larger than the L2MTU. In this case, you need to increase the L2MTU size on all slave interfaces, which will update the L2MTU size on the bridge interface. After this has been done, you will be able to set a larger MTU on the VLAN interface. The same principle applies to bond interfaces. You can increase the MTU on interfaces like VLAN, MPLS, VPLS, Bonding and other interfaces only when all physical slave interfaces have proper L2MTU set.
+当你试图增加VLAN接口的MTU大小时，你会收到一个错误：RouterOS **无法设置MTU**。这可能发生在你试图设置MTU大于L2MTU的时候。在这种情况下，需要增加所有从属接口上的 L2MTU 大小，这将更新桥接接口上的 L2MTU 大小。之后，你就可以在 VLAN 接口上设置更大的 MTU。这个原则也适用于绑定接口。只有当所有物理从属接口都设置了适当的 L2MTU 时，才能在 VLAN、MPLS、VPLS、Bonding 等接口上增加 MTU。
 
-## Symptoms
+## 症状
 
-Below is a list of possible symptoms that might be a result of this kind of misconfiguration:
+下面可能是错误配置造成的症状列表。
 
-- Cannot change MTU
+- 不能改变MTU
 
-## Solution
+## 解决方案
 
-Increase the L2MTU on slave interfaces before changing the MTU on a master interface.
+在改变主接口的MTU之前，增加从属接口上的L2MTU。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2 </code><code class="ros value">l2mtu</code><code class="ros plain">=9018</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">VLAN99 </code><code class="ros value">mtu</code><code class="ros plain">=9000</code></div></div></td></tr></tbody></table>
 
-# MTU inconsistency
+# MTU矛盾的地方
 
 ___
 
