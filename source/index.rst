@@ -34,4 +34,5 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
 
    Getting_started/index.rst
    Authentication_ Authorization_ Accounting/index.rst
+   Bridging_and_Switching/index.rst
 
