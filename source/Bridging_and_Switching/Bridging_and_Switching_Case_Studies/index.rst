@@ -2,7 +2,7 @@
 ===============================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    Basic_VLAN_switching.md
    Bridge_IGMP_MLD_snooping.md
