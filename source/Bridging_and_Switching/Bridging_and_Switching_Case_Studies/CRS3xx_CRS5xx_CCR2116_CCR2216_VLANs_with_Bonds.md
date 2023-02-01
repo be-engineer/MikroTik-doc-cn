@@ -12,7 +12,7 @@
 
 ## 绑定
 
-绑定接口是在需要较大带宽时使用的，这是通过创建一个链路聚合组来实现的，它还为交换机提供硬件自动故障切换和负载平衡。通过添加两个10Gbps的接口进行绑定，你可以将理论带宽限制增加到20Gbps。确保所有绑定的接口都链接到相同的速率。
+绑定接口是在需要较大带宽时使用的，这是通过创建一个链路聚合组来实现的，它还为交换机提供硬件自动故障切换和负载均衡。通过添加两个10Gbps的接口进行绑定，你可以将理论带宽限制增加到20Gbps。确保所有绑定的接口都链接到相同的速率。
 
 当使用硬件卸载网桥时，CRS3xx、CRS5xx、CCR2116和CCR2216设备使用内置的交换芯片聚合流量，而不使用CPU资源。为了路由流量，需要一个具有强大CPU的路由器来处理聚合的流量。
 
@@ -28,7 +28,7 @@
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2,sfp-sfpplus3,sfp-sfpplus4</code></div></div></td></tr></tbody></table>
 
-接口绑定不会创建一个具有更大链接速度的接口。接口绑定创建了一个虚拟接口，可以在多个接口上负载平衡流量。更多细节可以在[LAG接口和负载平衡](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing)页面找到。
+接口绑定不会创建一个具有更大链接速度的接口。接口绑定创建了一个虚拟接口，可以在多个接口上负载均衡流量。更多细节可以在[LAG接口和负载均衡](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing)页面找到。
 
 ## 端口交换
 

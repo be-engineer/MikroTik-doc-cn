@@ -116,7 +116,7 @@ RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓�
 
 !!!info 在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
 
-!!!warning STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载平衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
+!!!warning STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
 
 ## 每个端口的STP
 

@@ -299,7 +299,7 @@ ___
 
 ![](https://help.mikrotik.com/docs/download/attachments/103841836/Trunking3.jpg?version=1&modificationDate=1653991953731&api=v2)
 
-Cloud Router Switches中的聚合提供静态链路聚合组，具有硬件自动故障切换和负载平衡功能。目前还不支持IEEE802.3ad和IEEE802.1ax兼容的链路聚合控制协议。最多支持8个聚合组，每个聚合组最多支持8个聚合成员端口。
+Cloud Router Switches中的聚合提供静态链路聚合组，具有硬件自动故障切换和负载均衡功能。目前还不支持IEEE802.3ad和IEEE802.1ax兼容的链路聚合控制协议。最多支持8个聚合组，每个聚合组最多支持8个聚合成员端口。
 
 配置需要一组交换的端口和聚合表中的项目。
 

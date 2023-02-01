@@ -73,17 +73,17 @@ Cloud Router Switch（CRS）系列设备集成了先进的交换芯片，它们�
 
 根据交换机的类型，有些配置功能可能没有。
 
-# 特性
+## 特性
 
 ___
 
-## 端口交换
+### 端口交换
 
 为了在非CRS系列设备上设置端口交换，请查看[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)。
 
 在RouterOS v6.41和更新的版本中，端口交换是通过网桥配置完成的。在RouterOS v6.41之前，端口交换是使用主端口属性完成的。
 
-### 交换所有端口功能
+#### 交换所有端口功能
 
 在RB450G/RB435G/RB850Gx2设备上的Ether1端口有一个功能，允许它被移除/添加到默认的交换机组中，这个设置在`/interface ethernet switch`菜单中。默认情况下，ether1端口将包括在交换机组中。
 
@@ -96,7 +96,7 @@ ___
 - `yes` - ether1是交换机的一部分，支持交换机分组和所有其他高级Atheros8316/Atheros8327功能，包括扩展统计（`/interface ethernet print stats`）。
 - `no` - ether1不是交换机的一部分，让它成为一个独立的以太网端口，这样增加了它在桥接和路由模式下对其他端口的吞吐量，但取消了这个端口上的交换特性。 |
 
-## 端口镜像
+### 端口镜像
 
 端口镜像使交换机可以复制所有进出一个端口（"镜像源"）的流量，并将这些复制的帧发送到其他端口（"镜像目标"）。这个功能可以用来轻松建立一个 "阀门"设备，接收所有进出某个特定端口的流量。注意，"镜像源"和 "镜像目标"端口必须属于同一个交换机（见"/interface ethernet "菜单中哪个端口属于哪个交换机）。另外，镜像目标可以有一个特殊的 "cpu"值，这意味着镜像的数据包被发送到交换机芯片的CPU端口。端口镜像独立于已经配置或尚未配置的交换组。
 
@@ -134,7 +134,7 @@ ___
 
  如果把镜像源设置为至少有两个交换芯片设备的以太网端口，并且这些镜像源端口在一个网桥中，而两个交换芯片的镜像目标被设置为将数据包发送到CPU将导致环路，可能使设备无法访问。
 
-## 端口设置
+#### 端口设置
 
 本菜单下的属性用于为支持VLAN表的交换芯片配置VLAN交换和过滤选项。这些属性只适用于支持VLAN表的交换芯片，请查看[Switch Chip Features](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction)确定你的设备支持该功能。
 
@@ -193,7 +193,7 @@ VLAN转发
 
 上面的表格是为了更高级的配置，请反复检查你自己对每个VLAN相关属性的数据包将如何处理的理解。
 
-## 主机表
+### 主机表
 
 主机表表示交换芯片的内部MAC地址到端口的映射。它可以包含两种类型：动态和静态。动态条目是自动添加的，这也被称为学习过程：当交换芯片收到来自某个端口的数据包时，它会将数据包的源MAC地址和它收到数据包的端口添加到主机表中，因此当有相同目的MAC地址的数据包进来时，它知道应该将数据包转发到哪个端口。如果目的MAC地址不在主机表中（所谓的未知-单播流量），那么它就把数据包转发到该组的所有端口。动态项需要大约5分钟的时间来完成。学习只在被配置为交换机组一部分的端口上启用，所以如果你没有设置端口交换，你就不会看到动态项。另外，如果有相同MAC地址的动态项存在，可以添加静态条目来取代动态项。由于端口交换是通过硬件卸载的网桥来配置的，在一个表中创建的任何静态项（无论是网桥主机还是交换机主机）都会作为动态项出现在另一个表中。在交换机主机表上增加一个静态项，可以访问更多的功能，这些功能通过以下参数控制。
 
@@ -213,7 +213,7 @@ VLAN转发
 
 对于Atheros8316、Atheros8227和Atheros-7240交换芯片，当交换组上至少有一个硬件卸载网桥端口处于活动状态时，交换机-cpu端口将始终参与主机学习过程。这将导致switch-cpu端口从非HW卸载的接口中学习MAC地址。当单个网桥包含HW和非HW卸载接口时，这可能导致丢包。另外，如果在同一个交换组中使用重复的MAC地址，无论主机是否位于不同的逻辑网络中，都可能出现丢包。建议只在所有网桥端口都能使用HW卸载的情况下使用HW卸载，或者在一个或多个网桥端口不能配置HW卸载的情况下，在所有交换端口上保持禁用。
 
-## 规则表
+### 规则表
 
 规则表是一个非常强大的工具，允许根据L2、L3和L4协议头字段进行线速包过滤、转发和VLAN标记。该菜单包含一个有序的规则列表，就像在 `/ip firewall filter`中一样，所以ACL规则会对每个数据包进行检查，直到找到一个匹配项。如果有多个规则可以匹配，那么只有第一个规则会被触发。没有任何处理参数的规则是一个接受数据包的规则。 
 
@@ -411,7 +411,7 @@ It is possible to set multiple uplink ports for a single switch chip, this can b
 
 ```
 
-# 设置实例
+## 设置实例
 
 ___
 
@@ -423,7 +423,7 @@ ___
 
 带有**MT7621**、**RTL8367**、**88E6393X**、**88E6191X**交换芯片的设备在RouterOS v7中支持[HW offloaded vlan-filtering]（https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering）。"/interface ethernet switch "菜单上的VLAN相关配置不可用。 
 
-## VLAN 示例 1 (聚合和访问端口)
+#3# VLAN 示例 1 (聚合和访问端口)
 
 带有Atheros交换芯片的RouterBOARD可用于802.1Q Trunking。RouterOS v6中的这一功能由**QCA8337、Atheros8316、Atheros8327、Atheros8227**和**Atheros7240**交换芯片支持。在这个例子中，**ether3**、**ether4**和**ether5**接口是接入端口，而**ether2**是一个聚合端口。接入端口的VLAN ID：ether3 - 400，ether4 - 300，ether5 - 200。
 
@@ -450,7 +450,7 @@ ___
 
 在**QCA8337**和**Atheros8327**交换芯片上，应该使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过使用`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
 
-## VLAN 示例 2 (聚合和混合端口)
+### VLAN 示例 2 (聚合和混合端口)
 
 VLAN混合端口，可以同时转发有标签和无标签的流量。这种配置仅由一些千兆交换机芯片（**QCA8337，Atheros8327**）支持。
 
@@ -572,7 +572,7 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.20.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.10.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether3</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
 
-# 参考文档
+## 参考文档
 
 - [Switch Router](https://wiki.mikrotik.com/wiki/Manual:Switch_Router "Manual:Switch Router")
 - [Basic VLAN Switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)
