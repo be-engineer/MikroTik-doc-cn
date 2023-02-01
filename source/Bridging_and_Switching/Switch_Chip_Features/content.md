@@ -572,7 +572,7 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.20.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.10.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether3</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
 
-# 参见
+# 参考文档
 
 - [Switch Router](https://wiki.mikrotik.com/wiki/Manual:Switch_Router "Manual:Switch Router")
 - [Basic VLAN Switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)

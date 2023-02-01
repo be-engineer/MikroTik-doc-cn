@@ -399,13 +399,13 @@ VLAN设置示例
 
 通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。
 
-# (R/M)STP
+## (R/M)STP
 
 ___
 
 CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器能够在硬件层面上运行STP、RSTP和MSTP。 有关更多详细信息，可以查看 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol) 手册。
 
-# 绑定
+## 绑定
 
 ___
 
@@ -430,13 +430,13 @@ CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器支持带绑定接
 
 对于 HW-offloaded 绑定接口，内置交换芯片将始终使用 Layer2+Layer3+Layer4 作为传输哈希策略，手动更改传输哈希策略将不起作用。
 
-# 多机箱链路聚合组
+## 多机箱链路聚合组
 
 ___
 
 RouterOS 中的 MLAG（多机箱链路聚合组）实现允许在两个独立的设备上配置 LACP 绑定，而客户端设备认为连接在同一台机器上。 这在交换机故障的情况下提供了物理冗余。 所有 CRS3xx、CRS5xx 系列和 CCR2116、CCR2216 设备都可以配置 MLAG。 阅读[此处](https://help.mikrotik.com/docs/display/ROS/Multi-chassis+Link+Aggregation+Group)了解更多信息。
 
-# L3 硬件卸载
+## L3 硬件卸载
 
 ___
 
@@ -444,19 +444,19 @@ Layer3 硬件卸载（也称为 IP 交换或 HW 路由）将允许将一些路�
 
 卸载的功能集取决于所使用的芯片组。 阅读 [此处](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading) 了解更多信息。
 
-# 端口隔离
+## 端口隔离
 
 ___
 
 由于 RouterOS v6.43 可以创建专用 VLAN 设置，因此可以在 [交换机芯片端口隔离](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features) #SwitchChipFeatures-Portisolation）手册中找到示例 。 硬件卸载绑定接口不包含在交换机端口隔离菜单中，但仍然可以在绑定的每个辅助接口上单独配置端口隔离。
 
-# IGMP/MLD 侦听
+## IGMP/MLD 侦听
 
 ___
 
 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在硬件级别上使用 IGMP/MLD侦听。 要查看更多详细信息，请查看 [IGMP/MLD 侦听](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 手册。
 
-# DHCP 侦听和 DHCP 选项 82
+## DHCP 侦听和 DHCP 选项 82
 
 ___
 
@@ -464,13 +464,13 @@ CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在硬件级
 
 !!!info 创建硬件卸载绑定接口时，DHCP 侦听将不起作用。
 
-# 控制器桥和端口扩展器
+## 控制器桥和端口扩展器
 
 ___
 
 控制器桥 (CB) 和端口扩展器 (PE) 是 RouterOS 中的 IEEE 802.1BR 标准实现。 它允许使用 PE 设备虚拟扩展 CB 端口，并从单个控制设备管理这些扩展接口。 这样的配置提供了简化的网络拓扑结构、灵活性、增加端口密度和易管理性。 请参阅 [Controller Bridge and Port Extender 手册](https://help.mikrotik.com/docs/display/ROS/Controller+Bridge+and+Port+Extender) 了解更多详情。
 
-# 镜像
+## 镜像
 
 ___
 
@@ -509,7 +509,7 @@ ___
 
 还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features# CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)）找出所有可以用来匹配数据包的参数。
 
-# 流量整形
+## 流量整形
 
 ___
 
@@ -541,7 +541,7 @@ ___
 
 开关规则表用于 QoS 功能，请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
 
-# 流量风暴控制
+#3 流量风暴控制
 
 ___
 
@@ -565,7 +565,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">storm-rate</code><code class="ros plain">=1</code> <code class="ros value">limit-broadcasts</code><code class="ros plain">=yes</code> <code class="ros value">limit-unknown-unicasts</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-# MPLS硬件卸载
+#3 MPLS硬件卸载
 
 ___
 
@@ -575,7 +575,7 @@ ___
 
 !!!warning 自 RouterOS v7 以来，MPLS 硬件卸载已被删除。
 
-# 交换规则(ACL)
+## 交换规则(ACL)
 
 ___
 
@@ -659,7 +659,7 @@ Layer4条件参数:
 
 !!!info 当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。
 
-# 端口安全
+## 端口安全
 
 ___
 
@@ -682,7 +682,7 @@ ___
 
 广播流量仍将从 **ether1** 发出。 要限制桥接端口上的广播流量泛滥，您可以使用“广播泛滥”参数来交换它。 请注意，某些协议依赖于广播流量，例如流式传输协议和 DHCP。
 
-# 双启动
+## 双启动
 
 ___
 
@@ -695,7 +695,7 @@ ___
 
 有关 SwOS 的更多详细信息，请参见此处：[SwOS 手册](https://help.mikrotik.com/docs/display/SWOS/SwOS)
 
-# 使用 RouterOS 配置 SwOS
+## 使用 RouterOS 配置 SwOS
 
 ___
 
@@ -721,7 +721,7 @@ ___
 | **identity** (_name_; Default: **Mikrotik**)                                                                | 交换机名称（用于 Mikrotik 邻居发现协议）                                                                                                                                                                                                  |
 | **static-ip-address** (_IP_; Default: **192.168.88.1**)                                                     | 交换机的 IP 地址获取模式设置为 dhcp-with-fallback 或静态。 通过设置静态IP地址，地址获取过程不会改变，默认为DHCP with fallback。 这意味着只有当同一广播域中没有 DHCP 服务器时，配置的静态 IP 地址才会变为活动状态                          |
 
-# 另见
+## 参考文档
 
 [CRS Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router")
 
