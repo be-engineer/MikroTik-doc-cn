@@ -144,7 +144,7 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
  1 R  pe1-ether2                             pe1
  2 R  pe1-ether3                             pe1
  3 R  pe1-ether4                             pe1
- 4  U pe1-sfpplus1                           pe1
+ 4 U pe1-sfpplus1                           pe1
  5 RC pe1-sfpplus2                           pe1
  6 I  pe2-ether1                             pe2
  7 R  pe2-ether2                             pe2
@@ -363,16 +363,16 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
  0 R  pe1-ether2                                            pe1                                                    
  1 R  pe1-ether3                                            pe1                                                    
  2 R  pe1-ether4                                            pe1                                                    
- 3  U pe1-sfpplus1                                          pe1                                                    
- 4  U pe1-sfpplus2                                          pe1                                                    
+ 3 U pe1-sfpplus1                                          pe1                                                    
+ 4 U pe1-sfpplus2                                          pe1                                                    
  5 RC pe1-sfpplus3                                          pe1                                                    
  6 RC pe1-sfpplus4                                          pe1                                                    
  7 R  pe2-ether1                                            pe2                                                    
  8 R  pe2-ether2                                            pe2                                                    
  9 R  pe2-ether3                                            pe2                                                    
 10 R  pe2-ether4                                            pe2                                                    
-11  U pe2-sfpplus1                                          pe2                                                    
-12  U pe2-sfpplus2                                          pe2     
+11 U pe2-sfpplus1                                          pe2                                                    
+12 U pe2-sfpplus2                                          pe2     
 
 ```
 

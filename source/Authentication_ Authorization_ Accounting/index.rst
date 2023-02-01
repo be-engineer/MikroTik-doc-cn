@@ -3,7 +3,7 @@
 ===============================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    Certificates/index.rst
    Dot1X/index.rst

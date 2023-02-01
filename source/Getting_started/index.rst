@@ -9,7 +9,7 @@ RouterOS是一个基于Linux内核的独立操作系统。它为 MikroTik 硬件
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    Software_Specifications/index.rst
    First_Time_Configuration/index.rst

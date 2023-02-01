@@ -2,7 +2,7 @@ supout.rif文件
 ===============================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    content.md
 
