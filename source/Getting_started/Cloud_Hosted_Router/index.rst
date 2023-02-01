@@ -3,7 +3,7 @@
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    content.md
    CHR_ProxMox_installation.md

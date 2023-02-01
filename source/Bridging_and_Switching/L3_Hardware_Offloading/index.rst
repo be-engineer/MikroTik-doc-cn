@@ -2,7 +2,7 @@ L3硬件卸载
 ===============================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    content.md
 
