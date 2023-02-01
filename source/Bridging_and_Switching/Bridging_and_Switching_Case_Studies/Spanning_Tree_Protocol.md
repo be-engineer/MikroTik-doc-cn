@@ -1,4 +1,4 @@
-# 概述
+# 生成树协议
 
 ___
 
@@ -6,7 +6,7 @@ ___
 
 作为一个最佳实践，建议手动设置每个网桥的优先级、端口优先级和端口路径开销，以确保在任何时候都有正确的二层功能。对于由 1 到 2 个启用了 (R/M)STP 的网桥组成的网络来说，将 STP 的相关值保留为默认值是可以接受的，但对于更大的网络，强烈建议手动设置这些值。由于 STP 是通过检查网络上网桥的 STP 相关值来选择根桥和根端口的，如果将 STP 设置为自动，可能会选出一个不想要的根桥和根端口，在硬件故障的情况下，会导致网络无法访问。
 
-# 监测
+## 监测
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 当用 802.1Q 作为 EtherType 的网桥时，它们会向 01:80:C2:00:00:00 发送 BPDUs，这被 MSTP、RSTP 和 STP 使用。当使用802.1ad作为网桥VLAN协议时，BPDUs与802.1Q网桥不兼容，它们会被发送到01:80:C2:00:00:08。 如果整个二层网络有不同的网桥VLAN协议，(R/M)STP将不能正常工作。
 
-# STP和RSTP
+## STP和RSTP
 
 ___
 
@@ -54,7 +54,7 @@ STP和Rapid STP在许多网络中广泛使用，但几乎所有的网络都只�
 
 此外，桥接端口 `point-to-point` ，指定了一个桥接端口是否使用点对点链路连接到一个网桥，以便在发生故障时更快地收敛。将此属性设置为`yes'就等于强制为点对点链接，会跳过检查机制，即检测并等待来自该单一链接的其他设备的BPDU，将此属性设置为`no'就意味着一个链接可以接收来自多个设备的BPDU。通过将该属性设置为 "yes"，将大大改善（R/M）STP收敛时间。一般来说，只应该把这个属性设置为 "no"，如果一个链路之间有可能连接另一个设备，这主要和无线媒介和以太网集线器有关。如果以太网链路是全双工的，`auto`会启用点对点功能。当协议模式设置为 "none "时，该属性没有影响。
 
-## 默认值
+### 默认值
 
 在创建网桥或向网桥添加端口时， 以下是 RouterOS 分配的默认值。
 
@@ -69,7 +69,7 @@ RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、10
 
 如果使用网桥过滤规则，请确保允许带有 DST-MAC 地址 **01:80:C2:00:00:00** 的数据包，因为这些数据包携带 BPDU，对 STP 的正常工作至关重要。
 
-## 选举过程
+### 选举过程
 
 要在网络中正确配置 STP，需要了解选举过程，以及哪些参数以何种顺序参与。在RouterOS中，根桥会根据最小的优先级和最小的MAC地址以这种特定的顺序被选出。
 
@@ -96,9 +96,9 @@ RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、10
 
 在RouterOS中，可以为网桥优先级设置0到65535之间的任何数值，IEEE 802.1W标准规定，网桥优先级必须以4096为单位。这可能会导致不支持这种值的设备之间的不兼容问题。为了避免不兼容的问题，建议只使用这些优先级。0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440.
 
-## 示例
+### 示例
 
-### 根路径开销示例
+#### 根路径开销示例
 
 ![](https://help.mikrotik.com/docs/download/attachments/21725254/RootPath.png?version=3&modificationDate=1585736384808&api=v2)
 
@@ -116,7 +116,7 @@ RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、10
 
 可以在根桥上配置路径开销，但只有在该桥失去根桥地位时才会被考虑。 
 
-### STP示例
+#### STP示例
 
 ![](https://help.mikrotik.com/docs/download/attachments/21725254/STPexample1.png?version=1&modificationDate=1585739167256&api=v2)
 
@@ -146,7 +146,7 @@ RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、10
 
 **注意：**根据802.1Q的建议，应该以4096为单位使用网桥优先级。要设置推荐的优先级，使用十六进制的符号更方便，例如，0是0x0000，4096是0x1000，8192是0x2000，以此类推（0...F）。
 
-# 多重生成树协议
+## 多重生成树协议
 
 ___
 
@@ -156,7 +156,7 @@ ___
 
  在启用了 MSTP 的 RouterOS 中， 网桥优先级是 CIST 的根桥优先级， 按照 IEEE 802.1Q 标准， 网桥优先级必须以 4096 为单位， 最低的 12 位被忽略。这些是有效的网桥优先级。0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, 61440. 当设置一个无效的网桥优先级时，RouterOS 会警告，并将该值转为有效值，但会在配置中保存原来的值，因为无效的网桥优先级仍然可以在运行 RouterOS 的设备之间用于 (R)STP，尽管建议使用有效的网桥优先级。
 
-## MSTP区域
+### MSTP区域
 
 MSTP以区域为单位工作，每个区域都有一个区域根桥，区域之间也会有一个根桥。MSTP将使用内部生成树（IST）来构建区域内的网络拓扑结构，在区域外使用普通生成树（CST）来构建多个区域间的网络拓扑结构，MSTP将这两个协议合并为普通和内部生成树（CIST），它拥有区域内和区域间拓扑结构的信息。从CST的角度来看，一个区域似乎将作为一个单一的虚拟网桥，正因为如此，MSTP被认为对大型网络有很好的扩展性。为了使网桥处于同一区域，它们的配置必须匹配，BPDU不包括VLAN映射，因为它们可能很大，而是传输一个计算的哈希。如果一个网桥通过一个端口收到BPDU，而配置不匹配，那么MSTP将认为该端口是一个边界端口，它可以被用来到达其他区域。下面是需要匹配的参数列表，以便MSTP考虑来自同一区域的BPDU。
 
@@ -174,7 +174,7 @@ MSTP以区域为单位工作，每个区域都有一个区域根桥，区域之�
 
 由于 MSTP 需要在网桥接口上启用 VLAN 过滤，那么请确保在 `/interface bridge vlan` 中允许所有需要的 VLAN ID，否则，流量将不会被转发，并且可能看起来是 MSTP 配置错误，尽管这是一个 VLAN 过滤的错误配置。
 
-## 选举过程
+### 选举过程
 
 MSTP的选举过程可以分为两个部分，即区域内和区域间。为了使MSTP正常工作，总是需要有一个区域根，即区域内的根桥，和一个CIST根，即区域间的根桥。区域根是区域内的根桥，区域根桥需要为区域内的VLAN组正确设置负载平衡。CIST 根将被用来配置哪些端口是备用/备份端口（非活动），哪些端口是根端口（活动）。
 
@@ -199,7 +199,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
  MSTP检查选举根桥/端口的参数顺序与(R)STP相同，您可以在(R)STP选举过程部分阅读更多信息。
 
-## MST实例
+### MST实例
 
 **子菜单:** `/interface bridge msti'.
 
@@ -212,7 +212,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 | **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 / 0x8000**) | MST实例优先级，用于确定MSTP区域内一组VLAN的根桥。                                                                    |
 | **vlan-mapping** (_integer: 1..4094_; Default: )                                                           | 要分配给MST实例的VLAN ID的列表。此设置接受VLAN ID范围，以及逗号分隔的值。例如 `vlan-mapping=100-115,120,122,128-130` |
 
-## MST 覆盖
+### MST 覆盖
 
 **子菜单：** `/interface bridge port mst-override`。
 
@@ -226,7 +226,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 | **priority** (_integer: 0..240_; Default: **128**)                                         | MST实例的VLAN的优先级，用于远离根桥的VLAN上，以操纵路径选择，优先级越低越好。             |
 | **interface** (_name_; Default: )                                                          | 使用配置的MST实例的VLAN映射和定义的路径成本和优先级的端口的名称。                         |
 
-## 监控
+### 监控
 
 与(R)STP类似，也可以监控MSTP状态。通过监控网桥接口本身，可以看到当前的 CIST 根桥和当前的 MSTI0 区域根桥，也可以看到 MST 实例标识符和 VLAN 映射的计算哈希值，这在确保某些网桥处于同一 MSTP 区域时很有用。下面是一个监控MSTP网桥的例子。
 
@@ -240,7 +240,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override </code><code class="ros functions">monitor </code><code class="ros plain">1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: active</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">identifier</code><code class="ros constants">: 2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">role</code><code class="ros constants">: alternate-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">internal-root-path-cost</code><code class="ros constants">: 15</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-bridge</code><code class="ros constants">: 0x1002.6C:3B:6B:7B:F9:08</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-internal-cost</code><code class="ros constants">: 0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-number</code><code class="ros constants">: 130</code></div></div></td></tr></tbody></table>
 
-## MSTP例子
+### MSTP例子
 
 假设我们需要设计拓扑结构并配置MSTP，使VLAN 10,20在一个路径中转发，但VLAN 30,40在另一个路径中转发，而所有其他VLAN ID将在其中一个路径中转发。可以通过设置MST实例和分配端口路径开销来轻松实现，下面是一个网络拓扑结构，在3个独立的区域内对每个VLAN组进行负载均衡的例子。
 

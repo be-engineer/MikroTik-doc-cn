@@ -1,10 +1,10 @@
-# 概述
+# 网桥VLAN表
 
 ___
 
 从RouterOS v6.41开始，可以使用网桥来过滤网络中的VLAN。为了达到这个目的，应该使用[网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)功能。这个功能应该用来代替许多已知的VLAN错误配置，这些错误配置很可能导致你的性能问题或连接问题，你可以在[VLAN in a bridge with a physical interface](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANinabridgewithaphysicalinterface)部分阅读最受欢迎的错误配置之一。网桥 VLAN 过滤功能最重要的部分是网桥 VLAN 表，它规定了每个端口允许哪些 VLAN，但如果你想进行更高级的设置，配置它可能会变得相当复杂，对于一般的设置，你可以使用 [Trunk and Access ports](https://help. mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-VLANExample-TrunkandAccessPorts）的例子，但本指南的目的是深入解释并指出使用网桥VLAN过滤时的一些行为特征。
 
-# 背景
+## 背景
 
 ___
 
@@ -21,7 +21,7 @@ ___
 - 如果数据包的 EtherType 与网桥配置的 EtherType 不匹配，那么入站数据包就会被视为无标记数据包，这种行为为将 VLAN 封装到另一个不同的 VLAN 提供了可能性。这也为通过网络中的不同设备来分流特定的流量提供了可能。
 - 如果一个数据包有一个与EtherType相匹配的VLAN标签，那么这个数据包就会被认为是一个有标签的数据包，但是你可以强迫另一个VLAN标签，而不管数据包的内容。通过在网桥端口上设置 `tag-stacking=yes`，您将在所有入站数据包的任何其他标签之上添加另一个具有 PVID 值的 VLAN 标签。
 
-# 聚合/接入端口设置
+## 聚合/接入端口设置
 
 ___
 
@@ -141,7 +141,7 @@ ingress-filtering属性只对入站流量有影响，但frame-type对出站和�
 
 ![](https://help.mikrotik.com/docs/download/attachments/28606465/Basic_vlan_switching.png?version=3&modificationDate=1618318076269&api=v2)
 
-# VLAN 隧道设置
+## VLAN 隧道设置
 
 ___
 

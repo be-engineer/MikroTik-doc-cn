@@ -1,4 +1,4 @@
-# 介绍
+# 网桥 IGMP/MLD 嗅探
 
 ___
 
@@ -12,7 +12,7 @@ IGMPv3和MLDv2不支持源的特定组播转发。
 
 采用Marvell-98DX3236、Marvell-98DX224S或Marvell-98DX226S交换芯片的CRS3xx系列设备，一旦检测到IGMP或MLD查询器，就无法区分非IP/IPv4/IPv6组播数据包。这意味着交换机在检测到查询器时将停止转发所有未知的非IP/IPv4/IPv6组播流量。这不适用于某些链路本地组播地址范围，如224.0.0.0/24或ff02::1。
 
-# 配置选项
+## 配置选项
 
 ___
 
@@ -64,7 +64,7 @@ ___
 | **ports** (_name_; Default: )                                        | 将被转发的多播组的桥接端口列表。                                                                                                                     |
 | **vid** (_integer: 1..4094_; Default: )                              | 创建MDB项的VLAN ID，只适用于启用`vlan-filtering`的情况。当没有指定VLAN ID时，该项将在共享VLAN模式下工作，并动态地应用于特定端口的所有定义的VLAN ID。 |
 
-# 监控和故障排除
+## 监控和故障排除
 
 ___
 
@@ -104,7 +104,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface bridge port </code><code class="ros functions">monitor </code><code class="ros plain">[find]</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">interface</code><code class="ros constants">: ether2 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ether3 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ether4</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">status</code><code class="ros constants">: in-bridge &nbsp; &nbsp; &nbsp; in-bridge &nbsp; &nbsp; &nbsp; in-bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">port-number</code><code class="ros constants">: 1 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 2 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">role</code><code class="ros constants">: designated-port designated-port designated-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">edge-port</code><code class="ros constants">: no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; </code><code class="ros plain">edge-port-discovery</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; </code><code class="ros plain">point-to-point-port</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">external-fdb</code><code class="ros constants">: no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">sending-rstp</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;</code><code class="ros plain">multicast-router</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;</code><code class="ros plain">hw-offload-group</code><code class="ros constants">: switch1 &nbsp; &nbsp; &nbsp; &nbsp; switch1 &nbsp; &nbsp; &nbsp; &nbsp; switch1</code></div></div></td></tr></tbody></table>
 
-# 配置实例
+## 配置实例
 
 ___
 

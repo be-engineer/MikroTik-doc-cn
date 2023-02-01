@@ -1,4 +1,4 @@
-## 概述
+# 概述
 
 运行 RouterOS 的 MikroTik 硬件路由器预装了 RouterOS 许可证，如果您购买了基于 RouterOS 的设备，则无需对许可证进行任何操作。
 

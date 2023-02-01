@@ -1,4 +1,4 @@
-# 概述
+# CRS1xx/2xx系列交换机实例
 
 ___
 
@@ -6,7 +6,7 @@ Cloud Router Switch功能的基本使用案例和配置实例。
 
 本文适用于CRS1xx和CRS2xx系列交换机，不适用于CRS3xx系列交换机。对于CRS3xx系列设备，请阅读[CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)手册。
 
-# 端口交换
+## 端口交换
 
 ___
 
@@ -14,7 +14,7 @@ ___
 
 可以通过使用启用了硬件卸载的多个网桥来创建多个孤立的交换机组，这只在CRS1xx/2xx系列交换机上可以实现。对于更复杂的设置（例如，VLAN过滤），你应该使用端口隔离功能来代替。
 
-# 管理访问配置
+## 管理访问配置
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
 
-# VLAN
+## VLAN
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 多个硬件卸载网桥配置被设计为快速和简单的端口隔离解决方案，但它限制了CRS交换机芯片所支持的部分VLAN功能。对于高级配置，在CRS交换机芯片内为所有端口使用一个网桥，配置VLAN，用端口隔离配置文件配置隔离端口组。
 
-##基于端口的VLAN
+## 基于端口的VLAN
 
 对于CRS3xx系列设备，你必须使用桥接VLAN过滤，你可以在[桥接VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)部分阅读更多信息。
 
@@ -192,7 +192,7 @@ VLAN间路由配置包括两个主要部分--交换芯片的VLAN标记和RouterO
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.30.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.40.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN400</code></div></div></td></tr></tbody></table>
 
-##未知/无效的VLAN过滤
+## 未知/无效的VLAN过滤
 
 VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项使该VLAN流量在这些端口上有效。在设置了有效的VLAN配置后，可以启用未知/无效的VLAN过滤。这个VLAN过滤配置例子适用于VLAN间路由设置。
 
@@ -267,7 +267,7 @@ VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项�
 
 由于交换机被设置为根据服务标签查找VLAN ID，而服务标签被不同的EtherType所覆盖，那么VLAN过滤只在数据包的外部标签上进行，内部标签不被检查。
 
-# 镜像
+## 镜像
 
 ___
 
@@ -275,25 +275,25 @@ ___
 
 Cloud Router Switches支持三种类型的镜像。基于端口的镜像可以应用于任何交换机芯片端口，基于VLAN的镜像适用于所有指定的VLAN，与交换芯片端口无关，而基于MAC的镜像则复制从单播转发数据库中配置的端口可到达的特定设备发送或接收的流量。
 
-## 基于端口的镜像
+### 基于端口的镜像
 
 第一个配置将ether5端口设置为镜像0分析端口，用于入站和出站镜像，镜像的流量将被发送到这个端口。基于端口的入站和出站镜像在ether6端口启用。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">egress-mirror0</code><code class="ros plain">=ether5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">ingress-mirror-to</code><code class="ros plain">=mirror0</code> <code class="ros value">egress-mirror-to</code><code class="ros plain">=mirror0</code></div></div></td></tr></tbody></table>
 
-## 基于VLAN的镜像
+### 基于VLAN的镜像
 
 第二个例子要求端口在一个组中进行交换。镜像配置将ether5端口设置为镜像0分析端口，并将镜像0端口设置为在发生从VLAN镜像时使用。VLAN表项仅对ether2和ether7端口之间的VLAN 300流量启用镜像。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">vlan-uses</code><code class="ros plain">=mirror0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether7</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code> <code class="ros value">learn</code><code class="ros plain">=yes</code> <code class="ros value">ingress-mirror</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-##基于MAC的镜像
+### 基于MAC的镜像
 
 第三种配置也需要端口在一个组中进行交换。镜像配置将ether5端口设置为镜像0分析端口，并将镜像0端口设置为发生单播转发数据库的镜像时使用。来自单播转发数据库的项目使来自ether8端口的具有源或目的MAC地址E7:16:34:A1:CD:18的数据包能够被镜像。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">fdb-uses</code><code class="ros plain">=mirror0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch unicast-fdb</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">svl</code><code class="ros plain">=yes</code> <code class="ros value">mac-address</code><code class="ros plain">=E7:16:34:A1:CD:18</code></div></div></td></tr></tbody></table>
 
-# 聚合
+## 聚合
 
 ___
 
@@ -313,7 +313,7 @@ Cloud Router Switches中的聚合提供静态链路聚合组，具有硬件自�
 
 网桥(R)STP不知道底层交换机的聚合配置，一些聚合端口可以移动到丢弃或阻塞状态。当聚合成员端口连接到其他网桥时，应该禁用(R)STP或过滤掉集群设备之间的任何BPDU（例如，用ACL规则）。
 
-# 每个端口有限的 MAC 访问
+## 每个端口有限的 MAC 访问
 
 ___
 
@@ -327,11 +327,11 @@ CRS1xx/2xx交换机还允许每个端口学习一个动态MAC，以确保只有�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">learn-limit</code><code class="ros plain">=1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">learn-limit</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
 
-# 隔离
+## 隔离
 
 ___
 
-## 端口级隔离
+### 端口级隔离
 
 ![](https://help.mikrotik.com/docs/download/attachments/103841836/Port-level-Isolation.jpg?version=1&modificationDate=1653992020849&api=v2)
 
@@ -365,7 +365,7 @@ Community 2 和Community 3端口的配置是类似的。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether8 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=2</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether7,ether8</code> <code class="ros value">type</code><code class="ros plain">=dst</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether9 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=3</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether10 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=3</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=3</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether9,ether10</code> <code class="ros value">type</code><code class="ros plain">=dst</code></div></div></td></tr></tbody></table>
 
-## 协议级隔离
+### 协议级隔离
 
 ![](https://help.mikrotik.com/docs/download/attachments/103841836/Protocol-level-Isolation.jpg?version=1&modificationDate=1653992078245&api=v2)  
 
@@ -383,7 +383,7 @@ CRS交换机上的协议级隔离可以用来增强网络安全。例如，限�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=2</code> <code class="ros value">protocol-type</code><code class="ros plain">=dhcpv4</code> <code class="ros value">type</code><code class="ros plain">=dst</code> <code class="ros value">forwarding-type</code><code class="ros plain">=bridged</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">registration-status</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">traffic-type</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
 
-# 服务质量 (QoS)
+## 服务质量 (QoS)
 
 ___
 
@@ -399,7 +399,7 @@ ___
 
 基于DSCP的流量调度和整形: [QoS DSCP mapping] -> [Priority] -> [Queue] -> [Shaper]
 
-## 基于MAC的流量调度使用内部优先级
+### 基于MAC的流量调度使用内部优先级
 
 在严格的优先级调度模式下，最高优先级的队列首先被服务。队列号代表优先级，队列号最高的队列具有最高优先级。流量从最高优先级的队列传输，直到该队列为空，然后转移到下一个最高优先级的队列，以此类推。如果出站端口没有出现拥堵，数据包一收到就被传送。如果在高优先级流量不断到来的端口发生拥堵，低优先级队列就会饿死。
 
@@ -420,7 +420,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=da-based</code></div></div></td></tr></tbody></table>
 
-## 基于MAC的流量整形使用内部优先级
+### 基于MAC的流量整形使用内部优先级
 
 基于MAC的流量整形是根据内部优先级来完成的，方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue] -> [Shaper]。 
 在这个例子中，无限流量的优先级是0，有限流量的优先级是1，带宽限制是10Mbit。请注意，CRS每个端口最多有8个队列。
@@ -449,7 +449,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch acl policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=policer1</code> <code class="ros value">yellow-burst</code><code class="ros plain">=100k</code> <code class="ros value">yellow-rate</code><code class="ros plain">=10M</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch acl</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-dst-address</code><code class="ros plain">=E7:16:34:A1:CD:18</code> <code class="ros value">policer</code><code class="ros plain">=policer1</code></div></div></td></tr></tbody></table>
 
-## 基于VLAN的流量调度+使用内部优先级的整形
+### 基于VLAN的流量调度+使用内部优先级的整形
 
 最好的做法是为被整形器限制的流量分配较低的内部QoS优先级，使其在严格的优先级调度器中也不那么重要。(更高的优先级应该是更重要的和无限的）。
 
@@ -478,7 +478,7 @@ VLAN30 -> QoS group2 = highest priority
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch shaper</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether6</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
 
-## 基于PCP的流量调度
+### 基于PCP的流量调度
 
 默认情况下，CRS1xx/CRS2xx系列设备将忽略PCP/CoS/802.1p值，并基于FIFO（先进先出）方式转发数据包。当设备的内部队列未满时，则以先进先出的方式发送数据包，一旦队列满了，则更高优先级的流量就可以先发送出去。考虑一个场景，当**ether1**和**ether2**向**ether3**转发数据，而且**ether3**拥堵时，那么数据包就要被安排好，我们可以配置交换机来保留最低优先级的数据包，直到所有高优先级的数据包被发送出去，这是VoIP类型设置中非常常见的场景，有些流量需要优先处理。
 
@@ -502,7 +502,7 @@ VLAN30 -> QoS group2 = highest priority
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3 </code><code class="ros value">qos-scheme-precedence</code><code class="ros plain">=pcp-based</code></div></div></td></tr></tbody></table>
 
-# 带宽限制
+## 带宽限制
 
 ___
 
@@ -516,7 +516,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch shaper</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">meter-unit</code><code class="ros plain">=bit</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
 
-#  流量风暴控制
+##  流量风暴控制
 
 ___
 
@@ -530,7 +530,7 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-port-policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">rate</code><code class="ros plain">=5k</code> <code class="ros value">meter-unit</code><code class="ros plain">=packet</code> <code class="ros value">packet-types</code><code class="ros plain">=broadcast,arp-or-nd,unregistered-multicast</code></div></div></td></tr></tbody></table>
 
-# 另见
+## 参考
 
 ___
 

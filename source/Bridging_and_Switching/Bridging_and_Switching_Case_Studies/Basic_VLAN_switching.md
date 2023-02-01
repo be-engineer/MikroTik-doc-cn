@@ -1,4 +1,4 @@
-# 介绍
+# 基本VLAN交换
 
 ___
 
@@ -6,7 +6,7 @@ ___
 
 ![](https://help.mikrotik.com/docs/download/attachments/103841826/700px-Basic_vlan_switching.jpg?version=1&modificationDate=1653919551273&api=v2)
 
-# CRS3xx、CRS5xx系列交换机，CCR2116、CCR2216和RTL8367、88E6393X、88E6191X和MT7621交换芯片
+## CRS3xx、CRS5xx系列交换机，CCR2116、CCR2216和RTL8367、88E6393X、88E6191X和MT7621交换芯片
 
 ___
 
@@ -18,7 +18,7 @@ RTL8367、88E6393X、88E6191X和MT7621交换芯片从RouterOS v7开始可以使�
 
  将 "frame-types "设置为 "admit-all "或 "admit-only-untagged-and-priority-tagged "的网桥端口将被自动添加为 "pvid "VLAN的untagged端口。
 
-# CRS1xx/CRS2xx系列交换机
+## CRS1xx/CRS2xx系列交换机
 
 ___
 
@@ -26,7 +26,7 @@ ___
 
 更详细的例子可以在[这里]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN）找到。
 
-# 其他具有内置交换芯片的设备
+## 其他具有内置交换芯片的设备
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 对于有多个交换芯片的设备（例如，RB2011、RB3011、RB1100），每个交换芯片只能在同一交换芯片的端口之间交换VLAN流量，VLAN过滤在不同交换芯片的端口之间不会在硬件层面上发挥作用，这意味着如果你打算使用交换芯片的VLAN过滤，就不应该把所有的端口添加到一个网桥上，交换芯片之间的VLAN将不会得到过滤。你可以在两个交换芯片之间连接电缆来绕过这个硬件限制，另一个选择是使用网桥VLAN过滤，但它禁用了硬件卸载（降低了总吞吐量）。
 
-# 其他没有内置交换芯片的设备
+## 其他没有内置交换芯片的设备
 
 ___
 

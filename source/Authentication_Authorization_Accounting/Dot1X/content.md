@@ -1,8 +1,7 @@
-## 概述
+# 概述
 ___
 
 Dot1X 是 IEEE 802.1X 标准在 RouterOS 中的实现。 主要目的是使用 EAP over LAN（也称为 EAPOL）提供基于端口的网络访问控制。 802.1X 由请求者（客户端）、认证者（服务器）和认证服务器（RADIUS 服务器）组成。 目前，RouterOS 支持验证方和请求方。 请求者支持的 EAP 方法是 EAP-TLS、EAP-TTLS、EAP-MSCHAPv2 和 PEAPv0/EAP-MSCHAPv2。
-
 SMIPS 设备（hAP lite、hAP lite TC 和 hAP mini）不支持该功能。
 
 ## 客户端
@@ -15,8 +14,8 @@ ___
 
 | 属性                                                                                                                                                                                                                                                  | 说明                                                                                                                                |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **anon-identity** (_string_; Default: )                                                                                                                                                                                                               | 外层 EAP 身份验证。 仅与 `eap-ttls` 和 `eap-peap` 方法一起使用。 如果未设置，来自 `identity` 参数的值将用于外层 EAP 身份验证。      |
-| **client-certificate** (_string_; Default: )                                                                                                                                                                                                          | [System/Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates) 中列出的证书名称。 当使用 `eap-tls` 方法时是必需的。 |
+| **anon-identity** (_string_;Default: )                                                                                                                                                                                                                | 外层 EAP 身份验证。 仅与 `eap-ttls` 和 `eap-peap` 方法一起使用。 如果未设置，来自 `identity` 参数的值将用于外层 EAP 身份验证。      |
+| **client-certificate** (_string_;Default: )                                                                                                                                                                                                           | [System/Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates) 中列出的证书名称。 当使用 `eap-tls` 方法时是必需的。 |
 | **comment** (_string_; Default: )                                                                                                                                                                                                                     | 条目的简短描述。                                                                                                                    |
 | **disabled** (_yes                           \| no_; Default: **no**)                                                                                                                                                                                 | 客户端是否启用。                                                                                                                    |
 | **eap-methods** (_eap-tls                                             \| eap-ttls                                                                                                                            \| eap-peap \| eap-mschapv2_; Default: ) | 用于身份验证的 EAP 方法的有序列表。                                                                                                 |

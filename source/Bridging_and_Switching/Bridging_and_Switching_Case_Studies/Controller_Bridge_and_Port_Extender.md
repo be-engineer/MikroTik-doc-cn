@@ -1,4 +1,4 @@
-# 摘要
+# 控制网桥和端口扩展器
 
 ___
 
@@ -45,7 +45,7 @@ ___
 | L3 HW 卸载           | -    |
 | MLAG                 | -    |
 
-# 快速设置
+## 快速设置
 
 ___
 
@@ -69,7 +69,7 @@ ___
   
 请确保不在任何路由或网桥配置中包括级联端口和控制端口。这些端口只推荐给CB和PE使用。
 
-# 发现和控制协议
+## 发现和控制协议
 
 ___
 
@@ -83,7 +83,7 @@ CB和PE配置可以覆盖邻居发现设置，例如，如果一个级联端口�
 
 目前的CB实现不支持任何故障转移技术。一旦CB设备变得不可用，PE设备将失去所有的控制和数据转发规则。
 
-# 数据包流量
+## 数据包流量
 
 ___
 
@@ -103,7 +103,7 @@ ___
 
 ![](https://help.mikrotik.com/docs/download/attachments/37224456/CB_broadcast2.png?version=1&modificationDate=1599824973103&api=v2)
 
-# 控制网桥的设置和监控选项
+## 控制网桥的设置和监控选项
 
 ___
 
@@ -192,7 +192,7 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
     `poe-out-current: 123mA      95mA`
       `poe-out-power: 6.4W       5W`
 
-# 端口扩展器设置
+## 端口扩展器设置
 
 ___
 
@@ -206,7 +206,7 @@ ___
 | **excluded-ports** (_interfaces;_ Default: **none**) | 不会被扩展的接口。                                                                                         |
 | **switch** (_name;_ Default: **none**)               | 将作为扩展器并确保控制和网络流量的交换机。 只有指定该属性时，PE才会启用，否则，将处于禁用状态。            |
 
-# 配置实例
+## 配置实例
 
 ___
 

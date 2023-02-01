@@ -1,4 +1,4 @@
-## 概述
+# 概述
 
 用户管理器是 RouterOS 中的 RADIUS 服务器实现，它为某个服务提供集中的用户身份验证和授权。 拥有中央用户数据库可以更好地跟踪系统用户和客户。 作为一个单独的包，用户管理器可用于包括 SMIPS 在内的所有体系结构，但由于可用空间有限，必须小心。 它支持许多不同的身份验证方法，包括 PAP、CHAP、MS-CHAP、MS-CHAPv2、EAP-TLS、EAP-TTLS 和 EAP-PEAP。 在 RouterOS 中，DHCP、Dot1x、Hotspot、IPsec、PPP、Wireless 是最受益于用户管理器的功能。 每个用户都可以使用 WEB 界面查看他们的帐户统计信息并管理可用的配置文件。 此外，用户可以使用最流行的支付网关 - PayPal 购买他们自己的数据计划（配置文件），使其成为服务提供商的绝佳系统。 可以生成定制报告以简化计费部门的处理。 用户管理器根据 [RFC2865](https://tools.ietf.org/html/rfc2865) 和 [RFC3579](https://tools.ietf.org/html/rfc3579) 中定义的 RADIUS 标准工作。
 
@@ -368,11 +368,9 @@ add-batch-users number-of-users=3 password-characters=lowercase,numbers,uppercas
 ```shell
 /user-manager user print
 Flags: X - disabled
- 0   name="olsgkl" password="86a6zH" otp-secret="" group=default shared-users=1 attributes=""
- 
- 1   name="lkbwss" password="jaKY5V" otp-secret="" group=default shared-users=1 attributes=""
- 
- 2   name="cwxbwu" password="a62yZd" otp-secret="" group=default shared-users=1 attributes=""
+0   name="olsgkl" password="86a6zH" otp-secret="" group=default shared-users=1 attributes=""
+1   name="lkbwss" password="jaKY5V" otp-secret="" group=default shared-users=1 attributes=""
+2   name="cwxbwu" password="a62yZd" otp-secret="" group=default shared-users=1 attributes=""
 
 ```
 
@@ -599,4 +597,4 @@ set enabled=yes use-ipsec=required ipsec-secret=mySecret
 
 ```
 
-这就对了。 您的路由器现在已准备好接受 L2TP/IPsec 连接并向内部用户管理器验证它们
+这样就对了。 路由器现在已准备好接受 L2TP/IPsec 连接并向内部用户管理器验证它们

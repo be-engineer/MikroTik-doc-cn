@@ -1,4 +1,4 @@
-## 什么是supout.rif文件?
+# 什么是supout.rif文件?
 
 支持文件用于调试 MikroTik RouterOS 并更快地解决支持问题。 MikroTik Router的所有信息都保存在一个二进制文件中，该文件保存在路由器中，可以使用FTP从路由器上下载。 如果需要，您还可以在具有闪存类型内存或外部存储驱动器的设备上的“/flash”文件夹中生成文件，方法是指定文件“name=flash/supout.rif”的完整路径。 您可以在您的 [Mikrotik 帐户](https://www.mikrotik.com/) 中查看此文件的内容，只需单击左侧栏中的“Supout.rif 查看器”并上传文件。
 

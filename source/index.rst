@@ -33,6 +33,6 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
    :maxdepth: 1
 
    Getting_started/index.rst
-   Authentication_ Authorization_ Accounting/index.rst
+   Authentication_Authorization_Accounting/index.rst
    Bridging_and_Switching/index.rst
 

@@ -1,4 +1,4 @@
-## 介绍
+# 介绍
 
 Netinstall 是一个用于安装或重装 RouterOS 的 MikroTik 设备的工具。 如果怀疑设备无法正常工作，请始终尝试使用 Netinstall。 该工具可用于 Windows（带有图形界面）和 Linux（作为命令行工具）。
 

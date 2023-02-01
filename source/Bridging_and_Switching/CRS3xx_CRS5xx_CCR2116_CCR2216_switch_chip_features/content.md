@@ -24,7 +24,266 @@ CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成
 
 下表说明了 Cloud Router Switch 型号和 CCR 路由器之间的主要区别。
 
-<table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col><col><col><col><col><col></colgroup><tbody><tr><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title=""><u>Model</u></strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Switch Chip</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">CPU</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Cores</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">10G SFP+</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">10G Ethernet</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">25G SFP28</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">40G QSFP+</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">100G QSFP28</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">ACL rules</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Unicast FDB entries</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Jumbo Frame (Bytes)</strong></td></tr><tr><td class="confluenceTd">netPower 15FR (CRS318-1Fi-15Fr-2S)</td><td class="confluenceTd"><strong>Marvell-98DX224S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">netPower 16P (CRS318-16P-2S+)</td><td class="confluenceTd"><strong>Marvell-98DX226S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS310-1G-5S-4S+ (netFiber 9/IN)</td><td class="confluenceTd"><strong>Marvell-98DX226S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS326-24G-2S+ (RM/IN)</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS328-24P-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS328-4C-20S-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS305-1G-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS309-1G-8S+</td><td class="confluenceTd"><strong>Marvell-98DX8208</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>8</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS317-1G-16S+</td><td class="confluenceTd"><strong>Marvell-98DX8216</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS312-4C+8XG</td><td class="confluenceTd"><strong>Marvell-98DX8212</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4 (combo ports)</strong></td><td class="confluenceTd"><strong>8 + 4 (combo ports)</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>512</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS326-24S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX8332</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>24</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>256</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS354-48G-4S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX3257</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>170</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS354-48P-4S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX3257</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>170</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS504-4XQ-IN</td><td class="confluenceTd"><strong>Marvell-98DX4310</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS518-16XS-2XQ</td><td class="confluenceTd"><strong>Marvell-98DX8525</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CCR2116-12G-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3255</strong></td><td class="confluenceTd"><strong>2000MHz</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>512</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>9570</strong></td></tr><tr><td class="confluenceTd">CCR2216-1G-12XS-2XQ</td><td class="confluenceTd"><strong>Marvell-98DX8525</strong></td><td class="confluenceTd"><strong>2000MHz</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>12</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>9570</strong></td></tr></tbody></table>
+<table cellspacing="0" border="0">
+	<colgroup width="255"></colgroup>
+	<colgroup width="180"></colgroup>
+	<colgroup span="2" width="85"></colgroup>
+	<colgroup width="131"></colgroup>
+	<colgroup span="7" width="85"></colgroup>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">Model</font></td>
+		<td align="left"><font face="Liberation Sans">Switch Chip</font></td>
+		<td align="left"><font face="Liberation Sans">CPU</font></td>
+		<td align="left"><font face="Liberation Sans">Cores</font></td>
+		<td align="left"><font face="Liberation Sans">10G SFP+</font></td>
+		<td align="left"><font face="Liberation Sans">10G Ethernet</font></td>
+		<td align="left"><font face="Liberation Sans">25G SFP28</font></td>
+		<td align="left"><font face="Liberation Sans">40G QSFP+</font></td>
+		<td align="left"><font face="Liberation Sans">100G QSFP28</font></td>
+		<td align="left"><font face="Liberation Sans">ACL rules</font></td>
+		<td align="left"><font face="Liberation Sans">Unicast FDB entries</font></td>
+		<td align="left"><font face="Liberation Sans">Jumbo Frame (Bytes)</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">netPower 15FR (CRS318-1Fi-15Fr-2S)</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX224S</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">netPower 16P (CRS318-16P-2S+)</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX226S</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS310-1G-5S-4S+ (netFiber 9/IN)</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX226S</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS326-24G-2S+ (RM/IN)</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3236</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS328-24P-4S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3236</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS328-4C-20S-4S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3236</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS305-1G-4S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3236</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="128" sdnum="2052;"><font face="Liberation Sans">128</font></td>
+		<td align="right" sdval="16000" sdnum="2052;"><font face="Liberation Sans">16000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS309-1G-8S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8208</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="right" sdval="8" sdnum="2052;"><font face="Liberation Sans">8</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="1024" sdnum="2052;"><font face="Liberation Sans">1024</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS317-1G-16S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8216</font></td>
+		<td align="left"><font face="Liberation Sans">800MHz</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="right" sdval="16" sdnum="2052;"><font face="Liberation Sans">16</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="1024" sdnum="2052;"><font face="Liberation Sans">1024</font></td>
+		<td align="right" sdval="128000" sdnum="2052;"><font face="Liberation Sans">128000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS312-4C+8XG</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8212</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="left"><font face="Liberation Sans">4 (combo ports)</font></td>
+		<td align="left"><font face="Liberation Sans">8 + 4 (combo ports)</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="512" sdnum="2052;"><font face="Liberation Sans">512</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS326-24S+2Q+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8332</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="24" sdnum="2052;"><font face="Liberation Sans">24</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="256" sdnum="2052;"><font face="Liberation Sans">256</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS354-48G-4S+2Q+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3257</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="170" sdnum="2052;"><font face="Liberation Sans">170</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS354-48P-4S+2Q+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3257</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="170" sdnum="2052;"><font face="Liberation Sans">170</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS504-4XQ-IN</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX4310</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="right" sdval="1024" sdnum="2052;"><font face="Liberation Sans">1024</font></td>
+		<td align="right" sdval="128000" sdnum="2052;"><font face="Liberation Sans">128000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CRS518-16XS-2XQ</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8525</font></td>
+		<td align="left"><font face="Liberation Sans">650MHz</font></td>
+		<td align="right" sdval="1" sdnum="2052;"><font face="Liberation Sans">1</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="16" sdnum="2052;"><font face="Liberation Sans">16</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="right" sdval="1024" sdnum="2052;"><font face="Liberation Sans">1024</font></td>
+		<td align="right" sdval="128000" sdnum="2052;"><font face="Liberation Sans">128000</font></td>
+		<td align="right" sdval="10218" sdnum="2052;"><font face="Liberation Sans">10218</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CCR2116-12G-4S+</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX3255</font></td>
+		<td align="left"><font face="Liberation Sans">2000MHz</font></td>
+		<td align="right" sdval="16" sdnum="2052;"><font face="Liberation Sans">16</font></td>
+		<td align="right" sdval="4" sdnum="2052;"><font face="Liberation Sans">4</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="512" sdnum="2052;"><font face="Liberation Sans">512</font></td>
+		<td align="right" sdval="32000" sdnum="2052;"><font face="Liberation Sans">32000</font></td>
+		<td align="right" sdval="9570" sdnum="2052;"><font face="Liberation Sans">9570</font></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><font face="Liberation Sans">CCR2216-1G-12XS-2XQ</font></td>
+		<td align="left"><font face="Liberation Sans">Marvell-98DX8525</font></td>
+		<td align="left"><font face="Liberation Sans">2000MHz</font></td>
+		<td align="right" sdval="16" sdnum="2052;"><font face="Liberation Sans">16</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="12" sdnum="2052;"><font face="Liberation Sans">12</font></td>
+		<td align="left"><font face="Liberation Sans">-</font></td>
+		<td align="right" sdval="2" sdnum="2052;"><font face="Liberation Sans">2</font></td>
+		<td align="right" sdval="1024" sdnum="2052;"><font face="Liberation Sans">1024</font></td>
+		<td align="right" sdval="128000" sdnum="2052;"><font face="Liberation Sans">128000</font></td>
+		<td align="right" sdval="9570" sdnum="2052;"><font face="Liberation Sans">9570</font></td>
+	</tr>
+</table>
+
 
 L3硬件卸载功能和硬件限制，请参考[功能支持](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWFeatureSupport)和[设备支持](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWDeviceSupport)用户手册。
 

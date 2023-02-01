@@ -1,4 +1,4 @@
-# WMM如何工作
+# WMM和VLAN优先级
 
 ___
 
@@ -12,7 +12,7 @@ Mikrotik AP和客户端根据分配给它们的优先级对数据包进行分类
 
 WMM支持可以通过`wmm-support`设置来启用。它只适用于B和G频段，其他频段将启用它而不管这个设置。 
 
-# VLAN优先权如何工作
+## VLAN优先权如何工作
 
 ___
 
@@ -20,7 +20,7 @@ VLAN优先级是VLAN标记头中的一个3位字段，称为优先级代码点�
 
 更多细节可以在 IEEE 802.1p 规范中研究。
 
-# 如何设置优先权
+## 如何设置优先权
 
 ___
 
@@ -34,19 +34,19 @@ ___
 
 不要把队列的优先级和分配给数据包的优先级混在一起。队列的优先级是单独工作的，指定了队列的 "重要性"，并且只在特定的队列设置中具有意义。把数据包的优先级看作是某种标记，它通过规则附加到数据包上。还要考虑到这个标记目前只用于通过启用WMM的链路发出的数据包，以及发出的VLAN标记的数据包（无论该数据包是本地标记还是网桥的）。
 
-## 基于特定匹配器设置VLAN或WMM优先级
+### 基于特定匹配器设置VLAN或WMM优先级
 
 可以根据 IP mangle 或网桥过滤器/nat 规则中的特定匹配器来改变 VLAN 和 WMM 优先级。在这个例子中，所有传出的 ICMP 数据包都将使用 IP mangle 规则，以 VLAN 或 WMM 优先级发送。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=output</code> <code class="ros value">new-priority</code><code class="ros plain">=2</code> <code class="ros value">protocol</code><code class="ros plain">=icmp</code></div></div></td></tr></tbody></table>
 
-## 自定义优先级映射
+### 自定义优先级映射
 
 有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。我们可以在IP mangle或网桥防火墙/nat规则中使用`ingress-priority`匹配器，只过滤需要的优先级，并使用`new-priority`动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">ingress-priority</code><code class="ros plain">=5</code> <code class="ros value">new-priority</code><code class="ros plain">=0</code></div></div></td></tr></tbody></table>
 
-## 在网桥内将 WMM 优先级转换为 VLAN 优先级
+### 在网桥内将 WMM 优先级转换为 VLAN 优先级
 
 当收到一个已经设置了 WMM 优先级的无线数据包时，RouterOS 网桥不会自动将其转换为 VLAN 头。这意味着，收到带有 WMM 优先级的无线数据包，如果被网桥标记为 VLAN，则会以 0 的 VLAN 优先级转发。 然而，我们可以使用带有 `from-ingress` 设置的网桥过滤规则来保持 VLAN 数据包的优先级。例如，我们希望通过 ether2 转发带有 VLAN 10 标头的无线数据包，并保留已经设置的 WMM 优先级（由无线客户端设置）。
 
@@ -60,7 +60,7 @@ ___
 
 RouterOS 网桥转发 VLAN 标记的数据包时，不作任何改变，这意味着收到的具有一定 VLAN 优先级的 VLAN 标记的数据包将以相同的 VLAN 优先级离开网桥。唯一的例外是当网桥取消了数据包的标记，在这种情况下，由于VLAN头的缺失，VLAN优先级不会被保留。
 
-# 来自DSCP的优先级
+## 来自DSCP的优先级
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 最好是在一些边界路由器（例如用于连接互联网的主路由器）上，根据流量类型，在数据包的IP头中设置DSCP值，例如，将来自互联网的属于SIP连接的数据包的DSCP值设置为7，其余为0。这样，数据包只在一个地方被标记。然后，网络上的所有AP都可以通过DSCP值设置数据包的优先级，只需一条规则。
 
-## 从DSCP设置VLAN或WMM优先级
+### 从DSCP设置VLAN或WMM优先级
 
 在这个例子中，当数据包通过无线接口路由时，AP设备将从DSCP设置WMM优先级。
 
@@ -78,7 +78,7 @@ ___
   
 当数据包通过网桥转发时，可以通过网桥设置下的 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 
-# DSCP 从优先级
+## DSCP 从优先级
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 然而，这种设置不能直接使用从收到的VLAN或WMM数据包中的入口优先级。首先需要使用IP mangle或网桥过滤/nat规则设置优先级（在此情况下可以使用入口优先级），然后才能应用DSCP规则。
 
-## 从VLAN或WMM优先级设置DSCP
+### 从VLAN或WMM优先级设置DSCP
 
 在这个例子中，当数据包被路由时，AP设备需要从WMM优先级设置DSCP。首先，添加一个规则来设置优先级，为了正确改变DSCP值，DSCP规则需要它。这个规则可以从入口处获得优先权。然后添加DSCP规则来改变其值。
 
@@ -94,7 +94,7 @@ ___
 
 当数据包通过网桥转发时，可以通过网桥设置下 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 
-# 结合优先级设置和处理的方案
+## 结合优先级设置和处理的方案
 
 ___
 
@@ -105,7 +105,7 @@ ___
 - 必要时使用VLAN，因为它们也携带优先级信息，确保碍事的以太网桥和交换机不清除VLAN标签中的优先级信息。
 - 记住，QoS并不能提高链路的吞吐量，它只是对不同的数据包进行不同的处理，另外，无线链路上的WMM流量会对空中的常规流量进行判别。
 
-# 另见
+## 另见
 
 ___
 

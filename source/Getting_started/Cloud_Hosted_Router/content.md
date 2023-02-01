@@ -1,6 +1,6 @@
 Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 它支持 x86 64 位架构，可用于大多数流行的管理程序，如 VMWare、Hyper-V、VirtualBox、KVM 等。 CHR 具有默认启用的完整 RouterOS 功能，但具有与其他 RouterOS 版本不同的许可模型。
 
-## 系统要求
+# 系统要求
 
 - 软件包版本:RouterOS v6.34 或更新版本
 - 主机 CPU:64 位，支持虚拟化
