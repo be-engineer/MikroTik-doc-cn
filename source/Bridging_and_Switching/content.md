@@ -724,7 +724,6 @@ add bridge=bridge1 tagged=ether2,ether6,ether7 vlan-ids=400
 
 创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
 
-
 ```shell
 /interface bridge
 add name=bridge1 vlan-filtering=no
