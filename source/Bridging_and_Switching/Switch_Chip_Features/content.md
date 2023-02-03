@@ -69,7 +69,14 @@ Cloud Router Switch（CRS）系列设备集成了先进的交换芯片，它们�
 
 命令行配置在交换机菜单下。这个菜单包含了系统中存在的所有交换芯片的列表和一些子菜单。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface ethernet switch </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - invalid</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MIRROR-SOURCE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MIRROR-TARGET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SWITCH-ALL-PORTS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; switch1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Atheros-8327&nbsp;&nbsp;&nbsp;&nbsp; none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; switch2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Atheros-8227&nbsp;&nbsp;&nbsp;&nbsp; none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface ethernet switch print
+Flags: I - invalid
+ #   NAME         TYPE             MIRROR-SOURCE       MIRROR-TARGET       SWITCH-ALL-PORTS
+ 0   switch1      Atheros-8327     none                none              
+ 1   switch2      Atheros-8227     none                none
+
+```
 
 根据交换机的类型，有些配置功能可能没有。
 
@@ -79,7 +86,7 @@ ___
 
 ### 端口交换
 
-为了在非CRS系列设备上设置端口交换，请查看[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)。
+为了在非CRS系列设备上设置端口交换，请查看 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 。
 
 在RouterOS v6.41和更新的版本中，端口交换是通过网桥配置完成的。在RouterOS v6.41之前，端口交换是使用主端口属性完成的。
 
@@ -130,27 +137,31 @@ ___
 
 端口镜像配置示例:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-source</code><code class="ros plain">=ether2</code> <code class="ros value">mirror-target</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set switch1 mirror-source=ether2 mirror-target=ether3
+
+```
 
  如果把镜像源设置为至少有两个交换芯片设备的以太网端口，并且这些镜像源端口在一个网桥中，而两个交换芯片的镜像目标被设置为将数据包发送到CPU将导致环路，可能使设备无法访问。
 
 #### 端口设置
 
-本菜单下的属性用于为支持VLAN表的交换芯片配置VLAN交换和过滤选项。这些属性只适用于支持VLAN表的交换芯片，请查看[Switch Chip Features](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction)确定你的设备支持该功能。
+本菜单下的属性用于为支持VLAN表的交换芯片配置VLAN交换和过滤选项。这些属性只适用于支持VLAN表的交换芯片，请查看 [交换芯片特性](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction) 确定你的设备支持该功能。
 
 入站流量被认为是被送**入**某个端口的流量，这个端口有时被称为**入站端口**。出口流量是指从某一端口**发送**的流量，这个端口有时被称为**出站**端口。区分它们对于正确设置VLAN过滤是非常重要的，因为有些属性只适用于入站或出站流量。
 
-| 属性                                                                                        | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **vlan-mode** (_check \| disabled \| fallback \| secure_; Default: **disabled**)            | 根据[VLAN Table](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-VLANTable)改变VLAN查询机制，以获取入站流量。<br>- `disabled`- 完全禁止对进入的流量进行VLAN表的检查。当设置在入站端口时，流量不会被丢弃。<br>- `fallback`- 根据VLAN表检查入站流量的标记，并转发所有未标记的流量。如果入站流量是标记的，而出站端口在VLAN表中没有找到相应的VLAN ID，那么流量会被丢弃。如果在VLAN表中没有找到VLAN ID，那么流量会被转发。用于仅在特定端口允许已知的VLAN。<br>- `check`- 根据VLAN表检查入站流量的标签流量，并丢弃所有无标签的流量。如果入站流量是标记的，而出站端口在VLAN表中找不到相应的VLAN ID，那么流量会被丢弃。<br>- `secure`- 根据VLAN表检查入站流量的标签流量，并丢弃所有无标签的流量。入站和出站端口都必须在VLAN表中找到相应的VLAN ID，否则，流量会被丢弃。 |
-| **vlan-header** (_add-if-missing \| always-strip \| leave-as-is_; Default: **leave-as-is**) | 设置在端口上对出站流量进行的操作。<br>- `add-if-missing`- 在出站流量上增加一个VLAN标签，并使用入站端口的默认VLAN-id。用于聚合端口。<br>- `always-strip`- 在出站流量中删除一个VLAN标签。用于接入端口。<br>- `leave-as-is`-不在出站流量上增加或删除VLAN标签。用于混合端口。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **default-vlan-id** (_auto \| integer: 0..4095_; Default: **auto**)                         | 在端口上的所有未标记的入站流量上添加一个具有指定VLAN ID的VLAN标签，应与端口上的vlan-header设置为`always-strip`一起使用，以配置该端口为访问端口。对于混合端口，默认的vlan-id被用来标记未标记的流量。如果两个端口有相同的default-vlan-id，那么VLAN标签就不会被添加，因为交换芯片认为流量是在接入端口之间转发的。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 属性                                                                                        | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **vlan-mode** (_check \| disabled \| fallback \| secure_; Default: **disabled**)            | 根据 [VLAN表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-VLANTable) 改变VLAN查询机制，以获取入站流量。<br>- `disabled`- 完全禁止对进入的流量进行VLAN表的检查。当设置在入站端口时，流量不会被丢弃。<br>- `fallback`- 根据VLAN表检查入站流量的标记，并转发所有未标记的流量。如果入站流量是标记的，而出站端口在VLAN表中没有找到相应的VLAN ID，那么流量会被丢弃。如果在VLAN表中没有找到VLAN ID，那么流量会被转发。用于仅在特定端口允许已知的VLAN。<br>- `check`- 根据VLAN表检查入站流量的标签流量，并丢弃所有无标签的流量。如果入站流量是标记的，而出站端口在VLAN表中找不到相应的VLAN ID，那么流量会被丢弃。<br>- `secure`- 根据VLAN表检查入站流量的标签流量，并丢弃所有无标签的流量。入站和出站端口都必须在VLAN表中找到相应的VLAN ID，否则，流量会被丢弃。 |
+| **vlan-header** (_add-if-missing \| always-strip \| leave-as-is_; Default: **leave-as-is**) | 设置在端口上对出站流量进行的操作。<br>- `add-if-missing`- 在出站流量上增加一个VLAN标签，并使用入站端口的默认VLAN-id。用于聚合端口。<br>- `always-strip`- 在出站流量中删除一个VLAN标签。用于接入端口。<br>- `leave-as-is`-不在出站流量上增加或删除VLAN标签。用于混合端口。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **default-vlan-id** (_auto \| integer: 0..4095_; Default: **auto**)                         | 在端口上的所有未标记的入站流量上添加一个具有指定VLAN ID的VLAN标签，应与端口上的vlan-header设置为`always-strip`一起使用，以配置该端口为访问端口。对于混合端口，默认的vlan-id被用来标记未标记的流量。如果两个端口有相同的default-vlan-id，那么VLAN标签就不会被添加，因为交换芯片认为流量是在接入端口之间转发的。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 在**QCA8337**和**Atheros8327**交换芯片上，要使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
 
 ## VLAN表
 
-VLAN表为具有特定802.1Q标签的数据包指定了某些转发规则。这些规则比使用[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)功能配置的交换机组的优先级更高。基本上，该表包含将特定VLAN标签ID映射到一个或多个端口组的表项。带有VLAN标签的数据包通过一个或多个在相应表项中设置的端口离开交换芯片。控制如何处理带有VLAN标签的数据包的确切逻辑是由一个`vlan-mode'参数控制的，这个参数在每个交换机端口都可以改变。
+VLAN表为具有特定802.1Q标签的数据包指定了某些转发规则。这些规则比使用 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 功能配置的交换机组的优先级更高。基本上，该表包含将特定VLAN标签ID映射到一个或多个端口组的表项。带有VLAN标签的数据包通过一个或多个在相应表项中设置的端口离开交换芯片。控制如何处理带有VLAN标签的数据包的确切逻辑是由一个`vlan-mode'参数控制的，这个参数在每个交换机端口都可以改变。
 
 基于VLAN ID的转发考虑到了动态学习的MAC地址或在主机表中手动添加的MAC地址。QCA8337和Atheros8327交换芯片还支持独立VLAN学习（IVL），它同时基于MAC地址和VLAN ID进行学习，因此允许同一MAC用于多个VLAN。
 
@@ -253,11 +264,11 @@ VLAN转发
 
 IPv4和IPv6的条件不能出现在同一规则中。
 
-由于规则表完全在交换芯片硬件中处理，你可以有多少条规则是有限制的。根据在规则中使用的条件（MAC层、IP层、IPv6、L4层）的数量，对于Atheros8316交换芯片，活动规则的数量可能从8到32，对于Atheros8327/QCA8337交换芯片从24到96，对于88E6393X交换芯片从42到256。你可以在修改完规则集后，随时做`/interface ethernet switch rule print`，看看列表最后没有规则是'无效'的，这意味着这些规则不适合交换芯片。
+由于规则表完全在交换芯片硬件中处理，能有多少条规则是有限制的。根据在规则中使用的条件（MAC层、IP层、IPv6、L4层）的数量，对于Atheros8316交换芯片，活动规则的数量可能从8到32，对于Atheros8327/QCA8337交换芯片从24到96，对于88E6393X交换芯片从42到256。你可以在修改完规则集后，随时做`/interface ethernet switch rule print`，看看列表最后没有规则是'无效'的，这意味着这些规则不适合交换芯片。
 
 ## 端口隔离
 
-端口隔离提供了划分（隔离）网络的某些部分的可能性，当你需要确保某些设备不能访问其他设备时是有用的，可以通过隔离交换机的端口来实现。端口隔离只在属于同一个交换机的端口之间起作用。自RouterOS v6.43以来，交换机端口隔离在所有交换芯片上都可用。
+端口隔离提供了划分（隔离）网络的某些部分的可能性，当需要确保某些设备不能访问其他设备时是有用的，可以通过隔离交换机的端口来实现。端口隔离只在属于同一个交换机的端口之间起作用。自RouterOS v6.43以来，交换机端口隔离在所有交换芯片上都可用。
 
 | 属性                                             | 说明                                                         |
 | ------------------------------------------------ | ------------------------------------------------------------ |
@@ -277,13 +288,28 @@ IPv4和IPv6的条件不能出现在同一规则中。
 
 要配置交换机端口隔离，需要交换所有需要的端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add interface=sfp1 bridge=bridge1 hw=yes
+add interface=ether1 bridge=bridge1 hw=yes
+add interface=ether2 bridge=bridge1 hw=yes
+add interface=ether3 bridge=bridge1 hw=yes
+
+```
 
 默认情况下，网桥接口的 `protocol-mode `被配置为 `rstp`。对于某些设备， 这可能会禁用硬件卸载， 因为特定的交换机芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
 
 覆盖每个需要隔离的交换机端口的出站端口（不包括上行链路端口）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">forwarding-override</code><code class="ros plain">=sfp1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">forwarding-override</code><code class="ros plain">=sfp1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">forwarding-override</code><code class="ros plain">=sfp1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port-isolation
+set ether1 forwarding-override=sfp1
+set ether2 forwarding-override=sfp1
+set ether3 forwarding-override=sfp1
+
+```
 
 It is possible to set multiple uplink ports for a single switch chip, this can be done by specifying multiple interfaces and separating them with a comma.
 
@@ -295,19 +321,40 @@ It is possible to set multiple uplink ports for a single switch chip, this can b
 
 ![](https://help.mikrotik.com/docs/download/attachments/15302988/Port_isolation_2.png?version=1&modificationDate=1620716068287&api=v2)
 
-要配置隔离的交换机组，你必须首先交换所有的端口。
+要配置隔离的交换机组，必须先交换所有端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether5 hw=yes
+
+```
 
 默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
 
 然后在 "forwarding-override "属性中指定你想在同一个隔离的交换组中的所有端口（除了你应用属性的端口），例如，为**A**设备创建一个隔离的交换组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">forwarding-override</code><code class="ros plain">=ether2,ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">forwarding-override</code><code class="ros plain">=ether1,ether3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">forwarding-override</code><code class="ros plain">=ether1,ether2</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port-isolation
+set ether1 forwarding-override=ether2,ether3
+set ether2 forwarding-override=ether1,ether3
+set ether3 forwarding-override=ether1,ether2
+
+```
 
 要为**B**设备创建一个隔离的交换组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether4 </code><code class="ros value">forwarding-override</code><code class="ros plain">=ether5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5 </code><code class="ros value">forwarding-override</code><code class="ros plain">=ether4</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port-isolation
+set ether4 forwarding-override=ether5
+set ether5 forwarding-override=ether4
+
+```
 
 ## CPU流量控制
 
@@ -315,7 +362,7 @@ It is possible to set multiple uplink ports for a single switch chip, this can b
 
 从RouterOS v6.43开始，在一些使用以下交换芯片的设备上可以禁用CPU流量控制功能。Atheros8227、QCA8337、Atheros8327、Atheros7240或Atheros8316。其他交换芯片默认启用该功能，不能改变。要禁用CPU流量控制，请使用以下命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch </code><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">cpu-flow-control</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+`/interface ethernet switch set switch1 cpu-flow-control=no`
 
 ## 统计数据
 
@@ -415,13 +462,13 @@ It is possible to set multiple uplink ports for a single switch chip, this can b
 
 ___
 
-当使用安全的`vlan-mode'时，请确保你已经将所有需要的接口添加到VLAN表中。为了使路由功能在同一设备上通过使用安全`vlan-mode`的端口正常工作，你需要允许从这些端口访问CPU，这可以通过将switchX-cpu接口本身添加到VLAN表中来实现。例子可以在[Management port](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Managementaccessconfiguration)部分找到。
+当使用安全的`vlan-mode'时，请确保你已经将所有需要的接口添加到VLAN表中。为了使路由功能在同一设备上通过使用安全`vlan-mode`的端口正常工作，需要允许从这些端口访问CPU，这可以通过将switchX-cpu接口本身添加到VLAN表中来实现。例子可以在 [Management port](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Managementaccessconfiguration) 部分找到。
 
-可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为一个交换机和一个路由器。你可以在[Switch-Router](https://wiki.mikrotik.com/wiki/Manual:Switch_Router "Manual:Switch Router")指南中找到配置例子。
+可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为一个交换机和一个路由器。你可以在 [Switch-Router](https://wiki.mikrotik.com/wiki/Manual:Switch_Router "Manual:Switch Router") 指南中找到配置例子。
 
 当允许访问CPU时，是允许从某个端口访问实际的路由器/交换机，这并不总是恰当的。当允许从某个VLAN ID和端口访问CPU时，请确保有适当的防火墙过滤规则保护你的设备，使用防火墙过滤规则，只允许访问某些服务。
 
-带有**MT7621**、**RTL8367**、**88E6393X**、**88E6191X**交换芯片的设备在RouterOS v7中支持[HW offloaded vlan-filtering]（https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering）。"/interface ethernet switch "菜单上的VLAN相关配置不可用。 
+带有**MT7621**、**RTL8367**、**88E6393X**、**88E6191X**交换芯片的设备在RouterOS v7中支持 [HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。"/interface ethernet switch "菜单上的VLAN相关配置不可用。 
 
 #3# VLAN 示例 1 (聚合和访问端口)
 
@@ -431,17 +478,39 @@ ___
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether5 hw=yes
 
-默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
+```
+
+默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 部分，了解支持的功能。
 
 添加VLAN表项，允许端口之间有特定VLAN ID的帧。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether3</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether4</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether5</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether2,ether3 switch=switch1 vlan-id=200
+add ports=ether2,ether4 switch=switch1 vlan-id=300
+add ports=ether2,ether5 switch=switch1 vlan-id=400
+
+```
 
 为每个端口分配 "vlan-mode "和 "vlan-header "模式，并在每个接入端口的入站处分配 "default-vlan-id"。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=200</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether4 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=300</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 vlan-mode=secure vlan-header=add-if-missing
+set ether3 vlan-mode=secure vlan-header=always-strip default-vlan-id=200
+set ether4 vlan-mode=secure vlan-header=always-strip default-vlan-id=300
+set ether5 vlan-mode=secure vlan-header=always-strip default-vlan-id=400
+
+```
 
 - 设置`vlan-mode=secure`可以确保严格使用VLAN表。
 - 为接入端口设置`vlan-header=always-strip'，当帧离开交换芯片时，从帧中删除VLAN头。
@@ -458,17 +527,39 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether5 hw=yes
+
+```
 
 默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
 
 添加VLAN表项，允许端口之间有特定VLAN ID的帧。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether3,ether4,ether5</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether3,ether4,ether5</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether3,ether4,ether5</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether2,ether3,ether4,ether5 switch=switch1 vlan-id=200
+add ports=ether2,ether3,ether4,ether5 switch=switch1 vlan-id=300
+add ports=ether2,ether3,ether4,ether5 switch=switch1 vlan-id=400
+
+```
 
 在交换机端口菜单中，在所有端口上设置`vlan-mode'，在计划的混合端口上设置`default-vlan-id'。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=200</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether4 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=300</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 vlan-mode=secure vlan-header=leave-as-is
+set ether3 vlan-mode=secure vlan-header=leave-as-is default-vlan-id=200
+set ether4 vlan-mode=secure vlan-header=leave-as-is default-vlan-id=300
+set ether5 vlan-mode=secure vlan-header=leave-as-is default-vlan-id=400
+
+```
 
 - `vlan-mode=secure`将确保严格使用VLAN表。
 - `default-vlan-id`将定义端口上无标记入站流量的VLAN。
@@ -478,45 +569,92 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
 
 这里将显示多个场景的例子，但每个场景都要求有交换的端口。下面你可以找到如何交换多个端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add interface=ether1 bridge=bridge1 hw=yes
+add interface=ether2 bridge=bridge1 hw=yes
+
+```
 
 默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
 
 在这些例子中，我们假设**ether1**是聚合端口，**ether2**是接入端口，配置如下。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=100</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=100</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1 vlan-header=add-if-missing
+set ether2 default-vlan-id=100 vlan-header=always-strip
+/interface ethernet switch vlan
+add ports=ether1,ether2,switch1-cpu switch=switch1 vlan-id=100
+
+```
 
 ### 标签
 
 为了使设备只能从某个VLAN访问，需要在网桥接口上创建一个新的VLAN接口，并给它分配一个IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add name=MGMT vlan-id=99 interface=bridge1
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+
+```
 
 指定允许它从哪些接口访问设备。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether1,switch1-cpu switch=switch1 vlan-id=99
+
+```
   
 在这个VLAN表中只指定聚合端口，不允许通过接入端口用标签流量访问CPU，因为接入端口会用指定的`default-vlan-id`值对所有入站流量进行标记。
 
 当配置VLAN表时，可以启用`vlan-mode=secure`来限制对CPU的访问。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=100</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu </code><code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1 vlan-header=add-if-missing vlan-mode=secure
+set ether2 default-vlan-id=100 vlan-header=always-strip vlan-mode=secure
+set switch1-cpu vlan-header=leave-as-is vlan-mode=secure
+
+```
+
 
 ### 无标记
 
 为了使设备能够从接入端口访问，创建一个VLAN接口，其VLAN ID与`default-vlan-id`中设置的相同，例如VLAN 100，并为其添加一个IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN100</code> <code class="ros value">vlan-id</code><code class="ros plain">=100</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.100.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN100</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add name=VLAN100 vlan-id=100 interface=bridge1
+/ip address
+add address=192.168.100.1/24 interface=VLAN100
+
+```
 
 指定哪些访问（无标记）端口可以访问CPU。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=100</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether1,ether2,switch1-cpu switch=switch1 vlan-id=100
+
+```
 
 最常见的是一个接入（无标记）端口与一个聚合（有标记）端口一起使用。在无标记访问CPU的情况下，你要同时指定访问端口和聚合端口，这样也可以从聚合端口访问CPU。但并非都需要这样，可能要在VLAN过滤的基础上设置防火墙。
 
 当配置了VLAN表后，你可以启用`vlan-mode=secure`来限制对CPU的访问。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=100</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu </code><code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1 vlan-header=add-if-missing vlan-mode=secure
+set ether2 default-vlan-id=100 vlan-header=always-strip vlan-mode=secure
+set switch1-cpu vlan-header=leave-as-is vlan-mode=secure
+
+```
   
 要在有**Atheros7240**交换芯片的设备上使用无标记流量设置管理端口，需要为CPU端口设置`vlan-header=add-if-missing`。
 
@@ -524,15 +662,28 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
 
 允许从聚合（标记）端口访问设备，并允许未标记的流量。要做到这一点，要在网桥接口上分配一个IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.0.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=10.0.0.1/24 interface=bridge1
+
+```
 
 指定哪些端口允许访问CPU。使用`default-vlan-id`中使用的`vlan-id`，用于switch-cpu和聚合端口，默认情况下，设置为0或1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether1,switch1-cpu switch=switch1 vlan-id=1
+
+```
 
 当配置了VLAN表后，你可以启用`vlan-mode=secure`来限制对CPU的访问。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=1</code> <code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu </code><code class="ros value">default-vlan-id</code><code class="ros plain">=1</code> <code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1 default-vlan-id=1 vlan-header=add-if-missing vlan-mode=secure
+set switch1-cpu default-vlan-id=1 vlan-header=leave-as-is vlan-mode=secure
+
+```
 
 对于用**Atheros8316**和**Atheros7240**交换芯片的设备，这个配置例子是不用的。对于使用**QCA8337**和**Atheros8327**交换芯片的设备，可以使用任何其他的`default-vlan-id`，只要它在交换机cpu和聚合端口上保持不变。对于用**Atheros8227**交换芯片的设备，只能使用`default-vlan-id=0`，聚合端口要使用`vlan-header=leave-as-is`。
 
@@ -544,33 +695,71 @@ VLAN混合端口，可以同时转发有标签和无标签的流量。这种配�
   
 为了让设置发挥作用，必须把所有需要的端口交换到一起
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+
+```
 
 为每个VLAN ID创建一个VLAN接口，并为其分配一个IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.10.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN20</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge1 name=VLAN10 vlan-id=10
+add interface=bridge1 name=VLAN20 vlan-id=20
+/ip address
+add address=192.168.10.1/24 interface=VLAN10
+add address=192.168.20.1/24 interface=VLAN20
+
+```
 
 为每个VLAN设置一个DHCP服务器。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip pool</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=POOL10</code> <code class="ros value">ranges</code><code class="ros plain">=192.168.10.100-192.168.10.200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=POOL20</code> <code class="ros value">ranges</code><code class="ros plain">=192.168.20.100-192.168.20.200</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip dhcp-server</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address-pool</code><code class="ros plain">=POOL10</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=VLAN10</code> <code class="ros value">name</code><code class="ros plain">=DHCP10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address-pool</code><code class="ros plain">=POOL20</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=VLAN20</code> <code class="ros value">name</code><code class="ros plain">=DHCP20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/ip dhcp-server network</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.10.0/24</code> <code class="ros value">dns-server</code><code class="ros plain">=8.8.8.8</code> <code class="ros value">gateway</code><code class="ros plain">=192.168.10.1</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.0/24</code> <code class="ros value">dns-server</code><code class="ros plain">=8.8.8.8</code> <code class="ros value">gateway</code><code class="ros plain">=192.168.20.1</code></div></div></td></tr></tbody></table>
+```shell
+/ip address add address =192.168.88.1/24  interface =ether1 add address =10.0.0.17/24  interface =sfp-sfpplus16  /ip route add gateway =10.0.0.1  /ip firewall filter add action =fasttrack-connection  chain =forward  connection-state =established,related  hw-offload =yes add action =accept  chain =forward  connection-state =established,related  /ip firewall nat add action =masquerade  chain =srcnat  out-interface-list =WAN
+
+```
 
 在设备上启用NAT。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall nat</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">out-interface</code><code class="ros plain">=ether1</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=ether1
+
+```
 
 将每个端口添加到VLAN表中，允许这些端口访问CPU，使DHCP和路由正常工作。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">independent-learning</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether2,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">independent-learning</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether3,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add independent-learning=yes ports=ether2,switch1-cpu switch=switch1 vlan-id=10
+add independent-learning=yes ports=ether3,switch1-cpu switch=switch1 vlan-id=20
+
+```
 
 指定每个端口为接入端口，在每个端口和switch1-cpu端口上启用安全VLAN模式。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=10</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">default-vlan-id</code><code class="ros plain">=20</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 default-vlan-id=10 vlan-header=always-strip vlan-mode=secure
+set ether3 default-vlan-id=20 vlan-header=always-strip vlan-mode=secure
+set switch1-cpu vlan-mode=secure
+
+```
 
 在**QCA8337**和**Atheros8327**交换芯片上，应该使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过使用`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用以指定未标记的入站流量被分配到哪个VLAN。
 
 如果你的设备有一个交换规则表，那么你可以在硬件层面上限制VLAN之间的访问。只要你在VLAN接口上添加一个IP地址，你就会启用VLAN间的路由，但这可以在硬件层面上进行限制，同时保留DHCP服务器和其他与路由器有关的服务。要实现这一点，请使用这些ACL规则。通过这种配置，你可以使用VLAN实现孤立的端口组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.20.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.10.0/24</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether3</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add dst-address=192.168.20.0/24 new-dst-ports="" ports=ether2 switch=switch1
+add dst-address=192.168.10.0/24 new-dst-ports="" ports=ether3 switch=switch1
+
+```
 
 ## 参考文档
 

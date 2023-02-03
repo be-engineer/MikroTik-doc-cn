@@ -53,15 +53,27 @@ ___
 
 首先，在CB设备上配置一个启用VLAN过滤的网桥。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+
+```
 
 在同一设备上，配置一个连接到PE设备的端口，作为级联端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-controller</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">cascade-ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-controller
+set bridge=bridge1 cascade-ports=sfp-sfpplus1 switch=switch1
+
+```
 
 最后，在PE设备上，只需配置一个控制端口，它将被选为上游端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">control-ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-extender
+set control-ports=sfp-sfpplus1 switch=switch1
+
+```
 
 一旦PE和CB设备连接起来，所有在同一个交换机组上的接口（除了控制端口）将被扩展，并可以在CB设备上进一步配置。CB设备上将应用自动网桥端口配置，将所有扩展的端口添加到一个单一的网桥中，该配置可以以后修改。
 
@@ -119,7 +131,19 @@ ___
 
 在CB和PE设备配置和连接后，每个PE设备将自动在设备菜单上可见，使用`print`和`monitor`命令查看更多细节。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Controller] &gt; interface bridge port-controller device print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - inactive</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pe1"</code> <code class="ros value">pe-mac</code><code class="ros plain">=64:D1:54:EB:AE:BC</code> <code class="ros value">descr</code><code class="ros plain">=</code><code class="ros string">"MikroTik RouterOS 6.48beta35 (testing) CRS328-24P-4S+"</code> <code class="ros value">control-ports</code><code class="ros plain">=pe1-sfpplus1,pe1-sfpplus2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pe2"</code> <code class="ros value">pe-mac</code><code class="ros plain">=64:D1:54:C7:3A:58</code> <code class="ros value">descr</code><code class="ros plain">=</code><code class="ros string">"MikroTik RouterOS 6.48beta35 (testing) CRS326-24G-2S+"</code> <code class="ros value">control-ports</code><code class="ros plain">=pe2-sfpplus1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">[admin@Controller] &gt; interface bridge port-controller device </code><code class="ros functions">monitor </code><code class="ros plain">pe2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">name</code><code class="ros constants">: pe2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: active</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">connected-via-ports</code><code class="ros constants">: sfp-sfpplus1==pe1-sfpplus1,pe1-sfpplus2==pe2-sfpplus1</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">connected-via-devs</code><code class="ros constants">: controller,pe1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@Controller] > interface bridge port-controller device print
+Flags: I - inactive
+ 0   name="pe1" pe-mac=64:D1:54:EB:AE:BC descr="MikroTik RouterOS 6.48beta35 (testing) CRS328-24P-4S+" control-ports=pe1-sfpplus1,pe1-sfpplus2
+ 
+ 1   name="pe2" pe-mac=64:D1:54:C7:3A:58 descr="MikroTik RouterOS 6.48beta35 (testing) CRS326-24G-2S+" control-ports=pe2-sfpplus1
+[admin@Controller] > interface bridge port-controller device monitor pe2
+                 name: pe2
+               status: active
+  connected-via-ports: sfp-sfpplus1==pe1-sfpplus1,pe1-sfpplus2==pe2-sfpplus1
+   connected-via-devs: controller,pe1
+
+```
 
 **子菜单:** `/interface bridge port-controller device`
 
@@ -220,15 +244,29 @@ ___
 
 首先，配置CB设备。可以添加一个启用了VLAN过滤的网桥接口来完成。此外，将任何本地接口添加到同一个网桥，它允许在任何本地接口和扩展接口之间转发流量。在这个例子中，添加了一个 sfp-sfpplus2 接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=sfp-sfpplus2
+
+```
 
 要启用 CB，需要指定网桥、交换机和至少一个级联端口。请确保级联端口不包括在网桥或路由配置中。这些端口只推荐用于 CB 和 PE 的使用。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-controller</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">cascade-ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-controller
+set bridge=bridge1 cascade-ports=sfp-sfpplus1 switch=switch1
+
+```
 
 为了启用PE，配置控制端口和交换机。另外，配置一个或多个不应该被扩展的接口，用 "excluded-ports "属性（例如带外管理目的）。在这个例子中，所有的交换机端口将被扩展。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">control-ports</code><code class="ros plain">=sfp-sfpplus4</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-extender
+set control-ports=sfp-sfpplus4 switch=switch1
+
+```
 
 一旦PE和CB设备完成发现并开始控制和状态协议（CSP），RouterOS将永久地创建新的接口并将它们添加到CB设备的网桥中。接口自动分配PE设备名称，加上默认的接口名称，这些接口名称可以在之后修改。请注意，控制端口和排除端口也会被显示在接口列表中，但它们不会被纳入网桥。 
 
@@ -307,23 +345,55 @@ ___
 
 ![](https://help.mikrotik.com/docs/download/attachments/37224456/CB_PE_VLANs.png?version=3&modificationDate=1605189595256&api=v2)First, configure the CB and PE devices, the configuration is identical to the previous example. Use this configuration for CB device.
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-controller</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">cascade-ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=sfp-sfpplus2
+/interface bridge port-controller
+set bridge=bridge1 cascade-ports=sfp-sfpplus1 switch=switch1
+
+```
 
 对PE设备使用此配置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">control-ports</code><code class="ros plain">=sfp-sfpplus4</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-extender
+set control-ports=sfp-sfpplus4 switch=switch1
+
+```
 
 在CB设备上成功创建扩展端口并添加到网桥后，可以开始配置VLAN相关属性。首先，使用 `pvid` 属性将访问端口配置为各自的 VLAN ID。在"`/interface bridge port`"菜单中使用`print`命令，以找出准确的接口名称。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether1]</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether2]</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether3]</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find interface=pe1-ether1] pvid=10
+set [find interface=pe1-ether2] pvid=20
+set [find interface=pe1-ether3] pvid=30
+
+```
 
 然后添加网桥VLAN条目，并指定有标签、无标签的端口。注意，有两个标记的端口 - 本地端口名为 sfp-sfpplus2，扩展端口名为 pe1-sfpplus1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=pe1-sfpplus1,sfp-sfpplus2</code> <code class="ros value">untagged</code><code class="ros plain">=pe1-ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=pe1-sfpplus1,sfp-sfpplus2</code> <code class="ros value">untagged</code><code class="ros plain">=pe1-ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=pe1-sfpplus1,sfp-sfpplus2</code> <code class="ros value">untagged</code><code class="ros plain">=pe1-ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=pe1-sfpplus1,sfp-sfpplus2 untagged=pe1-ether1 vlan-ids=10
+add bridge=bridge1 tagged=pe1-sfpplus1,sfp-sfpplus2 untagged=pe1-ether2 vlan-ids=20
+add bridge=bridge1 tagged=pe1-sfpplus1,sfp-sfpplus2 untagged=pe1-ether3 vlan-ids=30
+
+```
 
 这样，VLAN就配置好了，设备应该能通过端口通信。然而，我们建议再进一步，应用一些额外的过滤选项。在本地网桥端口上启用端口 "ingress-filtering"，并根据数据包类型使用 "frame-types "设置进行帧过滤。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether1]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether2]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-ether3]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=pe1-sfpplus1]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus2]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find interface=pe1-ether1] frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=pe1-ether2] frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=pe1-ether3] frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=pe1-sfpplus1] frame-types=admit-only-vlan-tagged
+set [find interface=sfp-sfpplus2] frame-types=admit-only-vlan-tagged ingress-filtering=yes
+
+```
 
 端口入站VLAN过滤在扩展端口上不支持。
 
@@ -335,15 +405,38 @@ ___
 
 CB和PE的配置与第一个例子类似，主要区别在于绑定接口的使用。首先，配置CB设备--为级联端口创建一个绑定接口，创建一个网桥并添加任何需要的本地网桥端口，最后启用CB。使用下面的命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-controller</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">cascade-ports</code><code class="ros plain">=bond1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond1 slaves=sfp-sfpplus1,sfp-sfpplus2
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=sfp-sfpplus3
+/interface bridge port-controller
+set bridge=bridge1 cascade-ports=bond1 switch=switch1
+
+```
 
 然后配置端口扩展器1设备。这个设备需要两个绑定接口--第一个将作为上行端口，第二个将作为端口扩展器2设备的级联端口。另外，配置一个或多个不该扩展的接口，用 "excluded-ports "属性（例如带外管理目的）。在这个例子中，所有交换机端口都将被扩展。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond2</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus3,sfp-sfpplus4</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">control-ports</code><code class="ros plain">=bond1,bond2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond1 slaves=sfp-sfpplus1,sfp-sfpplus2
+add mode=802.3ad name=bond2 slaves=sfp-sfpplus3,sfp-sfpplus4
+/interface bridge port-extender
+set control-ports=bond1,bond2 switch=switch1
+
+```
 
 最后，配置端口扩展器2设备 - 创建一个绑定接口并启用PE。此外，如果有必要，配置一个或多个 "排除端口"。在这个例子中，所有的交换机端口都将被扩展。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">control-ports</code><code class="ros plain">=bond1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond1 slaves=sfp-sfpplus1,sfp-sfpplus2
+/interface bridge port-extender
+set control-ports=bond1 switch=switch1
+
+```
 
 现在，CRS317-1G-16S+设备已经用额外的48个千兆以太网端口扩展了它的端口，在所有桥接的端口之间可以实现数据包转发。
 
@@ -382,12 +475,21 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
 
 首先，要从CB中删除PE配置，使用以下命令禁用PE。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-extender </code><code class="ros functions">set </code><code class="ros value">switch</code><code class="ros plain">=none</code> <code class="ros value">control-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">excluded-ports</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-extender set switch=none control-ports="" excluded-ports=""
+
+```
 
 然后，在 CB 设备上，删除相关的桥接和其他使用 PE 接口的 RouterOS 配置 (例如，参见 "/interface bridge port" 和 "/interface bridge vlan" 菜单中的导出)。例如，要从一个特定的 PE 设备上删除所有桥接端口，请使用下面的命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">remove </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">interface~</code><code class="ros string">"pe1"</code><code class="ros plain">]</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port remove [find interface~"pe1"]
+
+```
 
 一旦配置被删除，PE就可以从CB设备列表中删除。此命令也将自动从CB接口列表中删除所有的PE设备接口。如果一些PE接口配置仍然应用在CB上，它将不再有效。使用`print`命令来找出PE设备的名称。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port-controller device </code><code class="ros functions">remove </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=pe1]</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port-controller device remove [find name=pe1]
+
+```

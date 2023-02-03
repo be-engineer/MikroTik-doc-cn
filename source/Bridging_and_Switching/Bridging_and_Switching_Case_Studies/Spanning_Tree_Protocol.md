@@ -12,13 +12,43 @@ ___
 
 可以使用`/interface bridge monitor`命令来检查网桥的STP状态，例如：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">monitor </code><code class="ros plain">bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 64:D1:54:D9:27:E6</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0x3000.64:D1:54:D9:27:E6</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: none</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 5</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge monitor bridge
+                  state: enabled
+    current-mac-address: 64:D1:54:D9:27:E6
+            root-bridge: yes
+         root-bridge-id: 0x3000.64:D1:54:D9:27:E6
+         root-path-cost: 0
+              root-port: none
+             port-count: 5
+  designated-port-count: 5
+
+```
 
 注意，根桥没有任何根端口，只有指定端口。
 
 可以使用 `/interface bridge port monitor` 命令来检查某个网桥端口的 STP 状态，例如：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">monitor </code><code class="ros plain">2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">interface</code><code class="ros constants">: ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: in-bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-number</code><code class="ros constants">: 3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">role</code><code class="ros constants">: root-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">edge-port</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">edge-port-discovery</code><code class="ros constants">: yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">point-to-point-port</code><code class="ros constants">: yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">external-fdb</code><code class="ros constants">: no</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">sending-rstp</code><code class="ros constants">: yes</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: yes</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 10</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-bridge</code><code class="ros constants">: 0x3000.64:D1:54:D9:27:E6</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-cost</code><code class="ros constants">: 0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-port-number</code><code class="ros constants">: 4</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">hw-offload-group</code><code class="ros constants">: switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port monitor 2
+               interface: ether3
+                  status: in-bridge
+             port-number: 3
+                    role: root-port
+               edge-port: no
+     edge-port-discovery: yes
+     point-to-point-port: yes
+            external-fdb: no
+            sending-rstp: yes
+                learning: yes
+              forwarding: yes
+          root-path-cost: 10
+       designated-bridge: 0x3000.64:D1:54:D9:27:E6
+         designated-cost: 0
+  designated-port-number: 4
+        hw-offload-group: switch1
+
+```
 
 注意，"根桥ID "由网桥优先级和网桥的MAC地址组成，对于非根桥，根桥将显示为 "指定桥"。在启用STP的网络中，一个端口可以有一个角色，下面是端口角色列表。
 
@@ -37,7 +67,7 @@ ___
 STP和Rapid STP在许多网络中广泛使用，但几乎所有的网络都只使用RSTP，因为它有很多好处。STP是一个非常古老的协议，它的收敛时间（完全了解网络拓扑结构变化并继续正确转发流量所需的时间）长达50秒。RSTP的收敛时间小很多，几秒甚至几毫秒。建议使用RSTP而不是STP，因为它的速度要快得多，而且还能向后兼容STP。RSTP更快的原因之一是减少了可能的端口状态，下面是STP端口状态列表：
 
 - **Forwarding** - 端口参与流量转发，正在学习MAC地址，正在接收BPDU。
-- Listening** - 端口不参与流量转发，不学习MAC地址，正在接收BPDU。
+- **Listening** - 端口不参与流量转发，不学习MAC地址，正在接收BPDU。
 - **Learning** - 端口不参与流量转发，但正在学习MAC地址。
 - **Blocking**  -- 端口被阻断，因为它造成环路，但正在接收BPDUs。
 - **Disabled** - 端口被禁用或不活跃。
@@ -46,7 +76,7 @@ STP和Rapid STP在许多网络中广泛使用，但几乎所有的网络都只�
 
 - **Forwarding** - 端口参与流量转发，正在学习MAC地址，正在接收BPDUs（forwarding=yes）。
 - **Learning** - 端口不参与流量转发，但正在学习MAC地址（learning=yes）。
-- Discarding** - 端口不参与流量转发，不学习MAC地址，正在接收BPDUs（forwarding=no）。
+- **Discarding** - 端口不参与流量转发，不学习MAC地址，正在接收BPDUs（forwarding=no）。
 
 在STP中，网桥之间的连接是由邻居网桥之间发送和接收BPDU决定的。指定的端口正在向根端口发送BPDU。如果连续3次没有收到BPDU的**HelloTime**，那么连接被认为是不可用的，网络拓扑收敛将开始。在某些情况下，STP有可能通过减少 "转发延迟 "计时器来减少收敛时间，该计时器负责端口在学习/监听状态的时间。
 
@@ -124,19 +154,53 @@ RouterOS不根据链路速度改变端口的路径开销，对于10M、100M、10
 
 - SW1的配置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">priority</code><code class="ros plain">=0x60</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">priority</code><code class="ros plain">=0x50</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">priority</code><code class="ros plain">=0x40</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">priority</code><code class="ros plain">=0x30</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge priority=0x1000
+/interface bridge port
+add bridge=bridge interface=ether1 priority=0x60
+add bridge=bridge interface=ether2 priority=0x50
+add bridge=bridge interface=ether3 priority=0x40
+add bridge=bridge interface=ether4 priority=0x30
+add bridge=bridge interface=ether5
+
+```
 
 - SW2配置:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge priority=0x2000
+/interface bridge port
+add bridge=bridge interface=ether1
+add bridge=bridge interface=ether2
+add bridge=bridge interface=ether3
+
+```
 
 - SW3配置:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge priority=0x4000
+/interface bridge port
+add bridge=bridge interface=ether1
+add bridge=bridge interface=ether2 path-cost=20
+add bridge=bridge interface=ether3
+
+```
 
 - SW4配置:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">priority</code><code class="ros plain">=0x4000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge priority=0x4000
+/interface bridge port
+add bridge=bridge interface=ether1
+add bridge=bridge interface=ether2 path-cost=20
+add bridge=bridge interface=ether3
+
+```
 
 在这个例子中，**SW1**是根桥，因为它有最低的网桥优先级。 **SW2**和**SW3**的ether1,ether2连接到根桥，ether3连接到**SW4**。当所有的交换机都正常工作时，流量将从服务器A通过SW1/ether2，通过SW2，通过SW4流向服务器B。在**SW1**故障的情况下，**SW2**成为根桥，因为它的优先级次之，由图中虚线表示。下面是每个交换机的端口及其作用的列表。
 
@@ -230,15 +294,54 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 与(R)STP类似，也可以监控MSTP状态。通过监控网桥接口本身，可以看到当前的 CIST 根桥和当前的 MSTI0 区域根桥，也可以看到 MST 实例标识符和 VLAN 映射的计算哈希值，这在确保某些网桥处于同一 MSTP 区域时很有用。下面是一个监控MSTP网桥的例子。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">monitor </code><code class="ros plain">bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 6C:3B:6B:7B:F0:AA</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0x1000.64:D1:54:24:23:72</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">regional-root-bridge-id</code><code class="ros constants">: 0x4000.6C:3B:6B:7B:F0:AA</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: ether4</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 3</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">mst-config-digest</code><code class="ros constants">: 74edbeefdbf82cf63a70cf60e43a56f3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge monitor bridge
+                    state: enabled
+      current-mac-address: 6C:3B:6B:7B:F0:AA
+              root-bridge: no
+           root-bridge-id: 0x1000.64:D1:54:24:23:72
+  regional-root-bridge-id: 0x4000.6C:3B:6B:7B:F0:AA
+           root-path-cost: 10
+                root-port: ether4
+               port-count: 5
+    designated-port-count: 3
+        mst-config-digest: 74edbeefdbf82cf63a70cf60e43a56f3
+
+```
 
 在MSTP中，可以对MST实例进行监控，这对于确定某个MST实例和VLAN组的当前区域根桥是很有用的，下面是一个监控MST实例的例子。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti </code><code class="ros functions">monitor </code><code class="ros plain">1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">identifier</code><code class="ros constants">: 2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">current-mac-address</code><code class="ros constants">: 6C:3B:6B:7B:F0:AA</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge</code><code class="ros constants">: no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0.00:00:00:00:00:00</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">regional-root-bridge-id</code><code class="ros constants">: 0x1002.6C:3B:6B:7B:F9:08</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">root-port</code><code class="ros constants">: ether2</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 5</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge msti monitor 1
+                    state: enabled
+               identifier: 2
+      current-mac-address: 6C:3B:6B:7B:F0:AA
+              root-bridge: no
+           root-bridge-id: 0.00:00:00:00:00:00
+  regional-root-bridge-id: 0x1002.6C:3B:6B:7B:F9:08
+           root-path-cost: 0
+                root-port: ether2
+               port-count: 5
+    designated-port-count: 1
+
+```
 
 也可以监控某个MST覆盖条目，这对于在MSTP区域配置根端口和备用/后备端口时确定某个MST实例的端口角色很有用，下面是一个监控MST覆盖条目的例子。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override </code><code class="ros functions">monitor </code><code class="ros plain">1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: active</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">identifier</code><code class="ros constants">: 2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">role</code><code class="ros constants">: alternate-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">internal-root-path-cost</code><code class="ros constants">: 15</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-bridge</code><code class="ros constants">: 0x1002.6C:3B:6B:7B:F9:08</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-internal-cost</code><code class="ros constants">: 0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">designated-port-number</code><code class="ros constants">: 130</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port mst-override monitor 1
+                      port: ether3
+                    status: active
+                identifier: 2
+                      role: alternate-port
+                  learning: no
+                forwarding: no
+   internal-root-path-cost: 15
+         designated-bridge: 0x1002.6C:3B:6B:7B:F9:08
+  designated-internal-cost: 0
+    designated-port-number: 130
+
+```
 
 ### MSTP例子
 
@@ -251,19 +354,43 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 - 在**R1_1**, **R1_3**, **R2_1**, **R2_3**, **R3_3**上使用以下命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">protocol-mode</code><code class="ros plain">=rstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge protocol-mode=rstp vlan-filtering=no
+/interface bridge port
+add bridge=bridge interface=ether1
+add bridge=bridge interface=ether2
+add bridge=bridge interface=ether3
+add bridge=bridge interface=ether4
+
+```
 
 - 在**R1_2**、**R2_2**、**R3_2**上使用以下命令：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">protocol-mode</code><code class="ros plain">=rstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge protocol-mode=rstp vlan-filtering=no
+/interface bridge port
+add bridge=bridge interface=ether1
+add bridge=bridge interface=ether2
+
+```
 
 - 确保在这些设备上允许所需的VLAN ID，这里我们将考虑每个设备将接收需要按VLAN组进行负载均衡的标记流量，在**R1_1**, **R1_3**, **R2_1**, **R2_3**, **R3_3**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2,ether3,ether4</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20,30,40</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge tagged=ether1,ether2,ether3,ether4 vlan-ids=10,20,30,40
+
+```
   
 - 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20,30,40</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge tagged=ether1,ether2 vlan-ids=10,20,30,40
+
+```
 
  确保将所有需要的 VLAN ID 和端口添加到网桥 VLAN 表中，否则设备将无法转发所有需要的 VLAN，并且将失去对设备的访问。
 
@@ -271,35 +398,69 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 - 为每个网桥设置合适的区域名称（和区域修订），在每个设备上使用以下命令（**修改区域名称！**）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">region-name</code><code class="ros plain">=Rx</code> <code class="ros value">region-revision</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge region-name=Rx region-revision=1
+
+```
 
 在创建了3个不同的MSTP区域后，需要确定哪个设备将成为每个VLAN组的区域根。为了保持一致性，要把每个区域的第一个设备（ \_1 ）设置为VLAN 10,20的区域根，把每个区域的第三个设备（ \_3 ）设置为VLAN 30,40的区域根。可以通过为每个 VLAN 组创建一个 MST 实例并为其分配网桥优先级来实现。MST实例的标识符只在 MSTP 区域内相关， 在 MSTP 区域外， 这些标识符可以是不同的， 并映射到不同的 VLAN 组。
 
 - 在 **R1_1**, **R2_1**, **R3_1** 上使用以下命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge msti
+add bridge=bridge identifier=1 priority=0x1000 vlan-mapping=10,20
+add bridge=bridge identifier=2 priority=0x3000 vlan-mapping=30,40
+
+```
 
 - 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x3000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x1000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge msti
+add bridge=bridge identifier=1 priority=0x3000 vlan-mapping=10,20
+add bridge=bridge identifier=2 priority=0x1000 vlan-mapping=30,40
+
+```
   
 - 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge msti</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=10,20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">priority</code><code class="ros plain">=0x2000</code> <code class="ros value">vlan-mapping</code><code class="ros plain">=30,40</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge msti
+add bridge=bridge identifier=1 priority=0x2000 vlan-mapping=10,20
+add bridge=bridge identifier=2 priority=0x2000 vlan-mapping=30,40
+
+```
 
 现在我们需要覆盖每个MST实例端口路径开销和端口优先级。可以通过为每个端口和每个MST实例添加一个MST-Override条目来完成。为了实现某一MST实例的流量路径不同，只需要确保端口的路径开销和优先级更大。我们可以增加端口路径开销，或者减少端口路径开销，使其面向区域根桥的端口。增加或减少数值并不重要，重要的是最后一个端口的路径开销要比另一个大。
 
 - 在**R1_1**, **R2_1**, **R3_1**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=15</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port mst-override
+add identifier=2 interface=ether1 internal-path-cost=5
+add identifier=2 interface=ether2 internal-path-cost=15
+
+```
 
 - 在**R1_2**, **R2_2**, **R3_2**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=9</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port mst-override
+add identifier=1 interface=ether1 internal-path-cost=5
+add identifier=2 interface=ether2 internal-path-cost=9
+
+```
 
 - 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port mst-override</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">identifier</code><code class="ros plain">=1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=9</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port mst-override
+add identifier=1 interface=ether2 internal-path-cost=5
+add identifier=1 interface=ether3 internal-path-cost=9
+
+```
 
 对于VLAN 10,20从第一台设备到达第三台设备，它会在ether1和ether2之间选择，一个端口将被封锁并被设置为备用端口，ether1的路径开销为`5+9=14`，ether2的路径开销为`10`，ether2将被选为第三台设备上MSTI1的根端口。在VLAN 30,40从第三台设备到达第一台设备的情况下，ether1的路径开销为`5+9=14`，ether2的路径开销为`15`， ether1将被选为第三台设备上MSTI2的根端口。
 
@@ -307,40 +468,77 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 - 在**R1_3**, **R2_3**, **R3_3**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">internal-path-cost</code><code class="ros plain">=25</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether3] internal-path-cost=25
+
+```
 
 至此，一个单一区域的MSTP可以认为是配置好的，一般来说，MSTP完全可以运行。强烈建议配置CIST部分，但为了测试的目的，可以保留默认值。在做任何测试之前，需要在所有网桥上启用MSTP。
 
 - 在**所有**设备上使用以下命令：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">protocol-mode</code><code class="ros plain">=mstp</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge protocol-mode=mstp vlan-filtering=yes
+
+```
 
 当 MSTP 区域配置完成后，可以通过转发流量来检查它们是否配置正确，例如，从第一台设备向第三台设备发送带标签的流量，并改变标签流量的 VLAN ID，观察基于 VLAN ID 的不同路径。当这一切都按预期进行时，就可以继续配置 CIST 相关参数，选出 CIST 根桥和 CIST 根端口。为了保持一致性，我们将选择第一个区域的第一台设备作为 CIST 根桥，为了确保故障时的一致性，我们可以给所有其他桥设置一个更高的优先级。
 
 - 在**R1_1**上使用以下命令：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x1000</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge priority=0x1000
+
+```
 
 - 在**R1_2**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x2000</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge priority=0x2000
+
+```
 
 - ...
 
 - 在**R3_3**上使用以下命令:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">priority</code><code class="ros plain">=0x9000</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether2] path-cost=30
+set [find where interface=ether3] path-cost=40
+set [find where interface=ether4] path-cost=20
+
+```
 
 我们还需要在每个网桥上选出一个根端口，为了简单起见，我们将选择离**Ŗ1_1**最近的端口作为根端口，并且跳数最少。这样选举根端口的程序与(R)STP的程序相同。
 
 - 在**R3_3**上使用以下命令：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">path-cost</code><code class="ros plain">=30</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">path-cost</code><code class="ros plain">=40</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether4]</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether2] path-cost=30
+set [find where interface=ether3] path-cost=40
+set [find where interface=ether4] path-cost=20
 
-- 在**R1\_3** 和**R2\_3**上使用下面的命令：
+```
+
+- 在**R1_3** 和**R2_3**上使用下面的命令：
     
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">path-cost</code><code class="ros plain">=20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">path-cost</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether2] path-cost=20
+set [find where interface=ether3] path-cost=30
 
-- 在**R1\_2**上使用下面的命令:
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether1]</code> <code class="ros value">path-cost=30</code></div></div></td></tr></tbody></table>
+- 在**R1_2**上使用下面的命令:
+
+```shell
+/interface bridge port
+set [find where interface=ether1] path-cost=30
+
+```

@@ -6,13 +6,13 @@
 
 要启用第 3 层硬件卸载，请为交换机设置 **l3-hw-offloading=yes**：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`/interface/ethernet/switch set 0 l3-hw-offloading=yes`
 
 ## 交换机端口配置
 
 可以为每个物理交换机端口配置第 3 层硬件卸载。 例如：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">sfp-sfpplus1 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`/interface/ethernet/switch/port set sfp-sfpplus1 l3-hw-offloading=yes`
 
 请注意，交换机和端口的 l3hw 设置不同：
 
@@ -21,17 +21,30 @@
 
 要启用完整的硬件路由，请在所有交换机端口上启用 l3hw：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+/interface/ethernet/switch/port set [find] l3-hw-offloading=yes
+
+```
 
 要让所有数据包首先通过 CPU，并仅卸载 Fasttrack 连接，请在所有端口上禁用 l3hw，但在交换机芯片本身上保持启用：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+/interface/ethernet/switch/port set [find] l3-hw-offloading=no
+
+```
 
 **仅当源端口和目标端口都具有 `l3-hw-offloading=yes` 时，数据包才会被硬件路由。**如果其中至少一个具有 `l3-hw-offloading=no`，则数据包将通过 CPU/防火墙，同时仅卸载 Fasttrack 连接。
 
 下一个示例在除上游端口 (sfp-sfpplus16) 之外的所有端口上启用硬件路由。 进出 sfp-sfpplus16 的数据包将进入 CPU，因此需要进行防火墙/NAT 处理。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">sfp-sfpplus16 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+/interface/ethernet/switch/port set [find] l3-hw-offloading=yes
+/interface/ethernet/switch/port set sfp-sfpplus16 l3-hw-offloading=no
+
+```
 
 现有连接可能不受“l3-hw-offloading”设置更改的影响。
 
@@ -59,7 +72,16 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 但是，接口列表可以用作端口选择器。 以下示例演示如何在 LAN 端口（属于“LAN”接口列表的端口）上启用硬件路由并在 WAN 端口上禁用它：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/interface/list/member/find</code> <code class="ros plain">where </code><code class="ros value">list</code><code class="ros plain">=LAN]</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros constants">/interface/list/member/</code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">interface] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/interface/list/member/find</code> <code class="ros plain">where </code><code class="ros value">list</code><code class="ros plain">=WAN]</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros constants">/interface/list/member/</code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">interface] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
+```shell
+:foreach i in=[/interface/list/member/find where list=LAN] do={
+    /interface/ethernet/switch/port set [/interface/list/member/get $i interface] l3-hw-offloading=yes
+}
+ 
+:foreach i in=[/interface/list/member/find where list=WAN] do={
+    /interface/ethernet/switch/port set [/interface/list/member/get $i interface] l3-hw-offloading=no
+}
+
+```
 
 请注意，由于硬件路由控制中不直接使用接口列表，**修改接口列表也不会自动反映到 l3hw 更改中**。 例如，将交换机端口添加到“LAN”接口列表不会自动在其上启用“l3-hw-offloading”。 用户必须重新运行上述脚本才能应用更改。
 
@@ -71,7 +93,14 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 **MTU 修改示例**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface </code><code class="ros functions">set </code><code class="ros plain">sfp-sfpplus1 </code><code class="ros value">mtu</code><code class="ros plain">=9000</code> <code class="ros value">l2mtu</code><code class="ros plain">=9022</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface </code><code class="ros functions">set </code><code class="ros plain">sfp-sfpplus2 </code><code class="ros value">mtu</code><code class="ros plain">=9000</code> <code class="ros value">l2mtu</code><code class="ros plain">=9022</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface </code><code class="ros functions">set </code><code class="ros plain">sfp-sfpplus3 </code><code class="ros value">mtu</code><code class="ros plain">=10000</code> <code class="ros value">l2mtu</code><code class="ros plain">=10022</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=no
+/interface set sfp-sfpplus1 mtu=9000 l2mtu=9022
+/interface set sfp-sfpplus2 mtu=9000 l2mtu=9022
+/interface set sfp-sfpplus3 mtu=10000 l2mtu=10022
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+
+```
 
 ## 二层依赖
 
@@ -81,7 +110,8 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 **用于禁用特定端口上的硬件处理的 ACL 规则**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/rule/</code><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">redirect-to-cpu</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`/interface/ethernet/switch/rule/add switch=switch1 ports=ether1 redirect-to-cpu=yes`
+
 建议在 L2 配置期间关闭 L3HW 卸载。
 
 为确保第 3 层在软件和硬件方面与第 2 层同步，我们建议在配置第 2 层功能时禁用 L3HW。 该建议适用于以下配置：
@@ -97,7 +127,18 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 **Layer 2 Configuration Template**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface/bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># put bridge configuration changes here</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface/vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros comments"># define/change VLAN interfaces</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=no
+ 
+/interface/bridge
+# put bridge configuration changes here
+ 
+/interface/vlan
+# define/change VLAN interfaces
+ 
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+
+```
 
 ## MAC telnet 和 RoMON
 
@@ -107,11 +148,19 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 例如，如果需要在 sfp-sfpplus1 和 sfp-sfpplus2 上进行 MAC telnet 访问，则需要添加此 ACL 规则。 可以使用 `ports` 设置选择更多接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-port</code><code class="ros plain">=20561</code> <code class="ros value">ports</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code> <code class="ros value">protocol</code><code class="ros plain">=udp</code> <code class="ros value">redirect-to-cpu</code><code class="ros plain">=yes</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add dst-port=20561 ports=sfp-sfpplus1,sfp-sfpplus2 protocol=udp redirect-to-cpu=yes switch=switch1
+
+```
 
 例如，如果需要对 sfp-sfpplus2 进行 RoMON 访问，则需要添加此 ACL 规则。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-protocol</code><code class="ros plain">=0x88BF</code> <code class="ros value">ports</code><code class="ros plain">=sfp-sfpplus2</code> <code class="ros value">redirect-to-cpu</code><code class="ros plain">=yes</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add mac-protocol=0x88BF ports=sfp-sfpplus2 redirect-to-cpu=yes switch=switch1
+
+```
 
 ## VLAN间路由
 
@@ -123,7 +172,16 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 **VLAN配置示例**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface/bridge/port </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface/bridge/vlan </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bridge,ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface/vlan </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">name</code><code class="ros plain">=vlan20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip/address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.0.2.1/24</code> <code class="ros value">interface</code><code class="ros plain">=vlan20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface/bridge </code><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch set 0 l3-hw-offloading=no
+/interface/bridge/port add bridge=bridge interface=ether2
+/interface/bridge/vlan add bridge=bridge tagged=bridge,ether2 vlan-ids=20
+/interface/vlan add interface=bridge name=vlan20 vlan-id=20
+/ip/address add address=192.0.2.1/24 interface=vlan20
+/interface/bridge set bridge vlan-filtering=yes
+/interface/ethernet/switch set 0 l3-hw-offloading=yes
+
+```
 
 对于 VLAN 间路由，网桥接口必须是每个可路由的“/interface/bridge/vlan/”条目的标记成员。
 
@@ -150,11 +208,20 @@ Marvell Prestera DX2000 和 DX3000 交换芯片有一个硬件限制，即只允
 
 例如，如果我们知道大部分流量流向服务器所在的网络，我们可以只启用卸载到该特定目的地：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/route </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where static &amp;&amp; dst-address!</code><code class="ros plain">=</code><code class="ros string">"192.168.3.0/24"</code><code class="ros plain">] </code><code class="ros value">suppress-hw-offload</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`/ip/route set [find where static && dst-address!="192.168.3.0/24"] suppress-hw-offload=yes`
 
 现在只有到 192.168.3.0/24 的路由有 H-flag，表明它将是唯一有资格被选中进行 HW 卸载的路由：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/ip/route </code><code class="ros functions">print </code><code class="ros plain">where static</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: A - ACTIVE; s - STATIC, y - COPY; H - HW-OFFLOADED</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DST-ADDRESS, GATEWAY, DISTANCE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp;&nbsp; DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GATEWAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 As&nbsp; </code><code class="ros color1">0.0.0.0/0</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">172.16.2.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">1 As&nbsp; </code><code class="ros color1">10.0.0.0/8</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.155.121.254&nbsp; 1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">2 AsH </code><code class="ros color1">192.168.3.0/24</code>&nbsp;&nbsp;&nbsp; <code class="ros plain">172.16.2.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /ip/route print where static
+Flags: A - ACTIVE; s - STATIC, y - COPY; H - HW-OFFLOADED
+Columns: DST-ADDRESS, GATEWAY, DISTANCE
+#     DST-ADDRESS       GATEWAY         D
+0 As  0.0.0.0/0         172.16.2.1      1
+1 As  10.0.0.0/8        10.155.121.254  1
+2 AsH 192.168.3.0/24    172.16.2.1      1
+
+```
 
 H-flag并不表示该route实际上是HW offloaded，它只是表示route可以被选为HW offloaded。
 
@@ -162,23 +229,40 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 对于 OSFP 和 BGP 等动态路由协议，可以使用[路由过滤器](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=74678285) 来抑制 HW 卸载。 例如，要抑制所有 OSFP 实例路由上的 HW 卸载，请使用“**`suppress-hw-offload yes`**”属性：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/ospf/instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=instance1]</code> <code class="ros value">in-filter-chain</code><code class="ros plain">=ospf-input</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=</code><code class="ros string">"ospf-input"</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"set suppress-hw-offload yes; accept"</code></div></div></td></tr></tbody></table>
+```shell
+/routing/ospf/instance
+set [find name=instance1] in-filter-chain=ospf-input
+/routing/filter/rule
+add chain="ospf-input" rule="set suppress-hw-offload yes; accept"
+
+```
 
 ## 卸载 Fasttrack 连接
 
 防火墙过滤规则具有 Fasttrack 的 **`hw-offload`** 选项，允许微调连接卸载。 由于 Fasttrack 连接的硬件内存非常有限，我们可以选择要卸载的连接类型，因此受益于接近线速的流量。 下一个示例仅卸载 TCP 连接，而 UDP 数据包通过 CPU 路由并且不占用 HW 内存：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/firewall/filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=fasttrack-connection</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code> <code class="ros value">hw-offload</code><code class="ros plain">=yes</code> <code class="ros value">protocol</code><code class="ros plain">=tcp</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=fasttrack-connection</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code> <code class="ros value">hw-offload</code><code class="ros plain">=no</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code></div></div></td></tr></tbody></table>
+```shell
+/ip/firewall/filter
+add action=fasttrack-connection chain=forward connection-state=established,related hw-offload=yes protocol=tcp
+add action=fasttrack-connection chain=forward connection-state=established,related hw-offload=no
+add action=accept chain=forward connection-state=established,related
+
+```
 
 ## 无状态硬件防火墙
 
-虽然连接跟踪和状态防火墙只能由 CPU 执行，但硬件可以通过[交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL))执行无状态防火墙。 下一个示例阻止（在硬件级别）从 ether1 访问 MySQL 服务器，并重定向到来自 ether2 和 ether3 的 CPU/防火墙数据包：
+虽然连接跟踪和状态防火墙只能由 CPU 执行，但硬件可以通过 [交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 执行无状态防火墙。 下一个示例阻止（在硬件级别）从 ether1 访问 MySQL 服务器，并重定向到来自 ether2 和 ether3 的 CPU/防火墙数据包：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.0.1.2/32</code> <code class="ros value">dst-port</code><code class="ros plain">=3306</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.0.1.2/32</code> <code class="ros value">dst-port</code><code class="ros plain">=3306</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether3</code> <code class="ros value">redirect-to-cpu</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+````shell
+/interface ethernet switch rule
+add switch=switch1 dst-address=10.0.1.2/32 dst-port=3306 ports=ether1 new-dst-ports=""
+add switch=switch1 dst-address=10.0.1.2/32 dst-port=3306 ports=ether2,ether3 redirect-to-cpu=yes
+
+````
 
 ## 交换规则 (ACL) 与 Fasttrack 硬件卸载
 
-一些防火墙规则可以通过[交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 和 CPU [防火墙过滤器](https://help.mikrotik.com/docs/display/ROS/Filter)\+ Fasttrack HW 卸载。 这两个选项都提供接近线速的性能。 所以问题是使用哪一个？
+一些防火墙规则可以通过 [交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 和 CPU [防火墙过滤器](https://help.mikrotik.com/docs/display/ROS/Filter) + Fasttrack HW 卸载。 这两个选项都提供接近线速的性能。 问题是使用哪一个？
 
 首先，[并非所有设备都支持 Fasttrack HW 卸载](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWDeviceSupport)。 在没有硬件卸载的情况下，Firewall Filter 仅使用软件路由，这比对应的硬件路由要慢得多。 其次，即使 Fasttrack HW Offloading 是一个选项，经验法则是：
 
@@ -186,7 +270,11 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 切换规则与 Fastrack 连接共享硬件内存。 但是，硬件资源是为每个 Fasttrack 连接分配的，而单个 ACL 规则可以匹配多个连接。 例如，如果你有一个连接到 sfp-sfpplus1 VLAN 10 的访客 WiFi 网络并且不希望它访问你的内部网络，只需创建一个 ACL 规则：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code> <code class="ros value">dst-address</code><code class="ros plain">=10.0.0.0/8</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+```shell
+/interface/ethernet/switch/rule
+add switch=switch1 ports=sfp-sfpplus1 vlan-id=10 dst-address=10.0.0.0/8 new-dst-ports=""
+
+```
 
 匹配的数据包将在硬件级别被丢弃。 这比让 _所有_ 客户数据包到 CPU 进行防火墙过滤要好得多。
 
@@ -211,29 +299,109 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 **端口列表**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface list</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=LAN</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=WAN</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=MGMT</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface list member</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus2</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus3</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus4</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus5</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus6</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus7</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus8</code> <code class="ros value">list</code><code class="ros plain">=LAN</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus16</code> <code class="ros value">list</code><code class="ros plain">=WAN</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">list</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
+```shell
+/interface list
+add name=LAN
+add name=WAN
+add name=MGMT
+ 
+/interface list member
+add interface=sfp-sfpplus1 list=LAN
+add interface=sfp-sfpplus2 list=LAN
+add interface=sfp-sfpplus3 list=LAN
+add interface=sfp-sfpplus4 list=LAN
+add interface=sfp-sfpplus5 list=LAN
+add interface=sfp-sfpplus6 list=LAN
+add interface=sfp-sfpplus7 list=LAN
+add interface=sfp-sfpplus8 list=LAN
+add interface=sfp-sfpplus16 list=WAN
+add interface=ether1 list=MGMT
+
+```
 
 **网桥设置**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus2</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus3</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus4</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus5</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus6</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus7</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus8</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bridge</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2,sfp-sfpplus3,sfp-sfpplus4</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bridge</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus5,sfp-sfpplus6,sfp-sfpplus7,sfp-sfpplus8</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge vlan-filtering=yes
+ 
+/interface bridge port
+add bridge=bridge interface=sfp-sfpplus1 pvid=20
+add bridge=bridge interface=sfp-sfpplus2 pvid=20
+add bridge=bridge interface=sfp-sfpplus3 pvid=20
+add bridge=bridge interface=sfp-sfpplus4 pvid=20
+add bridge=bridge interface=sfp-sfpplus5 pvid=30
+add bridge=bridge interface=sfp-sfpplus6 pvid=30
+add bridge=bridge interface=sfp-sfpplus7 pvid=30
+add bridge=bridge interface=sfp-sfpplus8 pvid=30
+ 
+/interface bridge vlan
+add bridge=bridge tagged=bridge untagged=sfp-sfpplus1,sfp-sfpplus2,sfp-sfpplus3,sfp-sfpplus4 vlan-ids=20
+add bridge=bridge tagged=bridge untagged=sfp-sfpplus5,sfp-sfpplus6,sfp-sfpplus7,sfp-sfpplus8 vlan-ids=30
+
+```
 
 路由需要专用的 VLAN 接口。 对于标准的 L2 VLAN 桥接（没有 VLAN 间路由），可以省略下一步。
 
 **用于路由的 VLAN 接口设置**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">name</code><code class="ros plain">=vlan20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">name</code><code class="ros plain">=vlan30</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.17/24</code> <code class="ros value">interface</code><code class="ros plain">=vlan20</code> <code class="ros value">network</code><code class="ros plain">=192.168.20.0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.30.17/24</code> <code class="ros value">interface</code><code class="ros plain">=vlan30</code> <code class="ros value">network</code><code class="ros plain">=192.168.30.0</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.88.1/24 interface=ether1
+add address=10.0.0.17/24 interface=sfp-sfpplus16
+ 
+/ip route
+add gateway=10.0.0.1
+ 
+/ip firewall filter
+add action=fasttrack-connection chain=forward connection-state=established,related hw-offload=yes
+add action=accept chain=forward connection-state=established,related
+ 
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface-list=WAN
+
+```
 
 配置管理和上游端口、基本防火墙、NAT，并启用 Fasttrack 连接的硬件卸载：
 
 **防火墙设置**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.0.0.17/24</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus16</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip route</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=10.0.0.1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall filter</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=fasttrack-connection</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code> <code class="ros value">hw-offload</code><code class="ros plain">=yes</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall nat</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">out-interface-list</code><code class="ros plain">=WAN</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.88.1/24 interface=ether1
+add address=10.0.0.17/24 interface=sfp-sfpplus16
+ 
+/ip route
+add gateway=10.0.0.1
+ 
+/ip firewall filter
+add action=fasttrack-connection chain=forward connection-state=established,related hw-offload=yes
+add action=accept chain=forward connection-state=established,related
+ 
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface-list=WAN
+
+```
 
 此时，所有路由仍然由CPU执行。 在交换芯片上启用硬件路由：
 
 **启用第 3 层硬件卸载**
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Enable full hardware routing on LAN ports</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/interface/list/member/find</code> <code class="ros plain">where </code><code class="ros value">list</code><code class="ros plain">=LAN]</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros constants">/interface/list/member/</code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">interface] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros comments"># Disable full hardware routing on WAN or Management ports</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/interface/list/member/find</code> <code class="ros plain">where </code><code class="ros value">list</code><code class="ros plain">=WAN</code> <code class="ros variable">or</code> <code class="ros value">list</code><code class="ros plain">=MGMT]</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/interface/ethernet/switch/port </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros constants">/interface/list/member/</code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">interface] </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=no</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># Activate Layer 3 Hardware Offloading on the switch chip</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/</code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">l3-hw-offloading</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+# Enable full hardware routing on LAN ports
+:foreach i in=[/interface/list/member/find where list=LAN] do={
+    /interface/ethernet/switch/port set [/interface/list/member/get $i interface] l3-hw-offloading=yes
+}
+ 
+# Disable full hardware routing on WAN or Management ports
+:foreach i in=[/interface/list/member/find where list=WAN or list=MGMT] do={
+    /interface/ethernet/switch/port set [/interface/list/member/get $i interface] l3-hw-offloading=no
+}
+ 
+# Activate Layer 3 Hardware Offloading on the switch chip
+/interface/ethernet/switch/set 0 l3-hw-offloading=yes
+
+```
 
 结果：
 
@@ -248,17 +416,28 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 ## 交换机端口上的 VLAN 接口
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code></div></div></td></tr></tbody></table>
+`/interface vlan add name=vlan10 vlan-id=10 interface=sfp-sfpplus1`
 
 由于第 2 层依赖性，必须在网桥上设置 VLAN 接口。 否则，L3HW 将无法工作。 正确的配置是：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,sfp-sfpplus1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port add bridge=bridge1 interface=sfp-sfpplus1 pvid=10
+/interface bridge vlan add bridge=bridge1 tagged=bridge1,sfp-sfpplus1 vlan-ids=10
+/interface vlan add name=vlan10 vlan-id=10 interface=bridge1
+
+```
 
 ## 不将网桥接口添加到/in/br/vlan
 
 对于 VLAN 间路由，桥接接口本身需要添加到给定 VLAN 的标记成员中。 在下一个示例中，VLAN 间路由在 VLAN 10 和 11 之间工作，但数据包不会路由到 VLAN 20。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,sfp-sfpplus1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=11</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus2,sfp-sfpplus3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code> <code class="ros value">tagged</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus4,sfp-sfpplus5</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 vlan-ids=10 tagged=bridge1,sfp-sfpplus1
+add bridge=bridge1 vlan-ids=11 tagged=bridge1 untagged=sfp-sfpplus2,sfp-sfpplus3
+add bridge=bridge1 vlan-ids=20 tagged=sfp-sfpplus1 untagged=sfp-sfpplus4,sfp-sfpplus5
+
+```
 
 上面的例子并不总是出错。 有时，你可能希望设备在某些或全部 VLAN 中充当简单的 L2 交换机。 只要确定你是故意这样设置，而不是因为错误。
 
@@ -272,7 +451,33 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 有些设备有两个交换芯片或直接连接到 CPU 的管理端口。 例如，**CRS312-4C+8XG** 有一个 **ether9** 端口连接到单独的交换芯片。 尝试将此端口添加到网桥或将其包含在 L3HW 设置中会导致意外结果。 记得留下管理端口进行管理！
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@crs312] </code><code class="ros constants">/interface/ethernet/switch&gt; </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, TYPE, L3-HW-OFFLOADING</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># NAME&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L3-HW-OFFLOADING</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0&nbsp;switch1&nbsp; Marvell-98DX8212&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1&nbsp;switch2&nbsp; Atheros-8227&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;no&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@crs312] </code><code class="ros constants">/interface/ethernet/switch&gt; port </code><code class="ros plain">print</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SWITCH&nbsp;&nbsp; L3-HW-OFFLOADING&nbsp; STORM-RATE</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;ether9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3&nbsp;ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4&nbsp;ether4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5&nbsp;ether5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">6&nbsp;ether6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">7&nbsp;ether7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">8&nbsp;ether8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">9&nbsp;combo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">10&nbsp;combo2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">11&nbsp;combo3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">12&nbsp;combo4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; switch1 &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;100</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">13&nbsp;switch1-cpu&nbsp; switch1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros plain">14&nbsp;switch2-cpu&nbsp; switch2</code></div></div></td></tr></tbody></table>
+```shell
+[admin@crs312] /interface/ethernet/switch> print
+Columns: NAME, TYPE, L3-HW-OFFLOADING
+# NAME     TYPE              L3-HW-OFFLOADING
+0 switch1  Marvell-98DX8212  yes            
+1 switch2  Atheros-8227      no   
+            
+[admin@crs312] /interface/ethernet/switch> port print
+Columns: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE
+ # NAME         SWITCH   L3-HW-OFFLOADING  STORM-RATE
+ 0 ether9       switch2                             
+ 1 ether1       switch1  yes                      100
+ 2 ether2       switch1  yes                      100
+ 3 ether3       switch1  yes                      100
+ 4 ether4       switch1  yes                      100
+ 5 ether5       switch1  yes                      100
+ 6 ether6       switch1  yes                      100
+ 7 ether7       switch1  yes                      100
+ 8 ether8       switch1  yes                      100
+ 9 combo1       switch1  yes                      100
+10 combo2       switch1  yes                      100
+11 combo3       switch1  yes                      100
+12 combo4       switch1  yes                      100
+13 switch1-cpu  switch1                           100
+14 switch2-cpu  switch2
+
+```
 
 ## 过度依赖 Fasttrack HW 卸载
 

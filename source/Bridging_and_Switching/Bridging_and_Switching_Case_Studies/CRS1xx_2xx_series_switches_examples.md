@@ -22,11 +22,24 @@ ___
 
 在所有类型的管理访问中，都假定端口必须被交换到一起，使用下面的命令将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether5 hw=yes
+
+```
 
 还应该给网桥接口分配一个 IP 地址，这样设备就可以用 IP 地址访问了（设备也可以用 MAC 地址访问）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1/24</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.88.1/24 interface=bridge1
+
+```
 
 ## 未标记的
 
@@ -34,25 +47,47 @@ ___
 
 如果你打算使用无效的VLAN过滤（你应该这样做），那么你要访问的交换机端口必须添加到VLAN表中，以获得未标记的（**VLAN 0**）流量，例如，如果你想从**ether2**访问交换机。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vlan-id</code><code class="ros plain">=0</code> <code class="ros value">ports</code><code class="ros plain">=ether2,switch1-cpu</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add vlan-id=0 ports=ether2,switch1-cpu
+
+```
 
 ## 标签
 
 只允许被标记的流量通过特定的端口对设备进行管理访问是一个更好的做法。例如，如果只允许**VLAN99**通过**ether2**访问设备，你应该首先在VLAN表中添加一个项，允许选定的端口和CPU端口（**switch1-cpu**）转发选定的VLAN ID，由此启用管理访问。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether2,switch1-cpu vlan-id=99
+
+```
 
 从CPU发出的数据包，例如，PING回复将没有VLAN标签，为了解决这个问题，你需要指定哪些端口应该总是为特定的VLAN ID发出带有VLAN标签的数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2,switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether2,switch1-cpu vlan-id=99
+
+```
 
 在设置了有效的VLAN99配置后，你可以启用未知/无效VLAN过滤，这将禁止通过与VLAN表中指定的不同端口进行管理访问。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether2,ether3,ether4,ether5</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether2,ether3,ether4,ether5
+
+```
 
 在这个例子中，VLAN99 将被用来访问设备，必须在网桥上创建一个 VLAN 接口，并为其分配一个 IP 地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge1 name=MGMT vlan-id=99
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+
+```
 
 ## VLAN
 
@@ -66,7 +101,7 @@ ___
 
 ## 基于端口的VLAN
 
-对于CRS3xx系列设备，你必须使用桥接VLAN过滤，你可以在[桥接VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)部分阅读更多信息。
+对于CRS3xx系列设备，你必须使用桥接VLAN过滤，你可以在 [桥接VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分阅读更多信息。
 
 ### 示例 1 (主干和接入端口)
 
@@ -74,27 +109,58 @@ ___
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 指定交换机必须对每个接入端口的未标记（VLAN0）流量设置的VLAN ID。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether8</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-vlan-translation
+add ports=ether6 customer-vid=0 new-customer-vid=200
+add ports=ether7 customer-vid=0 new-customer-vid=300
+add ports=ether8 customer-vid=0 new-customer-vid=400
+
+```
 
 当在`/interface ethernet switch ingress-vlan-translation`下创建项目时，交换芯片将在指定端口的入站帧上添加一个VLAN标签。要在同一端口上为出站帧移除VLAN标签，应该在指定有标签的端口上为同一VLAN ID创建`/interface ethernet switch egress-vlan-tag`项。如果一个特定的VLAN只在接入端口之间转发，`/interface ethernet switch egress-vlan-tag`项仍应该在没有任何标记的端口下创建。另一个选择是在`/interface ethernet switch egress-vlan-translation`菜单下创建额外的项，以设置未标记的（VLAN0）流量。
 
 你还必须指定哪些VLAN应该被发送到带VLAN标签的主干端口。使用tagged-ports属性来设置一个聚合端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether2 vlan-id=200
+add tagged-ports=ether2 vlan-id=300
+add tagged-ports=ether2 vlan-id=400
+
+```
 
 向VLAN表添加项，为每个端口和每个VLAN ID指定VLAN成员。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether6</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether7</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether2,ether6 vlan-id=200
+add ports=ether2,ether7 vlan-id=300
+add ports=ether2,ether8 vlan-id=400
+
+```
 
 在设置了有效的VLAN配置后，你可以启用未知/无效VLAN过滤。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether2,ether6,ether7,ether8
 
-可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为交换机和路由器。可以在[CRS-Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router")指南中找到一个配置实例。
+```
+
+可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为交换机和路由器。可以在 [CRS-Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router") 指南中找到一个配置实例。
 
 ### 示例 2 (聚合和混合端口)
 
@@ -102,23 +168,54 @@ ___
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 指定交换机必须对每个接入端口的未标记（VLAN0）流量设置VLAN ID。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether8</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-vlan-translation
+add ports=ether6 customer-vid=0 new-customer-vid=200
+add ports=ether7 customer-vid=0 new-customer-vid=300
+add ports=ether8 customer-vid=0 new-customer-vid=400
+
+```
 
 通过指定端口为标签端口，交换机将始终以相应的VLAN ID作为标签数据包发送出去。根据上图添加适当的项。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2,ether7,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2,ether6,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2,ether6,ether7</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether2,ether7,ether8 vlan-id=200
+add tagged-ports=ether2,ether6,ether8 vlan-id=300
+add tagged-ports=ether2,ether6,ether7 vlan-id=400
+
+```
 
 向VLAN表添加项，为每个端口和每个VLAN ID指定VLAN成员。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code> <code class="ros value">learn</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code> <code class="ros value">learn</code><code class="ros plain">=yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code> <code class="ros value">learn</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether2,ether6,ether7,ether8 vlan-id=200 learn=yes
+add ports=ether2,ether6,ether7,ether8 vlan-id=300 learn=yes
+add ports=ether2,ether6,ether7,ether8 vlan-id=400 learn=yes
+
+```
 
 在设置了有效的VLAN配置后，可以启用未知/无效VLAN过滤。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether2,ether6,ether7,ether8
+
+```
 
 ## 基于协议的VLAN
 
@@ -126,19 +223,47 @@ ___
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 为IP和ARP协议设置VLAN。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch protocol-based-vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether2</code> <code class="ros value">protocol</code><code class="ros plain">=arp</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=0</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether6</code> <code class="ros value">protocol</code><code class="ros plain">=arp</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether2</code> <code class="ros value">protocol</code><code class="ros plain">=ip</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether6</code> <code class="ros value">protocol</code><code class="ros plain">=ip</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch protocol-based-vlan
+add port=ether2 protocol=arp set-customer-vid-for=all new-customer-vid=0
+add port=ether6 protocol=arp set-customer-vid-for=all new-customer-vid=200
+add port=ether2 protocol=ip set-customer-vid-for=all new-customer-vid=0
+add port=ether6 protocol=ip set-customer-vid-for=all new-customer-vid=200
+
+```
 
 为IPX协议设置VLAN。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch protocol-based-vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether2</code> <code class="ros value">protocol</code><code class="ros plain">=ipx</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=0</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether7</code> <code class="ros value">protocol</code><code class="ros plain">=ipx</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=300</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch protocol-based-vlan
+add port=ether2 protocol=ipx set-customer-vid-for=all new-customer-vid=0
+add port=ether7 protocol=ipx set-customer-vid-for=all new-customer-vid=300
+
+```
 
 为AppleTalk AARP和AppleTalk DDP协议设置VLAN。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch protocol-based-vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether2</code> <code class="ros value">protocol</code><code class="ros plain">=0x80F3</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=0</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">protocol</code><code class="ros plain">=0x80F3</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether2</code> <code class="ros value">protocol</code><code class="ros plain">=0x809B</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">protocol</code><code class="ros plain">=0x809B</code> <code class="ros value">set-customer-vid-for</code><code class="ros plain">=all</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch protocol-based-vlan
+add port=ether2 protocol=0x80F3 set-customer-vid-for=all new-customer-vid=0
+add port=ether8 protocol=0x80F3 set-customer-vid-for=all new-customer-vid=400
+add port=ether2 protocol=0x809B set-customer-vid-for=all new-customer-vid=0
+add port=ether8 protocol=0x809B set-customer-vid-for=all new-customer-vid=400
+
+```
 
 ## 基于MAC的VLAN
 
@@ -148,19 +273,42 @@ ___
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+
+```
 
 在接入端口启用基于MAC的VLAN转换。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">allow-fdb-based-vlan-translate</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether7 allow-fdb-based-vlan-translate=yes
+
+```
 
 在基于MAC的VLAN表中添加MAC到VLAN的映射项。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch mac-based-vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">src-mac</code><code class="ros plain">=A4:12:6D:77:94:43</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">src-mac</code><code class="ros plain">=84:37:62:DF:04:20</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">src-mac</code><code class="ros plain">=E7:16:34:A1:CD:18</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch mac-based-vlan
+add src-mac=A4:12:6D:77:94:43 new-customer-vid=200
+add src-mac=84:37:62:DF:04:20 new-customer-vid=300
+add src-mac=E7:16:34:A1:CD:18 new-customer-vid=400
+
+```
 
 在ether2端口上添加VLAN200、VLAN300和VLAN400标记，将其创建为一个VLAN聚合端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether2 vlan-id=200
+add tagged-ports=ether2 vlan-id=300
+add tagged-ports=ether2 vlan-id=400
+
+```
 
 此外，在 VLAN 表中添加项，为每个端口指定 VLAN 成员，并启用未知/无效 VLAN 过滤，见下面的例子。这对于在网桥上添加更多接口的网络设置是必需的，因为它允许定义 VLAN 的边界。
 
@@ -172,39 +320,85 @@ VLAN间路由配置包括两个主要部分--交换芯片的VLAN标记和RouterO
 
 将所需的端口交换在一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 在CPU端口上为所有VLAN设置VLAN标签，使数据包在被路由之前被标记。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=switch1-cpu vlan-id=200
+add tagged-ports=switch1-cpu vlan-id=300
+add tagged-ports=switch1-cpu vlan-id=400
+
+```
 
 添加入口VLAN转换规则以确保在接入端口上进行正确的VLAN ID分配。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether8</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-vlan-translation
+add ports=ether6 customer-vid=0 new-customer-vid=200
+add ports=ether7 customer-vid=0 new-customer-vid=300
+add ports=ether8 customer-vid=0 new-customer-vid=400
+
+```
 
 在网桥接口上创建VLAN接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN200</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN300</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN400</code> <code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add name=VLAN200 interface=bridge1 vlan-id=200
+add name=VLAN300 interface=bridge1 vlan-id=300
+add name=VLAN400 interface=bridge1 vlan-id=400
+
+```
 
 请确保 VLAN 接口是在网桥接口之上而不是在任何物理接口之上创建的。如果 VLAN 接口是在从属接口上创建的， 那么数据包可能无法被正确接收， 路由可能会失败。更详细的信息可以在 [VLAN interface on a slave interface] (https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANinterfaceonaslaveinterface) 手册页上找到。
 
 在创建的VLAN接口上添加IP地址。这个例子中，三个192.168.x.1地址被添加到VLAN200、VLAN300和VLAN400接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.30.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.40.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN400</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.20.1/24 interface=VLAN200
+add address=192.168.30.1/24 interface=VLAN300
+add address=192.168.40.1/24 interface=VLAN400
+
+```
 
 ## 未知/无效的VLAN过滤
 
 VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项使该VLAN流量在这些端口上有效。在设置了有效的VLAN配置后，可以启用未知/无效的VLAN过滤。这个VLAN过滤配置例子适用于VLAN间路由设置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=switch1-cpu,ether6</code> <code class="ros value">vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=switch1-cpu,ether7</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=switch1-cpu,ether8</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=switch1-cpu,ether6 vlan-id=200
+add ports=switch1-cpu,ether7 vlan-id=300
+add ports=switch1-cpu,ether8 vlan-id=400
+
+```
 
 - 选项1：禁用特定端口上的无效VLAN转发（更常见）。
   
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether2,ether6,ether7,ether8</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether2,ether6,ether7,ether8
+
+```
 
 - 选项2：禁用所有端口上的无效VLAN转发。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">forward-unknown-vlan</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set forward-unknown-vlan=no
+
+```
 
 在单个交换芯片上使用多个网桥，并启用未知/无效的 VLAN 过滤，可能会导致意外的行为。在使用VLAN过滤时，应该始终使用单网桥配置。如果需要端口隔离，则应使用端口隔离功能，而不是使用多个网桥。
 
@@ -218,11 +412,40 @@ VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项�
 
 **CRS-1**。服务提供商网络边缘的第一台交换机必须正确识别端口上来自客户VLAN id的流量，并用入口VLAN转换规则分配新的服务VLAN id。服务提供商VLAN标签的VLAN聚合端口配置在同一个_egress-vlan-tag_表中。和基于端口的基本VLAN配置的主要区别是，CRS交换机芯片必须设置为根据服务（_outer_）VLAN id而不是客户（_inner_）VLAN id进行转发。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">customer-vid</code><code class="ros plain">=200</code> <code class="ros value">new-service-vid</code><code class="ros plain">=400</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">customer-vid</code><code class="ros plain">=300</code> <code class="ros value">new-service-vid</code><code class="ros plain">=500</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether9</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether9</code> <code class="ros value">vlan-id</code><code class="ros plain">=500</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge-type</code><code class="ros plain">=service-vid-used-as-lookup-vid</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether9 hw=yes
+ 
+/interface ethernet switch ingress-vlan-translation
+add customer-vid=200 new-service-vid=400 ports=ether1
+add customer-vid=300 new-service-vid=500 ports=ether2
+ 
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether9 vlan-id=400
+add tagged-ports=ether9 vlan-id=500
+ 
+/interface ethernet switch
+set bridge-type=service-vid-used-as-lookup-vid
+
+```
 
 **CRS-2**。服务提供商网络中的第二台交换机只要求交换的端口按照服务（_outer_）VLAN id而不是客户（_inner_）VLAN id进行转发。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge-type</code><code class="ros plain">=service-vid-used-as-lookup-vid</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether9 hw=yes
+add bridge=bridge1 interface=ether10 hw=yes
+ 
+/interface ethernet switch
+set bridge-type=service-vid-used-as-lookup-vid
+
+```
 
 **CRS-3**。第三台交换机的配置与CRS-1类似。
 
@@ -231,7 +454,26 @@ VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项�
 - 用于服务提供商VLAN聚合的标记端口。
 - CRS交换机芯片设置为在交换查找中使用服务VLAN ID。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">customer-vid</code><code class="ros plain">=200</code> <code class="ros value">new-service-vid</code><code class="ros plain">=400</code> <code class="ros value">ports</code><code class="ros plain">=ether3</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">customer-vid</code><code class="ros plain">=300</code> <code class="ros value">new-service-vid</code><code class="ros plain">=500</code> <code class="ros value">ports</code><code class="ros plain">=ether4</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether10</code> <code class="ros value">vlan-id</code><code class="ros plain">=400</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether10</code> <code class="ros value">vlan-id</code><code class="ros plain">=500</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge-type</code><code class="ros plain">=service-vid-used-as-lookup-vid</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether10 hw=yes
+ 
+/interface ethernet switch ingress-vlan-translation
+add customer-vid=200 new-service-vid=400 ports=ether3
+add customer-vid=300 new-service-vid=500 ports=ether4
+ 
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether10 vlan-id=400
+add tagged-ports=ether10 vlan-id=500
+ 
+/interface ethernet switch
+set bridge-type=service-vid-used-as-lookup-vid
+
+```
 
 ## CVID堆叠
 
@@ -239,31 +481,62 @@ VLAN成员资格是在VLAN表中定义的。添加带有VLAN ID和端口的项�
 
 将**ether1**和**ether2**交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes
+add bridge=bridge1 interface=ether2 hw=yes
+
+```
 
 设置交换机根据服务标签（0x88a8）来过滤VLAN。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">bridge-type</code><code class="ros plain">=service-vid-used-as-lookup-vid</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set bridge-type=service-vid-used-as-lookup-vid
+
+```
 
 为在**ether1**上有CVID 10标签的数据包添加一个服务标签SVID 20。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">customer-vid</code><code class="ros plain">=10</code> <code class="ros value">new-service-vid</code><code class="ros plain">=20</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-vlan-translation
+add customer-vid=10 new-service-vid=20 ports=ether1
+
+```
 
 指定**ether2**作为SVID 20的标记/聚合端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether2 vlan-id=20
+
+```
 
 允许**ether1**和**ether2**转发SVID 20。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether1,ether2 vlan-id=20
+
+```
 
 在**ether2**上将SVID EtherType（0x88a8）覆盖为CVID EtherType（0x8100）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">egress-service-tpid-override</code><code class="ros plain">=0x8100</code> <code class="ros value">ingress-service-tpid-override</code><code class="ros plain">=0x8100</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 egress-service-tpid-override=0x8100 ingress-service-tpid-override=0x8100
+
+```
 
 启用未知/无效的VLAN过滤。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether1,ether2</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether1,ether2
+
+```
 
 由于交换机被设置为根据服务标签查找VLAN ID，而服务标签被不同的EtherType所覆盖，那么VLAN过滤只在数据包的外部标签上进行，内部标签不被检查。
 
@@ -279,19 +552,52 @@ Cloud Router Switches支持三种类型的镜像。基于端口的镜像可以�
 
 第一个配置将ether5端口设置为镜像0分析端口，用于入站和出站镜像，镜像的流量将被发送到这个端口。基于端口的入站和出站镜像在ether6端口启用。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">egress-mirror0</code><code class="ros plain">=ether5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">ingress-mirror-to</code><code class="ros plain">=mirror0</code> <code class="ros value">egress-mirror-to</code><code class="ros plain">=mirror0</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set ingress-mirror0=ether5 egress-mirror0=ether5
+ 
+/interface ethernet switch port
+set ether6 ingress-mirror-to=mirror0 egress-mirror-to=mirror0
+
+```
 
 ### 基于VLAN的镜像
 
 第二个例子要求端口在一个组中进行交换。镜像配置将ether5端口设置为镜像0分析端口，并将镜像0端口设置为在发生从VLAN镜像时使用。VLAN表项仅对ether2和ether7端口之间的VLAN 300流量启用镜像。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">vlan-uses</code><code class="ros plain">=mirror0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2,ether7</code> <code class="ros value">vlan-id</code><code class="ros plain">=300</code> <code class="ros value">learn</code><code class="ros plain">=yes</code> <code class="ros value">ingress-mirror</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+ 
+/interface ethernet switch
+set ingress-mirror0=ether5 vlan-uses=mirror0
+ 
+/interface ethernet switch vlan
+add ports=ether2,ether7 vlan-id=300 learn=yes ingress-mirror=yes
+
+```
 
 ### 基于MAC的镜像
 
 第三种配置也需要端口在一个组中进行交换。镜像配置将ether5端口设置为镜像0分析端口，并将镜像0端口设置为发生单播转发数据库的镜像时使用。来自单播转发数据库的项目使来自ether8端口的具有源或目的MAC地址E7:16:34:A1:CD:18的数据包能够被镜像。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ingress-mirror0</code><code class="ros plain">=ether5</code> <code class="ros value">fdb-uses</code><code class="ros plain">=mirror0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch unicast-fdb</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">svl</code><code class="ros plain">=yes</code> <code class="ros value">mac-address</code><code class="ros plain">=E7:16:34:A1:CD:18</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+ 
+/interface ethernet switch
+set ingress-mirror0=ether5 fdb-uses=mirror0
+ 
+/interface ethernet switch unicast-fdb
+add port=ether8 mirror=yes svl=yes mac-address=E7:16:34:A1:CD:18
+
+```
 
 ## 聚合
 
@@ -303,13 +609,29 @@ Cloud Router Switches中的聚合提供静态链路聚合组，具有硬件自�
 
 配置需要一组交换的端口和聚合表中的项目。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">protocol-mode</code><code class="ros plain">=none</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch trunk</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=trunk1</code> <code class="ros value">member-ports</code><code class="ros plain">=ether6,ether7,ether8</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 protocol-mode=none
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+ 
+/interface ethernet switch trunk
+add name=trunk1 member-ports=ether6,ether7,ether8
+
+```
 
 这个例子还显示了另一端在RouterOS中的正确绑定配置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bonding1</code> <code class="ros value">slaves</code><code class="ros plain">=ether2,ether3,ether4</code> <code class="ros value">mode</code><code class="ros plain">=balance-xor</code> <code class="ros value">transmit-hash-policy</code><code class="ros plain">=layer-2-and-3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add name=bonding1 slaves=ether2,ether3,ether4 mode=balance-xor transmit-hash-policy=layer-2-and-3
 
-你可以在[CRS VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS_VLANs_with_Trunks "Manual:CRS VLANs with Trunks")页面找到聚合和基于端口的VLAN的工作实例。
+```
+
+你可以在 [CRS VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS_VLANs_with_Trunks "Manual:CRS VLANs with Trunks") 页面找到聚合和基于端口的VLAN的工作实例。
 
 网桥(R)STP不知道底层交换机的聚合配置，一些聚合端口可以移动到丢弃或阻塞状态。当聚合成员端口连接到其他网桥时，应该禁用(R)STP或过滤掉集群设备之间的任何BPDU（例如，用ACL规则）。
 
@@ -321,11 +643,32 @@ ___
 
 配置需要交换的一组端口，在这些端口上禁用MAC学习，以及静态UFDB项。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code> <code class="ros value">learn</code><code class="ros plain">=no</code> <code class="ros value">unknown-unicast-flood</code><code class="ros plain">=no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code> <code class="ros value">learn</code><code class="ros plain">=no</code> <code class="ros value">unknown-unicast-flood</code><code class="ros plain">=no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch unicast-fdb</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-address</code><code class="ros plain">=4C:5E:0C:00:00:01</code> <code class="ros value">port</code><code class="ros plain">=ether6</code> <code class="ros value">svl</code><code class="ros plain">=yes</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-address</code><code class="ros plain">=D4:CA:6D:00:00:02</code> <code class="ros value">port</code><code class="ros plain">=ether7</code> <code class="ros value">svl</code><code class="ros plain">=yes</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch acl</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">src-mac-addr-state</code><code class="ros plain">=sa-not-found</code> <code class="ros value">src-ports</code><code class="ros plain">=ether6,ether7</code> <code class="ros value">table</code><code class="ros plain">=egress</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">src-mac-addr-state</code><code class="ros plain">=static-station-move</code> <code class="ros value">src-ports</code><code class="ros plain">=ether6,ether7</code> <code class="ros value">table</code><code class="ros plain">=egress</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes learn=no unknown-unicast-flood=no
+add bridge=bridge1 interface=ether7 hw=yes learn=no unknown-unicast-flood=no
+ 
+/interface ethernet switch unicast-fdb
+add mac-address=4C:5E:0C:00:00:01 port=ether6 svl=yes
+add mac-address=D4:CA:6D:00:00:02 port=ether7 svl=yes
+ 
+/interface ethernet switch acl
+add action=drop src-mac-addr-state=sa-not-found src-ports=ether6,ether7 table=egress
+add action=drop src-mac-addr-state=static-station-move src-ports=ether6,ether7 table=egress
+
+```
 
 CRS1xx/2xx交换机还允许每个端口学习一个动态MAC，以确保只有一个终端用户设备被连接，无论其MAC地址如何。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">learn-limit</code><code class="ros plain">=1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">learn-limit</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether6 learn-limit=1
+set ether7 learn-limit=1
+
+```
 
 ## 隔离
 
@@ -351,19 +694,57 @@ Cloud Router Switches使用端口级隔离配置文件来实现私有VLAN。
 
 **本例需要一组交换的端口。假设本例中使用的所有端口都在一个交换组中**。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+add bridge=bridge1 interface=ether9 hw=yes
+add bridge=bridge1 interface=ether10 hw=yes
+
+```
 
 端口隔离配置的第一部分是设置上行链路端口 - 为ether2设置一个端口配置文件为0。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=0</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 isolation-leakage-profile-override=0
+
+```
 
 然后继续为所有被隔离的端口设置隔离配置1，并为端口隔离配置1添加通信端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=1</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">type</code><code class="ros plain">=dst</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether5 isolation-leakage-profile-override=1
+set ether6 isolation-leakage-profile-override=1
+ 
+/interface ethernet switch port-isolation
+add port-profile=1 ports=ether2 type=dst
+
+```
 
 Community 2 和Community 3端口的配置是类似的。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether8 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=2</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether7,ether8</code> <code class="ros value">type</code><code class="ros plain">=dst</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether9 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=3</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether10 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=3</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=3</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether9,ether10</code> <code class="ros value">type</code><code class="ros plain">=dst</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether7 isolation-leakage-profile-override=2
+set ether8 isolation-leakage-profile-override=2
+ 
+/interface ethernet switch port-isolation
+add port-profile=2 ports=ether2,ether7,ether8 type=dst
+ 
+/interface ethernet switch port
+set ether9 isolation-leakage-profile-override=3
+set ether10 isolation-leakage-profile-override=3
+ 
+/interface ethernet switch port-isolation
+add port-profile=3 ports=ether2,ether9,ether10 type=dst
+
+```
 
 ### 协议级隔离
 
@@ -373,15 +754,36 @@ CRS交换机上的协议级隔离可以用来增强网络安全。例如，限�
 
 将所需的端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+add bridge=bridge1 interface=ether4 hw=yes
+add bridge=bridge1 interface=ether5 hw=yes
+
+```
 
 为所有 DHCP 客户端端口设置相同的 Community 端口配置文件。Community端口配置文件编号从2到30。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether4 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether5 </code><code class="ros value">isolation-leakage-profile-override</code><code class="ros plain">=2</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether2 isolation-leakage-profile-override=2
+set ether3 isolation-leakage-profile-override=2
+set ether4 isolation-leakage-profile-override=2
+set ether5 isolation-leakage-profile-override=2
+
+```
 
 为选定的Community（2）配置端口隔离/泄漏配置文件，以允许DHCP流量只流向受信任的DHCP服务器所在的端口，注册状态和流量类型属性必须设置为空，以便只对DHCP协议应用限制。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port-isolation</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port-profile</code><code class="ros plain">=2</code> <code class="ros value">protocol-type</code><code class="ros plain">=dhcpv4</code> <code class="ros value">type</code><code class="ros plain">=dst</code> <code class="ros value">forwarding-type</code><code class="ros plain">=bridged</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">registration-status</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">traffic-type</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port-isolation
+add port-profile=2 protocol-type=dhcpv4 type=dst forwarding-type=bridged ports=ether1 registration-status="" traffic-type=""
+
+```
 
 ## 服务质量 (QoS)
 
@@ -406,48 +808,100 @@ ___
 在所有的CRS交换机上，基于MAC的出站流量调度是根据内部优先级进行的，其方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue]。 
 在这个例子中，主机1（E7:16:34:00:00:01）和主机2（E7:16:34:00:00:02）将拥有较高的优先级1，其余的主机将拥有较低的优先级0，用于在 ether7端口传输流量。请注意，CRS每个端口最多有8个队列。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 创建供UFDB使用的QoS组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch qos-group</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=group1</code> <code class="ros value">priority</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch qos-group
+add name=group1 priority=1
+
+```
 
 添加UFDB条目以匹配ether7上的特定MAC，并应用QoS组1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch unicast-fdb</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-address</code><code class="ros plain">=E7:16:34:00:00:01</code> <code class="ros value">port</code><code class="ros plain">=ether7</code> <code class="ros value">qos-group</code><code class="ros plain">=group1</code> <code class="ros value">svl</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-address</code><code class="ros plain">=E7:16:34:00:00:02</code> <code class="ros value">port</code><code class="ros plain">=ether7</code> <code class="ros value">qos-group</code><code class="ros plain">=group1</code> <code class="ros value">svl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch unicast-fdb
+add mac-address=E7:16:34:00:00:01 port=ether7 qos-group=group1 svl=yes
+add mac-address=E7:16:34:00:00:02 port=ether7 qos-group=group1 svl=yes
+
+```
 
 配置ether7端口队列，使其只对目标地址按照严格的优先级和QoS方案工作。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=da-based</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether7 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0" priority-to-queue=0:0,1:1 qos-scheme-precedence=da-based
+
+```
 
 ### 基于MAC的流量整形使用内部优先级
 
 基于MAC的流量整形是根据内部优先级来完成的，方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue] -> [Shaper]。 
 在这个例子中，无限流量的优先级是0，有限流量的优先级是1，带宽限制是10Mbit。请注意，CRS每个端口最多有8个队列。
 
-创建一个用于交换的端口组。
+创建一个交换端口组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 创建一个供UFDB使用的QoS组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch qos-group</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=group1</code> <code class="ros value">priority</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch qos-group
+add name=group1 priority=1
+
+```
 
 添加UFDB条目以匹配ether8上的特定MAC并应用QoS组1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch unicast-fdb</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-address</code><code class="ros plain">=E7:16:34:A1:CD:18</code> <code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">qos-group</code><code class="ros plain">=group1</code> <code class="ros value">svl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch unicast-fdb
+add mac-address=E7:16:34:A1:CD:18 port=ether8 qos-group=group1 svl=yes
+
+```
 
 配置ether8端口队列，使其根据严格的优先级和QoS方案工作，只针对目标地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether8 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=da-based</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether8 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0" priority-to-queue=0:0,1:1 qos-scheme-precedence=da-based
+
+```
 
 在ether8上为queue1应用带宽限制。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch shaper</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether8</code> <code class="ros value">rate</code><code class="ros plain">=10M</code> <code class="ros value">target</code><code class="ros plain">=queue1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch shaper
+add port=ether8 rate=10M target=queue1
+
+```
 
 如果CRS交换机支持访问控制列表，这种配置就比较简单。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch acl policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=policer1</code> <code class="ros value">yellow-burst</code><code class="ros plain">=100k</code> <code class="ros value">yellow-rate</code><code class="ros plain">=10M</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch acl</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-dst-address</code><code class="ros plain">=E7:16:34:A1:CD:18</code> <code class="ros value">policer</code><code class="ros plain">=policer1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch acl policer
+add name=policer1 yellow-burst=100k yellow-rate=10M
+ 
+/interface ethernet switch acl
+add mac-dst-address=E7:16:34:A1:CD:18 policer=policer1
+
+```
 
 ### 基于VLAN的流量调度+使用内部优先级的整形
 
@@ -460,23 +914,53 @@ VLAN10 -> QoS group0 = lowest priority
 VLAN20 -> QoS group1 = normal priority  
 VLAN30 -> QoS group2 = highest priority
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
+
+```
 
 创建QoS组，在VLAN表中使用。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch qos-group</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=group0</code> <code class="ros value">priority</code><code class="ros plain">=0</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=group1</code> <code class="ros value">priority</code><code class="ros plain">=1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=group2</code> <code class="ros value">priority</code><code class="ros plain">=2</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch qos-group
+add name=group0 priority=0
+add name=group1 priority=1
+add name=group2 priority=2
+
+```
 
 添加VLAN条目，对某些VLAN应用QoS组。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6,ether7,ether8</code> <code class="ros value">qos-group</code><code class="ros plain">=group0</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6,ether7,ether8</code> <code class="ros value">qos-group</code><code class="ros plain">=group1</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether6,ether7,ether8</code> <code class="ros value">qos-group</code><code class="ros plain">=group2</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch vlan
+add ports=ether6,ether7,ether8 qos-group=group0 vlan-id=10
+add ports=ether6,ether7,ether8 qos-group=group1 vlan-id=20
+add ports=ether6,ether7,ether8 qos-group=group2 vlan-id=30
+
+```
 
 配置ether6、ether7和ether8端口队列，使其仅根据严格的优先级和QoS方案工作，用于基于VLAN的QoS。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether6 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1,2:2</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=vlan-based</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether7 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1,2:2</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=vlan-based</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether8 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code> <code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1,2:2</code> <code class="ros value">qos-scheme-precedence</code><code class="ros plain">=vlan-based</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether6 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0" priority-to-queue=0:0,1:1,2:2 qos-scheme-precedence=vlan-based
+set ether7 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0" priority-to-queue=0:0,1:1,2:2 qos-scheme-precedence=vlan-based
+set ether8 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0" priority-to-queue=0:0,1:1,2:2 qos-scheme-precedence=vlan-based
+
+```
 
 在ether6上应用带宽限制。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch shaper</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether6</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch shaper
+add port=ether6 rate=10M
+
+```
 
 ### 基于PCP的流量调度
 
@@ -484,23 +968,47 @@ VLAN30 -> QoS group2 = highest priority
 
 为了实现这样的行为，将**ether1**、**ether2、**和**ether3**端口交换到一起。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether3 hw=yes
+
+```
 
 为每个端口上的每个内部队列启用**严格策略**。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3 </code><code class="ros value">per-queue-scheduling</code><code class="ros plain">=</code><code class="ros string">"strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1,ether2,ether3 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0,strict-priority:0"
+
+```
 
 将每个PCP值映射到一个内部优先级值，为方便起见，只需将PCP映射到一个内部优先级1-1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3 </code><code class="ros value">pcp-based-qos-priority-mapping</code><code class="ros plain">=0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1,ether2,ether3 pcp-based-qos-priority-mapping=0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7
+
+```
 
 交换机会先清空最大的队列，而最高的优先级先得到服务，那么可以把这个内部优先级分配给队列1-1。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3 </code><code class="ros value">priority-to-queue</code><code class="ros plain">=0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1,ether2,ether3 priority-to-queue=0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7
+
+```
 
 最后，将每个交换机端口设置为根据PCP值来安排数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1,ether2,ether3 </code><code class="ros value">qos-scheme-precedence</code><code class="ros plain">=pcp-based</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1,ether2,ether3 qos-scheme-precedence=pcp-based
+
+```
 
 ## 带宽限制
 
@@ -510,11 +1018,19 @@ ___
 
 - 入站端口监控器在端口上设置RX限制。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-port-policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">meter-unit</code><code class="ros plain">=bit</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-port-policer
+add port=ether5 meter-unit=bit rate=10M
+
+```
 
 - 整形器在端口上设置TX限制。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch shaper</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">meter-unit</code><code class="ros plain">=bit</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch shaper
+add port=ether5 meter-unit=bit rate=10M
+
+```
 
 ##  流量风暴控制
 
@@ -524,23 +1040,31 @@ ___
 
 - 下面是ether5端口的广播风暴控制实例，每秒限制500个数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-port-policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">rate</code><code class="ros plain">=500</code> <code class="ros value">meter-unit</code><code class="ros plain">=packet</code> <code class="ros value">packet-types</code><code class="ros plain">=broadcast</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-port-policer
+add port=ether5 rate=500 meter-unit=packet packet-types=broadcast
+
+```
 
 - 有多种数据包类型的例子，其中包括ARP和ND协议以及未注册的组播流量。未注册的组播是未在组播转发数据库中定义的流量。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-port-policer</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">port</code><code class="ros plain">=ether5</code> <code class="ros value">rate</code><code class="ros plain">=5k</code> <code class="ros value">meter-unit</code><code class="ros plain">=packet</code> <code class="ros value">packet-types</code><code class="ros plain">=broadcast,arp-or-nd,unregistered-multicast</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch ingress-port-policer
+add port=ether5 rate=5k meter-unit=packet packet-types=broadcast,arp-or-nd,unregistered-multicast
+
+```
 
 ## 参考
 
 ___
 
--   [CRS1xx/2xx series switches examples](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836)
--   [CRS Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router")
--   [CRS1xx/2xx VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS1xx/2xx_VLANs_with_Trunks "Manual:CRS1xx/2xx VLANs with Trunks")
--   [Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)
--   [Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)
--   [Spanning Tree Protocol](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)
--   [IGMP Snooping](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403)
--   [DHCP Snooping and Option 82](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-DHCPSnoopingandDHCPOption82)
--   [MTU on RouterBOARD](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)
--   [Layer2 misconfiguration](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration)
+- [CRS1xx/2xx series switches examples](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836)
+- [CRS Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router")
+- [CRS1xx/2xx VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS1xx/2xx_VLANs_with_Trunks "Manual:CRS1xx/2xx VLANs with Trunks")
+- [Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)
+- [Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)
+- [Spanning Tree Protocol](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)
+- [IGMP Snooping](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403)
+- [DHCP Snooping and Option 82](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-DHCPSnoopingandDHCPOption82)
+- [MTU on RouterBOARD](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)
+- [Layer2 misconfiguration](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration)

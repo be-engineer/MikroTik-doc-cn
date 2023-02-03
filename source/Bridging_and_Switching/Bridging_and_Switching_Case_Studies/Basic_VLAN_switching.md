@@ -10,9 +10,27 @@ ___
 
 ___
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=20</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=30</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 frame-types=admit-only-vlan-tagged
+/interface bridge port
+add bridge=bridge1 interface=ether1 frame-types=admit-only-vlan-tagged
+add bridge=bridge1 interface=ether2 pvid=20 frame-types=admit-only-untagged-and-priority-tagged
+add bridge=bridge1 interface=ether3 pvid=30 frame-types=admit-only-untagged-and-priority-tagged
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 vlan-ids=20
+add bridge=bridge1 tagged=ether1 vlan-ids=30
+add bridge=bridge1 tagged=ether1,bridge1 vlan-ids=99
+/interface vlan
+add interface=bridge1 vlan-id=99 name=MGMT
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+/interface bridge
+set bridge1 vlan-filtering=yes
 
-更详细的例子可以在[这里]（https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering）找到。
+```
+
+更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)找到。
 
 RTL8367、88E6393X、88E6191X和MT7621交换芯片从RouterOS v7开始可以使用HW卸载的vlan过滤特性。
 
@@ -22,7 +40,32 @@ RTL8367、88E6393X、88E6191X和MT7621交换芯片从RouterOS v7开始可以使�
 
 ___
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch ingress-vlan-translation</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether3</code> <code class="ros value">customer-vid</code><code class="ros plain">=0</code> <code class="ros value">new-customer-vid</code><code class="ros plain">=30</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch egress-vlan-tag</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">tagged-ports</code><code class="ros plain">=ether1,switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether3</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,switch1-cpu</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">drop-if-invalid-or-src-port-not-member-of-vlan-on-ports</code><code class="ros plain">=ether1,ether2,ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=ether3
+/interface ethernet switch ingress-vlan-translation
+add ports=ether2 customer-vid=0 new-customer-vid=20
+add ports=ether3 customer-vid=0 new-customer-vid=30
+/interface ethernet switch egress-vlan-tag
+add tagged-ports=ether1 vlan-id=20
+add tagged-ports=ether1 vlan-id=30
+add tagged-ports=ether1,switch1-cpu vlan-id=99
+/interface ethernet switch vlan
+add ports=ether1,ether2 vlan-id=20
+add ports=ether1,ether3 vlan-id=30
+add ports=ether1,switch1-cpu vlan-id=99
+/interface vlan
+add interface=bridge1 vlan-id=99 name=MGMT
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+/interface ethernet switch
+set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether1,ether2,ether3
+
+```
 
 更详细的例子可以在[这里]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN）找到。
 
@@ -30,11 +73,32 @@ ___
 
 ___
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,ether3</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1,switch1-cpu</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=add-if-missing</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether2 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=20</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether3 </code><code class="ros value">vlan-mode</code><code class="ros plain">=secure</code> <code class="ros value">vlan-header</code><code class="ros plain">=always-strip</code> <code class="ros value">default-vlan-id</code><code class="ros plain">=30</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1-cpu </code><code class="ros value">vlan-header</code><code class="ros plain">=leave-as-is</code> <code class="ros value">vlan-mode</code><code class="ros plain">=secure</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=ether3
+/interface ethernet switch vlan
+add ports=ether1,ether2 switch=switch1 vlan-id=20
+add ports=ether1,ether3 switch=switch1 vlan-id=30
+add ports=ether1,switch1-cpu switch=switch1 vlan-id=99
+/interface vlan
+add interface=bridge1 vlan-id=99 name=MGMT
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+/interface ethernet switch port
+set ether1 vlan-mode=secure vlan-header=add-if-missing
+set ether2 vlan-mode=secure vlan-header=always-strip default-vlan-id=20
+set ether3 vlan-mode=secure vlan-header=always-strip default-vlan-id=30
+set switch1-cpu vlan-header=leave-as-is vlan-mode=secure
 
-更详细的例子可以在[这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-SetupExamples)找到。
+```
 
-并非所有带有交换芯片的设备都能在硬件层面进行VLAN交换，请检查每个交换芯片支持的功能，兼容性表可以在这里找到[https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction]。如果一个设备支持 "VLAN表 "，那么它就能够使用内置的交换芯片进行VLAN交换。你可以通过所提供的链接或使用`/interface ethernet switch print`来查看设备的交换芯片。
+更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-SetupExamples) 找到。
+
+并非所有带有交换芯片的设备都能在硬件层面进行VLAN交换，请检查每个交换芯片支持的功能，兼容性表可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction)找到 。如果一个设备支持 "VLAN表 "，那么它就能够使用内置的交换芯片进行VLAN交换。你可以通过所提供的链接或使用`/interface ethernet switch print`来查看设备的交换芯片。
 
 在**QCA8337**和**Atheros8327**交换芯片上，应使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
 
@@ -50,6 +114,24 @@ ___
 
 可以用CPU做VLAN过滤，有多种方法，但强烈建议使用桥接VLAN过滤。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=20</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=30</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 frame-types=admit-only-vlan-tagged
+/interface bridge port
+add bridge=bridge1 interface=ether1 frame-types=admit-only-vlan-tagged
+add bridge=bridge1 interface=ether2 pvid=20 frame-types=admit-only-untagged-and-priority-tagged
+add bridge=bridge1 interface=ether3 pvid=30 frame-types=admit-only-untagged-and-priority-tagged
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 vlan-ids=20
+add bridge=bridge1 tagged=ether1 vlan-ids=30
+add bridge=bridge1 tagged=ether1,bridge1 vlan-ids=99
+/interface vlan
+add interface=bridge1 vlan-id=99 name=MGMT
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+/interface bridge
+set bridge1 vlan-filtering=yes
 
-更详细的例子可以在[这里](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)找到。
+```
+
+更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 找到。

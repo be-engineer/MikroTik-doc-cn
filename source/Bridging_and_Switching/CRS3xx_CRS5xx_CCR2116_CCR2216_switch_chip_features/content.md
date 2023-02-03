@@ -157,26 +157,46 @@ add mac-protocol=0x80F3 new-vlan-id=400 ports=ether8 switch=switch1
 创建一个新网桥并通过硬件卸载向其添加端口：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=no
+/interface bridge port
+add interface=ether1 bridge=bridge1 hw=yes
+add interface=ether2 bridge=bridge1 hw=yes
+
+```
 
 添加 ACL 规则以便在每个方向上转换 VLAN ID：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">new-dst-ports</code><code class="ros plain">=ether2</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=20</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">new-dst-ports</code><code class="ros plain">=ether1</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=10</code> <code class="ros value">ports</code><code class="ros plain">=ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add new-dst-ports=ether2 new-vlan-id=20 ports=ether1 switch=switch1 vlan-id=10
+add new-dst-ports=ether1 new-vlan-id=10 ports=ether2 switch=switch1 vlan-id=20
+
+```
 
 将两个 VLAN ID 添加到网桥 VLAN 表中：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 vlan-ids=10
+add bridge=bridge1 tagged=ether2 vlan-ids=20
+
+```
 
 允许网桥进行VLAN过滤:
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge set bridge1 vlan-filtering=yes
+
+```
 
 双向通信仅限于两个交换机端口之间。 在更多端口之间转换 VLAN ID 会导致流量泛滥或相同 VLAN 端口之间的错误转发。
 
-通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。
+通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个  [管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。
 
 ## (R/M)STP
 
@@ -192,20 +212,39 @@ CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器支持带绑定接
 
 要创建硬件卸载绑定接口，必须使用受支持的绑定模式创建绑定接口：
 
+```shell
+/interface bonding
+add mode=802.3ad name=bond1 slaves=ether1,ether2
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=ether1,ether2</code></div></div></td></tr></tbody></table>
+```
 
 此接口可以和其他接口一起添加到网桥中：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=bond1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port print
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
+ #     INTERFACE                                 BRIDGE                                 HW
+ 0   H bond1                                     bridge                                 yes
+ 1   H ether3                                    bridge                                 yes
+ 2   H ether4                                    bridge                                 yes
+
+```
 
 不要将接口添加到已经处于绑定中的网桥，RouterOS 不允许将接口添加到已经是绑定的从端口的网桥。
 
 通过检查“H”标志确保绑定接口是硬件卸载的：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">/interface bridge port print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BRIDGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HW</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp; H bond1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp; H ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2&nbsp;&nbsp; H ether4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port print
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
+ #     INTERFACE                                 BRIDGE                                 HW
+ 0   H bond1                                     bridge                                 yes
+ 1   H ether3                                    bridge                                 yes
+ 2   H ether4                                    bridge                                 yes
+
+```
 
 对于 HW-offloaded 绑定接口，内置交换芯片将始终使用 Layer2+Layer3+Layer4 作为传输哈希策略，手动更改传输哈希策略将不起作用。
 
@@ -213,7 +252,7 @@ CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器支持带绑定接
 
 ___
 
-RouterOS 中的 MLAG（多机箱链路聚合组）实现允许在两个独立的设备上配置 LACP 绑定，而客户端设备认为连接在同一台机器上。 这在交换机故障的情况下提供了物理冗余。 所有 CRS3xx、CRS5xx 系列和 CCR2116、CCR2216 设备都可以配置 MLAG。 阅读[此处](https://help.mikrotik.com/docs/display/ROS/Multi-chassis+Link+Aggregation+Group)了解更多信息。
+RouterOS 中的 MLAG（多机箱链路聚合组）实现允许在两个独立的设备上配置 LACP 绑定，而客户端设备认为连接在同一台机器上。 这在交换机故障的情况下提供了物理冗余。 所有 CRS3xx、CRS5xx 系列和 CCR2116、CCR2216 设备都可以配置 MLAG。 阅读 [此处](https://help.mikrotik.com/docs/display/ROS/Multi-chassis+Link+Aggregation+Group) 了解更多信息。
 
 ## L3 硬件卸载
 
@@ -227,7 +266,7 @@ Layer3 硬件卸载（也称为 IP 交换或 HW 路由）将允许将一些路�
 
 ___
 
-由于 RouterOS v6.43 可以创建专用 VLAN 设置，因此可以在 [交换机芯片端口隔离](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features) #SwitchChipFeatures-Portisolation）手册中找到示例 。 硬件卸载绑定接口不包含在交换机端口隔离菜单中，但仍然可以在绑定的每个辅助接口上单独配置端口隔离。
+由于 RouterOS v6.43 可以创建专用 VLAN 设置，因此可以在 [交换机芯片端口隔离](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Portisolation) 手册中找到示例 。 硬件卸载绑定接口不包含在交换机端口隔离菜单中，但仍然可以在绑定的每个辅助接口上单独配置端口隔离。
 
 ## IGMP/MLD 侦听
 
@@ -247,7 +286,7 @@ CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在硬件级
 
 ___
 
-控制器桥 (CB) 和端口扩展器 (PE) 是 RouterOS 中的 IEEE 802.1BR 标准实现。 它允许使用 PE 设备虚拟扩展 CB 端口，并从单个控制设备管理这些扩展接口。 这样的配置提供了简化的网络拓扑结构、灵活性、增加端口密度和易管理性。 请参阅 [Controller Bridge and Port Extender 手册](https://help.mikrotik.com/docs/display/ROS/Controller+Bridge+and+Port+Extender) 了解更多详情。
+控制器桥 (CB) 和端口扩展器 (PE) 是 RouterOS 中的 IEEE 802.1BR 标准实现。 它允许使用 PE 设备虚拟扩展 CB 端口，并从单个控制设备管理这些扩展接口。 这样的配置提供了简化的网络拓扑结构、灵活性、增加端口密度和易管理性。 请参阅 [控制网桥和端口扩展器手册](https://help.mikrotik.com/docs/display/ROS/Controller+Bridge+and+Port+Extender) 了解更多详情。
 
 ## 镜像
 
@@ -258,35 +297,71 @@ ___
 基于端口的镜像：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-source</code><code class="ros plain">=ether2</code> <code class="ros value">mirror-target</code><code class="ros plain">=ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set switch1 mirror-source=ether2 mirror-target=ether3
+
+```
 
 属性 `mirror-source` 会将入口和出口数据包副本发送到 `mirror-target` 端口。 `mirror-source` 和 `mirror-target` 都仅限于一个接口。
 
+```shell
+/interface ethernet switch
+set switch1 mirror-source=none mirror-target=ether3
+/interface ethernet switch rule
+add mirror=yes ports=ether1,ether2 switch=switch1
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-source</code><code class="ros plain">=none</code> <code class="ros value">mirror-target</code><code class="ros plain">=ether3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```
 
 使用 ACL 规则，可以镜像来自多个“端口”接口的数据包。 只有入口数据包被镜像到“镜像目标”接口。
 
 基于 VLAN 的镜像：
 
+```shell
+/interface bridge
+set bridge1 vlan-filtering=yes
+/interface ethernet switch
+set switch1 mirror-target=ether3 mirror-source=none
+/interface ethernet switch rule
+add mirror=yes ports=ether1 switch=switch1 vlan-id=11
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-target</code><code class="ros plain">=ether3</code> <code class="ros value">mirror-source</code><code class="ros plain">=none</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=11</code></div></div></td></tr></tbody></table>
+```
 
-通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration）。
+通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了 [管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration) 。
 
 基于 MAC 的镜像：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-target</code><code class="ros plain">=ether3</code> <code class="ros value">mirror-source</code><code class="ros plain">=none</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">dst-mac-address</code><code class="ros plain">=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">src-mac-address</code><code class="ros plain">=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set switch1 mirror-target=ether3 mirror-source=none
+/interface ethernet switch rule
+add mirror=yes ports=ether1 switch=switch1 dst-mac-address=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF
+add mirror=yes ports=ether1 switch=switch1 src-mac-address=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF
+
+```
 
 基于协议的镜像:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-target</code><code class="ros plain">=ether3</code> <code class="ros value">mirror-source</code><code class="ros plain">=none</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">mac-protocol</code><code class="ros plain">=ipx</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set switch1 mirror-target=ether3 mirror-source=none
+/interface ethernet switch rule
+add mirror=yes ports=ether1 switch=switch1 mac-protocol=ipx
+
+```
 
 基于IP地址的镜像:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">switch1 </code><code class="ros value">mirror-target</code><code class="ros plain">=ether3</code> <code class="ros value">mirror-source</code><code class="ros plain">=none</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">src-address</code><code class="ros plain">=192.168.88.0/24</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mirror</code><code class="ros plain">=yes</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">dst-address</code><code class="ros plain">=192.168.88.0/24</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch
+set switch1 mirror-target=ether3 mirror-source=none
+/interface ethernet switch rule
+add mirror=yes ports=ether1 switch=switch1 src-address=192.168.88.0/24
+add mirror=yes ports=ether1 switch=switch1 dst-address=192.168.88.0/24
 
-还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features# CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)）找出所有可以用来匹配数据包的参数。
+```
+
+还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 找出所有可以用来匹配数据包的参数。
 
 ## 流量整形
 
@@ -296,41 +371,57 @@ ___
 
 基于端口的流量监管器和整形器：
 
+```shell
+/interface ethernet switch port
+set ether1 ingress-rate=10M egress-rate=5M
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">ingress-rate</code><code class="ros plain">=10M</code> <code class="ros value">egress-rate</code><code class="ros plain">=5M</code></div></div></td></tr></tbody></table>
+```
 
 基于MAC的流量监管器:
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">src-mac-address</code><code class="ros plain">=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add ports=ether1 switch=switch1 src-mac-address=64:D1:54:D9:27:E6/FF:FF:FF:FF:FF:FF rate=10M
+
+```
 
 基于VLAN的流量监管器:
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">vlan-id</code><code class="ros plain">=11</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge1 vlan-filtering=yes
+/interface ethernet switch rule
+add ports=ether1 switch=switch1 vlan-id=11 rate=10M
 
-通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个[管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-管理访问配置)。
+```
+
+通过启用“vlan-filtering”，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个 [管理端口](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。
 
 基于协议的流量监管器：
 
+```shell
+/interface ethernet switch rule
+add ports=ether1 switch=switch1 mac-protocol=ipx rate=10M
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">mac-protocol</code><code class="ros plain">=ipx</code> <code class="ros value">rate</code><code class="ros plain">=10M</code></div></div></td></tr></tbody></table>
+```
 
 还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL))找出所有用来匹配数据包的参数。
 
 开关规则表用于 QoS 功能，请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
 
-#3 流量风暴控制
+## 流量风暴控制
 
 ___
 
-从 RouterOS v6.42 开始，可以启用流量风暴控制。 当某些帧在网络上不断泛滥时，可能会出现流量风暴。 例如，如果已创建网络环路并且未使用环路控制机制（例如 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)），则广播或多播帧会迅速淹没网络，导致网络性能下降甚至完全崩溃。 使用 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器，可以限制广播、未知多播和未知单播流量。 当交换机不包含目标 MAC 地址的主机条目时，将考虑未知单播流量。 当交换机在“/interface bridge mdb”菜单中不包含多播组条目时，就会考虑未知多播流量。 风暴控制设置要应用于入口端口，出口流量将受到限制。
+从 RouterOS v6.42 开始，可以启用流量风暴控制。 当某些帧在网络上不断泛滥时，可能会出现流量风暴。 例如，如果已创建网络环路并且未使用环路控制机制（例如 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol))，则广播或多播帧会迅速淹没网络，导致网络性能下降甚至完全崩溃。 使用 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器，可以限制广播、未知多播和未知单播流量。 当交换机不包含目标 MAC 地址的主机条目时，将考虑未知单播流量。 当交换机在“/interface bridge mdb”菜单中不包含多播组条目时，就会考虑未知多播流量。 风暴控制设置要应用于入口端口，出口流量将受到限制。
 
 风暴控制参数以链路速度的百分比 (%) 指定。 如果你的链接速度为 1Gbps，则将 `storm-rate` 指定为 `10` 将仅允许转发 100Mbps 的广播、未知多播和/或未知单播流量。
 
 **子菜单:** `/interface ethernet switch port`
 
-| Property                                                                      | Description                                                  |
+| 属性                                                                          | 说明                                                         |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | **limit-broadcasts** (_yes                          \| no_; Default: **yes**) | 在一个交换端口上限制广播流量                                 |
 | **limit-unknown-multicasts** (_yes                  \| no_; Default: **no**)  | 在一个交换端口上限制未知的多播流量                           |
@@ -342,13 +433,17 @@ ___
 例如，要限制 ether1 (1Gbps) 上 1% (10Mbps) 的广播和未知单播流量，请使用以下命令：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">ether1 </code><code class="ros value">storm-rate</code><code class="ros plain">=1</code> <code class="ros value">limit-broadcasts</code><code class="ros plain">=yes</code> <code class="ros value">limit-unknown-unicasts</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch port
+set ether1 storm-rate=1 limit-broadcasts=yes limit-unknown-unicasts=yes
 
-#3 MPLS硬件卸载
+```
+
+## MPLS硬件卸载
 
 ___
 
-由于 RouterOS v6.41 可以将某些 MPLS 功能卸载到交换机芯片，交换机必须是 PE-P-PE 设置中的 (P)rovider 路由器才能实现硬件卸载。 可以在[基本 MPLS 设置示例](https://wiki.mikrotik.com/wiki/Manual:Basic_MPLS_setup_example "Manual:Basic MPLS setup example") 手册中找到设置示例。 只有当 LDP 接口配置为物理交换机接口（例如以太网、SFP、SFP+）时，才会发生硬件卸载。
+由于 RouterOS v6.41 可以将某些 MPLS 功能卸载到交换机芯片，交换机必须是 PE-P-PE 设置中的 (P)rovider 路由器才能实现硬件卸载。 可以在 [基本 MPLS 设置示例](https://wiki.mikrotik.com/wiki/Manual:Basic_MPLS_setup_example "Manual:Basic MPLS setup example") 手册中找到设置示例。 只有当 LDP 接口配置为物理交换机接口（例如以太网、SFP、SFP+）时，才会发生硬件卸载。
 
 目前只有使用 RouterOS v6.41 及更新版本的 CRS317-1G-16S+ 和 CRS309-1G-8S+ 能够硬件卸载某些 MPLS 功能。 `CRS317-1G-16S+` 和 `CRS309-1G-8S+` 内置交换芯片无法从数据包中弹出 MPLS 标签，在 PE-P-PE 设置中，必须使用显式 null 或禁用 TTL 传播 MPLS网络实现硬件卸载。
 
@@ -358,7 +453,7 @@ ___
 
 ___
 
-访问控制列表包含入口策略和出口策略引擎。 请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少条规则。 它是一种基于第 2 层、第 3 层和第 4 层协议头条件进行线速数据包过滤、转发和修改的高级工具。
+访问控制列表包含入口策略和出口策略引擎。 请参阅 [此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 查看每个设备支持多少条规则。 它是一种基于第 2 层、第 3 层和第 4 层协议头条件进行线速数据包过滤、转发和修改的高级工具。
 
 > 为每个收到的数据包检查 ACL 规则，直到找到匹配项。 如果有多个规则可以匹配，那么只会触发第一个规则。 没有任何操作参数的规则是接受数据包的规则。
 
@@ -366,7 +461,7 @@ ___
   
 **子菜单:** `/interface ethernet switch rule`
 
-| Property                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Description                                                                                                                                 |
+| 属性                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 说明                                                                                                                                        |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **copy-to-cpu** (_no                     \| yes_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 克隆匹配的数据包发送到CPU                                                                                                                   |
 | **disabled** (_yes                       \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | 启用或禁用ACL条目                                                                                                                           |
@@ -385,7 +480,7 @@ ___
 | **protocol** (_dccp                      \| ddp                                                                                                                                                                                                                                         \| egp                                                                                             \| encap \| etherip \| ggp \| gre  \| hmp          \| icmp           \| icmpv6       \| idpr-cmtp     \| igmp           \| ipencap \| ipip            \| ipsec-ah \| ipsec-esp    \| ipv6 \| ipv6-frag   \| ipv6-nonxt         \| ipv6-opts                                                             \| ipv6-route \| iso-tp4 \| l2tp \| ospf \| pim \| pup \| rdp \| rspf \| rsvp \| sctp \| st \| tcp \| udp \| udp-lite \| vmtp \| vrrp \| xns-idp \| xtp \| or 0..255_)                                | 匹配由协议名称或编号指定的特定 IP 协议。                                                                                                    |
 | **rate** (_0..4294967295_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | 为匹配的流量设置入口流量限制（bps）。                                                                                                       |
 | **redirect-to-cpu** (_no                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \| yes_)                       | 将匹配数据包的目标端口更改为 CPU。                                                                                                          |
-| **src-address** (_IP address\/Mask_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 匹配源IP地址和掩码                                                                                                                          |
+| **src-address** (_IP address/Mask_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | 匹配源IP地址和掩码                                                                                                                          |
 | **src-address6** (_IPv6 address/Mask_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 匹配源IPv6地址和掩码                                                                                                                        |
 | **src-mac-address** (_MAC address/Mask_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 匹配源MAC地址和掩码                                                                                                                         |
 | **src-port** (_0..65535_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 匹配源协议端口号                                                                                                                            |
@@ -447,17 +542,33 @@ ___
 创建一个 ACL 规则允许给定的 MAC 地址并丢弃 **ether1** 上的所有其他流量（对于入口流量):
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">src-mac-address</code><code class="ros plain">=64:D1:54:81:EF:8E/FF:FF:FF:FF:FF:FF</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">ports</code><code class="ros plain">=ether1</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add ports=ether1 src-mac-address=64:D1:54:81:EF:8E/FF:FF:FF:FF:FF:FF switch=switch1
+add new-dst-ports="" ports=ether1 switch=switch1
+
+```
 
 将所有需要的端口一起交换，禁用 MAC 学习并禁用 **ether1** 上的未知单播泛滥：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">hw</code><code class="ros plain">=yes</code> <code class="ros value">learn</code><code class="ros plain">=no</code> <code class="ros value">unknown-unicast-flood</code><code class="ros plain">=no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether1 hw=yes learn=no unknown-unicast-flood=no
+add bridge=bridge1 interface=ether2 hw=yes
+
+```
 
 为 64:D1:54:81:EF:8E 添加静态主机条目（用于出口流量）：
 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge host</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">mac-address</code><code class="ros plain">=64:D1:54:81:EF:8E</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge host
+add bridge=bridge1 interface=ether1 mac-address=64:D1:54:81:EF:8E
+
+```
 
 广播流量仍将从 **ether1** 发出。 要限制桥接端口上的广播流量泛滥，你可以使用“广播泛滥”参数来交换它。 请注意，某些协议依赖于广播流量，例如流式传输协议和 DHCP。
 
@@ -486,7 +597,7 @@ ___
 
 - 使用`/system swos load-config`加载配置
 - 使用`/system swos password`更改密码
-- 使用 `/system swos reset-config` 重置配置
+- 使用`/system swos reset-config` 重置配置
 - 使用`/system swos upgrade`从 RouterOS 升级 SwOS
 
 升级命令将自动安装最新可用的 SwOS 版本，确保设备可以访问 Internet，以便升级过程正常进行。 当设备启动进入 SwOS 时，版本号将包含字母“p”，表示主版本。 然后，你可以从 SwOS“升级”菜单安装最新可用的 SwOS 二级主版本。

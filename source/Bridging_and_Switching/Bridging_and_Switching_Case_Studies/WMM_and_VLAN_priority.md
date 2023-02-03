@@ -38,23 +38,58 @@ ___
 
 可以根据 IP mangle 或网桥过滤器/nat 规则中的特定匹配器来改变 VLAN 和 WMM 优先级。在这个例子中，所有传出的 ICMP 数据包都将使用 IP mangle 规则，以 VLAN 或 WMM 优先级发送。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=output</code> <code class="ros value">new-priority</code><code class="ros plain">=2</code> <code class="ros value">protocol</code><code class="ros plain">=icmp</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall mangle
+add action=set-priority chain=output new-priority=2 protocol=icmp
+
+```
 
 ### 自定义优先级映射
 
 有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。我们可以在IP mangle或网桥防火墙/nat规则中使用`ingress-priority`匹配器，只过滤需要的优先级，并使用`new-priority`动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">ingress-priority</code><code class="ros plain">=5</code> <code class="ros value">new-priority</code><code class="ros plain">=0</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge filter
+add action=set-priority chain=forward ingress-priority=5 new-priority=0
+
+```
 
 ### 在网桥内将 WMM 优先级转换为 VLAN 优先级
 
 当收到一个已经设置了 WMM 优先级的无线数据包时，RouterOS 网桥不会自动将其转换为 VLAN 头。这意味着，收到带有 WMM 优先级的无线数据包，如果被网桥标记为 VLAN，则会以 0 的 VLAN 优先级转发。 然而，我们可以使用带有 `from-ingress` 设置的网桥过滤规则来保持 VLAN 数据包的优先级。例如，我们希望通过 ether2 转发带有 VLAN 10 标头的无线数据包，并保留已经设置的 WMM 优先级（由无线客户端设置）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan2</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros comments"># translates WMM priority to VLAN priority</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code> <code class="ros value">out-interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=wlan2 pvid=10
+/interface bridge vlan
+add bridge=bridge1 tagged=ether2 vlan-ids=10
+ 
+# translates WMM priority to VLAN priority
+/interface bridge filter
+add action=set-priority chain=forward new-priority=from-ingress out-interface=ether2
+
+```
 
 当无线数据包被无线接口用 `vlan-mode=use-tag` 和 `vlan-id` 打上 VLAN 标签时，情况也是如此。仍然需要使用相同的网桥过滤规则来将 WMM 优先级转换为 VLAN 优先级。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros value">default-name</code><code class="ros plain">=wlan2</code> <code class="ros plain">] </code><code class="ros value">vlan-mode</code><code class="ros plain">=use-tag</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan2</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># translates WMM priority to VLAN priority</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge filter</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code> <code class="ros value">out-interface</code><code class="ros plain">=ether2</code></div></div></td></tr></tbody></table>
+```shell
+/interface wireless
+set [ find default-name=wlan2 ] vlan-mode=use-tag vlan-id=10
+ 
+/interface bridge
+add name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=wlan2
+ 
+ # translates WMM priority to VLAN priority
+/interface bridge filter
+add action=set-priority chain=forward new-priority=from-ingress out-interface=ether2
+
+```
 
 同样的原则也适用于另一个方向。RouterOS不会自动将VLAN优先级转换为WMM优先级。同样的规则`new-priority=from-ingress`可以用来将VLAN优先级转换为WMM优先级。 
 
@@ -74,7 +109,11 @@ ___
 
 在这个例子中，当数据包通过无线接口路由时，AP设备将从DSCP设置WMM优先级。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">new-priority</code><code class="ros plain">=from-dscp</code> <code class="ros value">out-interface</code><code class="ros plain">=wlan2</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall mangle
+add action=set-priority chain=forward new-priority=from-dscp out-interface=wlan2
+
+```
   
 当数据包通过网桥转发时，可以通过网桥设置下的 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 
@@ -90,7 +129,12 @@ ___
 
 在这个例子中，当数据包被路由时，AP设备需要从WMM优先级设置DSCP。首先，添加一个规则来设置优先级，为了正确改变DSCP值，DSCP规则需要它。这个规则可以从入口处获得优先权。然后添加DSCP规则来改变其值。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=set-priority</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">in-interface</code><code class="ros plain">=wlan2</code> <code class="ros value">new-priority</code><code class="ros plain">=from-ingress</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=change-dscp</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">in-interface</code><code class="ros plain">=wlan2</code> <code class="ros value">new-dscp</code><code class="ros plain">=from-priority</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall mangle
+add action=set-priority chain=prerouting in-interface=wlan2 new-priority=from-ingress
+add action=change-dscp chain=prerouting in-interface=wlan2 new-dscp=from-priority
+
+```
 
 当数据包通过网桥转发时，可以通过网桥设置下 `use-ip-firewall=yes` 的 IP 混淆规则来传递数据。
 

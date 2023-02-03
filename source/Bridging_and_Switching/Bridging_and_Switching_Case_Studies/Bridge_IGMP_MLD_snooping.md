@@ -80,7 +80,24 @@ ___
 | **on-ports** (_read-only: name_)                   | 显示订阅了某个多播组的网桥端口。                      |
 | **vid** (_read-only: integer_)                     | 显示多播组的VLAN ID，仅在启用`vlan-filtering`时适用。 |
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface bridge mdb </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - DYNAMIC</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: GROUP, VID, ON-PORTS, BRIDGE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; GROUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VID&nbsp; ON-PORTS&nbsp; BRIDGE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 D ff02</code><code class="ros constants">::2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 D ff02</code><code class="ros constants">::6a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 D ff02</code><code class="ros constants">::1:ff00:0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 D ff02</code><code class="ros constants">::1:ff01:6a43&nbsp;&nbsp;&nbsp; 1&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 D 229.1.1.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; ether2&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 D 229.2.2.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; ether3&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">6 D ff02</code><code class="ros constants">::2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; ether5&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether4</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /interface bridge mdb print
+Flags: D - DYNAMIC
+Columns: GROUP, VID, ON-PORTS, BRIDGE
+ #   GROUP              VID  ON-PORTS  BRIDGE
+ 0 D ff02::2              1  bridge1   bridge1
+ 1 D ff02::6a             1  bridge1   bridge1
+ 2 D ff02::1:ff00:0       1  bridge1   bridge1
+ 3 D ff02::1:ff01:6a43    1  bridge1   bridge1
+ 4 D 229.1.1.1           10  ether2    bridge1
+ 5 D 229.2.2.2           10  ether3    bridge1
+                             ether2          
+ 6 D ff02::2             10  ether5    bridge1
+                             ether3          
+                             ether2          
+                             ether4
+
+```
 
 要监控网桥接口的当前状态， 可以使用 `monitor` 命令。
 
@@ -92,7 +109,23 @@ ___
 | **mld-querier** (_none_    \| _interface & IPv6 address_) | 显示检测到的MLD查询器的网桥端口和源IPv6地址。只显示检测到的外部 MLD 查询器， 本地网桥的 MLD 查询器不会显示。只有当 `igmp-snooping` 启用并且网桥有一个活动的 IPv6 地址时，才会出现监控值。 |
 | **multicast-router** (_yes \| no_)                        | 显示是否在网桥接口上检测到多播路由器。监控值仅在 `igmp-snooping` 被启用时出现。                                                                                                           |
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface bridge </code><code class="ros functions">monitor </code><code class="ros plain">bridge1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">state</code><code class="ros constants">: enab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; </code><code class="ros plain">current-mac-address</code><code class="ros constants">: 64:D1:54:C7:3A:59</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">root-bridge</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">root-bridge-id</code><code class="ros constants">: 0x8000.64:D1:54:C7:3A:59</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">root-path-cost</code><code class="ros constants">: 0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">root-port</code><code class="ros constants">: none</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">port-count</code><code class="ros constants">: 3</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">designated-port-count</code><code class="ros constants">: 3</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">fast-forward</code><code class="ros constants">: no</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;</code><code class="ros plain">multicast-router</code><code class="ros constants">: no</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">igmp-querier</code><code class="ros constants">: ether2 192.168.10.10</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">mld-querier</code><code class="ros constants">: ether2 fe80::e68d:8cff:fe39:3824</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface bridge port monitor [find]
+              interface: ether2          ether3          ether4
+                 status: in-bridge       in-bridge       in-bridge
+            port-number: 1               2               3
+                   role: designated-port designated-port designated-port
+              edge-port: no              yes             yes
+    edge-port-discovery: yes             yes             yes
+    point-to-point-port: yes             yes             yes
+           external-fdb: no              no              no
+           sending-rstp: yes             yes             yes
+               learning: yes             yes             yes
+             forwarding: yes             yes             yes
+       multicast-router: yes             no              no
+       hw-offload-group: switch1         switch1         switch1
+
+```
 
 要监控网桥端口的当前状态， 可以使用 `monitor` 命令。
 
@@ -102,7 +135,23 @@ ___
 | ---------------------------------- | ----------------------------------------------------------------------- |
 | **multicast-router** (_yes \| no_) | 显示端口上是否检测到组播路由器。监控值仅在`igmp-snooping`被启用时出现。 |
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface bridge port </code><code class="ros functions">monitor </code><code class="ros plain">[find]</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">interface</code><code class="ros constants">: ether2 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ether3 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ether4</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">status</code><code class="ros constants">: in-bridge &nbsp; &nbsp; &nbsp; in-bridge &nbsp; &nbsp; &nbsp; in-bridge</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">port-number</code><code class="ros constants">: 1 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 2 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">role</code><code class="ros constants">: designated-port designated-port designated-port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </code><code class="ros plain">edge-port</code><code class="ros constants">: no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; </code><code class="ros plain">edge-port-discovery</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; </code><code class="ros plain">point-to-point-port</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">external-fdb</code><code class="ros constants">: no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">sending-rstp</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">learning</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</code><code class="ros plain">forwarding</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; yes</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;</code><code class="ros plain">multicast-router</code><code class="ros constants">: yes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;no</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;</code><code class="ros plain">hw-offload-group</code><code class="ros constants">: switch1 &nbsp; &nbsp; &nbsp; &nbsp; switch1 &nbsp; &nbsp; &nbsp; &nbsp; switch1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface bridge port monitor [find]
+              interface: ether2          ether3          ether4
+                 status: in-bridge       in-bridge       in-bridge
+            port-number: 1               2               3
+                   role: designated-port designated-port designated-port
+              edge-port: no              yes             yes
+    edge-port-discovery: yes             yes             yes
+    point-to-point-port: yes             yes             yes
+           external-fdb: no              no              no
+           sending-rstp: yes             yes             yes
+               learning: yes             yes             yes
+             forwarding: yes             yes             yes
+       multicast-router: yes             no              no
+       hw-offload-group: switch1         switch1         switch1
+
+```
 
 ## 配置实例
 
@@ -118,11 +167,22 @@ ___
 
 首先，创建一个启用了 IGMP 监听的网桥接口。在这个例子中，没有活动的 IGMP 查询器 (没有组播路由器或代理)， 所以必须在同一个网桥上启用本地 IGMP 查询器。这可以通过 `multicast-querier` 的设置来完成。如果局域网中没有活跃的IGMP查询器，未注册的IP组播将被泛滥，组播条目将总是从组播数据库中超时。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">igmp-snooping</code><code class="ros plain">=yes</code> <code class="ros value">multicast-querier</code><code class="ros plain">=yes</code> <code class="ros value">name</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add igmp-snooping=yes multicast-querier=yes name=bridge1
+
+```
 
 然后添加必要的接口作为桥接端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=ether3
+add bridge=bridge1 interface=ether4
+add bridge=bridge1 interface=ether5
+
+```
 
 基本的IGMP监听配置已经完成。使用 "`/interface bridge mdb print"` 命令来监视活动的组播组。如有必要，可以在同一个网桥接口上配置 IP 地址和 [DHCP 服务器](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-ConfigurationExamples) 。 
 
@@ -134,52 +194,148 @@ ___
 
 首先，在两台设备上创建一个网桥，并将需要的接口添加为网桥端口。要改变桥接端口的无标记VLAN，使用`pvid`设置。Bridge1 将作为一个 IGMP 查询器。下面是对 Bridge1 的配置命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">igmp-snooping</code><code class="ros plain">=yes</code> <code class="ros value">multicast-querier</code><code class="ros plain">=yes</code> <code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add igmp-snooping=yes multicast-querier=yes name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether2 pvid=10
+add bridge=bridge1 interface=ether3 pvid=10
+add bridge=bridge1 interface=ether4 pvid=10
+add bridge=bridge1 interface=ether5 pvid=20
+add bridge=bridge1 interface=sfp-sfpplus1 pvid=10
+
+```
 
 对于Bridge2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">igmp-snooping</code><code class="ros plain">=yes</code> <code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add igmp-snooping=yes name=bridge1
+/interface bridge port
+add bridge=bridge1 interface=ether3 pvid=10
+add bridge=bridge1 interface=ether4 pvid=10
+add bridge=bridge1 interface=ether5 pvid=20
+add bridge=bridge1 interface=sfp-sfpplus1 pvid=10
+
+```
 
 网桥IGMP查询器的实现只能发送无标签的IGMP查询。如果要发送带标签的IGMP查询，或者要在多个VLAN中产生IGMP查询，可以安装一个[组播包](https://help.mikrotik.com/docs/display/ROS/Packages)，添加一个VLAN接口，并在VLAN上配置一个[PIM接口](https://wiki.mikrotik.com/wiki/Manual:Routing/Multicast#Interfaces)。PIM接口可以作为一个IGMP查询器使用。
 
 确保为设备配置[管理访问](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。在配置具有 VLAN 过滤功能的网桥时，它是必不可少的。在这个例子中，一个带有 IP 地址的 VLAN 99 接口被添加到网桥中。这个 VLAN 将被允许在标记的 sfp-sfpplus1 端口上使用。下面是对 Bridge1 的配置命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code> <code class="ros value">network</code><code class="ros plain">=192.168.99.0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,sfp-sfpplus1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge1 name=MGMT vlan-id=99
+/ip address
+add address=192.168.99.2/24 interface=MGMT network=192.168.99.0
+/interface bridge vlan
+add bridge=bridge1 tagged=bridge1,sfp-sfpplus1 vlan-ids=99
+
+```
 
 对于Bridge2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.2/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code> <code class="ros value">network</code><code class="ros plain">=192.168.99.0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,sfp-sfpplus1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge1 name=MGMT vlan-id=99
+/ip address
+add address=192.168.99.2/24 interface=MGMT network=192.168.99.0
+/interface bridge vlan
+add bridge=bridge1 tagged=bridge1,sfp-sfpplus1 vlan-ids=99
+
+```
 
 添加桥接VLAN条目，并指定有标签和无标签的端口。在配置管理访问时已经创建了 VLAN 99 条目，现在只需添加 VLAN 10 和 VLAN 20。下面是对 Bridge1 的配置命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">untagged</code><code class="ros plain">=ether2,ether3,ether4,sfp-sfpplus1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">untagged</code><code class="ros plain">=ether5</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 untagged=ether2,ether3,ether4,sfp-sfpplus1 vlan-ids=10
+add bridge=bridge1 tagged=sfp-sfpplus1 untagged=ether5 vlan-ids=20
+
+```
 
 对于Bridge2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">untagged</code><code class="ros plain">=ether3,ether4,sfp-sfpplus1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">untagged</code><code class="ros plain">=ether5</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 untagged=ether3,ether4,sfp-sfpplus1 vlan-ids=10
+add bridge=bridge1 tagged=sfp-sfpplus1 untagged=ether5 vlan-ids=20
+
+```
 
 最后，启用VLAN过滤。下面是Bridge1和Bridge2的配置命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bridge1]</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge set [find name=bridge1] vlan-filtering=yes
+
+```
 
 在这里，VLANs和IGMP监听已经配置好了，设备应该能够通过端口进行通信。然而，建议再进一步，应用一些额外的过滤选项。在网桥端口上启用 "ingress-filtering "和 "frame-types"。下面是Bridge1的配置命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether4]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether5]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find interface=ether2] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=ether3] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=ether4] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=ether5] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=sfp-sfpplus1] ingress-filtering=yes
+
+```
 
 对于Bridge2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether3]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether4]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=ether5]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=sfp-sfpplus1]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find interface=ether3] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=ether4] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=ether5] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+set [find interface=sfp-sfpplus1] ingress-filtering=yes
+
+```
 
 ## 静态MDB项
 
 从RouterOS 7.7版本开始，可以为IPv4和IPv6组播群创建静态MDB项。例如，要在VLAN 10的ether2和ether3端口上为组播组229.10.10.10创建一个静态MDB项，使用下面的命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge mdb</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">group</code><code class="ros plain">=229.10.10.10</code> <code class="ros value">ports</code><code class="ros plain">=ether2,ether3</code> <code class="ros value">vid</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge mdb
+add bridge=bridge1 group=229.10.10.10 ports=ether2,ether3 vid=10
+
+```
 
 用`print`命令验证结果。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface bridge mdb </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">group</code><code class="ros plain">=229.10.10.10</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: GROUP, VID, ON-PORTS, BRIDGE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># GROUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VID&nbsp; ON-PORTS&nbsp; BRIDGE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">12 229.10.10.10&nbsp;&nbsp; 10&nbsp; ether2&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether3</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface bridge mdb print where group=229.10.10.10
+Columns: GROUP, VID, ON-PORTS, BRIDGE
+ # GROUP         VID  ON-PORTS  BRIDGE
+12 229.10.10.10   10  ether2    bridge1
+                      ether3
+
+```
 
 如果某个 IPv6 多播组不需要被监听， 而希望在所有端口和 VLAN 上泛滥， 可以在所有 VLAN 和端口上创建一个静态 MDB项， 包括网桥接口本身。使用下面的命令在所有 VLAN 和端口上为组播组 ff02::2 创建一个静态 MDB 项 (根据你的特定设置修改 `ports` 的设置)。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge mdb</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">group</code><code class="ros plain">=ff02::2</code> <code class="ros value">ports</code><code class="ros plain">=bridge1,ether2,ether3,ether4,ether5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface bridge mdb </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">group</code><code class="ros plain">=ff02::2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - DYNAMIC</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: GROUP, VID, ON-PORTS, BRIDGE</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; GROUP&nbsp;&nbsp;&nbsp; VID&nbsp; ON-PORTS&nbsp; BRIDGE</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; ff02</code><code class="ros constants">::2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">15 D ff02</code><code class="ros constants">::2&nbsp;&nbsp;&nbsp; 1&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">16 D ff02</code><code class="ros constants">::2&nbsp;&nbsp; 10&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">17 D ff02</code><code class="ros constants">::2&nbsp;&nbsp; 20&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">18 D ff02</code><code class="ros constants">::2&nbsp;&nbsp; 30&nbsp; bridge1&nbsp;&nbsp; bridge1</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge mdb
+add bridge=bridge1 group=ff02::2 ports=bridge1,ether2,ether3,ether4,ether5
+ 
+[admin@MikroTik] > /interface bridge mdb print where group=ff02::2
+Flags: D - DYNAMIC
+Columns: GROUP, VID, ON-PORTS, BRIDGE
+ #   GROUP    VID  ON-PORTS  BRIDGE
+ 0   ff02::2                 bridge1
+15 D ff02::2    1  bridge1   bridge1
+16 D ff02::2   10  bridge1   bridge1
+                   ether2          
+                   ether3          
+                   ether4          
+                   ether5          
+17 D ff02::2   20  bridge1   bridge1
+                   ether2          
+                   ether3          
+18 D ff02::2   30  bridge1   bridge1
+                   ether2          
+                   ether3
+
+```

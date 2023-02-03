@@ -18,27 +18,79 @@
 
 要在SwitchA到SwitchB之间以及SwitchC到SwitchB之间从sfp-sfpplus1和sfp-sfpplus2创建一个20Gbps的绑定接口，请在**SwitchA**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_1-2</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond_1-2 slaves=sfp-sfpplus1,sfp-sfpplus2
+
+```
 
 要在SwitchB和Router之间创建一个40Gbps的绑定接口，在SwitchA和SwitchC之间创建20Gbps的绑定接口，在**SwitchB**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_1-2</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_3-4</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus3,sfp-sfpplus4</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_5-6-7-8</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus5,sfp-sfpplus6,sfp-sfpplus7,sfp-sfpplus8</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond_1-2 slaves=sfp-sfpplus1,sfp-sfpplus2
+add mode=802.3ad name=bond_3-4 slaves=sfp-sfpplus3,sfp-sfpplus4
+add mode=802.3ad name=bond_5-6-7-8 slaves=sfp-sfpplus5,sfp-sfpplus6,sfp-sfpplus7,sfp-sfpplus8
+
+```
 
 在我们的案例中，路由器需要一个基于软件的绑定接口，在**路由器**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mode</code><code class="ros plain">=802.3ad</code> <code class="ros value">name</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">slaves</code><code class="ros plain">=sfp-sfpplus1,sfp-sfpplus2,sfp-sfpplus3,sfp-sfpplus4</code></div></div></td></tr></tbody></table>
+```shell
+/interface bonding
+add mode=802.3ad name=bond_1-2-3-4 slaves=sfp-sfpplus1,sfp-sfpplus2,sfp-sfpplus3,sfp-sfpplus4
 
-接口绑定不会创建一个具有更大链接速度的接口。接口绑定创建了一个虚拟接口，可以在多个接口上负载均衡流量。更多细节可以在[LAG接口和负载均衡](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing)页面找到。
+```
+
+接口绑定不会创建一个具有更大链接速度的接口。接口绑定创建了一个虚拟接口，可以在多个接口上负载均衡流量。更多细节可以在 [LAG接口和负载均衡](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing) 页面找到。
 
 ## 端口交换
 
 此设置中的所有交换机要求所有使用的端口都被交换到一起。对于绑定，你应该把绑定接口作为一个桥接端口，而不是单独的绑定端口。在**SwitchA**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether4</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">pvid</code><code class="ros plain">=10</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether9</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether10</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether11</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether12</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether13</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether14</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether15</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether16</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether17</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether18</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether19</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether20</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether21</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether22</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether23</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=ether24</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=bond_1-2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge vlan-filtering=no
+/interface bridge port
+add bridge=bridge interface=ether1 pvid=10
+add bridge=bridge interface=ether2 pvid=10
+add bridge=bridge interface=ether3 pvid=10
+add bridge=bridge interface=ether4 pvid=10
+add bridge=bridge interface=ether5 pvid=10
+add bridge=bridge interface=ether6 pvid=10
+add bridge=bridge interface=ether7 pvid=10
+add bridge=bridge interface=ether8 pvid=10
+add bridge=bridge interface=ether9 pvid=20
+add bridge=bridge interface=ether10 pvid=20
+add bridge=bridge interface=ether11 pvid=20
+add bridge=bridge interface=ether12 pvid=20
+add bridge=bridge interface=ether13 pvid=20
+add bridge=bridge interface=ether14 pvid=20
+add bridge=bridge interface=ether15 pvid=20
+add bridge=bridge interface=ether16 pvid=20
+add bridge=bridge interface=ether17 pvid=30
+add bridge=bridge interface=ether18 pvid=30
+add bridge=bridge interface=ether19 pvid=30
+add bridge=bridge interface=ether20 pvid=30
+add bridge=bridge interface=ether21 pvid=30
+add bridge=bridge interface=ether22 pvid=30
+add bridge=bridge interface=ether23 pvid=30
+add bridge=bridge interface=ether24 pvid=30
+add bridge=bridge interface=bond_1-2
+
+```
 
 通过在 **SwitchB** 上使用这些命令，将所有绑定接口添加到 SwitchB 上的一个网桥。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=bond_1-2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=bond_3-4</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">interface</code><code class="ros plain">=bond_5-6-7-8</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge vlan-filtering=no
+/interface bridge port
+add bridge=bridge interface=bond_1-2
+add bridge=bridge interface=bond_3-4
+add bridge=bridge interface=bond_5-6-7-8
+
+```
 
 ## 管理IP
 
@@ -46,11 +98,19 @@
 
 在**SwitchA**、**SwitchB、**和**SwitchC**上创建一个可路由的VLAN接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge name=MGMT vlan-id=99
+
+```
 
 路由器需要在绑定接口上创建一个可路由的VLAN接口，使用这些命令在**路由器**上创建一个VLAN接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">name</code><code class="ros plain">=MGMT</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bond_1-2-3-4 name=MGMT vlan-id=99
+
+```
 
 在本指南中，我们将对每个设备使用这些地址。
 
@@ -63,51 +123,99 @@
 
 为VLAN接口上的每个交换机设备添加一个IP地址（将X改为适当的数字）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.X/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.99.X/24 interface=MGMT
+
+```
 
 不要忘记在交换机设备上添加默认网关并指定一个DNS服务器。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip route</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=192.168.99.1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip dns</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">servers</code><code class="ros plain">=192.168.99.1</code></div></div></td></tr></tbody></table>
+```shell
+/ip route
+add gateway=192.168.99.1
+/ip dns
+set servers=192.168.99.1
+
+```
 
 在**路由器**上添加IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.1/24</code> <code class="ros value">interface</code><code class="ros plain">=MGMT</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=192.168.99.1/24 interface=MGMT
+
+```
 
 ## 无效的VLAN过滤
 
 由于SwitchA和SwitchC上的大多数端口都将是接入端口，你可以将所有端口设置为只接受某些类型的数据包，在这种情况下，我们希望SwitchA和SwitchC只接受无标记的数据包，在**SwitchA**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros plain">] </code><code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [ find ] frame-types=admit-only-untagged-and-priority-tagged
+
+```
 
 在SwitchA和SwitchC上的帧类型有一个例外，在这个设置中，需要从ether1和bonding接口进行管理，这要求可以转发标签流量。在**SwitchA**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether1]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-all</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=bond_1-2]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether1] frame-types=admit-all
+set [find where interface=bond_1-2] frame-types=admit-only-vlan-tagged
+
+```
 
 在SwitchB上，只有标签数据包应该被转发，在**SwitchB**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros plain">] </code><code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [ find ] frame-types=admit-only-vlan-tagged
+
+```
 
 一个可选的步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged`， 以便禁用默认的无标记 VLAN 1 (`pvid=1`)。我们在网桥上使用带标签的 VLAN 来进行管理， 所以没有必要在网桥上接受无标签的流量。在 **SwitchA**, **SwitchB** 和 **SwitchC** 上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bridge]</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge set [find name=bridge] frame-types=admit-only-vlan-tagged
+
+```
 
 需要设置一个桥接VLAN表。在这个网络设置中，我们需要在ether1-ether8上允许VLAN 10，在ether9-ether16上允许VLAN 20，在ether17-ether24上允许VLAN 30，在bond/_1-2上允许VLAN 10,20,30,99，还有一个特殊情况，就是ether1允许在SwitchA和SwitchC上转发VLAN 99。在**SwitchA**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bond_1-2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bond_1-2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bond_1-2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bridge,bond_1-2,ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge tagged=bond_1-2 vlan-ids=10
+add bridge=bridge tagged=bond_1-2 vlan-ids=20
+add bridge=bridge tagged=bond_1-2 vlan-ids=30
+add bridge=bridge tagged=bridge,bond_1-2,ether1 vlan-ids=99
+
+```
 
 将 "frame-types "设置为 "admit-all "或 "admit-only-untagged-and-priority-tagged "的网桥端口将被自动添加为 "pvid "VLAN的untagged端口。
 
 同样地，需要为SwitchB设置一个桥接VLAN表。在**SwitchB**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bond_1-2,bond_3-4,bond_5-6-7-8</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10,20,30</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=bond_1-2,bond_3-4,bond_5-6-7-8,bridge</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge tagged=bond_1-2 vlan-ids=10
+add bridge=bridge tagged=bond_1-2 vlan-ids=20
+add bridge=bridge tagged=bond_1-2 vlan-ids=30
+add bridge=bridge tagged=bridge,bond_1-2,ether1 vlan-ids=99
+
+```
 
 当一切配置完毕后，启用VLAN过滤。在**SwitchA**、**SwitchB、**和**SwitchC**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge vlan-filtering=yes
+
+```
 
 仔细检查是否正确设置了基于端口的VLAN。如果犯了错误，你可能会丢失对交换机的访问，只有通过重置配置或使用串行控制台才能重新获取。
 
-VLAN过滤在[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)部分有更多描述。
+VLAN过滤在 [Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分有更多描述。
 
 ## VLAN间路由
 
@@ -115,7 +223,17 @@ VLAN过滤在[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/
 
 在**路由器**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">name</code><code class="ros plain">=VLAN10</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">name</code><code class="ros plain">=VLAN20</code> <code class="ros value">vlan-id</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bond_1-2-3-4</code> <code class="ros value">name</code><code class="ros plain">=VLAN30</code> <code class="ros value">vlan-id</code><code class="ros plain">=30</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.10.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN10</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN20</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.30.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN30</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bond_1-2-3-4 name=VLAN10 vlan-id=10
+add interface=bond_1-2-3-4 name=VLAN20 vlan-id=20
+add interface=bond_1-2-3-4 name=VLAN30 vlan-id=30
+/ip address
+add address=192.168.10.1/24 interface=VLAN10
+add address=192.168.20.1/24 interface=VLAN20
+add address=192.168.30.1/24 interface=VLAN30
+
+```
 
 这些命令对DHCP服务器来说是必需的。如果不需要VLAN间的路由，但需要在一台路由器上设置DHCP服务器，那么可以使用[Firewall Filter](https://help.mikrotik.com/docs/display/ROS/Filter)来阻止不同子网间的访问。
 
@@ -127,17 +245,39 @@ VLAN过滤在[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/
 
 要设置DHCP服务器，请在**路由器**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip pool</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN10_POOL</code> <code class="ros value">ranges</code><code class="ros plain">=192.168.10.100-192.168.10.200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN20_POOL</code> <code class="ros value">ranges</code><code class="ros plain">=192.168.20.100-192.168.20.200</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN30_POOL</code> <code class="ros value">ranges</code><code class="ros plain">=192.168.30.100-192.168.30.200</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip dhcp-server</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address-pool</code><code class="ros plain">=VLAN10_POOL</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=VLAN10</code> <code class="ros value">name</code><code class="ros plain">=VLAN10_DHCP</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address-pool</code><code class="ros plain">=VLAN20_POOL</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=VLAN20</code> <code class="ros value">name</code><code class="ros plain">=VLAN20_DHCP</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address-pool</code><code class="ros plain">=VLAN30_POOL</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=VLAN30</code> <code class="ros value">name</code><code class="ros plain">=VLAN30_DHCP</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/ip dhcp-server network</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.10.0/24</code> <code class="ros value">dns-server</code><code class="ros plain">=192.168.10.1</code> <code class="ros value">gateway</code><code class="ros plain">=192.168.10.1</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.20.0/24</code> <code class="ros value">dns-server</code><code class="ros plain">=192.168.20.1</code> <code class="ros value">gateway</code><code class="ros plain">=192.168.20.1</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.30.0/24</code> <code class="ros value">dns-server</code><code class="ros plain">=192.168.30.1</code> <code class="ros value">gateway</code><code class="ros plain">=192.168.30.1</code></div></div></td></tr></tbody></table>
+```shell
+/ip pool
+add name=VLAN10_POOL ranges=192.168.10.100-192.168.10.200
+add name=VLAN20_POOL ranges=192.168.20.100-192.168.20.200
+add name=VLAN30_POOL ranges=192.168.30.100-192.168.30.200
+/ip dhcp-server
+add address-pool=VLAN10_POOL disabled=no interface=VLAN10 name=VLAN10_DHCP
+add address-pool=VLAN20_POOL disabled=no interface=VLAN20 name=VLAN20_DHCP
+add address-pool=VLAN30_POOL disabled=no interface=VLAN30 name=VLAN30_DHCP
+/ip dhcp-server network
+add address=192.168.10.0/24 dns-server=192.168.10.1 gateway=192.168.10.1
+add address=192.168.20.0/24 dns-server=192.168.20.1 gateway=192.168.20.1
+add address=192.168.30.0/24 dns-server=192.168.30.1 gateway=192.168.30.1
+
+```
 
 如果使用的是路由器的DNS服务器，切记要允许远程请求，并确保在路由器上配置了DNS服务器。在**路由器**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip dns</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">allow-remote-requests</code><code class="ros plain">=yes</code> <code class="ros value">servers</code><code class="ros plain">=8.8.8.8</code></div></div></td></tr></tbody></table>
+```shell
+/ip dns
+set allow-remote-requests=yes servers=8.8.8.8
+
+```
 
 当 "允许远程请求 "设置为 "是 "时，确保从外部用防火墙保护你的本地DNS服务器，因为如果你的DNS服务器可以被任何人从互联网上访问，它就可以被用来进行DDoS攻击。
 
 不要忘记创建NAT，假设sfp-sfpplus8被用作WAN端口，在**路由器**上使用这些命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall nat</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">out-interface</code><code class="ros plain">=sfp-sfpplus8</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=sfp-sfpplus8
+
+```
 
 ## 巨型帧
 
@@ -145,12 +285,23 @@ VLAN过滤在[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/
 
 在这种情况下，如果SwitchA后面的客户和SwitchC后面的客户支持巨型帧，那么启用巨型帧将是有益的。在启用巨型帧之前，请使用此命令确定MAX-L2MTU。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@SwitchA] &gt; interface </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: R - RUNNING</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, TYPE, ACTUAL-MTU, L2MTU, MAX-L2MTU, MAC-ADDRESS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp; ACTUAL-MTU&nbsp; L2MTU&nbsp; MAX-L2MTU&nbsp; MAC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 R sfp-sfpplus1&nbsp;&nbsp; ether&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1500&nbsp;&nbsp; 1584&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10218&nbsp; 64</code><code class="ros constants">:D1:54:FF:E3:7F</code></div></div></td></tr></tbody></table>
+```shell
+[admin@SwitchA] > interface print
+Flags: R - RUNNING
+Columns: NAME, TYPE, ACTUAL-MTU, L2MTU, MAX-L2MTU, MAC-ADDRESS
+ #   NAME           TYPE   ACTUAL-MTU  L2MTU  MAX-L2MTU  MAC-ADDRESS     
+ 1 R sfp-sfpplus1   ether        1500   1584      10218  64:D1:54:FF:E3:7F
 
-更多信息可以在[MTU手册](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)页面找到。
+```
+
+更多信息可以在 [MTU手册](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS) 页面找到。
 
 当MAX-L2MTU确定后，根据网络上的流量选择MTU大小，在**SwitchA**、**SwitchB**和**SwitchC**使用此命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros plain">] </code><code class="ros value">l2mtu</code><code class="ros plain">=10218</code> <code class="ros value">mtu</code><code class="ros plain">=10218</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet
+set [ find ] l2mtu=10218 mtu=10218
 
-切记在你的客户设备上也要更改MTU，否则，上述设置将没有任何效果。
+```
+
+切记在客户设备上也要更改MTU，否则，上述设置将没有任何效果。

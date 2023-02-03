@@ -39,23 +39,42 @@ ___
 
 要配置聚合/接入端口设置，首先需要创建一个网桥。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1
+
+```
 
 先不要启用VLAN过滤，因为你可能会因为没有管理权限而被锁定在设备之外，管理权限是在最后配置的。
 
 添加桥接端口，为每个接入端口指定PVID。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+add bridge=bridge1 interface=ether1
+add bridge=bridge1 interface=ether2 pvid=20
+add bridge=bridge1 interface=ether3 pvid=30
+
+```
 
 PVID 在启用 VLAN 过滤之前没有任何作用。
 
 在网桥 VLAN 表中添加适当的条目。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 untagged=ether2 vlan-ids=20
+add bridge=bridge1 tagged=ether1 untagged=ether3 vlan-ids=30
+
+```
 
 你可能会想用一个项来简化这个项，类似于这样。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether2,ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20,30</code></div></div></td></tr></tbody></table>
+````shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 untagged=ether2,ether3 vlan-ids=20,30
+
+````
 
 不要在接入端口上使用多个VLAN ID。这将无意中在两个接入端口上同时允许**VLAN20**和**VLAN30**。在上面的例子中，**ether3**应该为所有进入的数据包设置VLAN标签，使用**VLAN30**(因为`PVID=30`)，但当VLAN通过这个端口发送出去时，没有限制这个端口上允许的VLAN。网桥 VLAN 表负责决定是否允许某个 VLAN 通过特定端口发送。上面的条目指定了**VLAN20**和**VLAN30**都允许通过**ether2**和**ether3**发送出去，在此基础上，该项还指定了数据包应该在没有VLAN标签的情况下发送出去（数据包作为无标签的数据包发送）。因此，你可能会从VLAN向不应该接收这种流量的端口泄漏数据包，请看下面的图片。
 
@@ -69,13 +88,25 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 出于测试目的，我们将启用 VLAN 过滤，但请注意，这可能会失去对设备的访问，因为它还没有配置管理权限（我们将在后面配置）。建议在使用串行控制台时配置VLAN过滤，尽管你也可以通过一个没有加入网桥的端口来配置设备。确保你使用的是串行控制台或通过不同的端口（不在网桥中）连接，并启用VLAN过滤功能。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge set bridge1 vlan-filtering=yes
+
+```
   
 可能不会在启用VLAN过滤后就失去对设备的访问，但你可能会被断开连接，因为网桥必须自我重置才能使VLAN过滤生效，这将迫使你重新连接（这主要与使用MAC-telnet时有关）。你有可能使用无标记的流量来访问你的设备，这种情况将在下面描述。
 
 如果你现在启用了VLAN过滤，并打印出当前的VLAN表，你会看到这样一张表。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /interface bridge vlan print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp; BRIDGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-IDS&nbsp; CURRENT-TAGGED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CURRENT-UNTAGGED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2 D bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">ether1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface bridge vlan print
+Flags: X - disabled, D - dynamic
+ #   BRIDGE                     VLAN-IDS  CURRENT-TAGGED       CURRENT-UNTAGGED
+ 0   bridge1                    20        ether1               ether2
+ 1   bridge1                    30        ether1               ether3
+ 2 D bridge1                    1                              bridge1
+                                                               ether1
+
+```
 
 由于所有桥接端口（包括聚合端口，**ether1**）都默认设置了 "PVID=1"，所以**VLAN1**有一个动态添加的项，但你也应该注意到，**bridge1**接口（CPU端口）也被动态添加。你应该注意到，**bridge1**也是一个网桥端口，因此可能会被动态添加到网桥VLAN表中。你有可能因为这个功能而无意中允许对设备的访问。例如，如果你按照本指南的要求，为聚合端口（**ether1**）设置了**PVID=1**，而没有同时改变CPU端口（**bridge1**）的PVID，那么通过**ether1**使用无标记流量访问设备是允许的，这在打印出网桥VLAN表时也可以看到。这种情况在下面的图片中有所说明。
 
@@ -89,13 +120,21 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 管理访问是用来创建一种通过启用了 VLAN 过滤的网桥访问设备的方式。你可以简单地允许无标记的访问，要做到这一点相当简单。假设你想让**ether3**后面的工作站能够访问设备，我们之前假设工作站是一台普通的计算机，不会使用有标签的数据包，因此只会发送无标签的数据包，这意味着我们应该把CPU端口（**bridge1**）作为一个无标签的接口添加到网桥的VLAN表中，要做到这一点，只需对**bridge1**和**ether3**端口使用相同的PVID值，把两个端口设置为VLAN ID无标签的成员。 在本例中，你将从**ether3**连接，它有`PVID=30`，所以你要相应地改变配置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bridge1]</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">vlan-ids</code><code class="ros plain">=30]</code> <code class="ros value">untagged</code><code class="ros plain">=bridge1,ether3</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge set [find name=bridge1] pvid=30
+/interface bridge vlan set [find vlan-ids=30] untagged=bridge1,ether3
+
+```
 
 可以使用动态添加具有相同PVID值的无标记端口的功能，你可以简单地改变PVID以匹配**ether3**和**bridge1**。
 
 允许使用无标记流量访问设备并不是一个好的安全做法，一个更好的方法是允许使用一个非常具体的VLAN（有时称为管理VLAN）来访问设备，在我们的案例中，这将是**VLAN99**。这增加了一个重要的安全层，因为攻击者必须猜测用于管理的VLAN ID，然后猜测登录凭证，在此基础上，你甚至可以通过只允许使用某些IP地址访问设备来增加另一个安全层。本指南的目的是提供一个深入的解释，为此，我们在设置中增加了一个复杂程度，以了解一些你必须考虑到的可能的注意事项。我们将允许从一个访问端口使用标记流量进行访问（如下图所示）。为了允许使用**VLAN99**从**ether3**访问设备，我们必须在网桥VLAN表中添加一个适当的条目。此外，连接到ether3的网络设备必须支持VLAN标记。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=bridge1,ether3 vlan-ids=99
+
+```
   
 ![](https://help.mikrotik.com/docs/download/attachments/28606465/Trunk_access_setup_mgmt_access.png?version=2&modificationDate=1618317611046&api=v2)
 
@@ -105,21 +144,46 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 但你可能会注意到，使用**VLAN99**的访问在这里不起作用，这是因为你需要一个监听标记流量的VLAN接口，你可以简单地为适当的VLAN ID创建这个接口，你也可以为这个接口设置一个IP地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN99</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.2/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN99</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add interface=bridge1 name=VLAN99 vlan-id=99
+/ip address
+add address=192.168.99.2/24 interface=VLAN99
+
+```
 
 我们的接入端口（**ether3**）在这一点上希望同时获得有标签和无标签的流量，这样的端口被称为**混合端口**。
 
 在这一点上，我们可以从使用ingress-filtering和frame-type中获益。首先，我们要关注帧类型，它限制了允许的数据包类型（有标记的、无标记的、两者都有），但为了使帧类型正常工作，必须启用ingress-filtering，否则它不会有任何效果。在我们的例子中，我们想允许从**ether3**使用标记流量（**VLAN99**）访问，同时允许一个普通工作站访问网络，我们可以得出结论，这个端口需要允许标记和非标记的数据包，但**ether1**和**ether2**应该只接收特定类型的数据包，出于这个原因，我们可以加强我们网络的安全性。由于**ether1**是我们的聚合端口，它应该只携带有标记的数据包，但**ether2**是我们的接入端口，所以它不应该携带任何有标记的数据包，基于这些结论，可以丢弃无效的数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether1]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">interface</code><code class="ros plain">=ether2]</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code> <code class="ros value">frame-types</code><code class="ros plain">=admit-only-untagged-and-priority-tagged</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge port
+set [find where interface=ether1] ingress-filtering=yes frame-types=admit-only-vlan-tagged
+set [find where interface=ether2] ingress-filtering=yes frame-types=admit-only-untagged-and-priority-tagged
+
+```
 
 假设你忘了启用ingress-filtering和改变**ether1**的frame-type属性，这将无意中通过**ether1**增加对设备的访问，因为**bridge1**和**ether1**的PVID是匹配的，但你希望只有标签流量能够访问设备。可以放弃所有以**CPU端口为目的地的无标记数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+set bridge1 frame-types=admit-only-vlan-tagged ingress-filtering=yes
+
+```
 
 这不仅会丢弃无标记的数据包， 而且会禁用动态添加无标记端口到网桥 VLAN 表的功能。如果你打印出当前的网桥 VLAN 表， 就会发现 **bridge1** 没有被动态地添加为无标记端口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /interface bridge vlan print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp; BRIDGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-IDS&nbsp; CURRENT-TAGGED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CURRENT-UNTAGGED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2 D bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">3&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">ether3</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface bridge vlan print
+Flags: X - disabled, D - dynamic
+ #   BRIDGE       VLAN-IDS  CURRENT-TAGGED        CURRENT-UNTAGGED
+ 0   bridge1      20        ether1
+ 1   bridge1      30        ether1                ether3
+ 2 D bridge1      1                               ether1
+ 3   bridge1      99        bridge1
+                            ether3
+
+```
 
 当在端口上使用 "frame-type=admit-only-vlan-tagged "时，该端口不会被动态地添加为PVID的非标记端口。
 
@@ -137,7 +201,11 @@ ingress-filtering属性只对入站流量有影响，但frame-type对出站和�
 
 即使你可以限制端口上允许的VLAN和数据包类型，但允许通过访问端口访问设备绝不是一个好的安全做法，因为攻击者可以嗅探数据包并提取管理VLAN的ID，你应该只允许从聚合端口（**ether1**）访问设备，因为聚合端口通常有更好的物理安全性，你应该删除之前的项，允许通过连接到路由器的端口访问设备（如下图所示）。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=bridge1,ether1 vlan-ids=99
+
+```
 
 ![](https://help.mikrotik.com/docs/download/attachments/28606465/Basic_vlan_switching.png?version=3&modificationDate=1618318076269&api=v2)
 
@@ -165,17 +233,51 @@ ether-type 属性允许你为 VLAN 标签选择以下 EtherTypes。
 
 为了正确配置网桥的 VLAN 过滤， 你必须了解网桥是如何区分有标签和无标签的数据包的。如前所述， 网桥会检查 EtherType 是否与包中的外层 VLAN 标签相匹配。例如， 考虑下面这个数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">FFFFFFFFFFFF 6C3B6B7C413E 8100 6063 9999</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">----------------------------------------</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">DST-MAC = FFFFFFFFFFFF</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">SRC-MAC = 6C3B6B7C413E</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">Outer EtherType = 8100 (IEEE 802.1Q VLAN tag)</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">VLAN priority = 6</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">VLAN ID = 99 (HEX = 63)</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">Inner EtherType = 9999</code></div></div></td></tr></tbody></table>
+```shell
+FFFFFFFFFFFF 6C3B6B7C413E 8100 6063 9999
+----------------------------------------
+DST-MAC = FFFFFFFFFFFF
+SRC-MAC = 6C3B6B7C413E
+Outer EtherType = 8100 (IEEE 802.1Q VLAN tag)
+VLAN priority = 6
+VLAN ID = 99 (HEX = 63)
+Inner EtherType = 9999
+
+```
 
 假设我们设置了 ** `ether-type=0x88a8`**， 在这种情况下， 上面的数据包将被视为无标记， 因为网桥正在寻找不同的 VLAN 标记。现在考虑下面的数据包。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">FFFFFFFFFFFF 6C3B6B7C413E 88A8 6063 8100 5062 9999</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">----------------------------------------</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">DST-MAC = FFFFFFFFFFFF</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">SRC-MAC = 6C3B6B7C413E</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">Outer EtherType = 88A8 (IEEE 802.1ad VLAN tag)</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">VLAN priority = 6</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">VLAN ID = 99 (HEX = 63)</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">Inner EtherType 1 = 8100 (IEEE 802.1Q VLAN tag)</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">VLAN priority = 5</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">VLAN ID = 98 (HEX = 62)</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">Innter EtherType 2 = 9999</code></div></div></td></tr></tbody></table>
+```shell
+FFFFFFFFFFFF 6C3B6B7C413E 88A8 6063 8100 5062 9999
+----------------------------------------
+DST-MAC = FFFFFFFFFFFF
+SRC-MAC = 6C3B6B7C413E
+Outer EtherType = 88A8 (IEEE 802.1ad VLAN tag)
+VLAN priority = 6
+VLAN ID = 99 (HEX = 63)
+Inner EtherType 1 = 8100 (IEEE 802.1Q VLAN tag)
+VLAN priority = 5
+VLAN ID = 98 (HEX = 62)
+Innter EtherType 2 = 9999
+
+```
 
 这次假设设置了**`ether-type=0x8100`**，在这种情况下，上面的数据包也被认为是没有标签的，因为外部标签使用的是IEEE 802.1ad VLAN标签。同样的原则也适用于其他与VLAN相关的功能，例如，PVID属性会在接入端口上添加一个新的VLAN标签，VLAN标签将使用ether-type中指定的EtherType。
 
 **SW1**和**SW2**都在使用相同的配置。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code> <code class="ros value">ether-type</code><code class="ros plain">=0x88a8</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">pvid</code><code class="ros plain">=200</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">pvid</code><code class="ros plain">=300</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">bridge</code><code class="ros plain">=bridge1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether3</code> <code class="ros value">untagged</code><code class="ros plain">=ether1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=200</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether3</code> <code class="ros value">untagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=300</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes ether-type=0x88a8
+/interface bridge port
+add interface=ether1 bridge=bridge1 pvid=200
+add interface=ether2 bridge=bridge1 pvid=300
+add interface=ether3 bridge=bridge1
+/interface bridge vlan
+add bridge=bridge1 tagged=ether3 untagged=ether1 vlan-ids=200
+add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
+
+```
 
 在这个例子中，我们假设所有路由器传递的流量都使用CVID VLAN标签（内部VLAN标签）。根据上述原则，交换机上的这种流量将被视为无标签的流量。交换机将使用SVID VLAN标签（外侧VLAN标签）对这些流量进行封装，**SW1**和**SW2**之间的流量将被视为有标签的流量。在流量到达目的地之前，交换机将解封外部标签，并将原始的CVID VLAN标签帧转发给路由器。请看下面的一个数据包例子。
 
@@ -185,7 +287,15 @@ ether-type 属性允许你为 VLAN 标签选择以下 EtherTypes。
 
 如果你想从**ether3**到设备建立管理访问，并想使用**VLAN99**，那么你将使用这样的命令。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=bridge1</code> <code class="ros value">name</code><code class="ros plain">=VLAN99</code> <code class="ros value">use-service-tag</code><code class="ros plain">=yes</code> <code class="ros value">vlan-id</code><code class="ros plain">=99</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.99.2/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN99</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=bridge1,ether3 vlan-ids=99
+/interface vlan
+add interface=bridge1 name=VLAN99 use-service-tag=yes vlan-id=99
+/ip address
+add address=192.168.99.2/24 interface=VLAN99
+
+```
 
 你可能注意到，唯一的区别是VLAN接口使用了`us-service-tag=yes'，这将VLAN接口设置为监听SVID（IEEE 802.1ad）VLAN标签。这要求你使用IEEE 802.1ad VLAN标签，使用管理VLAN访问设备。这意味着，在使用网桥VLAN过滤时，你将无法使用CVID VLAN标签连接到设备，ether-type是全局设置的，对所有网桥VLAN过滤功能都有影响。
 
@@ -203,7 +313,18 @@ ether-type 属性允许你为 VLAN 标签选择以下 EtherTypes。
 
 我们想实现的是，无论在**ether2**和**ether3**上收到什么，都会添加一个新的VLAN标签来封装来自这些端口的流量。标签堆叠的作用是强迫添加一个新的VLAN标签，所以可以使用这个属性来实现所期望的设置。我们将使用与聚合/接入端口设置相同的配置，但在接入端口上启用标签堆叠。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code> <code class="ros value">ether-type</code><code class="ros plain">=0x8100</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">tag-stacking</code><code class="ros plain">=yes</code> <code class="ros value">pvid</code><code class="ros plain">=20</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">tag-stacking</code><code class="ros plain">=yes</code> <code class="ros value">pvid</code><code class="ros plain">=30</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether1</code> <code class="ros value">untagged</code><code class="ros plain">=ether3</code> <code class="ros value">vlan-ids</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes ether-type=0x8100
+/interface bridge port
+add bridge=bridge1 interface=ether1
+add bridge=bridge1 interface=ether2 tag-stacking=yes pvid=20
+add bridge=bridge1 interface=ether3 tag-stacking=yes pvid=30
+/interface bridge vlan
+add bridge=bridge1 tagged=ether1 untagged=ether2 vlan-ids=20
+add bridge=bridge1 tagged=ether1 untagged=ether3 vlan-ids=30
+
+```
 
 添加的VLAN标签将使用指定的以太网类型。所选的EtherType也将被用于VLAN过滤。只有外部标签被检查，但在标签堆叠的情况下，标签检查被跳过，并假定必须以任何方式添加新标签。
 
