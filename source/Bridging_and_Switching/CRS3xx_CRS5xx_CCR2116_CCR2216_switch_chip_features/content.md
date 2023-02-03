@@ -4,7 +4,7 @@ ___
 
 CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成的交换机，配备高性能 CPU 和功能丰富的数据包处理器。这些设备可以设计成各种以太网应用，包括非管理型交换机、第 2 层管理型交换机、运营商交换机、VLAN 间路由器和有线统一数据包处理器。
 
-> 本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于[CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835)。
+> 本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于 [CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835) 。
 
 ## 特性
 
@@ -298,7 +298,7 @@ L3硬件卸载功能和硬件限制，请参考[功能支持](https://help.mikro
 - CVID - 客户 VLAN ID
 - SVID - 服务 VLAN ID
 
-# 端口交换
+## 端口交换
 
 ___
 
@@ -308,7 +308,7 @@ ___
 
 网桥 STP/RSTP/MSTP、IGMP 侦听和 VLAN 过滤设置不影响硬件卸载，因为 RouterOS v6.42 绑定的接口也会被硬件卸载。
 
-# VLAN
+## VLAN
 
 ___
 
@@ -334,36 +334,71 @@ VLAN设置示例
 
 通过创建启用硬件卸载的网桥来启用端口交换：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+
+```
 
 在 Bridge VLAN 表中添加 VLAN 并指定端口：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether7</code> <code class="ros value">vlan-ids</code><code class="ros plain">=200,300,400</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether2 untagged=ether7 vlan-ids=200,300,400
+
+```
 
 添加基于 MAC 地址分配 VLAN id 的交换机规则：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">src-mac-address</code><code class="ros plain">=A4:12:6D:77:94:43/FF:FF:FF:FF:FF:FF</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">src-mac-address</code><code class="ros plain">=84:37:62:DF:04:20/FF:FF:FF:FF:FF:FF</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">src-mac-address</code><code class="ros plain">=E7:16:34:A1:CD:18/FF:FF:FF:FF:FF:FF</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```shell
+/interface ethernet switch rule
+add switch=switch1 ports=ether7 src-mac-address=A4:12:6D:77:94:43/FF:FF:FF:FF:FF:FF new-vlan-id=200
+add switch=switch1 ports=ether7 src-mac-address=84:37:62:DF:04:20/FF:FF:FF:FF:FF:FF new-vlan-id=300
+add switch=switch1 ports=ether7 src-mac-address=E7:16:34:A1:CD:18/FF:FF:FF:FF:FF:FF new-vlan-id=400
+
+```
 
 ### 基于协议的VLAN
 
-- 交换机规则表用于基于协议的 VLAN 功能，请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
+- 交换机规则表用于基于协议的 VLAN 功能，请参阅 [此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 查看每个设备支持多少规则。
 - 基于协议的 VLAN 只能在交换机端口之间正常工作，而不能在交换机端口和 CPU 之间正常工作。 当数据包被转发到 CPU 时，将始终使用桥接端口的“pvid”属性，而不是 ACL 规则中的“new-vlan-id”。
 - 当启用 DHCP 侦听时，基于协议的 VLAN 将不适用于 DHCP 数据包。
 
-通过创建启用硬件卸载的网桥来启用端口切换：
+通过创建启用硬件卸载的网桥来启用端口交换：
 
+```shell
+/interface bridge
+add name=bridge1 vlan-filtering=yes
+/interface bridge port
+add bridge=bridge1 interface=ether2 hw=yes
+add bridge=bridge1 interface=ether6 hw=yes
+add bridge=bridge1 interface=ether7 hw=yes
+add bridge=bridge1 interface=ether8 hw=yes
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether6</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether7</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code> <code class="ros value">hw</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```
 
 在 Bridge VLAN 表中添加 VLAN 并指定端口：
 
+```shell
+/interface bridge vlan
+add bridge=bridge1 tagged=ether2 untagged=ether6 vlan-ids=200
+add bridge=bridge1 tagged=ether2 untagged=ether7 vlan-ids=300
+add bridge=bridge1 tagged=ether2 untagged=ether8 vlan-ids=400
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether6</code> <code class="ros value">vlan-ids</code><code class="ros plain">=200</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether7</code> <code class="ros value">vlan-ids</code><code class="ros plain">=300</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2</code> <code class="ros value">untagged</code><code class="ros plain">=ether8</code> <code class="ros value">vlan-ids</code><code class="ros plain">=400</code></div></div></td></tr></tbody></table>
+```
 
 添加基于 MAC 协议分配 VLAN id 的交换机规则：
 
+```shell
+/interface ethernet switch rule
+add mac-protocol=ip new-vlan-id=200 ports=ether6 switch=switch1
+add mac-protocol=ipx new-vlan-id=300 ports=ether7 switch=switch1
+add mac-protocol=0x80F3 new-vlan-id=400 ports=ether8 switch=switch1
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ethernet switch rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-protocol</code><code class="ros plain">=ip</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=200</code> <code class="ros value">ports</code><code class="ros plain">=ether6</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-protocol</code><code class="ros plain">=ipx</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=300</code> <code class="ros value">ports</code><code class="ros plain">=ether7</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">mac-protocol</code><code class="ros plain">=0x80F3</code> <code class="ros value">new-vlan-id</code><code class="ros plain">=400</code> <code class="ros value">ports</code><code class="ros plain">=ether8</code> <code class="ros value">switch</code><code class="ros plain">=switch1</code></div></div></td></tr></tbody></table>
+```
 
 ### VLAN隧道(Q-in-Q)
 
