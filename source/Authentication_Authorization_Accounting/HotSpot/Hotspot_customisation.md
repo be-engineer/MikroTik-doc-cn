@@ -1,4 +1,4 @@
-## 定制要求
+# 定制要求
 
 - hotspot强制门户
 
@@ -49,24 +49,24 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 - 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
 - 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
 
-1. **在HotSpot主机上请求“/”**
+2. **在HotSpot主机上请求“/”**
 
 - 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
 - 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
   
-1. **请求“/login”页面**
+3. **请求“/login”页面**
 
 - 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
 - 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
 - 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
 - 如果出现致命错误，则显示 error.html
 
-1. **请求“/status”页面**
+4. **请求“/status”页面**
 
 - 如果用户已登录，则显示 status.html
 - 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
 
-1. **请求“/logout”页面**
+5. **请求“/logout”页面**
 
 - 如果用户已登录，则显示 logout.html
 - 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面

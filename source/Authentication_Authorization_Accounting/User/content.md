@@ -63,8 +63,14 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
 
 ## 监控活跃用户
 
-  
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user active </code><code class="ros functions">print</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] user> print
+Flags: X - disabled
+# NAME GROUP ADDRESS LAST-LOGGED-IN
+0 ;;; system default user
+admin full 0.0.0.0/0 dec/08/2010 16:19:24
+
+```
 
 该命令显示当前活跃的用户以及各自的统计信息。
 
