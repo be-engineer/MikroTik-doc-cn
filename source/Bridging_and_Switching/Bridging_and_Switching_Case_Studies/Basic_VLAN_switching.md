@@ -30,7 +30,7 @@ set bridge1 vlan-filtering=yes
 
 ```
 
-更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)找到。
+更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 找到。
 
 RTL8367、88E6393X、88E6191X和MT7621交换芯片从RouterOS v7开始可以使用HW卸载的vlan过滤特性。
 
@@ -67,7 +67,7 @@ set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether1,ether2,ether3
 
 ```
 
-更详细的例子可以在[这里]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN）找到。
+更详细的例子可以在 [这里]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN）找到。
 
 ## 其他具有内置交换芯片的设备
 

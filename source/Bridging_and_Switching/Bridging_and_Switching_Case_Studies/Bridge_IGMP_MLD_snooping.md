@@ -219,9 +219,9 @@ add bridge=bridge1 interface=sfp-sfpplus1 pvid=10
 
 ```
 
-网桥IGMP查询器的实现只能发送无标签的IGMP查询。如果要发送带标签的IGMP查询，或者要在多个VLAN中产生IGMP查询，可以安装一个[组播包](https://help.mikrotik.com/docs/display/ROS/Packages)，添加一个VLAN接口，并在VLAN上配置一个[PIM接口](https://wiki.mikrotik.com/wiki/Manual:Routing/Multicast#Interfaces)。PIM接口可以作为一个IGMP查询器使用。
+网桥IGMP查询器的实现只能发送无标签的IGMP查询。如果要发送带标签的IGMP查询，或者要在多个VLAN中产生IGMP查询，可以安装一个 [组播包](https://help.mikrotik.com/docs/display/ROS/Packages)，添加一个VLAN接口，并在VLAN上配置一个 [PIM接口](https://wiki.mikrotik.com/wiki/Manual:Routing/Multicast#Interfaces)。PIM接口可以作为一个IGMP查询器使用。
 
-确保为设备配置[管理访问](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。在配置具有 VLAN 过滤功能的网桥时，它是必不可少的。在这个例子中，一个带有 IP 地址的 VLAN 99 接口被添加到网桥中。这个 VLAN 将被允许在标记的 sfp-sfpplus1 端口上使用。下面是对 Bridge1 的配置命令。
+确保为设备配置 [管理访问](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)。在配置具有 VLAN 过滤功能的网桥时，它是必不可少的。在这个例子中，一个带有 IP 地址的 VLAN 99 接口被添加到网桥中。这个 VLAN 将被允许在标记的 sfp-sfpplus1 端口上使用。下面是对 Bridge1 的配置命令。
 
 ```shell
 /interface vlan
