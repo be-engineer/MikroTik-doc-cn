@@ -184,7 +184,7 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 如果可以，就始终使用交换规则 (ACL)。
 
-切换规则与 Fastrack 连接共享硬件内存。 但是，硬件资源是为每个 Fasttrack 连接分配的，而单个 ACL 规则可以匹配多个连接。 例如，如果您有一个连接到 sfp-sfpplus1 VLAN 10 的访客 WiFi 网络并且不希望它访问您的内部网络，只需创建一个 ACL 规则：
+切换规则与 Fastrack 连接共享硬件内存。 但是，硬件资源是为每个 Fasttrack 连接分配的，而单个 ACL 规则可以匹配多个连接。 例如，如果你有一个连接到 sfp-sfpplus1 VLAN 10 的访客 WiFi 网络并且不希望它访问你的内部网络，只需创建一个 ACL 规则：
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ethernet/switch/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">switch</code><code class="ros plain">=switch1</code> <code class="ros value">ports</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">vlan-id</code><code class="ros plain">=10</code> <code class="ros value">dst-address</code><code class="ros plain">=10.0.0.0/8</code> <code class="ros value">new-dst-ports</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
 
@@ -260,7 +260,7 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1,sfp-sfpplus1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=11</code> <code class="ros value">tagged</code><code class="ros plain">=bridge1</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus2,sfp-sfpplus3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=20</code> <code class="ros value">tagged</code><code class="ros plain">=sfp-sfpplus1</code> <code class="ros value">untagged</code><code class="ros plain">=sfp-sfpplus4,sfp-sfpplus5</code></div></div></td></tr></tbody></table>
 
-上面的例子并不总是出错。 有时，您可能希望设备在某些或全部 VLAN 中充当简单的 L2 交换机。 只要确定你是故意这样设置，而不是因为错误。
+上面的例子并不总是出错。 有时，你可能希望设备在某些或全部 VLAN 中充当简单的 L2 交换机。 只要确定你是故意这样设置，而不是因为错误。
 
 ## 创建多个网桥
 
@@ -317,7 +317,7 @@ H-flag并不表示该route实际上是HW offloaded，它只是表示route可以�
 
 以下设备基于 **Marvell **98DX224S、98DX226S**** 或 ****98DX3236**** 交换芯片型号。 这些设备不支持 Fasttrack 或 NAT 连接卸载。
 
-!!!note **98DX3255** 和 **98DX3257** 型号是例外，它们具有 DX8000 而非 DX3000 系列的功能集。
+> **98DX3255** 和 **98DX3257** 型号是例外，它们具有 DX8000 而非 DX3000 系列的功能集。
 
 | 型号                   | 交换芯片         | ==发布版本== | IPv4 Route Prefixes<sup>1</sup> | IPv6 Route Prefixes<sup>2</sup> | Nexthops | ECMP paths per prefix<sup>3</sup> |
 | ---------------------- | ---------------- | ------------ | ------------------------------- | ------------------------------- | -------- | --------------------------------- |

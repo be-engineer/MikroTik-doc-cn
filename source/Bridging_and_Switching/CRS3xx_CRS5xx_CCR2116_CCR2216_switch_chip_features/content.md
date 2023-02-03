@@ -4,7 +4,7 @@ ___
 
 CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成的交换机，配备高性能 CPU 和功能丰富的数据包处理器。这些设备可以设计成各种以太网应用，包括非管理型交换机、第 2 层管理型交换机、运营商交换机、VLAN 间路由器和有线统一数据包处理器。
 
-!!!info 本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于[CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835)。
+> 本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于[CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835)。
 
 ## 特性
 
@@ -409,7 +409,7 @@ CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器能够在硬件层面
 
 ___
 
-CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器支持带绑定接口的硬件卸载。 只有 `802.3ad` 和 `balance-xor` 绑定模式是硬件卸载的，其他绑定模式将使用 CPU 的资源。 您可以在 [绑定接口](https://help.mikrotik.com/docs/display/ROS/Bonding) 部分找到更多信息。 如果使用 802.3ad 模式，则支持 LACP（链路聚合控制协议）。
+CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器支持带绑定接口的硬件卸载。 只有 `802.3ad` 和 `balance-xor` 绑定模式是硬件卸载的，其他绑定模式将使用 CPU 的资源。 你可以在 [绑定接口](https://help.mikrotik.com/docs/display/ROS/Bonding) 部分找到更多信息。 如果使用 802.3ad 模式，则支持 LACP（链路聚合控制协议）。
 
 要创建硬件卸载绑定接口，必须使用受支持的绑定模式创建绑定接口：
 
@@ -462,7 +462,7 @@ ___
 
 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在硬件级别上使用带有选项 82 的 DHCP 侦听。 交换机将创建动态ACL规则来捕获DHCP数据包并将它们重定向到主CPU进行进一步处理。 要查看更多详细信息，请访问 [DHCP 侦听和 DHCP 选项 82](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-DHCPSnoopingandDHCPOption82) 手册。
 
-!!!info 创建硬件卸载绑定接口时，DHCP 侦听将不起作用。
+> 创建硬件卸载绑定接口时，DHCP 侦听将不起作用。
 
 ## 控制器桥和端口扩展器
 
@@ -474,7 +474,7 @@ ___
 
 ___
 
-镜像让交换机可以嗅探进入交换机芯片的所有流量，并将这些数据包的副本发送到另一个端口（镜像目标）。 此功能可用于轻松设置分路器设备，使您可以在流量分析设备上检查网络上的流量。 可以设置简单的基于端口的镜像，但也可以根据各种参数设置更复杂的镜像。 请注意，镜像目标端口必须属于同一个交换机（请参阅`/interface ethernet` 菜单中哪个端口属于哪个交换机）。 此外，mirror-target 可以有一个特殊的`cpu`值，这意味着嗅探到的数据包将从交换芯片的 CPU 端口发送出去。 可用于镜像特定流量的可能性有很多种，您可以在下面找到最常见的镜像示例：
+镜像让交换机可以嗅探进入交换机芯片的所有流量，并将这些数据包的副本发送到另一个端口（镜像目标）。 此功能可用于轻松设置分路器设备，使你可以在流量分析设备上检查网络上的流量。 可以设置简单的基于端口的镜像，但也可以根据各种参数设置更复杂的镜像。 请注意，镜像目标端口必须属于同一个交换机（请参阅`/interface ethernet` 菜单中哪个端口属于哪个交换机）。 此外，mirror-target 可以有一个特殊的`cpu`值，这意味着嗅探到的数据包将从交换芯片的 CPU 端口发送出去。 可用于镜像特定流量的可能性有很多种，你可以在下面找到最常见的镜像示例：
 
 基于端口的镜像：
 
@@ -547,7 +547,7 @@ ___
 
 从 RouterOS v6.42 开始，可以启用流量风暴控制。 当某些帧在网络上不断泛滥时，可能会出现流量风暴。 例如，如果已创建网络环路并且未使用环路控制机制（例如 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)），则广播或多播帧会迅速淹没网络，导致网络性能下降甚至完全崩溃。 使用 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器，可以限制广播、未知多播和未知单播流量。 当交换机不包含目标 MAC 地址的主机条目时，将考虑未知单播流量。 当交换机在“/interface bridge mdb”菜单中不包含多播组条目时，就会考虑未知多播流量。 风暴控制设置要应用于入口端口，出口流量将受到限制。
 
-风暴控制参数以链路速度的百分比 (%) 指定。 如果您的链接速度为 1Gbps，则将 `storm-rate` 指定为 `10` 将仅允许转发 100Mbps 的广播、未知多播和/或未知单播流量。
+风暴控制参数以链路速度的百分比 (%) 指定。 如果你的链接速度为 1Gbps，则将 `storm-rate` 指定为 `10` 将仅允许转发 100Mbps 的广播、未知多播和/或未知单播流量。
 
 **子菜单:** `/interface ethernet switch port`
 
@@ -558,7 +558,7 @@ ___
 | **limit-unknown-unicasts** (_yes                    \| no_; Default: **no**)  | 在一个交换端口上限制未知的单播流量                           |
 | **storm-rate** (_integer 0..100_; Default: **100**)                           | 广播、未知多播和未知单播流量的数量被限制在链接速度的百分比。 |
  
-!!!warning 采用Marvell-98DX3236交换芯片的设备无法区分未知组播流量和所有组播流量。 例如，当使用 `limit-unknown-multicasts` 和 `storm-rate` 时，CRS326-24G-2S+ 将限制所有多播流量。 对于其他设备，例如 CRS317-1G-16S+，`limit-unknown-multicasts` 参数将仅限制未知多播流量（不在`/interface bridge mdb` 中的地址）。
+> 采用Marvell-98DX3236交换芯片的设备无法区分未知组播流量和所有组播流量。 例如，当使用 `limit-unknown-multicasts` 和 `storm-rate` 时，CRS326-24G-2S+ 将限制所有多播流量。 对于其他设备，例如 CRS317-1G-16S+，`limit-unknown-multicasts` 参数将仅限制未知多播流量（不在`/interface bridge mdb` 中的地址）。
 
 例如，要限制 ether1 (1Gbps) 上 1% (10Mbps) 的广播和未知单播流量，请使用以下命令：
 
@@ -573,7 +573,7 @@ ___
 
 目前只有使用 RouterOS v6.41 及更新版本的 CRS317-1G-16S+ 和 CRS309-1G-8S+ 能够硬件卸载某些 MPLS 功能。 `CRS317-1G-16S+` 和 `CRS309-1G-8S+` 内置交换芯片无法从数据包中弹出 MPLS 标签，在 PE-P-PE 设置中，必须使用显式 null 或禁用 TTL 传播 MPLS网络实现硬件卸载。
 
-!!!warning 自 RouterOS v7 以来，MPLS 硬件卸载已被删除。
+> 自 RouterOS v7 以来，MPLS 硬件卸载已被删除。
 
 ## 交换规则(ACL)
 
@@ -581,9 +581,9 @@ ___
 
 访问控制列表包含入口策略和出口策略引擎。 请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少条规则。 它是一种基于第 2 层、第 3 层和第 4 层协议头条件进行线速数据包过滤、转发和修改的高级工具。
 
-!!!warning 为每个收到的数据包检查 ACL 规则，直到找到匹配项。 如果有多个规则可以匹配，那么只会触发第一个规则。 没有任何操作参数的规则是接受数据包的规则。
+> 为每个收到的数据包检查 ACL 规则，直到找到匹配项。 如果有多个规则可以匹配，那么只会触发第一个规则。 没有任何操作参数的规则是接受数据包的规则。
 
-!!!warning 当交换机 ACL 规则被修改（例如添加、删除、禁用、启用或移动）时，现有的交换机规则将在短时间内处于非活动状态。 这可能会导致在 ACL 规则修改期间发生一些数据包泄漏。
+> 当交换机 ACL 规则被修改（例如添加、删除、禁用、启用或移动）时，现有的交换机规则将在短时间内处于非活动状态。 这可能会导致在 ACL 规则修改期间发生一些数据包泄漏。
   
 **子菜单:** `/interface ethernet switch rule`
 
@@ -655,9 +655,9 @@ Layer4条件参数:
 
   
 
-!!!info 要使 VLAN 相关匹配器或 VLAN 相关操作参数起作用，您需要在网桥接口上启用 `vlan-filtering` 并确保在这些端口上启用硬件卸载，否则，这些参数将不起作用。
+> 要使 VLAN 相关匹配器或 VLAN 相关操作参数起作用，你需要在网桥接口上启用 `vlan-filtering` 并确保在这些端口上启用硬件卸载，否则，这些参数将不起作用。
 
-!!!info 当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。
+> 当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。
 
 ## 端口安全
 
@@ -680,13 +680,13 @@ ___
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge host</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">mac-address</code><code class="ros plain">=64:D1:54:81:EF:8E</code></div></div></td></tr></tbody></table>
 
-广播流量仍将从 **ether1** 发出。 要限制桥接端口上的广播流量泛滥，您可以使用“广播泛滥”参数来交换它。 请注意，某些协议依赖于广播流量，例如流式传输协议和 DHCP。
+广播流量仍将从 **ether1** 发出。 要限制桥接端口上的广播流量泛滥，你可以使用“广播泛滥”参数来交换它。 请注意，某些协议依赖于广播流量，例如流式传输协议和 DHCP。
 
 ## 双启动
 
 ___
 
-“双启动”功能允许选择您喜欢在 CRS3xx 系列交换机、RouterOS 或 SwOS 上使用的操作系统。 可以使用以下方式更改设备操作系统：
+“双启动”功能允许选择你喜欢在 CRS3xx 系列交换机、RouterOS 或 SwOS 上使用的操作系统。 可以使用以下方式更改设备操作系统：
 
 - 命令行（`/system routerboard settings set boot-os=swos`）
 - Winbox
@@ -710,7 +710,7 @@ ___
 - 使用 `/system swos reset-config` 重置配置
 - 使用`/system swos upgrade`从 RouterOS 升级 SwOS
 
-升级命令将自动安装最新可用的 SwOS 版本，确保设备可以访问 Internet，以便升级过程正常进行。 当设备启动进入 SwOS 时，版本号将包含字母“p”，表示主版本。 然后，您可以从 SwOS“升级”菜单安装最新可用的 SwOS 二级主版本。
+升级命令将自动安装最新可用的 SwOS 版本，确保设备可以访问 Internet，以便升级过程正常进行。 当设备启动进入 SwOS 时，版本号将包含字母“p”，表示主版本。 然后，你可以从 SwOS“升级”菜单安装最新可用的 SwOS 二级主版本。
 
 | 属性                                                                                                        | 说明                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

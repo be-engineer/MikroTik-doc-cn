@@ -4,7 +4,7 @@
 
 ## 介绍
 
-您可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，您需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
+你可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，你需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
 
 **注意：** 如果“html-override-directory”值路径丢失或为空，则热点服务器将恢复为默认 HTML 文件。
 
@@ -75,7 +75,7 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 自定义 HotSpot 身份验证页面的外观有多种可能性：
 
-- 页面容易修改。 它们存储在路由器的 FTP 服务器上，位于您为各自的 HotSpot 服务器配置文件选择的目录中。
+- 页面容易修改。 它们存储在路由器的 FTP 服务器上，位于你为各自的 HotSpot 服务器配置文件选择的目录中。
 - 通过更改客户端发送到 HotSpot 小服务程序的变量，可以将关键字计数减少到一个（用户名或密码；例如，客户端的 MAC 地址可以用作其他值）甚至为零（许可协议 ; 一些对所有用户通用的预定义值或客户端的 MAC 地址可以用作用户名和密码）
 - 注册可能发生在不同的服务器上（例如，在能够对信用卡收费的服务器上）。 客户端的 MAC 地址可以传递给它，因此不需要手动写入此信息。 注册后，服务器应更改 RADIUS 数据库，使客户端能够登录一段时间。
 
@@ -252,7 +252,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ### 自定义错误消息
 
-所有错误消息都存储在相应 HotSpot servlet 目录中的 errors.txt 文件中。 您可以将所有这些消息更改并翻译成您的母语。 为此，请编辑 errors.txt 文件。 您还可以在消息中使用变量。 所有说明都在该文件中给出。
+所有错误消息都存储在相应 HotSpot servlet 目录中的 errors.txt 文件中。 你可以将所有这些消息更改并翻译成你的母语。 为此，请编辑 errors.txt 文件。 你还可以在消息中使用变量。 所有说明都在该文件中给出。
 
 ### 多个版本的 HotSpot 页面
 
@@ -272,7 +272,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ### 杂项
 
-如果您想使用 HTTP-CHAP 身份验证方法，则应该在 **提交** 之前包含 **doLogin()** 函数（它引用必须已经加载的 **md5.js**） 登录表单的操作。 否则，CHAP 登录将失败。
+如果你想使用 HTTP-CHAP 身份验证方法，则应该在 **提交** 之前包含 **doLogin()** 函数（它引用必须已经加载的 **md5.js**） 登录表单的操作。 否则，CHAP 登录将失败。
 
 在 HTTP-CHAP 方法的情况下，要发送到 HotSpot 网关的结果密码由以下内容的 MD5 散列连接组成：chap-id、用户密码和 chap-challenge（按给定顺序）
 
@@ -298,7 +298,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-（其中 hsuser 是您提供的用户名）
+（其中 hsuser 是你提供的用户名）
 
 - 要提供预定义值作为密码，请在 login.html 中更改：
 
@@ -314,7 +314,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-（其中 hspass 是您提供的密码）
+（其中 hspass 是你提供的密码）
 
 - 以下形式将客户端的 MAC 地址发送到注册服务器：
 
@@ -327,7 +327,7 @@ https://www.example.com/register.html?mac=$(mac)
 
 ```
 
-（应该修改链接指向您的服务器）
+（应该修改链接指向你的服务器）
 
 - 在用户登录后显示横幅，在 alogin.html 之后
 
@@ -338,7 +338,7 @@ open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 ```
 
-（应该修改链接指向您要显示的页面）
+（应该修改链接指向你要显示的页面）
 
 - 要选择登录后显示的不同页面，请在 login.html 中更改：
 
@@ -354,7 +354,7 @@ open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 ```
 
-（应该修改链接指向您的服务器）
+（应该修改链接指向你的服务器）
 
 - 要在注销时删除 cookie，请在包含注销链接的页面（例如，在 status.html 中）更改：
 
@@ -445,7 +445,7 @@ Hotspot 登录页面可以使用 **$(http-header-name);** 访问 HTTP 标头
 
 例如，存在检查用户代理（或浏览器）的能力，如果需要，将返回任何其他内容而不是常规登录页面。 例如，这可用于禁用手机中的自动弹出窗口。
 
-例如，要为特定 Firefox 移动版本的用户输出“SUCCESS”，而不是登录页面，您可以在热点目录中的 **rlogin.html** 页面顶部添加以下行：
+例如，要为特定 Firefox 移动版本的用户输出“SUCCESS”，而不是登录页面，你可以在热点目录中的 **rlogin.html** 页面顶部添加以下行：
 
 ```html
 $(if user-agent == "Mozilla/5.0 (Android; Mobile; rv:40.0) Gecko/40.0 Firefox/40.0" ) 
@@ -548,7 +548,7 @@ $(endif)
 
 ```
 
-将所有 DNS 请求重定向到 HotSpot 服务。 64872端口为所有HotSpot用户提供DNS服务。 如果您希望 HotSpot 服务器也监听另一个端口，请以相同的方式在此处添加规则，更改 dst-port 属性。
+将所有 DNS 请求重定向到 HotSpot 服务。 64872端口为所有HotSpot用户提供DNS服务。 如果你希望 HotSpot 服务器也监听另一个端口，请以相同的方式在此处添加规则，更改 dst-port 属性。
 
 ```
  4 D chain=hotspot action=redirect to-ports=64873 hotspot=local-dst dst-port=80
@@ -601,7 +601,7 @@ $(endif)
 
 ```
 
-HotSpot 默认假定只有这些端口可用于 HTTP 代理请求。 这两个条目用于“捕获”客户端对未知代理的请求（您可以在此处为其他端口添加更多规则）。 即使有未知代理设置的客户端可以使用 HotSpot 系统。 此功能称为“通用代理”。 如果检测到客户端正在使用某个代理服务器，系统会自动用 http 热点标记标记该数据包以解决未知代理问题，我们将在后面看到。 请注意，使用的端口 (64874) 与规则 #9 中的 HTTP 请求相同（因此 HTTP 和 HTTP 代理请求都由相同的代码处理）。
+HotSpot 默认假定只有这些端口可用于 HTTP 代理请求。 这两个条目用于“捕获”客户端对未知代理的请求（你可以在此处为其他端口添加更多规则）。 即使有未知代理设置的客户端可以使用 HotSpot 系统。 此功能称为“通用代理”。 如果检测到客户端正在使用某个代理服务器，系统会自动用 http 热点标记标记该数据包以解决未知代理问题，我们将在后面看到。 请注意，使用的端口 (64874) 与规则 #9 中的 HTTP 请求相同（因此 HTTP 和 HTTP 代理请求都由相同的代码处理）。
 
 ```
 12 D chain=hs-unauth action=redirect to-ports=64875 dst-port=443 protocol=tcp
@@ -615,7 +615,7 @@ HTTPS 代理监听64875端口.
 
 ```
 
-也可以在 HotSpot 配置中定义 SMTP 协议的重定向。 如果是，重定向规则将被放入 hs-smtp 链中。 这样做是为了让具有未知 SMTP 配置的用户能够通过服务提供商的（您的）SMTP 服务器发送邮件，而不是转到用户在其计算机上配置的[possibly unavailable outside their network of origin] SMTP 服务器 . 默认情况下链为空，因此跳转规则无效。
+也可以在 HotSpot 配置中定义 SMTP 协议的重定向。 如果是，重定向规则将被放入 hs-smtp 链中。 这样做是为了让具有未知 SMTP 配置的用户能够通过服务提供商的（你的）SMTP 服务器发送邮件，而不是转到用户在其计算机上配置的[possibly unavailable outside their network of origin] SMTP 服务器 . 默认情况下链为空，因此跳转规则无效。
 
 ```
 14 D chain=hs-auth action=redirect to-ports=64874 hotspot=http protocol=tcp

@@ -12,7 +12,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 此子菜单允许添加/删除 RADIUS 客户端。
 
-!!! warning 此列表中添加项目的顺序很重要。
+> 此列表中添加项目的顺序很重要。
 
 ### 属性
 
@@ -35,13 +35,13 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 | **src-address** (_ipv4/ipv6 address_; Default: **0.0.0.0**)                                                                                                                                                                                                                                                                                              | 发送到RADIUS服务器的报文的源IP/IPv6地址                                                                                                                                                                                                   |
 | **timeout** (_time_; Default: **100ms**)                                                                                                                                                                                                                                                                                                                 | 应重新发送请求的超时时间，例如 radius set timeout=300ms numbers=0                                                                                                                                                                         |
 
-!!!info 当 RADIUS 服务器使用 CHAP、MS-CHAPv1、MS-CHAPv2 对用户进行身份验证时，它不使用共享密钥，该密钥仅在身份验证回复中使用，路由器正在对其进行验证。 因此，如果您的共享密钥有误，RADIUS 服务器将接受请求，但路由器不会接受回复。 您可以看到，使用 /radius monitor 命令，只要有人尝试连接，“错误回复”数量就会增加。
+> 当 RADIUS 服务器使用 CHAP、MS-CHAPv1、MS-CHAPv2 对用户进行身份验证时，它不使用共享密钥，该密钥仅在身份验证回复中使用，路由器正在对其进行验证。 因此，如果你的共享密钥有误，RADIUS 服务器将接受请求，但路由器不会接受回复。 你可以看到，使用 /radius monitor 命令，只要有人尝试连接，“错误回复”数量就会增加。
 
-!!!warning 如果启用了 RadSec，请确保您的 RADIUS 服务器使用“**radsec**”作为共享密钥，否则，RADIUS 服务器将无法正确解密数据（不可打印的字符）。 使用 RadSec RouterOS 强制将共享机密设置为“radsec”，而不管手动设置的是什么 (RFC6614)。
+> 如果启用了 RadSec，请确保你的 RADIUS 服务器使用“**radsec**”作为共享密钥，否则，RADIUS 服务器将无法正确解密数据（不可打印的字符）。 使用 RadSec RouterOS 强制将共享机密设置为“radsec”，而不管手动设置的是什么 (RFC6614)。
 
 ### 例子
 
-要为将针对 RADIUS 服务器 (10.0.0.3) 进行身份验证的 HotSpot 和 PPP 服务设置 RADIUS 客户端，您需要执行以下操作：
+要为将针对 RADIUS 服务器 (10.0.0.3) 进行身份验证的 HotSpot 和 PPP 服务设置 RADIUS 客户端，你需要执行以下操作：
 
 ````shell
 [admin@MikroTik] > /radius add service=hotspot,ppp address=10.0.0.3 secret=ex
@@ -52,7 +52,7 @@ Flags: X - disabled
 
 ````
 
-要使用 RadSec 设置 RADIUS 客户端，您需要执行以下操作：
+要使用 RadSec 设置 RADIUS 客户端，你需要执行以下操作：
 
 ```shell
 [admin@MikroTik] > /radius add service=hotspot,ppp address=10.0.0.3 secret=radsec protocol=radsec certificate=client.crt
@@ -65,7 +65,7 @@ Flags: X - disabled
 
 确保指定的证书是可信的。
 
-要查看 RADIUS 客户端统计信息，您需要执行以下操作：
+要查看 RADIUS 客户端统计信息，你需要执行以下操作：
 
 ```shell
 [admin@MikroTik] > /radius monitor 0
@@ -94,7 +94,7 @@ last-request-rtt: 0s
 
 此工具支持从 RADIUS 服务器发送的未经请求的消息。 未经请求的消息扩展了 RADIUS 协议命令，允许终止已经从 RADIUS 服务器连接的会话。 为此，使用了 DM（断开连接消息）。 断开连接消息会导致用户会话立即终止。
 
-!!! warning RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与断开连接类似的功能
+> RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与断开连接类似的功能
 
 ## 属性
 

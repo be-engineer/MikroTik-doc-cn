@@ -20,7 +20,7 @@
   
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,wlan1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge</code> <code class="ros value">tagged</code><code class="ros plain">=ether1,wlan1,bridge</code> <code class="ros value">vlan-ids</code><code class="ros plain">=99</code></div></div></td></tr></tbody></table>
   
-您可以限制允许从哪些接口访问设备。例如， 如果您不希望设备从 `wlan1` 被访问， 那么您可以从相应的网桥 VLAN 项中删除该接口。
+你可以限制允许从哪些接口访问设备。例如， 如果你不希望设备从 `wlan1` 被访问， 那么你可以从相应的网桥 VLAN 项中删除该接口。
 
 对于有[硬件卸载VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)和无线接口支持的设备(如RB4011带RTL8367交换芯片，或LtAP带MT7621交换芯片)，需要更加注意。如果不允许VLAN访问CPU，从HW卸载端口到无线的数据包可以被过滤掉。可以通过将网桥接口添加为VLAN成员（类似于VLAN99的例子）或禁用网桥端口的HW卸载来允许某个VLAN的CPU访问。
   

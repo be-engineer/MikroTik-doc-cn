@@ -164,7 +164,7 @@ VLAN表为具有特定802.1Q标签的数据包指定了某些转发规则。这�
 | **switch** (_name_; Default: **none**)                                 | 各个VLAN项针对的交换机的名称。                                            |
 | **vlan-id** (_integer: 0..4095_; Default: )                            | 某些交换机端口配置的VLAN ID。                                             |
 
-!!!warning 带有**MT7621**, **RTL8367**, **88E6393X**, **88E6191X**交换芯片的设备在RouterOS v7中支持[HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。在"/interface ethernet switch "菜单上不能进行VLAN相关配置。
+> 带有**MT7621**, **RTL8367**, **88E6393X**, **88E6191X**交换芯片的设备在RouterOS v7中支持[HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。在"/interface ethernet switch "菜单上不能进行VLAN相关配置。
 
 VLAN转发
 

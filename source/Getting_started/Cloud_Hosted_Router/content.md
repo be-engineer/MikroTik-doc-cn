@@ -1,4 +1,4 @@
-Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 它支持 x86 64 位架构，可用于大多数流行的管理程序，如 VMWare、Hyper-V、VirtualBox、KVM 等。 CHR 具有默认启用的完整 RouterOS 功能，但具有与其他 RouterOS 版本不同的许可模型。
+Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 它支持 x86 64 位架构，可用于大多数流行的管理软件，如 VMWare、Hyper-V、VirtualBox、KVM 等。 CHR默认启用完整的 RouterOS 功能，但和其他 RouterOS 版本有不同的许可模型。
 
 # 系统要求
 
@@ -7,12 +7,12 @@ Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 �
 - 内存:128MB 或更多（最大:128GB）
 - 磁盘:CHR 虚拟硬盘驱动器的 128MB 磁盘空间（最大:16GB）
 
-所需的最小 RAM 取决于接口数量和 CPU 数量。 您可以使用以下公式得到一个大概的数字:
+最小 RAM 取决于接口数量和 CPU 数量。 可以使用以下公式得到一个大概的数字:
 
 - RouterOS v6 - RAM = 128 + [ 8 * (CPU_COUNT) * (INTERFACE_COUNT - 1) ]
 - RouterOS v7 - RAM = 256 + [ 8 * (CPU_COUNT) * (INTERFACE_COUNT - 1) ]
 
-**注意:**我们建议为 CHR 实例分配至少 1024MiB 的 RAM。
+**注意:**建议为 CHR 实例分配至少 1024MiB 的 RAM。
 
 ## CHR 已经在以下平台上进行了测试:
 
@@ -25,7 +25,7 @@ Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 �
 
 **警告:** 不支持提供准虚拟化的管理程序。
 
-## 各种管理程序上可用的网络和磁盘接口:
+## 各种管理软件上可用的网络和磁盘接口:
 
 - ESX:
   - Network: vmxnet3, E1000
@@ -45,11 +45,11 @@ Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 �
 
 **注意:** SCSI 控制器 Hyper-V 和 ESX 仅可用于辅助磁盘，系统映像必须与 IDE 控制器一起使用！
 
-**警告:**如果特定管理程序上有更好的接口选项，则不建议使用 E1000 网络接口！
+**警告:**如果特定管理软件上有更好的接口选项，则不建议使用 E1000 网络接口！
 
 ## 如何使用 CHR 映像安装虚拟 RouterOS 系统
 
-我们提供 4 种不同的虚拟磁盘映像供您选择。 请注意，它们只是磁盘映像，不能简单地运行它们。
+我们提供 4 种不同的虚拟磁盘映像供选择。 注意，它们只是磁盘映像，不能简单地运行。
 
 - RAW disk image (.img file)
 - VMWare disk image (.vmdk file)
@@ -58,13 +58,13 @@ Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 �
 
 ### 安装CHR步骤
 
-1. [下载](https://www.mikrotik.com/download#chr) 用于您管理程序的虚拟磁盘映像
+1. [下载](https://www.mikrotik.com/download#chr) 用于管理软件的虚拟磁盘映像
 2.创建客户虚拟机
 3.使用之前下载的镜像文件作为虚拟磁盘驱动器
 4.启动guest CHR虚拟机
-5.登录到您的 CHR。 默认用户是“admin”，没有密码
+5.登录到CHR。 默认用户是“admin”，没有密码
 
-注意，可以克隆和复制正在运行的 CHR 系统，但副本会知道之前的试用期，因此您不能通过复制 CHR 来延长试用时间。 但是，您可以单独许可这两个系统。 要制作新的试用系统，您需要全新安装并重新配置 RouterOS。
+注意，可以克隆和复制正在运行的 CHR 系统，但副本会知道之前的试用期，因此不能通过复制 CHR 来延长试用时间。 但是，可以单独许可这两个系统。 要制作新的试用系统，需要全新安装并重新配置 RouterOS。
 
 ### 安装 CHR 指南
 
@@ -86,11 +86,11 @@ CHR 有 4 个许可级别:
 - _**p10**_ _perpetual-10_ ($95)
 - _**p-unlimited**_ _perpetual-unlimited_ ($250)
 
-60 天免费试用许可证适用于所有付费许可证级别。 要获得免费试用许可证，您必须在 [MikroTik.com](https://mikrotik.com/) 上拥有一个帐户，因为所有许可证管理都在那里完成。
+60 天免费试用许可证适用于所有付费许可证级别。 要获得免费试用许可证，必须在 [MikroTik.com](https://mikrotik.com/) 上拥有一个帐户，因为所有许可证管理都在那里。
 
-Perpetual 是终身许可证（一次购买，永久使用）。 可以将永久许可证转移到另一个 CHR 实例。 正在运行的 CHR 实例将指示它必须访问帐户服务器以更新其许可证的时间。 如果 CHR 实例无法续订许可证，会表现为试用期已经结束，并且不允许将 RouterOS 升级到更新的版本。
+Perpetual 是终身许可证（一次购买，永久使用）。 可以将永久许可证转移到另一个 CHR 实例。 正在运行的 CHR 实例将指示它必须访问帐户服务器以更新其许可证的时间。 如果 CHR 实例无法续订许可证，会表现为试用期结束，不允许将 RouterOS 升级到更新的版本。
 
-获得运行中的试用系统许可后，您**必须**从CHR手动运行 _/system license renew_ 功能以使其激活。 否则，系统将不知道您已在您的帐户中获取了许可。 如果您没有在系统截止时间之前执行此操作，试用将结束，您将必须全新安装 CHR，请求新的试用，然后使用您获得的许可证进行授权。
+获得运行中的试用系统许可后，**必须**从CHR手动运行 _/system license renew_ 功能激活。 否则，系统将不知道获取了许可。 如果没有在系统截止时间之前执行此操作，试用将结束，则必须全新安装 CHR，请求新的试用，然后使用获得的许可证进行授权。
 
 | 许可证      | 速度限制  | 价格 |
 | ----------- | --------- | ---- |
@@ -103,11 +103,11 @@ Perpetual 是终身许可证（一次购买，永久使用）。 可以将永久
 
 ### p1
 
-_p1_ (perpetual-1) 许可级别允许 CHR 无限期运行。 每个接口的上传速度限制为 1Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。 可以将 _p1_ 升级到 _p10_ 或 _p-unlimited（可以按标准价格购买新的许可证级别）。购买升级后，以前的许可证将可供您的帐户以后使用。
+_p1_ (perpetual-1) 许可级别允许 CHR 无限期运行。 每个接口传速度限制为 1Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。 可以将 _p1_ 升级到 _p10_ 或 _p-unlimited（可以按标准价格购买新的许可证级别）。购买升级后，以前的许可证可供你的帐户以后使用。
 
 ### p10
 
-_p10_（perpetual-10）许可级别允许 CHR 无限期运行。 每个接口的上传速度限制为 10Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。 可以将 _p10_ 升级到 _p-unlimited_，购买升级后，以前的许可证将可供您以后在您的帐户上使用。
+_p10_（perpetual-10）许可级别允许 CHR 无限期运行。 每个接口传速度限制为 10Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。 可以将 _p10_ 升级到 _p-unlimited_，购买升级后，以前的许可证将可供你的帐户以后使用。
 
 ### p-unlimited
 
@@ -119,27 +119,27 @@ _p-unlimited_（永久无限制）许可级别允许 CHR 无限期运行。 它�
 
 ### free
 
-_free_ 许可级别允许 CHR 无限期运行。 每个接口的上传速度限制为1Mbps。 CHR 提供的所有其他功能都可以不受限制地使用。 要使用它，您所要做的就是从我们的下载页面下载磁盘映像文件并创建一个虚拟客户机。
+_free_ 许可级别允许 CHR 无限期运行。 每个接口的上传速度限制为1Mbps。 CHR 提供的所有其他功能都可以不受限制地使用。 要使用它，要做的就是从下载页面下载磁盘映像文件并创建一个虚拟客户机。
 
 ### 60 天试用
 
-除了有限的免费安装，您还可以通过 60 次试用来测试 P1/P10/PU 许可证的提升速度。
+除了有限的免费安装，还可以通过 60 天试用来测试 P1/P10/PU 许可证的速度。
 
-您必须在 [MikroTik.com](https://mikrotik.com/) 上注册一个帐户。 然后可以从路由器请求所需的试用许可级别，这会将您的路由器 ID 分配给您的帐户，并允许从您的帐户购买许可证。 所有付费许可证均可试用。 试用期是从获取之日起的 60 天，过了这段时间后，您的许可证菜单将显示“限制升级”，这意味着 RouterOS 无法再升级。
+你必须在 [MikroTik.com](https://mikrotik.com/) 上注册一个帐户。 然后从路由器请求所需的试用许可级别，这会将路由器 ID 分配给你的帐户，并允许从你的帐户购买许可证。 所有付费许可证均可试用。 试用期是从获取之日起的 60 天，过了这段时间后，你的许可证菜单将显示“限制升级”，意味着 RouterOS 无法再升级。
 
-如果您计划购买所选许可证，则必须在试用结束日期后 60 天内购买。 如果您的试用结束，并且在结束后 2 个月内没有购买，该设备将不再出现在您的 MikroTik 帐户中。 您将必须进行新的 CHR 安装才能在规定的时间范围内进行购买。
+如果你计划购买所选许可证，则必须在试用结束日期后 60 天内购买。 如果试用结束，并且在结束后 2 个月内没有购买，该设备将不再出现在你的 MikroTik 帐户中。 必须进行新的 CHR 安装才能在规定的时间范围内进行购买。
 
-要申请试用许可证，您必须从 CHR 设备命令行运行命令“**/system license renew**”。 系统将要求您提供 [mikrotik.com](https://mikrotik.com/) 帐户的用户名和密码。
+要申请试用许可证，必须从 CHR 设备命令行运行命令"**/system license renew**"。 系统会要求你提供 [mikrotik.com](https://mikrotik.com/) 帐户的用户名和密码。
 
-如果您计划使用多个相同类型的虚拟系统，那么下一台机器可能具有与原始机器相同的系统 ID。 这可能发生在某些云提供商上，例如 Linode。 为避免这种情况，**在您请求试用许可证之前**，在您第一次启动后，运行命令“/system license generate-new-id”。 请注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果您已经获得付费或试用许可证，请不要使用重新生成功能，因为您将无法再更新当前密钥
+如果你计划使用多个相同类型的虚拟系统，那么下一台机器可能具有与原始机器相同的系统 ID。 这可能发生在某些云提供商处，例如 Linode。 为避免这种情况，**在你请求试用许可证之前**，在你第一次启动后，运行命令"/system license generate-new-id"。 注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果你已经获得付费或试用许可证，请不要使用生成功能，因为你无法再更新当前密钥.
 
 ## 获取许可证
 
-初始设置后，CHR 实例将分配_免费_许可证。 从那里可以将许可证升级到更高级别。 获得试用许可证后，所有使用许可证的工作都在 [帐户服务器](https://mikrotik.com/client) 上完成，在那里可以将许可证升级到更高级别，除非它已经是 _p-unlimited_ .
+初始设置后，CHR 实例将分配 _free_ 许可证。 从那里可以将许可证升级到更高级别。 获得试用许可证后，所有使用许可证的工作都在 [帐户服务器](https://mikrotik.com/client) 上完成，在那里可以将许可证升级到更高级别，除非已经是 _p-unlimited_ .
 
 ### 从免费许可升级到 p1 或更高版本
 
-从 _free_ 级别升级到任何更高层会导致在 [帐户服务器](https://mikrotik.com/client) 上注册 CHR 实例。 为此，您必须输入您的 [MikroTik.com](https://www.mikrotik.com/client/) 用户名和密码以及您想要获得的许可级别。 因此，将在帐户服务器上为您的帐户分配一个 CHR ID 号，并为该 ID 创建一个 60 天的试用期。 有 2 种方法可以获得许可证 - 使用 WinBox 或 RouterOS 命令行界面:
+从 _free_ 级别升级到任何更高层会导致在 [帐户服务器](https://mikrotik.com/client) 上注册 CHR 实例。 为此，你必须输入你的 [MikroTik.com](https://www.mikrotik.com/client/) 用户名和密码以及你想要获得的许可级别。 因此，将在帐户服务器上为你的帐户分配一个 CHR ID 号，并为该 ID 创建一个 60 天的试用期。 有 2 种方法可以获得许可证 - 使用 WinBox 或 RouterOS 命令行界面:
 
 **使用WinBox (Sytem -> License menu):**
 
@@ -170,11 +170,11 @@ level: p1
 
 要获得更高级别的试用版，请设置一个新的 CHR 实例，续订许可证，然后选择所需的级别。
 
-要从试用许可证升级到付费许可证，请转到 [MikroTik.com 帐户服务器](https://www.mikrotik.com/client) 并在云托管路由器 (CHR) 部分选择“所有密钥”:
+要从试用许可证升级到付费许可证，请转到 [MikroTik.com 帐户服务器](https://www.mikrotik.com/client) 并在云托管路由器 (CHR) 选择“所有密钥”:
 
 ![](https://help.mikrotik.com/docs/download/attachments/18350234/CHR_keys_01.png?version=1&modificationDate=1596783162188&api=v2)
 
-您将看到您的 CHR 机器和许可证的列表:
+你将看到你的 CHR 机器和许可证列表:
 
 ![](https://help.mikrotik.com/docs/download/attachments/18350234/CHR_keys_02a.PNG?version=1&modificationDate=1596783162146&api=v2)
 
@@ -192,7 +192,7 @@ level: p1
 
 ![](https://help.mikrotik.com/docs/download/attachments/18350234/CHR_Licence_02-2.png?version=1&modificationDate=1596783161974&api=v2)
 
-在“/system license”菜单中，路由器将指示 _next-renewal-at_ 时间，它将尝试联系位于 [licence.mikrotik.com](https://licence.mikrotik.com/) 上的服务器。 通信尝试将在 _next-renewal-at_ 日期后每小时执行一次，在服务器响应错误之前不会停止。 如果到达 _deadline-at_ 日期但仍未成功联系帐户服务器，则路由器将认为许可证已过期并将不允许进一步的软件更新。 但是，路由器将继续使用与以前相同的许可等级。
+在`/system license`菜单中，路由器将指示 _next-renewal-at_ 时间，它将尝试联系位于 [licence.mikrotik.com](https://licence.mikrotik.com/) 上的服务器。 通信尝试将在 _next-renewal-at_ 日期后每小时执行一次，在服务器响应错误之前不会停止。 如果到达 _deadline-at_ 日期但仍未成功联系帐户服务器，则路由器将认为许可证已过期并将不允许进一步的软件更新。 但是，路由器将继续使用与以前相同的许可等级。
 
 ## 虚拟网络适配器
 
@@ -206,7 +206,7 @@ RouterOS v6 不支持Fast Path。
 
 ### 改变MTU
 
-VMware ESXi 支持最大 9000 字节的 MTU。 要从中获益，您必须调整 ESXi 安装以允许更高的 MTU。 ESXi 服务器正确允许 ESXi 服务器在 MTU **更改后**添加虚拟以太网接口以传输巨型帧。 在 ESXi 服务器上的 MTU 更改之前添加的接口将被 ESXi 服务器禁止（它仍将旧 MTU 报告为最大可能大小）。 如果有这个，你必须重新添加接口到虚拟客户机。
+VMware ESXi 支持最大 9000 字节的 MTU。 要从中获益，必须调整 ESXi 安装允许更高的 MTU。 ESXi 服务器正确允许 ESXi 服务器在 MTU **更改后**添加虚拟以太网接口以传输巨型帧。 在 ESXi 服务器上的 MTU 更改之前添加的接口将被 ESXi 服务器禁止（它仍将旧 MTU 报告为最大可能大小）。 如果有这个，你必须重新添加接口到虚拟客户机。
 
 **示例** 有 2 个接口添加到 ESXi 客户机，接口上自动检测到 MTU 显示添加接口时的 MTU 大小:
 
@@ -228,15 +228,15 @@ echo -n 0 > /sys/class/net/vmbr0/bridge/multicast_snooping
 
 ```
 
-### 未从客户机传递数据包
+### 数据包未从客户机传递
 
-问题:在访客 CHR 上配置软件接口（VLAN、EoIP、网桥等）后，它停止将数据传递到路由器之外的世界。
+问题:在访客 CHR 上配置软件接口（VLAN、EoIP、网桥等）后，它会停止把数据传递到路由器之外。
 
-解决方法:检查你的VMS（Virtualization Management System）安全设置，是否允许其他MAC地址通过，是否允许带有VLAN标签的数据包通过。 根据您的需要调整安全设置，例如允许 MAC 欺骗或某个 MAC 地址范围。 对于 VLAN 接口，通常可以定义允许的 VLAN 标签或 VLAN 标签范围。
+解决方法:检查你的VMS（Virtualization Management System）安全设置，是否允许其他MAC地址通过，是否允许带有VLAN标签的数据包通过。 根据需要调整安全设置，例如允许 MAC 欺骗或某个 MAC 地址范围。 对于 VLAN 接口，通常可以定义允许的 VLAN 标签或 VLAN 标签范围。
 
 ### 在各种管理程序中使用 CHR 上的 VLAN
 
-在某些管理程序中，在虚拟机上使用 VLAN 之前，需要先在管理程序本身配置它们。
+某些管理软件在虚拟机上使用 VLAN 之前，需要先在管理程序本身配置。
 
 #### ESXI
 
@@ -255,11 +255,11 @@ _**Hyper-V documentation:**_
 
 #### bhyve hypervisor
 
-无法在此管理程序上运行 CHR。 CHR 不能作为准虚拟化平台运行。
+无法在此管理软件上运行 CHR。 CHR 不能作为准虚拟化平台运行。
 
 #### Linode
 
-当创建多个具有相同磁盘大小的 Linode 时，新的 Linode 将具有相同的 systemID。 这将导致获得试用/付费许可证的问题。 为避免这种情况，请在首次启动后和申请试用或付费许可证之前运行命令“/system license generate-new-id”。 这将确保 ID 是唯一的。
+当创建多个具有相同磁盘大小的 Linode 时，新的 Linode 将具有相同的 systemID。 这会导致获得试用/付费许可证的问题。 为避免这种情况，请在首次启动后和申请试用或付费许可证之前运行命令“/system license generate-new-id”。 确保 ID 是唯一的。
 
 _**一些有用的文章:**_
 
@@ -276,7 +276,7 @@ NIC 接口未标记特定 VLAN:
 
 ### 时间同步
 
-必须从 GUI 启用（“与主机同步时间”）。 默认情况下禁用后向同步 - 如果客户机领先主机超过 ~5 秒，则不执行同步
+必须从 GUI 启用（“与主机同步时间”）。 默认情况下禁用反向同步 - 如果客户机领先主机超过 ~5 秒，则不执行同步
 
 ### 电源操作
 
@@ -285,14 +285,14 @@ NIC 接口未标记特定 VLAN:
 - 如果脚本花费的时间超过 30 秒或包含错误，则操作失败
 - 如果失败，重试相同的操作将忽略任何错误并成功完成
 - 失败的脚本输出被保存到文件（例如'poweroff-script.log'，'resume-script.log'等）
-- 可以从管理程序 GUI（“运行 VMware 工具脚本”）或通过从控制台启用/禁用脚本来启用/禁用脚本
+- 可以从管理程序 GUI（“运行 VMware 工具脚本”）或通过控制台启用/禁用脚本
 
 ### 暂停/备份
 
 客户机文件系统暂停仅在请求时执行。
 
 - _freeze_ 脚本在冻结文件系统之前执行
--如果管理程序无法准备快照或_freeze_脚本失败，则执行_freeze-fail_脚本
+- 如果管理软件无法准备快照或_freeze_脚本失败，则执行_freeze-fail_脚本
 - _thaw_ 脚本在拍摄快照后执行
 - 脚本运行时间限制为 60 秒
 - _freeze_ 脚本超时和错误导致备份操作中止
@@ -469,13 +469,13 @@ if __name__ == '__main__':
 
 ## KVM
 
-QEMU 客户机代理可用。 可以使用 guest-info 命令检索支持的代理命令。 可以使用 guest-file-\* 命令执行主机-客户机文件传输。 可以使用 guest-network-get-interfaces 命令检索客户机网络信息。
+QEMU 客户机代理可用。 可以用 guest-info 命令检索支持的代理命令。 可以用 guest-file-\* 命令执行主机-客户机文件传输。 可以使用 guest-network-get-interfaces 命令检索客户机网络信息。
 
 - 可以通过使用 guest-exec 命令和 GuestExec 数据结构来执行脚本:
   - 如果提供了 _path_ 成员，则执行相应的文件
   - 如果未设置 _path_ 成员且提供了 _input-data_ 成员，则 _input-data_ 值用作脚本输入
   - 如果设置了 _capture-output_，则报告脚本输出
-  - _args_ 和 _env_ 成员未被使用
+  - _args_ 和 _env_ 成员未使用
 
 - 可以使用 guest-exec-status 命令监控脚本作业进度。 GuestExecStatus 数据结构填充如下:
   - 成功时 _exitcode_ 成员设置为 0

@@ -10,5 +10,3 @@
 -   L3 Hardware offloading [https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWDeviceSupport](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWDeviceSupport)
 -   PTP [https://help.mikrotik.com/docs/display/ROS/Precision+Time+Protocol](https://help.mikrotik.com/docs/display/ROS/Precision+Time+Protocol)
 -   Switch chip features [https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features)
-
-

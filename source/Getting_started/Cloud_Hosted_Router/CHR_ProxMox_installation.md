@@ -2,17 +2,17 @@
 
 - 根据需要使用系统盘和其他设备创建新的guest。
 
-- 然后你必须在 ProxMox 主机上手动上传 CHR 磁盘（qcow 格式）。
+- 然后必须在 ProxMox 主机上手动上传 CHR 磁盘（qcow 格式）。
 
-- 使用 _scp_ 或任何其他类似工具，因为它将使用 SSH 进行上传，并且不需要任何额外配置。
+- 使用 _scp_ 或任何其他类似工具，因为它用 SSH 进行上传，不需要任何额外配置。
 
 - 将文件复制到服务器然后手动编辑 VM 的 .conf 文件或替换之前创建的用于引导客户机的系统映像文件。
 
-- ProxMox 上的本地存储位于 _/var/lib/vz_ 目录中。 应该有一个名为 _images_ 的子目录，其中包含每个 VM 的目录（以 VM 编号命名）。 您可以直接在那里复制文件。
+- ProxMox 上的本地存储位于 _/var/lib/vz_ 目录中。 应该有一个名为 _images_ 的子目录，其中包含每个 VM 的目录（以 VM 编号命名）。 可以直接在那里复制文件。
 
-- 要将现有文件添加到 VM，请直接编辑 VM 的 .conf 文件。 在 _/etc/pve/qemu-server/_ 中查找带有 VM 编号后跟 .conf 的文件。
+- 要将现有文件添加到 VM，可直接编辑 VM 的 .conf 文件。 在 _/etc/pve/qemu-server/_ 中查找带有 VM 编号后跟 .conf 的文件。
 
-**注意：** 创建第二个测试 VM 是个好主意，这样您就可以参考它的 .conf 文件以确保语法正确
+**注意：** 创建第二个测试 VM 是个好主意，这样你就可以参考它的 .conf 文件以确保语法正确
 
 ## 替代方法
 
@@ -22,15 +22,13 @@
 - 通过 scp、wget 或任何其他工具将 CHR 原始映像（.img 文件）下载到此目录中。
 - 现在使用 qemu-img 工具将 CHR 原始映像转换为 qcow2 格式：
 
-```
-qemu-img convert -f raw -O qcow2 chr-6.40.3.img vm-(VM_ID)-disk-1.qcow2
-```
+`qemu-img convert -f raw -O qcow2 chr-6.40.3.img vm-(VM_ID)-disk-1.qcow2`
 
 ## Bash 脚本方法
 
-如果您有权访问 ProxMox 主机，还可以通过 BASH 脚本快速创建 CHR VM。 下面是一个这样的脚本例子。
+如果有权访问 ProxMox 主机，还可以通过 BASH 脚本快速创建 CHR VM。 下面是一个例子。
 
-该脚本的作用：
+脚本的作用：
 
 - 将 tmp 文件存储在：_/root/temp_ 目录中。
 - 从 MikroTik 下载页面下载原始映像存档。

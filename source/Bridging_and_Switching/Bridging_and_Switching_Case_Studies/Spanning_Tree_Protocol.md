@@ -197,7 +197,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 | **priority** (_integer: 0..240_; Default: **128**)                                                         | /interface bridge port, CIST port priority, 在CIST根桥上用于选举CIST根端口。            |
 | **path-cost** (_integer: 1..4294967295_; Default: **10**)                                                  | /interface bridge port, CIST port path cost, 用在CIST非根桥端口上，用于选举CIST根端口。 |
 
- MSTP检查选举根桥/端口的参数顺序与(R)STP相同，您可以在(R)STP选举过程部分阅读更多信息。
+ MSTP检查选举根桥/端口的参数顺序与(R)STP相同，你可以在(R)STP选举过程部分阅读更多信息。
 
 ### MST实例
 

@@ -10,8 +10,8 @@ ___
 
 在深入解释桥接VLAN过滤之前， 应该了解桥接VLAN过滤所涉及的几个基本概念。
 
-- **Tagged/Untagged** 在"/interface bridge vlan "菜单下，你可以指定一个包含有标签和无标签端口的项。一般来说，有标签的端口应该是您的聚合端口，无标签的端口应该是您的接入端口。通过指定一个有标签的端口，网桥将始终为通过该端口发送的数据包设置一个 VLAN 标签 (出站)。如果指定了一个未标记的端口， 网桥将总是从出站数据包中去除 VLAN 标记。
-- **VLAN-ids** - 在"/interface bridge vlan "菜单下，您可以指定一项，其中允许在特定的端口上使用某些VLAN。VLAN ID在出站端口上被检查。如果数据包中的 VLAN ID 不存在于出站端口的桥接 VLAN 表中，那么数据包在发送之前就会被丢弃。
+- **Tagged/Untagged** 在"/interface bridge vlan "菜单下，你可以指定一个包含有标签和无标签端口的项。一般来说，有标签的端口应该是你的聚合端口，无标签的端口应该是你的接入端口。通过指定一个有标签的端口，网桥将始终为通过该端口发送的数据包设置一个 VLAN 标签 (出站)。如果指定了一个未标记的端口， 网桥将总是从出站数据包中去除 VLAN 标记。
+- **VLAN-ids** - 在"/interface bridge vlan "菜单下，你可以指定一项，其中允许在特定的端口上使用某些VLAN。VLAN ID在出站端口上被检查。如果数据包中的 VLAN ID 不存在于出站端口的桥接 VLAN 表中，那么数据包在发送之前就会被丢弃。
 - **PVID** - 端口VLAN ID用于接入端口，用一个特定的VLAN ID来标记所有入站流量。每使用一个PVID，就会在网桥VLAN表中添加一个动态条目，该端口会被自动添加为未标记的端口。
 - **Ingress filtering/** - 默认情况下，在桥接VLAN表中不存在的VLAN会在发送前被丢弃（出站），但这个属性允许你在接收数据包时丢弃（入站）。
 - **管理访问** - 网桥应该只是在网桥端口之间转发数据包，在其他设备看来，它们之间只是有一条线。通过网桥VLAN过滤，你可以限制哪些数据包被允许访问配置了网桥的设备，最常见的做法是只允许使用一个非常具体的VLAN ID来访问设备，但也有其他方法可以授予设备访问权。在通过网桥端口访问设备时，管理访问是增加另一层安全性的好方法，这种访问方式有时被称为管理端口。对于支持 [VLAN Filtering with hardware offloading] (https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 的设备，它也与网桥的CPU端口有关。
@@ -19,7 +19,7 @@ ___
 - **frame-type** - 你可以过滤掉数据包，无论它们是否有VLAN标签，这对于为你的桥接端口增加一层安全保障很有用。
 - **EtherType\** - 默认情况下，VLAN感知网桥会通过检查C-TAG（0x8100）来过滤VLAN，所有其他的VLAN标签都被认为是无标签的数据包（没有VLAN标签）。所选的 EtherType 将被用于 VLAN 过滤和 VLAN 标记/未标记。
 - 如果数据包的 EtherType 与网桥配置的 EtherType 不匹配，那么入站数据包就会被视为无标记数据包，这种行为为将 VLAN 封装到另一个不同的 VLAN 提供了可能性。这也为通过网络中的不同设备来分流特定的流量提供了可能。
-- 如果一个数据包有一个与EtherType相匹配的VLAN标签，那么这个数据包就会被认为是一个有标签的数据包，但是你可以强迫另一个VLAN标签，而不管数据包的内容。通过在网桥端口上设置 `tag-stacking=yes`，您将在所有入站数据包的任何其他标签之上添加另一个具有 PVID 值的 VLAN 标签。
+- 如果一个数据包有一个与EtherType相匹配的VLAN标签，那么这个数据包就会被认为是一个有标签的数据包，但是你可以强迫另一个VLAN标签，而不管数据包的内容。通过在网桥端口上设置 `tag-stacking=yes`，你将在所有入站数据包的任何其他标签之上添加另一个具有 PVID 值的 VLAN 标签。
 
 ## 聚合/接入端口设置
 
@@ -35,7 +35,7 @@ ___
 
 当我们确定了我们的非标记端口后，我们现在可以确定我们的标记端口。标签端口将是聚合端口（携带多个VLAN的端口），通常这个端口连接到路由器或另一个交换机/网桥，你也可以有多个聚合端口。标签端口总是携带带有VLAN标签的数据包（因此而得名），你必须**总是**为你希望这个端口转发的每个VLAN ID指定标签端口。有可能一个端口是一个VLAN ID的标记端口，而同一个端口是一个不同VLAN ID的非标记端口，但这是针对不同类型的设置（混合端口设置）。
 
-必须为PVID属性添加特别说明。这个属性应该用于接入端口，但它也可以用于聚合端口（在混合端口设置中）。通过使用 PVID 属性，您将为该特定网桥端口上收到的所有 **UNTAGGED** 数据包添加一个新的 VLAN 标签，其 VLAN ID 在 PVID 中指定。PVID 对有标签的数据包没有任何影响，这意味着，例如，如果在 **ether2** 上收到一个 VLAN 标签为 **VLAN40** 的数据包，而这个数据包有 `PVID=20`，那么 VLAN 标签就不会被改变，转发将取决于网桥 VLAN 表中的条目。
+必须为PVID属性添加特别说明。这个属性应该用于接入端口，但它也可以用于聚合端口（在混合端口设置中）。通过使用 PVID 属性，你将为该特定网桥端口上收到的所有 **UNTAGGED** 数据包添加一个新的 VLAN 标签，其 VLAN ID 在 PVID 中指定。PVID 对有标签的数据包没有任何影响，这意味着，例如，如果在 **ether2** 上收到一个 VLAN 标签为 **VLAN40** 的数据包，而这个数据包有 `PVID=20`，那么 VLAN 标签就不会被改变，转发将取决于网桥 VLAN 表中的条目。
 
 要配置聚合/接入端口设置，首先需要创建一个网桥。
 
@@ -65,7 +65,7 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 不要为接入端口使用一个以上的桥接VLAN表项中指定的VLAN ID， 只应该为聚合端口指定多个VLAN ID。
 
-没有必要把桥接端口作为无标记端口添加，因为每个桥接端口都是作为无标记端口动态添加的，其 VLAN ID 是在 PVID 属性中指定的。这是因为有一个功能可以自动在网桥 VLAN 表中添加一个适当的条目， 以方便和提高性能， 但这个功能也有一些注意事项， 您必须加以注意。所有具有相同PVID的端口都会被添加到一个适当的VLAN ID条目中，作为无标记的端口，但请注意**网桥接口**也有一个VLAN ID。
+没有必要把桥接端口作为无标记端口添加，因为每个桥接端口都是作为无标记端口动态添加的，其 VLAN ID 是在 PVID 属性中指定的。这是因为有一个功能可以自动在网桥 VLAN 表中添加一个适当的条目， 以方便和提高性能， 但这个功能也有一些注意事项， 你必须加以注意。所有具有相同PVID的端口都会被添加到一个适当的VLAN ID条目中，作为无标记的端口，但请注意**网桥接口**也有一个VLAN ID。
 
 出于测试目的，我们将启用 VLAN 过滤，但请注意，这可能会失去对设备的访问，因为它还没有配置管理权限（我们将在后面配置）。建议在使用串行控制台时配置VLAN过滤，尽管你也可以通过一个没有加入网桥的端口来配置设备。确保你使用的是串行控制台或通过不同的端口（不在网桥中）连接，并启用VLAN过滤功能。
 
@@ -77,7 +77,7 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /interface bridge vlan print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp; BRIDGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-IDS&nbsp; CURRENT-TAGGED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CURRENT-UNTAGGED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2 D bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">ether1</code></div></div></td></tr></tbody></table>
 
-由于所有桥接端口（包括聚合端口，**ether1**）都默认设置了 "PVID=1"，所以**VLAN1**有一个动态添加的项，但你也应该注意到，**bridge1**接口（CPU端口）也被动态添加。你应该注意到，**bridge1**也是一个网桥端口，因此可能会被动态添加到网桥VLAN表中。你有可能因为这个功能而无意中允许对设备的访问。例如，如果您按照本指南的要求，为聚合端口（**ether1**）设置了**PVID=1**，而没有同时改变CPU端口（**bridge1**）的PVID，那么通过**ether1**使用无标记流量访问设备是允许的，这在打印出网桥VLAN表时也可以看到。这种情况在下面的图片中有所说明。
+由于所有桥接端口（包括聚合端口，**ether1**）都默认设置了 "PVID=1"，所以**VLAN1**有一个动态添加的项，但你也应该注意到，**bridge1**接口（CPU端口）也被动态添加。你应该注意到，**bridge1**也是一个网桥端口，因此可能会被动态添加到网桥VLAN表中。你有可能因为这个功能而无意中允许对设备的访问。例如，如果你按照本指南的要求，为聚合端口（**ether1**）设置了**PVID=1**，而没有同时改变CPU端口（**bridge1**）的PVID，那么通过**ether1**使用无标记流量访问设备是允许的，这在打印出网桥VLAN表时也可以看到。这种情况在下面的图片中有所说明。
 
 ![](https://help.mikrotik.com/docs/download/attachments/28606465/Trunk_access_setup_unintentional_mgmt.png?version=2&modificationDate=1618317673875&api=v2)
 
@@ -117,7 +117,7 @@ PVID 在启用 VLAN 过滤之前没有任何作用。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">bridge1 </code><code class="ros value">frame-types</code><code class="ros plain">=admit-only-vlan-tagged</code> <code class="ros value">ingress-filtering</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
-这不仅会丢弃无标记的数据包， 而且会禁用动态添加无标记端口到网桥 VLAN 表的功能。如果您打印出当前的网桥 VLAN 表， 就会发现 **bridge1** 没有被动态地添加为无标记端口。
+这不仅会丢弃无标记的数据包， 而且会禁用动态添加无标记端口到网桥 VLAN 表的功能。如果你打印出当前的网桥 VLAN 表， 就会发现 **bridge1** 没有被动态地添加为无标记端口。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /interface bridge vlan print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp; BRIDGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-IDS&nbsp; CURRENT-TAGGED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CURRENT-UNTAGGED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2 D bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">3&nbsp;&nbsp; bridge1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">ether3</code></div></div></td></tr></tbody></table>
 
@@ -157,13 +157,13 @@ ___
 
 网桥只检查外层标签 (最接近 MAC 地址的标签)， 任何其他标签都会在网桥配置的任何地方被忽略。网桥不知道数据包的内容，即使可能还有其他 VLAN 标签，也只检查第一个 VLAN 标签。
 
-ether-type 属性允许您为 VLAN 标签选择以下 EtherTypes。
+ether-type 属性允许你为 VLAN 标签选择以下 EtherTypes。
 
 - 0x88a8 - SVID, IEEE 802.1ad, 服务VLAN
 - 0x8100 - CVID, IEEE 802.1Q, 客户 VLAN
 - 0x9100 - 双重标签（不是很常见）。
 
-为了正确配置网桥的 VLAN 过滤， 您必须了解网桥是如何区分有标签和无标签的数据包的。如前所述， 网桥会检查 EtherType 是否与包中的外层 VLAN 标签相匹配。例如， 考虑下面这个数据包。
+为了正确配置网桥的 VLAN 过滤， 你必须了解网桥是如何区分有标签和无标签的数据包的。如前所述， 网桥会检查 EtherType 是否与包中的外层 VLAN 标签相匹配。例如， 考虑下面这个数据包。
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">FFFFFFFFFFFF 6C3B6B7C413E 8100 6063 9999</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">----------------------------------------</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">DST-MAC = FFFFFFFFFFFF</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">SRC-MAC = 6C3B6B7C413E</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">Outer EtherType = 8100 (IEEE 802.1Q VLAN tag)</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">VLAN priority = 6</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">VLAN ID = 99 (HEX = 63)</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">Inner EtherType = 9999</code></div></div></td></tr></tbody></table>
 

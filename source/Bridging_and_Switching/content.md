@@ -33,7 +33,7 @@ ___
 | **frame-types** (_admit-all \| admit-only-untagged-and-priority-tagged \| admit-only-vlan-tagged_; Default: **admit-all**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 指定桥接端口上允许的帧类型。此属性仅在 `vlan-filtering` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **igmp-snooping** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 启用组播组和端口学习，以防止组播流量淹没一个网桥中的所有接口。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **igmp-version** (_2 \| 3_; Default: **2**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 选择当桥接口充当 IGMP 查询器时将生成 IGMP 成员查询的 IGMP 版本。此属性仅在 `igmp-snooping` 和 `multicast-querier` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **ingress-filtering** (_yes \| no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 启用或禁用 VLAN 入口过滤，检查入口端口是否是桥接 VLAN 表中接收到的 VLAN ID 的成员。默认情况下，桥接 VLAN 表中不存在的 VLAN 在发送（出口）之前被丢弃，但此属性允许您在接收到数据包（入口）时丢弃它们。应与 `frame-types` 一起使用以指定是否应标记或取消标记入口流量。此属性仅在 `vlan-filtering` 设置为 `yes` 时有效。该设置自 RouterOS v7 起默认启用。                                                                                                                                                                                                                                                                                                                                                                                      |
+| **ingress-filtering** (_yes \| no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 启用或禁用 VLAN 入口过滤，检查入口端口是否是桥接 VLAN 表中接收到的 VLAN ID 的成员。默认情况下，桥接 VLAN 表中不存在的 VLAN 在发送（出口）之前被丢弃，但此属性允许你在接收到数据包（入口）时丢弃它们。应与 `frame-types` 一起使用以指定是否应标记或取消标记入口流量。此属性仅在 `vlan-filtering` 设置为 `yes` 时有效。该设置自 RouterOS v7 起默认启用。                                                                                                                                                                                                                                                                                                                                                                                      |
 | **l2mtu** (_read-only_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | L2MTU 表示这个接口可以发送的没有 MAC 头的帧的最大尺寸。L2MTU 值将由网桥自动设置， 它将使用任何相关网桥端口的最低 L2MTU 值。这个值不能被手动改变。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **last-member-interval** (_time_; Default: **1s**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 当网桥端口上的最后一个客户端取消订阅多播组并且网桥充当主动查询器时，网桥将发送组特定的 IGMP/MLD 查询，以确保没有其他客户端仍然订阅。该设置更改了这些查询的响应时间。如果在特定时间段内没有收到成员报告（`last-member-interval` * `last-member-query-count`），则多播组将从多播数据库 (MDB) 中删除。<br>如果桥接端口配置了快速离开，多播组被立即删除而不发送任何查询。<br>此属性仅在 `igmp-snooping` 和 `multicast-querier` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                            |
 | **last-member-query-count** (_integer: 0..4294967295_; Default: **2**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | 在 IGMP/MLD 侦听网桥停止转发某个多播流之前，`last-member-interval` 应该经过多少次。此属性仅在 `igmp-snooping` 和 `multicast-querier` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -42,7 +42,7 @@ ___
 | **membership-interval** (_time_; Default: **4m20s**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 如果在网桥端口上未收到 IGMP/MLD 成员报告，则删除多播数据库 (MDB) 中的条目后的时间量。此属性仅在 `igmp-snooping` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **mld-version** (_1 \| 2_; Default: **1**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 当网桥接口充当 MLD 查询器时，选择将生成 MLD 成员查询的 MLD 版本。此属性仅在网桥具有活动 IPv6 地址时有效，`igmp-snooping` 和 `multicast-querier` 设置为 `yes`。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **mtu** (_integer_; Default: **auto**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | 最大传输单元，默认情况下，网桥会自动设置 MTU，它将使用任何关联网桥端口的最低 MTU 值。不添加任何网桥端口的默认网桥MTU值为1500。MTU值可以手动设置，但不能超过网桥L2MTU或最低网桥端口L2MTU。如果新的网桥端口添加了 L2MTU，它小于网桥的“actual-mtu”（由“mtu”属性设置），那么手动设置的值将被忽略，网桥将像“mtu=auto”一样工作` 已设置。<br>在网桥上添加 VLAN 接口时，当 VLAN 使用高于默认值 1500 的 MTU 时，建议手动设置网桥的 MTU。                                                                                                                                                                                                                                                                                                             |
-| **multicast-querier** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 多播查询器生成周期性的 IGMP/MLD 一般成员查询，所有支持 IGMP/MLD 的设备都会使用 IGMP/MLD 成员报告对其进行响应，通常是 PIM（多播）路由器或 IGMP 代理生成这些查询。<br>通过使用此属性，您可以制作启用 IGMP/MLD 侦听的网桥以生成 IGMP/MLD 一般成员资格查询。只要第 2 层网络中没有活动查询器（PIM 路由器或 IGMP 代理），就应该使用此属性。如果第 2 层网络中没有多播查询器，多播数据库 (MDB) 将不会更新，学习的条目将超时并且 IGMP/MLD 侦听将无法正常运行。<br>仅生成未标记的 IGMP/MLD 一般成员查询，IGMP查询使用 IPv4 0.0.0.0 源地址发送，MLD 查询使用网桥接口的 IPv6 链路本地地址发送。如果检测到外部 IGMP/MLD 查询器，网桥将不会发送查询（请参阅监控值 `igmp-querier` 和 `mld-querier`）。<br>这属性仅在 `igmp-snooping` 设置为 `yes` 时有效。 |
+| **multicast-querier** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 多播查询器生成周期性的 IGMP/MLD 一般成员查询，所有支持 IGMP/MLD 的设备都会使用 IGMP/MLD 成员报告对其进行响应，通常是 PIM（多播）路由器或 IGMP 代理生成这些查询。<br>通过使用此属性，你可以制作启用 IGMP/MLD 侦听的网桥以生成 IGMP/MLD 一般成员资格查询。只要第 2 层网络中没有活动查询器（PIM 路由器或 IGMP 代理），就应该使用此属性。如果第 2 层网络中没有多播查询器，多播数据库 (MDB) 将不会更新，学习的条目将超时并且 IGMP/MLD 侦听将无法正常运行。<br>仅生成未标记的 IGMP/MLD 一般成员查询，IGMP查询使用 IPv4 0.0.0.0 源地址发送，MLD 查询使用网桥接口的 IPv6 链路本地地址发送。如果检测到外部 IGMP/MLD 查询器，网桥将不会发送查询（请参阅监控值 `igmp-querier` 和 `mld-querier`）。<br>这属性仅在 `igmp-snooping` 设置为 `yes` 时有效。 |
 | **multicast-router** (_disabled                                                                                                                                                                                                                                                                                                                                                                                                                                                              \| permanent \| temporary-query_; Default: **temporary-query**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | 组播路由器端口是连接组播路由器或查询器的端口。在此端口上，将发送未注册的多播流和 IGMP/MLD 成员报告。此设置更改桥接接口本身的多播路由器的状态。此属性可用于将 IGMP/MLD 成员报告发送到桥接接口，以进行进一步的多播路由或代理。此属性仅在 `igmp-snooping` 设置为 `yes` 时有效。 <br>- `disabled` \- 在网桥接口上禁用组播路由器状态。未注册的多播和 IGMP/MLD 成员报告不会发送到网桥接口，无论网桥接口上的配置如何。<br>- `permanent` \- 在网桥接口上启用多播路由器状态。未注册的多播和 IGMP/MLD 成员报告被发送到网桥接口本身，无论网桥接口上的配置如何。<br>- `temporary-query` \- 自动检测网桥上的多播路由器状态使用 IGMP/MLD 查询的桥接接口。                                                                                                 |
 | **name** (_text_; Default: **bridgeN**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | 网桥接口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **priority** (_integer: 0..65535 decimal format or 0x0000-0xffff hex format_; Default: **32768 \/ 0x8000**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 网桥优先级，R/STP用来确定根桥，MSTP用来确定CIST和IST区域根网桥。当 `protocol-mode` 设置为 `none` 时，此属性无效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -58,7 +58,7 @@ ___
 | **transmit-hold-count** (_integer: 1..10_; Default: **6**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 端口传输状态机用于限制传输速率的传输保持计数。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **vlan-filtering** (_yes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \| no_; Default: **no**) | 全局启用或禁用网桥的 VLAN 功能。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
-!!!warning 更改某些属性可能会导致网桥暂时禁用所有端口。每当在生产环境中更改此类属性时都必须考虑到这一点，因为它可能导致所有数据包被暂时丢弃。这些属性包括“vlan-filtering”、“protocol-mode”、“igmp-snooping”、“fast-forward”等。
+> 更改某些属性可能会导致网桥暂时禁用所有端口。每当在生产环境中更改此类属性时都必须考虑到这一点，因为它可能导致所有数据包被暂时丢弃。这些属性包括“vlan-filtering”、“protocol-mode”、“igmp-snooping”、“fast-forward”等。
 
 ## 示例  
 
@@ -114,15 +114,15 @@ ___
 
 RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓扑。对于只有 2 个网桥的小型网络，STP 不会带来很多好处，但对于较大的网络，正确配置 STP 非常重要，将 STP 相关值保留为默认值可能会导致网络完全无法访问，即使是单个网桥发生故障。为了实现适当的无环路和冗余拓扑，有必要正确设置网桥优先级、端口路径成本和端口优先级。
 
-!!!info 在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
+> 在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
 
-!!!warning STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
+> STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
 
 ## 每个端口的STP
 
-在某些情况下，您可能希望限制单个或多个端口上的 STP 功能。您可以在下面找到一些针对不同用例的示例。
+在某些情况下，你可能希望限制单个或多个端口上的 STP 功能。你可以在下面找到一些针对不同用例的示例。
 
-!!!warning 更改默认 (R/M)STP 功能时要小心，确保您了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
+> 更改默认 (R/M)STP 功能时要小心，确保你了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
 
 ### 创建边缘端口
 
@@ -152,7 +152,7 @@ add action=drop chain=output dst-mac-address=01:80:C2:00:00:00/FF:FF:FF:FF:FF:FF
 
 ```
 
-!!!info 你可以使用接口列表来指定多个接口。
+> 你可以使用接口列表来指定多个接口。
 
 ### 丢弃已接收的BPDU包
 
@@ -176,11 +176,11 @@ add action=drop mac-dst-address=01:80:C2:00:00:00 src-ports=ether1
 
 在此示例中，所有在 **ether1** 上收到的 BPDU 都被丢弃。
 
-!!!warning 如果您打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果您仅在一侧阻塞了 BPDU，则端口将不断摆动。
+> 如果你打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果你仅在一侧阻塞了 BPDU，则端口将不断摆动。
 
 ### 启用BPDU防护
 
-在此示例中，如果 **ether1** 收到 BPDU，它将阻止端口并要求您手动重新启用它。
+在此示例中，如果 **ether1** 收到 BPDU，它将阻止端口并要求你手动重新启用它。
 
 ```shell
 /interface bridge
@@ -201,9 +201,9 @@ ___
 
 | 属性                                                                               | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **use-ip-firewall** (_yes                                \| no_; Default: **no**)  | 强制桥接流量也由 IP 路由的预路由、转发和后路由部分处理（请参阅[数据包流](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS#heading-FlowofBridgedPacket)文章)。这不适用于路由流量。如果您想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue) 或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)在桥中进行流量。如果使用网桥“vlan-filtering”，则需要属性“use-ip-firewall-for-vlan”。 |
-| **use-ip-firewall-for-pppoe** (_yes                      \| no_; Default: **no**)  | 发送桥接的未加密 PPPoE 流量也由 IP/防火墙处理。此属性仅在 `use-ip-firewall` 设置为 `yes` 时有效。如果您想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue)或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)到网桥中的 PPPoE 流量。                                                                                                                                                                 |
-| **use-ip-firewall-for-vlan** (_yes                       \| no_; Default: **no**)  | 发送桥接 VLAN 流量也由 IP/防火墙处理。此属性仅在 `use-ip-firewall` 设置为 `yes` 时有效。如果您想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue)或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)到网桥中的 VLAN 流量。                                                                                                                                                                           |
+| **use-ip-firewall** (_yes                                \| no_; Default: **no**)  | 强制桥接流量也由 IP 路由的预路由、转发和后路由部分处理（请参阅[数据包流](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS#heading-FlowofBridgedPacket)文章)。这不适用于路由流量。如果你想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue) 或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)在桥中进行流量。如果使用网桥“vlan-filtering”，则需要属性“use-ip-firewall-for-vlan”。 |
+| **use-ip-firewall-for-pppoe** (_yes                      \| no_; Default: **no**)  | 发送桥接的未加密 PPPoE 流量也由 IP/防火墙处理。此属性仅在 `use-ip-firewall` 设置为 `yes` 时有效。如果你想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue)或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)到网桥中的 PPPoE 流量。                                                                                                                                                                 |
+| **use-ip-firewall-for-vlan** (_yes                       \| no_; Default: **no**)  | 发送桥接 VLAN 流量也由 IP/防火墙处理。此属性仅在 `use-ip-firewall` 设置为 `yes` 时有效。如果你想分配[简单队列](https://help.mikrotik.com/docs/display/ROS/Queues#heading-SimpleQueue)或全局[队列树](https://help.mikrotik.com/docs/display/ROS/Queues#heading-QueueTree)到网桥中的 VLAN 流量。                                                                                                                                                                           |
 | **allow-fast-path** (_yes                                \| no_; Default: **yes**) | 是否全局启用网桥快速路径。                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **bridge-fast-path-active** (_yes                        \| no_; Default: _)_      | 显示网桥 FastPath 是否在全局处于活动状态，不显示每个网桥接口的 FastPath 状态。                                                                                                                                                                                                                                                                                                                                                                                           |
 | **bridge-fast-path-packets** (_integer_; Default: _)_                              | 显示由网桥 Fast Path 转发的数据包计数。                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -211,7 +211,7 @@ ___
 | **bridge-fast-forward-packets** (_integer_; Default: _)_                           | 显示由网桥 Fast Forward 转发的数据包计数。                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **bridge-fast-forward-bytes** (_integer_; Default: _)_                             | 显示由网桥 Fast Forward 转发的字节数。                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-!!!info 如果您想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，您还应该启用适当的属性。
+> 如果你想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，你还应该启用适当的属性。
 
 # 端口设置
 
@@ -237,7 +237,7 @@ ___
 | **internal-path-cost** (_integer: 0..4294967295_; Default: **10**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 区域内 MSTI0 接口的路径成本。此属性仅在 `protocol-mode` 设置为 `mstp` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **interface** (_name_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 接口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **path-cost** (_integer: 0..4294967295_; Default: **10**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 接口的路径开销，STP 使用它来确定最佳路径，MSTP 使用它来确定区域之间的最佳路径。当 `protocol-mode` 设置为 `none` 时，此属性无效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **point-to-point** (_auto \| yes \| no_; Default: **auto**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 指定网桥端口是否使用点对点链路连接到网桥，以便在出现故障时更快地收敛。将此属性设置为“是”，您将强制链接成为点对点链接，这将跳过检查机制，该机制会检测并等待来自此单个链接的其他设备的 BPDU。通过将此属性设置为 `no`，链接可以从多个设备接收 BPDU。将该属性设置为“是”，可以明显缩短 (R/M)STP 收敛时间。通常，如果链路之间可以连接另一台设备，您应该只将此属性设置为`no`，这主要与无线媒体和以太网集线器有关。如果以太网链路是全双工的，则 `auto` 会启用点对点功能。当 `protocol-mode` 设置为 `none` 时，此属性无效。                                                                                                                                                                                                                                               |
+| **point-to-point** (_auto \| yes \| no_; Default: **auto**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 指定网桥端口是否使用点对点链路连接到网桥，以便在出现故障时更快地收敛。将此属性设置为“是”，你将强制链接成为点对点链接，这将跳过检查机制，该机制会检测并等待来自此单个链接的其他设备的 BPDU。通过将此属性设置为 `no`，链接可以从多个设备接收 BPDU。将该属性设置为“是”，可以明显缩短 (R/M)STP 收敛时间。通常，如果链路之间可以连接另一台设备，你应该只将此属性设置为`no`，这主要与无线媒体和以太网集线器有关。如果以太网链路是全双工的，则 `auto` 会启用点对点功能。当 `protocol-mode` 设置为 `none` 时，此属性无效。                                                                                                                                                                                                                                               |
 | **priority** (_integer: 0..240_; Default: **128**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 接口的优先级，STP用它来确定根端口，MSTP用它来确定区域间的根端口。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **pvid** (_integer 1..4094_; Default: **1**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 端口 VLAN ID (pvid) 指定未标记的入口流量分配到哪个 VLAN。此属性仅在 `vlan-filtering` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **restricted-role** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 在端口上启用受限角色，STP 使用该角色来禁止端口成为根端口。此属性仅在 `protocol-mode` 设置为 `mstp` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -315,7 +315,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-!!!info 移动接口列表时的第二个参数被认为是“before id”，第二个参数指定将选择的接口列表移动到哪个接口列表之前。当移动第一个接口列表代替第二个接口列表时，该命令将无效，因为第一个列表将移动到第二个列表之前，无论哪种方式都是当前状态。
+> 移动接口列表时的第二个参数被认为是“before id”，第二个参数指定将选择的接口列表移动到哪个接口列表之前。当移动第一个接口列表代替第二个接口列表时，该命令将无效，因为第一个列表将移动到第二个列表之前，无论哪种方式都是当前状态。
 
 ## 桥接端口监控
 
@@ -478,7 +478,7 @@ Columns: GROUP, VID, ON-PORTS, BRIDGE
 
 ```
 
-如果某个 IPv6 多播组不需要被监听，并且希望在所有端口和 VLAN 上泛洪，则可以在所有 VLAN 和端口上创建一个静态 MDB 条目，包括桥接接口本身。使用以下命令在所有 VLAN 和端口上为多播组 ff02::2 创建一个静态 MDB 条目（针对您的特定设置修改“端口”设置）：
+如果某个 IPv6 多播组不需要被监听，并且希望在所有端口和 VLAN 上泛洪，则可以在所有 VLAN 和端口上创建一个静态 MDB 条目，包括桥接接口本身。使用以下命令在所有 VLAN 和端口上为多播组 ff02::2 创建一个静态 MDB 条目（针对你的特定设置修改“端口”设置）：
 
 ```shell
 /interface bridge mdb
@@ -508,11 +508,11 @@ Columns: GROUP, VID, ON-PORTS, BRIDGE
 
 ___
 
-自 RouterOS v6.41 起，如果设备具有内置交换芯片，则可以同时交换多个端口。虽然网桥是一种会消耗 CPU 资源的软件功能，但网桥硬件卸载功能将允许您使用内置交换芯片转发数据包，如果配置正确，这将使您获得更高的吞吐量。
+自 RouterOS v6.41 起，如果设备具有内置交换芯片，则可以同时交换多个端口。虽然网桥是一种会消耗 CPU 资源的软件功能，但网桥硬件卸载功能将允许你使用内置交换芯片转发数据包，如果配置正确，这将使你获得更高的吞吐量。
 
-在以前的版本（RouterOS v6.41 之前）中，您必须使用 master-port 属性来同时切换多个端口，但在 RouterOS v6.41 中，此属性被桥接硬件卸载功能所取代，它允许您切换端口和使用一些桥功能，例如，[生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)。
+在以前的版本（RouterOS v6.41 之前）中，你必须使用 master-port 属性来同时切换多个端口，但在 RouterOS v6.41 中，此属性被桥接硬件卸载功能所取代，它允许你切换端口和使用一些桥功能，例如，[生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)。
 
-!!!info 从以前的版本（RouterOS v6.41 之前）升级时，旧的主端口配置会自动转换为新的**桥硬件卸载**配置。从较新版本（RouterOS v6.41 和更新版本）降级到旧版本（在 RouterOS v6.41 之前）配置不会转换回来，取而代之的是没有硬件卸载的网桥，在这种情况下，您需要重新配置设备以使用旧的主端口配置。
+> 从以前的版本（RouterOS v6.41 之前）升级时，旧的主端口配置会自动转换为新的**桥硬件卸载**配置。从较新版本（RouterOS v6.41 和更新版本）降级到旧版本（在 RouterOS v6.41 之前）配置不会转换回来，取而代之的是没有硬件卸载的网桥，在这种情况下，你需要重新配置设备以使用旧的主端口配置。
 
 以下是支持硬件卸载 (+) 或禁用硬件卸载 (-) 的设备和功能列表：
 
@@ -529,21 +529,21 @@ ___
 
 5. 只有 802.3ad 和 balance-xor 模式可以进行 HW 卸载。其他绑定模式不支持HW卸载。
   
-从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 切换为您的设备配置。 Bridge Hardware Offloading 应视为端口切换，但具有更多可能的功能。通过启用硬件卸载，您允许内置交换芯片使用其交换逻辑处理数据包。下图说明切换发生在任何与软件相关的操作之前。
+从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 切换为你的设备配置。 Bridge Hardware Offloading 应视为端口切换，但具有更多可能的功能。通过启用硬件卸载，你允许内置交换芯片使用其交换逻辑处理数据包。下图说明切换发生在任何与软件相关的操作之前。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/image2022-2-14_14-57-37.png?version=1&modificationDate=1644843359301&api=v2)
 
 由其中一个端口接收的数据包总是首先通过交换机逻辑。交换机逻辑决定数据包应该去往哪些端口（最常见的是根据数据包的目标 MAC 地址做出此决定，但根据数据包和配置可能涉及其他标准）。在大多数情况下，数据包对 RouterOS 是不可见的（只有统计数据会显示数据包已经通过），这是因为数据包已经被交换芯片处理并且从未到达 CPU。
 
-尽管在某些情况下允许数据包由 CPU 处理是可能的，但这通常称为将数据包转发到交换机 CPU 端口（或网桥 VLAN 过滤场景中的网桥接口）。这允许 CPU 处理数据包并让 CPU 转发数据包。将数据包传递到 CPU 端口将使您有机会将数据包路由到不同的网络，执行流量控制等软件相关的数据包处理动作。要允许 CPU 处理数据包，您需要根据您的需要和所使用的设备进行某些配置更改（最常见的是，将数据包传递到 CPU 是 VLAN 过滤设置所必需的）。查看特定设备的手册页：
+尽管在某些情况下允许数据包由 CPU 处理是可能的，但这通常称为将数据包转发到交换机 CPU 端口（或网桥 VLAN 过滤场景中的网桥接口）。这允许 CPU 处理数据包并让 CPU 转发数据包。将数据包传递到 CPU 端口将使你有机会将数据包路由到不同的网络，执行流量控制等软件相关的数据包处理动作。要允许 CPU 处理数据包，你需要根据你的需要和所使用的设备进行某些配置更改（最常见的是，将数据包传递到 CPU 是 VLAN 过滤设置所必需的）。查看特定设备的手册页：
 
 - [CRS1xx/2xx series switches](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836)
 - [CRS3xx, CRS5xx series switches and CCR2116, CCR2216 routers](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)
 - [non-CRS series switches](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features)
 
-!!!info 某些网桥和以太网端口属性与交换芯片设置直接相关，更改此类属性可以触发**交换芯片重置**，这将暂时禁用交换芯片上的所有以太网端口以使设置生效，这每当更改生产环境中的属性时都必须考虑。这些属性包括 DHCP 侦听、IGMP 侦听、VLAN 过滤、L2MTU、流量控制等（可以触发交换芯片重置的具体设置取决于设备的型号）。
+> 某些网桥和以太网端口属性与交换芯片设置直接相关，更改此类属性可以触发**交换芯片重置**，这将暂时禁用交换芯片上的所有以太网端口以使设置生效，这每当更改生产环境中的属性时都必须考虑。这些属性包括 DHCP 侦听、IGMP 侦听、VLAN 过滤、L2MTU、流量控制等（可以触发交换芯片重置的具体设置取决于设备的型号）。
 
-!!!warning [CRS1xx/2xx 系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835#CRS1xx/2xxseriesswitches-Multipleswitchgroups) 支持每个交换芯片的多个硬件卸载网桥。所有其他设备每个交换芯片仅支持一个硬件卸载网桥。使用 hw=yes/no 参数选择哪个网桥将使用硬件卸载。
+> [CRS1xx/2xx 系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835#CRS1xx/2xxseriesswitches-Multipleswitchgroups) 支持每个交换芯片的多个硬件卸载网桥。所有其他设备每个交换芯片仅支持一个硬件卸载网桥。使用 hw=yes/no 参数选择哪个网桥将使用硬件卸载。
 
 ## 示例
 
@@ -573,7 +573,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-!!!info RouterOS v6.41 和更新版本中的端口切换是使用网桥配置完成的。在 RouterOS v6.41 之前，端口切换是使用 master-port 属性完成的。
+> RouterOS v6.41 和更新版本中的端口切换是使用网桥配置完成的。在 RouterOS v6.41 之前，端口切换是使用 master-port 属性完成的。
 
 # 网桥VLAN过滤
 
@@ -583,7 +583,7 @@ ___
 
 主要的 VLAN 设置是“vlan-filtering”，它全局控制网桥中的 VLAN 感知和 VLAN 标记处理。 如果配置了`vlan-filtering=no`，网桥会忽略VLAN标签，工作在共享VLAN学习（SVL）模式，不能修改数据包的VLAN标签。 打开 vlan-filtering 会启用所有桥接 VLAN 相关功能和独立 VLAN 学习 (IVL) 模式。 除了加入用于二层转发的端口外，网桥本身也是一个接口，因此它具有端口 VLAN ID（pvid）。
 
-!!!info 目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南中描述的方法进行配置。 如果使用不正确的配置方法，您的设备可能会导致网络吞吐量问题。
+> 目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
 
 ## 网桥VLAN表
 
@@ -599,13 +599,13 @@ ___
 | **untagged** (_interfaces_; Default: **none**)                            | 出口中带有 VLAN 标记删除操作的接口列表。 此设置接受逗号分隔值。 例如 `untagged=ether3，ether4`                  |
 | **vlan-ids** (_integer 1..4094_; Default: **1**)                          | 特定端口配置的 VLAN ID 列表。 此设置接受 VLAN ID 范围以及逗号分隔值。 例如 `vlan-ids=100-115,120,122,128-130`。 |
 
-!!!info `vlan-ids` 参数可用于指定一组或范围的 VLAN，但在单个网桥 VLAN 表条目中指定多个 VLAN 应仅用于标记端口的端口。 如果为访问端口指定了多个 VLAN，则无论 PVID 值如何，标记的数据包都可能通过错误的访问端口作为未标记的数据包发送出去。
+> `vlan-ids` 参数可用于指定一组或范围的 VLAN，但在单个网桥 VLAN 表条目中指定多个 VLAN 应仅用于标记端口的端口。 如果为访问端口指定了多个 VLAN，则无论 PVID 值如何，标记的数据包都可能通过错误的访问端口作为未标记的数据包发送出去。
 
-!!!info 使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，您需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，这会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），这可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，您需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
+> 使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，你需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，这会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），这可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，你需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
 
-!!!info 当允许访问 CPU 时，您允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护您的设备，使用防火墙过滤规则仅允许访问某些服务。
+> 当允许访问 CPU 时，你允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护你的设备，使用防火墙过滤规则仅允许访问某些服务。
 
-!!!warning 桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保您完全了解[桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table)的工作原理。
+> 桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解[桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table)的工作原理。
 
 ## 桥接端口设置
 
@@ -637,7 +637,7 @@ Flags: X - disabled, I - invalid, D - dynamic, L - local, E - external
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/access_ports.png?version=2&modificationDate=1626780195564&api=v2)
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对设备的访问权限。 如果您需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对设备的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
 
 ```shell
 /interface bridge
@@ -679,7 +679,7 @@ add bridge=bridge1 tagged=ether2 vlan-ids=400
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/hybrid_ports.png?version=2&modificationDate=1626780214236&api=v2)
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果您需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
 
 ```shell
 /interface bridge
@@ -716,13 +716,13 @@ add bridge=bridge1 tagged=ether2,ether6,ether7 vlan-ids=400
 
 `/interface bridge set bridge1 frame-types=admit-only-vlan-tagged`
 
-您不必将访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，您可以仅将中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 您必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 您可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的`pvid`，或者将`frame-type` 设置为`accept-only-vlan-tagged` 来规避此行为。
+你不必将访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，你可以仅将中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 你必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 你可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的`pvid`，或者将`frame-type` 设置为`accept-only-vlan-tagged` 来规避此行为。
 
 ## VLAN 示例 - 通过网桥进行 VLAN 间路由
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/vlan_routing.png?version=2&modificationDate=1626780264836&api=v2) 
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果您需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
 
 
 ```shell
@@ -821,7 +821,7 @@ add address=192.168.99.1/24 interface=MGMT
 
 ```
 
-例如，如果您希望允许使用标记的 VLAN 99 流量从端口**ether3**、**ether4、****sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
+例如，如果你希望允许使用标记的 VLAN 99 流量从端口**ether3**、**ether4、****sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
 
 ```shell
 /interface bridge vlan
@@ -845,7 +845,7 @@ add interface=bridge1 name=MGMT vlan-id=99
 add address=192.168.99.1/24 interface=MGMT
 ```
 
-例如，未标记的端口 **ether2** 和 **ether3** 应该能够使用未标记的流量与 VLAN 99 接口通信。 为了实现这一点，这些端口应该配置与管理 VLAN 上的 VLAN ID 相匹配的“pvid”。 请注意，**bridge1** 接口是标记端口成员，如有必要，您可以配置其他标记端口（参见前面的示例）。
+例如，未标记的端口 **ether2** 和 **ether3** 应该能够使用未标记的流量与 VLAN 99 接口通信。 为了实现这一点，这些端口应该配置与管理 VLAN 上的 VLAN ID 相匹配的“pvid”。 请注意，**bridge1** 接口是标记端口成员，如有必要，你可以配置其他标记端口（参见前面的示例）。
 
 ```shell
 /interface bridge port
@@ -897,7 +897,7 @@ add bridge=bridge1 tagged=sfp-sfpplus1 untagged=bridge1,ether2,ether3 vlan-ids=9
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Provider_bridge.png?version=3&modificationDate=1615376897236&api=v2)
 
-在此示例中，**R1**、**R2**、**R3、**和**R4** 可能通过 802.1Q (CVID) 发送任何 VLAN 标记的流量，但**SW1** 和* *SW2** 需要隔离路由器之间的流量，使得 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4** 通信。 为此，您可以使用 SVID 标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先在网桥上启用 `802.1ad` VLAN 协议，在 **SW1** 和 **SW2** 上使用这些命令：
+在此示例中，**R1**、**R2**、**R3、**和**R4** 可能通过 802.1Q (CVID) 发送任何 VLAN 标记的流量，但**SW1** 和* *SW2** 需要隔离路由器之间的流量，使得 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4** 通信。 为此，你可以使用 SVID 标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先在网桥上启用 `802.1ad` VLAN 协议，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 
@@ -924,17 +924,17 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，您可以启用桥接 VLAN 过滤，在**SW1** 和**SW2 上使用这些命令：**
+配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，在**SW1** 和**SW2 上使用这些命令：**
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-!!!info 通过启用 vlan 过滤，您将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，您应该确保设置管理端口。 使用不同 EtherType 的区别在于您必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
+> 通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你应该确保设置管理端口。 使用不同 EtherType 的区别在于你必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
 
-!!!info 配置`ether-type=0x8100`时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType`0x8100`。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
+> 配置`ether-type=0x8100`时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType`0x8100`。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
 
-!!!info 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在`ether-type`设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
+> 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在`ether-type`设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
 
-!!!info 具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
+> 具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
 
 ## 标签堆叠
 
@@ -942,7 +942,7 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Tag_stacking.png?version=3&modificationDate=1615376914770&api=v2)
 
-在此示例中，**R1**、**R2**、**R3、**和**R4**可能发送任何标记了 VLAN 的流量，它可以是 802.1ad、802.1Q 或任何其他类型的流量， 但是 **SW1** 和 **SW2** 需要以一种方式隔离路由器之间的流量，即 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4**。 为此，您可以使用新的 CVID 标签标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先选择合适的 EtherType，在 **SW1** 和 **SW2** 上使用这些命令：
+在此示例中，**R1**、**R2**、**R3、**和**R4**可能发送任何标记了 VLAN 的流量，它可以是 802.1ad、802.1Q 或任何其他类型的流量， 但是 **SW1** 和 **SW2** 需要以一种方式隔离路由器之间的流量，即 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4**。 为此，你可以使用新的 CVID 标签标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先选择合适的 EtherType，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -960,7 +960,7 @@ add interface=ether3 bridge=bridge1
 
 ```
 
-在桥接 VLAN 表中指定标记和未标记端口，您只需指定外部标记的 VLAN ID，在**SW1** 和**SW2** 上使用这些命令：
+在桥接 VLAN 表中指定标记和未标记端口，你只需指定外部标记的 VLAN ID，在**SW1** 和**SW2** 上使用这些命令：
 
 ```shell
 /interface bridge vlan
@@ -969,17 +969,17 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，您可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在**SW1** 和**SW2** 上使用这些命令：
+配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在**SW1** 和**SW2** 上使用这些命令：
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-通过启用 vlan 过滤，您将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，您要确保设置了一个管理端口。
+通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你要确保设置了一个管理端口。
 
 # 快速转发
 
 ___
 
-快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 您可以在下面找到要激活快进必须满足的条件列表：
+快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 你可以在下面找到要激活快进必须满足的条件列表：
 
 - Bridge 已将`fast-forward`设置为`yes`
 - Bridge 只有 2 个运行端口
@@ -993,9 +993,9 @@ ___
 - 网桥的 MAC 地址与来自其中一个网桥从端口的 MAC 地址相匹配
 - 两个端口的`horizon`都设置为`none`
 
-!!!info 快速转发禁用 MAC 学习，这是为了实现更快的数据包转发而设计的。 MAC 学习可防止流量泛洪多个接口，但当数据包只能通过一个接口发送时，则不需要 MAC 学习。
+> 快速转发禁用 MAC 学习，这是为了实现更快的数据包转发而设计的。 MAC 学习可防止流量泛洪多个接口，但当数据包只能通过一个接口发送时，则不需要 MAC 学习。
 
-!!!info 启用硬件卸载时禁用快进。 硬件卸载在激活时可以实现全写速度性能，因为它将使用内置交换芯片（如果您的设备上存在），快进使用 CPU 转发数据包。 比较吞吐量结果时，您会得到这样的结果：Hardware offloading > Fast Forward > Fast Path > Slow Path。
+> 启用硬件卸载时禁用快进。 硬件卸载在激活时可以实现全写速度性能，因为它将使用内置交换芯片（如果你的设备上存在），快进使用 CPU 转发数据包。 比较吞吐量结果时，你会得到这样的结果：Hardware offloading > Fast Forward > Fast Path > Slow Path。
 
 可以检查快速转发处理了多少数据包：
 
@@ -1013,7 +1013,7 @@ ___
 
 ```
 
-!!!info 如果数据包由 Fast Path 处理，则快速转发未激活。 数据包计数可用作 快速转发是否处于活动状态的指示器。
+> 如果数据包由 Fast Path 处理，则快速转发未激活。 数据包计数可用作 快速转发是否处于活动状态的指示器。
 
 从 RouterOS 6.44 开始，可以监控快速转发状态，例如：
 
@@ -1043,7 +1043,7 @@ ___
 
 ___
 
-从 RouterOS 版本 6.43 开始，网桥支持 DHCP Snooping 和 DHCP Option 82。DHCP Snooping 是一种第 2 层安全功能，可限制未经授权的 DHCP 服务器向用户提供恶意信息。 在 RouterOS 中，您可以指定哪些桥接端口是可信的（已知 DHCP 服务器所在的位置，应该转发 DHCP 消息），哪些是不可信的（通常用于访问端口，收到的 DHCP 服务器消息将被丢弃）。 DHCP 选项 82 是由支持 DHCP 侦听的设备提供的附加信息（代理电路 ID 和代理远程 ID），允许识别设备本身和 DHCP 客户端。
+从 RouterOS 版本 6.43 开始，网桥支持 DHCP Snooping 和 DHCP Option 82。DHCP Snooping 是一种第 2 层安全功能，可限制未经授权的 DHCP 服务器向用户提供恶意信息。 在 RouterOS 中，你可以指定哪些桥接端口是可信的（已知 DHCP 服务器所在的位置，应该转发 DHCP 消息），哪些是不可信的（通常用于访问端口，收到的 DHCP 服务器消息将被丢弃）。 DHCP 选项 82 是由支持 DHCP 侦听的设备提供的附加信息（代理电路 ID 和代理远程 ID），允许识别设备本身和 DHCP 客户端。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Dhcp_snooping.png?version=2&modificationDate=1615372193430&api=v2)
 
@@ -1058,7 +1058,7 @@ add bridge=bridge interface=ether2 trusted=yes
 
 ```
 
-对于 SW2，配置类似，但我们还需要将 ether1 标记为受信任，因为该接口将接收已添加选项 82 的 DHCP 消息。 如果所有端口要接收添加了选项 82 的 DHCP 消息，您需要将所有端口标记为可信端口，否则这些消息将被丢弃。 此外，我们将 ether3 添加到同一个网桥并让这个端口不受信任，想象有一个未经授权的（捣乱）DHCP 服务器。 在 **SW2** 上使用这些命令：
+对于 SW2，配置类似，但我们还需要将 ether1 标记为受信任，因为该接口将接收已添加选项 82 的 DHCP 消息。 如果所有端口要接收添加了选项 82 的 DHCP 消息，你需要将所有端口标记为可信端口，否则这些消息将被丢弃。 此外，我们将 ether3 添加到同一个网桥并让这个端口不受信任，想象有一个未经授权的（捣乱）DHCP 服务器。 在 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -1070,7 +1070,7 @@ add bridge=bridge interface=ether3
 
 ```
 
-然后我们需要启用 DHCP Snooping 和 Option 82。如果您的 DHCP 服务器不支持 DHCP Option 82 或者您没有实施任何 Option 82 相关策略，可以禁用此选项。 在 **SW1** 和 **SW2** 上使用这些命令：
+然后我们需要启用 DHCP Snooping 和 Option 82。如果你的 DHCP 服务器不支持 DHCP Option 82 或者你没有实施任何 Option 82 相关策略，可以禁用此选项。 在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -1080,7 +1080,7 @@ set [find where name="bridge"] dhcp-snooping=yes add-dhcp-option82=yes
 
 现在两台设备都将分析在桥接端口上接收到哪些 DHCP 消息。 **SW1** 负责添加和删除 DHCP 选项 82。**SW2** 将限制流氓 DHCP 服务器接收任何发现消息，并丢弃来自 ether3 的恶意 DHCP 服务器消息。
 
-目前，CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片完全支持硬件卸载的 DHCP 侦听和选项 82。对于 CRS1xx 和 CRS2xx 系列交换机，可以将 DHCP 侦听与 VLAN 切换一起使用，但随后您 需要确保使用出口 ACL 规则发送带有正确 VLAN 标记的 DHCP 数据包。 其他设备能够使用 DHCP Snooping 和 Option 82 功能以及硬件卸载，但您必须确保设备上没有应用与 VLAN 相关的配置，否则 DHCP Snooping 和 Option 82 可能无法正常工作。 请参阅具有受支持功能的桥接硬件卸载部分。
+目前，CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片完全支持硬件卸载的 DHCP 侦听和选项 82。对于 CRS1xx 和 CRS2xx 系列交换机，可以将 DHCP 侦听与 VLAN 切换一起使用，但随后你 需要确保使用出口 ACL 规则发送带有正确 VLAN 标记的 DHCP 数据包。 其他设备能够使用 DHCP Snooping 和 Option 82 功能以及硬件卸载，但你必须确保设备上没有应用与 VLAN 相关的配置，否则 DHCP Snooping 和 Option 82 可能无法正常工作。 请参阅具有受支持功能的桥接硬件卸载部分。
 
 对于 CRS3xx、CRS5xx 系列交换机和 CCR2116、CR2216 路由器，当创建硬件卸载绑定接口时，DHCP 监听将不起作用。
 
@@ -1108,7 +1108,7 @@ ___
   - **srcnat** \- 用于将主机或网络“隐藏”在不同的 MAC 地址后面。 此链适用于通过桥接接口离开路由器的数据包
   - **dstnat** \- 用于将一些数据包重定向到其他目的地
 
-您可以在网桥防火墙（过滤器和NAT）中放置数据包标记，这与`'/ip firewall mangle'`配置的IP防火墙中的数据包标记相同。 这样，桥接防火墙放置的数据包标记就可以在`IP防火墙`中使用，反之亦然。
+你可以在网桥防火墙（过滤器和NAT）中放置数据包标记，这与`'/ip firewall mangle'`配置的IP防火墙中的数据包标记相同。 这样，桥接防火墙放置的数据包标记就可以在`IP防火墙`中使用，反之亦然。
 
 本节介绍了一般的网桥防火墙属性。 nat 和 filter 规则之间的一些不同参数将在后续部分中介绍。
 

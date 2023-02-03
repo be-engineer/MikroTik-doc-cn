@@ -78,10 +78,10 @@ your choice:
 
 | 字母 | 说明           | 含义                                                                                     |
 | ---- | -------------- | ---------------------------------------------------------------------------------------- |
-| d    | 启动延迟       | 延迟RouterOS启动，以初始化接口                                                           |
+| d    | 启动延迟       | 延迟RouterOS启动，初始化接口                                                             |
 | k    | 启动密钥       | 打开配置菜单按钮                                                                         |
 | s    | 串行控制台     | 设置串口波特率                                                                           |
-| n    | 静默启动       | 限制串口上的所有输出，以防某些设备连接到它(如GPS设备或温度监视器)                        |
+| n    | 静默启动       | 限制串口上的所有输出，防某些设备连接到它(如GPS设备或温度监视器)                          |
 | o    | 启动设备       | 允许启用Netinstall引导                                                                   |
 | z    | 额外的内核参数 |
 |      |
@@ -241,7 +241,7 @@ Exit bios configuration menu and continues with system startup.
 RouterBOOT 可以通过以下方式从 RouterOS 升级：
 
 - 运行命令 _/system routerboard upgrade_
-- 重新启动路由器以应用升级 (_/system reboot_)]
+- 重新启动路由器应用升级 (_/system reboot_)]
 
 ```shell
 [admin@admin] > system/routerboard/upgrade
@@ -249,7 +249,7 @@ Do you really want to upgrade firmware? [y/n]
 
 ```
 
-!!!warning 每个 ROS 版本都包含一个新的 RouterBoot 版本，一旦执行 ROS 升级，建议您也升级 RouterBoot。
+> 每个 ROS 版本都包含一个新的 RouterBoot 版本，一旦执行 ROS 升级，建议也升级 RouterBoot。
 
 ## 检查RouterBOOT版本
 
@@ -270,6 +270,6 @@ Do you really want to upgrade firmware? [y/n]
 
 ```
 
-在这种情况下，您会看到在当前的 RouterOS 版本中已经有 **更新版本** 的 Bootloader 固件可用，并且它已经更新并需要重新启动。
+在这种情况下，你会看到在当前的 RouterOS 版本中已经有 **更新版本** 的 Bootloader 固件可用，并且它已经更新并需要重新启动。
 
 也可以通过上传 *.FWF 文件进行降级，联系 MikroTik 支持时可能需要使用旧版本进行故障排除。

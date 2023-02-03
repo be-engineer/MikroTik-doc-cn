@@ -95,13 +95,13 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
 | **interim-update** (_time_; Default: **0s**)                                                             | 临时更新时间间隔                                                                                                                                                                                                                                      |
 | **use-radius** (_yes                                                            \| no_; Default: **no**) | 通过 RADIUS 启用用户身份验证                                                                                                                                                                                                                          |
 
-!!! note 如果您使用的是 RADIUS，则需要在 RADIUS 服务器中启用 CHAP 支持才能使 WinBox 工作
+> 如果你使用的是 RADIUS，则需要在 RADIUS 服务器中启用 CHAP 支持才能使 WinBox 工作
 
 # SSH密钥
 
  此菜单允许导入用于 ssh 身份验证的公钥。
 
-!!! warning 如果添加了用户的 ssh-keys，则不允许用户通过密码通过 ssh 登录
+> 如果添加了用户的 ssh-keys，则不允许用户通过密码通过 ssh 登录
 
 ## 属性
 
@@ -111,7 +111,7 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
 |                                |
 | **user** (_string_; Default: ) | 分配ssh密钥的用户名 |
 
-通过“/user ssh-keys import”导入 ssh 密钥时，系统会要求您提供两个参数：
+通过“/user ssh-keys import”导入 ssh 密钥时，系统会要求你提供两个参数：
 
 - **public-key-file** - 包含密钥的路由器根目录中的文件名。
 - **user** - 分配密钥的用户名
@@ -128,7 +128,7 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
  | **key-owner** (_string_) |
 
 
-当使用“/user ssh-keys private”从此子菜单导入 ssh 密钥时，导入命令将要求您提供三个参数：
+当使用“/user ssh-keys private”从此子菜单导入 ssh 密钥时，导入命令将要求你提供三个参数：
 
 - **private-key-file** - 包含私钥的路由器根目录中的文件名。
 - **public-key-file** - 包含公钥的路由器根目录中的文件名。
