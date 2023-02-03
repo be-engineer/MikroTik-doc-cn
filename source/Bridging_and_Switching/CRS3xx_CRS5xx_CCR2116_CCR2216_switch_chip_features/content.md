@@ -316,7 +316,7 @@ ___
 
 ## VLAN过滤
 
-VLAN 过滤在[桥接 VLAN 过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分进行了描述。
+VLAN 过滤在 [桥接 VLAN 过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分进行了描述。
 
 VLAN设置示例
 
@@ -328,7 +328,7 @@ VLAN设置示例
 
 ### 基于 MAC 的 VLAN
 
-- 交换机规则表用于基于 MAC 的 VLAN 功能，请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
+- 交换机规则表用于基于 MAC 的 VLAN 功能，请参阅 [此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
 - 基于 MAC 的 VLAN 只能在交换机端口之间正常工作，而不能在交换机端口和 CPU 之间正常工作。 当数据包被转发到 CPU 时，将始终使用桥接端口的 `pvid` 属性，而不是 ACL 规则中的 `new-vlan-id`。
 - 当启用 DHCP 侦听时，基于 MAC 的 VLAN 将不适用于 DHCP 数据包。
 
