@@ -192,58 +192,8 @@ VLAN转发
 - **VID match** - 在VLAN表中，入站流量的VLAN标签的VLAN ID存在
 - **Port match** - 入站端口在VLAN表中有适当的VLAN ID
 
-<table>
-<tr>
-    <td rowspan="2">VLAN Mode = disabled</td>
-    <td colspan="3">Egress port not present in VLAN Table</td>
-    <td colspan="3">Egress port is present in VLAN Table</td>
-</tr>
-<tr>
-    <td>L</td>
-    <td>S</td>
-    <td>A</td>
-    <td>L</td>
-    <td>S</td>
-    <td>A</td>
-</tr>
-<tr>
-    <td>Untagged traffic</td>
-    <td>U</td>
-    <td>U</td>
-    <td>TA</td>
-    <td>U</td>
-    <td>U</td>
-    <td>TA</td>
-</tr>
-<tr>
-    <td>Tagged traffic; no VID match</td>
-    <td>T</td>
-    <td>U</td>
-    <td>T</td>
-    <td colspan="3"></td>
-</tr>
-<tr>
-    <td>Tagged traffic; VID match; no Port match</td>
-    <td>T</td>
-    <td>U</td>
-    <td>T</td>
-    <td>T</td>
-    <td>U</td>
-    <td>T</td>    
-</tr>
-<tr>
-    <td>Tagged traffic; VID match; Port match</td>
-    <td>T</td>
-    <td>U</td>
-    <td>T</td>
-    <td>T</td>
-    <td>U</td>
-    <td>T</td>    
-</tr>
 
-</table>
-
-<table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col></colgroup><tbody><tr><td rowspan="2" class="confluenceTd"><em>VLAN Mode = disabled</em></td><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port not present in VLAN Table</th><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port is present in VLAN Table</th></tr><tr><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th></tr><tr><th style="text-align: center;" class="confluenceTh">Untagged traffic</th><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; no VID match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td colspan="3" class="confluenceTd"><br></td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; no Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr></tbody></table>
+<table class="wrapped confluenceTable" style="text-align: center;" resolved=""  style="boarder:2px solid black"><colgroup><col><col><col><col><col><col><col></colgroup><tbody><tr><td rowspan="2" class="confluenceTd"><em>VLAN Mode = disabled</em></td><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port not present in VLAN Table</th><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port is present in VLAN Table</th></tr><tr><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th></tr><tr><th style="text-align: center;" class="confluenceTh">Untagged traffic</th><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; no VID match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td colspan="3" class="confluenceTd"><br></td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; no Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr></tbody></table>
 
 <table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col></colgroup><tbody><tr><td rowspan="2" class="confluenceTd"><em>VLAN Mode = fallback</em></td><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port not present in VLAN Table</th><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port is present in VLAN Table</th></tr><tr><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th></tr><tr><th style="text-align: center;" class="confluenceTh">Untagged traffic</th><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; no VID match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td colspan="3" class="confluenceTd"><br></td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; no Port match</th><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; Port match</th><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="highlight-red confluenceTd" data-highlight-colour="red" title="Background colour : Red">DE</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr></tbody></table>
 
@@ -275,7 +225,7 @@ VLAN转发
 
 ### 规则表
 
-规则表是一个非常强大的工具，允许根据L2、L3和L4协议头字段进行线速包过滤、转发和VLAN标记。该菜单包含一个有序的规则列表，就像在 `/ip firewall filter`中一样，所以ACL规则会对每个数据包进行检查，直到找到一个匹配项。如果有多个规则可以匹配，那么只有第一个规则会被触发。没有任何处理参数的规则是一个接受数据包的规则。 
+规则表是一个非常强大的工具，允许根据L2、L3和L4协议头字段进行线速包过滤、转发和VLAN标记。该菜单包含一个有序的规则列表，就像在 `/ip firewall filter`中一样，所以ACL规则会对每个数据包进行检查，直到找到一个匹配项。如果有多个规则可以匹配，那么只有第一个规则会被触发。没有任何处理参数的规则是一个接受数据包的规则。
 
 每个规则都包含一个条件部分和一个处理部分。处理部分由以下参数控制。
 
@@ -348,7 +298,7 @@ add interface=ether3 bridge=bridge1 hw=yes
 
 ```
 
-默认情况下，网桥接口的 `protocol-mode `被配置为 `rstp`。对于某些设备， 这可能会禁用硬件卸载， 因为特定的交换机芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
+默认情况下，网桥接口的 `protocol-mode`被配置为 `rstp`。对于某些设备， 这可能会禁用硬件卸载， 因为特定的交换机芯片不支持这一功能。请参阅[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)部分，了解支持的功能。
 
 覆盖每个需要隔离的交换机端口的出站端口（不包括上行链路端口）。
 
@@ -517,9 +467,9 @@ ___
 
 当允许访问CPU时，是允许从某个端口访问实际的路由器/交换机，这并不总是恰当的。当允许从某个VLAN ID和端口访问CPU时，请确保有适当的防火墙过滤规则保护你的设备，使用防火墙过滤规则，只允许访问某些服务。
 
-带有**MT7621**、**RTL8367**、**88E6393X**、**88E6191X**交换芯片的设备在RouterOS v7中支持 [HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。"/interface ethernet switch "菜单上的VLAN相关配置不可用。 
+带有**MT7621**、**RTL8367**、**88E6393X**、**88E6191X**交换芯片的设备在RouterOS v7中支持 [HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。"/interface ethernet switch "菜单上的VLAN相关配置不可用。
 
-#3# VLAN 示例 1 (聚合和访问端口)
+# 3# VLAN 示例 1 (聚合和访问端口)
 
 带有Atheros交换芯片的RouterBOARD可用于802.1Q Trunking。RouterOS v6中的这一功能由**QCA8337、Atheros8316、Atheros8327、Atheros8227**和**Atheros7240**交换芯片支持。在这个例子中，**ether3**、**ether4**和**ether5**接口是接入端口，而**ether2**是一个聚合端口。接入端口的VLAN ID：ether3 - 400，ether4 - 300，ether5 - 200。
 
@@ -671,7 +621,6 @@ set ether2 default-vlan-id=100 vlan-header=always-strip vlan-mode=secure
 set switch1-cpu vlan-header=leave-as-is vlan-mode=secure
 
 ```
-
 
 ### 无标记
 
