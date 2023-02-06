@@ -2,7 +2,7 @@
 
 本文档描述了把 RouterOS 升级到 v7 主要版本的推荐步骤以及注意事项。
 
-从 v6 升级到 v7 的方式和在 v6 版本内升级的方式完全相同。 请按照[升级手册](https://help.mikrotik.com/docs/display/ROS/Upgrading+and+installation) 了解更多详细步骤。 如果你当前运行的是 RouterOS 版本 6 或更早版本，我们首先建议升级到 v6 中的最新稳定版或长期版（目前为 6.48.6 长期版或 6.49.7 稳定版）。
+从 v6 升级到 v7 的方式和在 v6 版本内升级的方式完全相同。 请按照 [升级手册](https://help.mikrotik.com/docs/display/ROS/Upgrading+and+installation) 了解更多详细步骤。 如果你当前运行的是 RouterOS 版本 6 或更早版本，我们首先建议升级到 v6 中的最新稳定版或长期版（目前为 6.48.6 长期版或 6.49.7 稳定版）。
 
 > 在上述 v6 版本上运行良好的大多数 RouterOS 设置中，不需要额外的步骤。 升级到 v7 将自动转换配置，你的设备将立即运行。
 
@@ -27,25 +27,25 @@
 | Firewall         | OK                                                                                                               |
 | HotSpot          | OK                                                                                                               |
 | Static Routing   | OK                                                                                                               |
-| User Manager     | 见[注释](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-usermanager)                   |
+| User Manager     | 见 [注释](https://help.mikrotik.com/docs/display/ROS/Upgrading+to+v7#Upgradingtov7-usermanager)                  |
 
-### 注意
+**注释**
 
 > 路由协议配置升级只触发一次。 这意味着如果路由器降级到 ROSv6，配置被修改并且路由器升级回 ROSv7，那么生成的配置是降级之前存在的配置。 要重新触发 v6 配置转换，请使用选项“force-v6-to-v7-configuration-upgrade=yes”加载 ROSv6 备份。
 
 ### BGP
 
-所有已知配置都将成功从 6.x 升级到 7.x。 但请记住，配置已完全重新设计。 v7 BGP 实现提供了 **`connection`**、**`template`** 和 **`session`** 菜单。
+所有已知配置都将成功从 6.x 升级到 7.x。 但请记住，配置已完全重新设计。 v7 BGP 实现提供了 `connection`、`template` 和 `session` 菜单。
 
-**`Template`** 包含所有 BGP 协议相关的配置选项。 可以用作动态对等点的模板，并将类似的配置应用于一组对等点。 大多数参数与之前的实现相似，除了一些参数被分组在输出和输入部分，使配置更具可读性和更容易理解该选项是应用于输入还是输出。
+`Template` 包含所有 BGP 协议相关的配置选项。 可以用作动态对等点的模板，并将类似的配置应用于一组对等点。 大多数参数与之前的实现相似，除了一些参数被分组在输出和输入部分，使配置更具可读性和更容易理解该选项是应用于输入还是输出。
 
-BGP **`connection`** 最小参数集是 `remote.address`、`template、 connect`、`listen` 和 `local.role`
+BGP `connection` 最小参数集是 `remote.address`、`template、 connect`、`listen` 和 `local.role`
 连接和侦听参数指定对等点是尝试连接和侦听远程地址，还是只是连接或只是侦听。 在对等方使用多跳连接的设置中，也必须配置 local.address 。 Peer role 现在是强制参数，对于基本设置，可以只使用 ibgp、ebgp。
 
 现在你可以从“/routing bgp session”菜单监控所有连接和断开连接的对等点的状态。
 可以从“/routing stats”菜单中监视有关所有路由进程的其他重要调试信息。
 
-网络被添加到防火墙地址列表中，并在 BGP **`connection`** 配置中被引用。
+网络被添加到防火墙地址列表中，并在 BGP `connection` 配置中被引用。
 
 ### OSPF
 

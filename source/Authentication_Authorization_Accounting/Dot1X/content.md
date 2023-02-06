@@ -33,7 +33,7 @@ ___
 
 ___
 
-RouterOS dot1x 服务器充当身份验证器。 启用 dot1x 服务器的接口将阻止除用于身份验证的 EAPOL 数据包之外的所有流量。 客户端认证成功后，该接口将接受所有接收到的流量。 如果接口连接到具有多个主机的共享介质，则当一个客户端成功通过身份验证时，将接受来自所有主机的流量。 但是，可以[配置动态切换规则](https://help.mikrotik.com/docs/display/ROS/Dot1X#Dot1X-Dynamicsswitchruleconfiguration) 仅接受经过身份验证的用户源 MAC 地址并丢弃所有其他源 MAC 地址。 如果身份验证失败，可以接受具有专用端口 VLAN ID 的流量。
+RouterOS dot1x 服务器充当身份验证器。 启用 dot1x 服务器的接口将阻止除用于身份验证的 EAPOL 数据包之外的所有流量。 客户端认证成功后，该接口将接受所有接收到的流量。 如果接口连接到具有多个主机的共享介质，则当一个客户端成功通过身份验证时，将接受来自所有主机的流量。 但是，可以 [配置动态切换规则](https://help.mikrotik.com/docs/display/ROS/Dot1X#Dot1X-Dynamicsswitchruleconfiguration) 仅接受经过身份验证的用户源 MAC 地址并丢弃所有其他源 MAC 地址。 如果身份验证失败，可以接受具有专用端口 VLAN ID 的流量。
 
 在网桥端口上创建 dot1x 服务器时，网桥应该运行 (R/M)STP，否则来自客户端的 EAP 数据包不会被正确接受。 默认情况下，使用 `protocol-mode=rstp` 创建网桥接口。 如果网桥端口不发送任何 BPDU 或忽略任何接收到的 BPDU，请在网桥端口上使用 edge=yes 配置。
 
@@ -244,7 +244,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 
 ```
 
-> 动态交换规则仅适用于支持交换规则的路由器板——CRS3xx、CRS5xx 系列交换机、CCR2116、CCR2216 以及带有 QCA8337、Atheros8327 和 Atheros8316 交换芯片的设备。 CRS1xx/2xx 系列交换机不支持此功能。 每个设备的最大规则数，请参阅[CRS3xx、CRS5xx、CCR2116、CCR2216 表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)和[基本交换芯片表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#heading-Introduction)
+> 动态交换规则仅适用于支持交换规则的路由器板——CRS3xx、CRS5xx 系列交换机、CCR2116、CCR2216 以及带有 QCA8337、Atheros8327 和 Atheros8316 交换芯片的设备。 CRS1xx/2xx 系列交换机不支持此功能。 每个设备的最大规则数，请参阅 [CRS3xx、CRS5xx、CCR2116、CCR2216 表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 和 [基本交换芯片表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#heading-Introduction)
 
 ## RouterOS 请求者配置
 

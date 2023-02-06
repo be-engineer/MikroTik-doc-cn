@@ -32,7 +32,7 @@ RouterBOOT 复位按钮具有三个功能：
 
 ## 配置
 
-对于具有串行控制台连接器的 RouterBOARD 设备，可以访问 RouterBOOT 加载程序配置菜单。 [串行控制台](https://help.mikrotik.com/docs/display/ROS/Serial+Console)手册中描述了所需的电缆。 RouterBOARD串口配置为115200bit/s，8个数据位，1个停止位，无奇偶校验。 我们建议禁用硬件流控。
+对于具有串行控制台连接器的 RouterBOARD 设备，可以访问 RouterBOOT 加载程序配置菜单。 [串行控制台](https://help.mikrotik.com/docs/display/ROS/Serial+Console) 手册中描述了所需的电缆。 RouterBOARD串口配置为115200bit/s，8个数据位，1个停止位，无奇偶校验。 我们建议禁用硬件流控。
 
 此示例显示了 RouterBOOT 7.4beta4 中可用的菜单：
 

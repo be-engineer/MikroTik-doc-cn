@@ -100,7 +100,7 @@ Columns: NAME, TYPE, SIZE, CREATION-TIME
 
 ## Let's Encrypt证书
 
-观看[关于此功能的视频](https://youtu.be/T1Dyg4_caa4)。
+观看 [关于此功能的视频](https://youtu.be/T1Dyg4_caa4)。
 
 RouterOS v7 为“www-ssl”服务提供 Let's Encrypt (letsencrypt) 证书支持。 要通过自动证书续订启用 Let's Encrypt 证书服务，请使用“enable-ssl-certificate”命令：
 
