@@ -2,9 +2,9 @@
 
 ___
 
-Cloud Router Switch 系列是高度集成的交换机，具有高性能 MIPS CPU 和功能丰富的数据包处理器。 CRS 交换机可以设计成各种以太网应用，包括非管理型交换机、第 2 层管理型交换机、运营商交换机和无线/有线统一数据包处理设备。 参见[Cloud Router Switch](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836) 配置示例。
+Cloud Router Switch 系列是高度集成的交换机，具有高性能 MIPS CPU 和功能丰富的数据包处理器。 CRS 交换机可以设计成各种以太网应用，包括非管理型交换机、第 2 层管理型交换机、运营商交换机和无线/有线统一数据包处理设备。 参见 [Cloud Router Switch](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836) 配置示例。
 
-本文适用于 CRS1xx 和 CRS2xx 系列交换机，不适用于 CRS3xx 系列交换机。 对于 CRS3xx 系列设备，请阅读 [CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)手册。
+本文适用于 CRS1xx 和 CRS2xx 系列交换机，不适用于 CRS3xx 系列交换机。 对于 CRS3xx 系列设备，请阅读  [CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features) 手册。
 
 | 特性                           | 说明                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -17,15 +17,25 @@ Cloud Router Switch 系列是高度集成的交换机，具有高性能 MIPS CPU
 | **Shaping and Scheduling**     | - 每个物理端口上有 8 个队列<br>- 按端口、按队列、按队列组整形                                                                                                                                                                                                                                                                                                    |
 | **Access Control List**        | - 入站和出站 ACL 表<br>- 最多 128 个 ACL 规则（受 RouterOS 限制）<br>- 基于端口、L2、L3、L4协议头字段的分类<br>- ACL动作包括过滤、转发、修改协议头字段                                                                                                                                                                                                           |
 
-# Cloud Router 交换机型号
+## Cloud Router 交换机型号
 
 ___
 
 下表说明了 Cloud Router 交换机型号之间的主要区别。
 
-<table class="wrapped confluenceTable" style="text-align: center;" resolved=""><tbody><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title=""><u>型号</u></strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">交换芯片</strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">CPU</strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">Wireless</strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">SFP+ port</strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">Access Control List</strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">Jumbo Frame (Bytes)</strong></td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS105-5S-FB</strong></td><td class="confluenceTd">QCA-8511</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS106-1C-5S</strong></td><td class="confluenceTd">QCA-8511</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS112-8G-4S</strong></td><td class="confluenceTd">QCA-8511</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS210-8G-2S+</strong></td><td class="confluenceTd">QCA-8519</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS212-1G-10S-1S+</strong></td><td class="confluenceTd">QCA-8519</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS226-24G-2S+</strong></td><td class="confluenceTd">QCA-8519</td><td class="confluenceTd">400MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">+</td><td class="confluenceTd">+</td><td class="confluenceTd">9204</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS125-24G-1S</strong></td><td class="confluenceTd">QCA-8513L</td><td class="confluenceTd">600MHz</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">4064</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS125-24G-1S-2HnD</strong></td><td class="confluenceTd">QCA-8513L</td><td class="confluenceTd">600MHz</td><td class="confluenceTd">+</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">4064</td></tr><tr><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong>CRS109-8G-1S-2HnD</strong></td><td class="confluenceTd">QCA-8513L</td><td class="confluenceTd">600MHz</td><td class="confluenceTd">+</td><td class="confluenceTd">-</td><td class="confluenceTd">-</td><td class="confluenceTd">4064</td></tr></tbody></table>
+| 型号               | 交换芯片  | CPU    | Wireless | SFP+ port | Access Control List | Jumbo Frame (Bytes) |
+| ------------------ | --------- | ------ | -------- | --------- | ------------------- | ------------------- |
+| CRS105-5S-FB       | QCA-8511  | 400MHz | -        | -         | +                   | 9204                |
+| CRS106-1C-5S       | QCA-8511  | 400MHz | -        | -         | +                   | 9204                |
+| CRS112-8G-4S       | QCA-8511  | 400MHz | -        | -         | +                   | 9204                |
+| CRS210-8G-2S+      | QCA-8519  | 400MHz | -        | +         | +                   | 9204                |
+| CRS212-1G-10S-1S+  | QCA-8519  | 400MHz | -        | +         | +                   | 9204                |
+| CRS226-24G-2S+     | QCA-8519  | 400MHz | -        | +         | +                   | 9204                |
+| CRS125-24G-1S      | QCA-8513L | 600MHz | -        | -         | -                   | 4064                |
+| CRS125-24G-1S-2HnD | QCA-8513L | 600MHz | +        | -         | -                   | 4064                |
+| CRS109-8G-1S-2HnD  | QCA-8513L | 600MHz | +        | -         | -                   | 4064                |
 
-# 缩略语和解释
+## 缩略语和解释
 
 ___
 
@@ -47,15 +57,15 @@ DSCP - 差异化服务代码点
 
 丢弃优先级- CRS交换机内部QoS属性，用于数据包的排队或丢弃。
 
-# 端口交换
+## 端口交换
 
 ___
 
-为了在CRS1xx/2xx系列交换机上设置端口交换，请查看【网桥硬件卸载】(https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)页面。
+为了在CRS1xx/2xx系列交换机上设置端口交换，请查看 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 页面。
 
 > 在创建硬件卸载网桥，添加交换端口组时，会在CRS交换机中创建动态保留的VLAN项（如VLAN4091；VLAN4090；VLAN4089等等）。这些VLAN是内部操作所必需的，其优先级低于用户配置的VLAN。
 
-## 多个交换组
+### 多个交换组
 
 CRS1xx/2xx系列交换机允许你使用带有硬件卸载的多个网桥，可以轻松地隔离多个交换机组。可以通过简单地创建多个网桥和启用硬件卸载来实现。
 
@@ -63,23 +73,24 @@ CRS1xx/2xx系列交换机允许你使用带有硬件卸载的多个网桥，可�
   
 CRS1xx/2xx系列交换机能够在启用(R)STP的情况下运行多个硬件卸载网桥，但不建议这样做，因为该设备的设计不是为了在硬件层面上运行多个(R)STP实例。要隔离多个交换机组并启用(R)STP，你应该用端口隔离配置文件配置来隔离端口组。
 
-# 全局设置
+## 全局设置
 
 ___
 
-CRS交换芯片可从`/interface ethernet switch`控制台菜单中配置。
+CRS交换芯片可从 `/interface ethernet switch` 控制台菜单中配置。
 
 **子菜单:** `/interface ethernet switch`
-| 属性                                                                                                                                                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **name** (_string value_; Default: **switch1**)                                                                                                               | 交换名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **bridge-type** (_customer-vid-used-as-lookup-vid                           \| service-vid-used-as-lookup-vid_; Default: **customer-vid-used-as-lookup-vid**) | 网桥类型定义了哪个VLAN标签被用作Lookup-VID。Lookup-VID作为所有基于VLAN的查询的VLAN密钥。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **mac-level-isolation** (_yes                     \| no_; Default: **yes**)                                                                                   | 全局性地启用或禁用MAC级隔离。一旦启用，交换机将从单播转发表中检查源和目的MAC地址项及其隔离配置文件。默认情况下，交换机将学习MAC地址并将其放入 "混杂 "隔离配置文件。在创建静态单播项时可以使用其他隔离配置文件。如果源MAC地址或目的MAC地址位于`promiscuous`隔离配置文件上，数据包将被转发。如果源MAC地址和目的MAC地址都位于同一个 "community1 "或 "community2 "隔离配置上，数据包将被转发。当源和目的MAC地址隔离配置文件为 "isolated"，或源和目的MAC地址隔离配置文件来自不同的社区（例如，源MAC地址是 "community1"，目的MAC地址是 "community2"）时，数据包将被丢弃。当MAC级隔离被全局禁用时，隔离将被绕过。 |
-| **use-svid-in-one2one-vlan-lookup** (_yes         \| no_; Default: **no**)                                                                                    | 是否使用服务VLAN id进行1:1 VLAN交换查询。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **use-cvid-in-one2one-vlan-lookup** (_yes         \| no_; Default: **yes**)                                                                                   | 是否使用客户VLAN id进行1:1 VLAN交换查询。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **multicast-lookup-mode** (_dst-ip-and-vid-for-ipv4 \| dst-mac-and-vid-always_;Default:**dst-ip-and-vid-for-ipv4**)                                           | IPv4 组播网桥的查找模式。<br>- dst-mac-and-vid-always \- 对于所有数据包类型，查找关键字是目标 MAC 和 VLAN id。<br>- dst-ip-and-vid-for-ipv4 \- 对于 IPv4 数据包查找关键字是目标 IP 和 VLAN id。 对于其他数据包类型，查找关键字是目标 MAC 和 VLAN id。                                                                                                                                                                                                                                                                                                                                                      |
-| **unicast-fdb-timeout** (_time interval_; Default: **5m**)                                                                                                    | 单播FDB项的超时时间。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **override-existing-when-ufdb-full** (_yes \| no_; Default: **no**)                                                                                           | 启用或禁用来覆盖现有的项，当UFDB已满时，该项具有最低的老化值。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+
+| 属性                                                                                                                                                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **name** (_string value_; Default: **switch1**)                                                                                                               | 交换名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **bridge-type** (_customer-vid-used-as-lookup-vid                           \| service-vid-used-as-lookup-vid_; Default: **customer-vid-used-as-lookup-vid**) | 网桥类型定义了哪个VLAN标签被用作Lookup-VID。Lookup-VID作为所有基于VLAN的查询的VLAN密钥。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **mac-level-isolation** (_yes                     \| no_; Default: **yes**)                                                                                   | 全局性地启用或禁用MAC级隔离。一旦启用，交换机将从单播转发表中检查源和目的MAC地址项及其隔离配置文件。默认情况下，交换机将学习MAC地址并将其放入 "混杂 "隔离配置文件。在创建静态单播项时可以使用其他隔离配置文件。如果源MAC地址或目的MAC地址位于 `promiscuous` 隔离配置文件上，数据包将被转发。如果源MAC地址和目的MAC地址都位于同一个 "community1 "或 "community2 "隔离配置上，数据包将被转发。当源和目的MAC地址隔离配置文件为 "isolated"，或源和目的MAC地址隔离配置文件来自不同的社区（例如，源MAC地址是 "community1"，目的MAC地址是 "community2"）时，数据包将被丢弃。当MAC级隔离被全局禁用时，隔离将被绕过。 |
+| **use-svid-in-one2one-vlan-lookup** (_yes         \| no_; Default: **no**)                                                                                    | 是否使用服务VLAN id进行1:1 VLAN交换查询。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **use-cvid-in-one2one-vlan-lookup** (_yes         \| no_; Default: **yes**)                                                                                   | 是否使用客户VLAN id进行1:1 VLAN交换查询。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **multicast-lookup-mode** (_dst-ip-and-vid-for-ipv4 \| dst-mac-and-vid-always_;Default:**dst-ip-and-vid-for-ipv4**)                                           | IPv4 组播网桥的查找模式。<br>- dst-mac-and-vid-always \- 对于所有数据包类型，查找关键字是目标 MAC 和 VLAN id。<br>- dst-ip-and-vid-for-ipv4 \- 对于 IPv4 数据包查找关键字是目标 IP 和 VLAN id。 对于其他数据包类型，查找关键字是目标 MAC 和 VLAN id。                                                                                                                                                                                                                                                                                                                                                        |
+| **unicast-fdb-timeout** (_time interval_; Default: **5m**)                                                                                                    | 单播FDB项的超时时间。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **override-existing-when-ufdb-full** (_yes \| no_; Default: **no**)                                                                                           | 启用或禁用来覆盖现有的项，当UFDB已满时，该项具有最低的老化值。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 | 属性                                                                                                                                | 说明                                                                  |
 | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -109,7 +120,7 @@ CRS交换芯片可从`/interface ethernet switch`控制台菜单中配置。
 | **fdb-uses** (_mirror0                                                                     \| mirror1_; Default: **mirror0**) | 用于FDB的镜像的分析器端口。                                                                                                                                                                                                                                                                                                                |
 | **vlan-uses** (_mirror0                                                                    \| mirror1_; Default: **mirror0**) | 用于VLAN的镜像的分析器端口。                                                                                                                                                                                                                                                                                                               |
 
-# 端口设置
+## 端口设置
 
 ___
 
@@ -160,23 +171,24 @@ ___
 | **dscp-based-qos-dscp-to-dscp-mapping** (_yes \| no_; Default: **yes**)                                                                                                                                                | 启用或禁用端口上的DSCP到内部DSCP的映射。                                                                                                        |
 | **pcp-based-qos-drop-precedence-mapping** (_PCP/DEI-range:drop-precedence_; Default: **0-15:green**)                                                                                                                   | 丢弃优先级新值，用于 PCP\/DEI 到 drop precedence (drop \| green \| red \| yellow) 映射。 多个映射允许用逗号分隔，例如 “0-7：黄色，8-15：红色”。 |
 | **pcp-based-qos-dscp-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                              | PCP/DEI 到 DSCP (0..63) 映射的 DSCP 新值。 多个映射允许用逗号分隔，例如 “0-7：25，8-15：50”。                                                   |
-| **pcp-based-qos-dei-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                               | PCP\/DEI 到 DEI (0..1) 映射的新 DEI 值。 多个映射允许用逗号分隔，例如 “0-7:0,8-15:1”。                                                          |
-| **pcp-based-qos-pcp-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                               | PCP\/DEI 到 PCP (0..7) 映射的新 PCP 值。 多个映射允许用逗号分隔，例如 “0-7：3，8-15：4”。                                                       |
-| **pcp-based-qos-priority-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                          | PCP\/DEI 到优先级 (0..15) 映射的内部优先级的新值。 多个映射允许用逗号分隔，例如 “0-7：5，8-15：15”。                                            |
+| **pcp-based-qos-dei-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                               | PCP/DEI 到 DEI (0..1) 映射的新 DEI 值。 多个映射允许用逗号分隔，例如 “0-7:0,8-15:1”。                                                           |
+| **pcp-based-qos-pcp-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                               | PCP/DEI 到 PCP (0..7) 映射的新 PCP 值。 多个映射允许用逗号分隔，例如 “0-7：3，8-15：4”。                                                        |
+| **pcp-based-qos-priority-mapping** (_PCP/DEI-range:DEI_; Default: **0-15:0**)                                                                                                                                          | PCP/DEI 到优先级 (0..15) 映射的内部优先级的新值。 多个映射允许用逗号分隔，例如 “0-7：5，8-15：15”。                                             |
 
 | 属性                                                                                                                                                                                   | 说明                                                                       |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | **priority-to-queue** (_priority-range:queue_; Default: **0-15:0,1:1,2:2,3:3**)                                                                                                        | 每个端口的内部优先级（0...15）与队列（0...7）的映射。                      |
 | **per-queue-scheduling** (_Scheduling-type:Weight_;<br>Default: **wrr-group0:1,wrr-group0:2,wrr-group0:4,wrr-group0:8,wrr-group0:16,wrr-group0:32,** **wrr-group0:64,wrr-group0:128**) | 设置端口对每个队列组的流量整形使用严格或加权循环策略，每个队列用逗号分隔。 |
-  
-| 属性                                                                                                                                                  | 说明                                                                                                                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+
+| 属性                                                                                                                                                  | 说明                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | **ingress-customer-tpid-override** (_yes \| no_;Default:**!ingress-customer-tpid-override**)                                                          |
-| **ingress-customer-tpid** (_0..10000_; Default: **0x8100**)                                                                                           | 入站客户TPID覆盖允许接受具有自定义客户标签TPID的特定帧。默认值是针对802.1Q帧的标签。                                                         |
+| **ingress-customer-tpid** (_0..10000_; Default: **0x8100**)                                                                                           | 入站客户TPID覆盖允许接受具有自定义客户标签TPID的特定帧。默认值是针对802.1Q帧的标签。        |
 | **egress-customer-tpid-override** (_yes \| no_; Default: **!egress-customer-tpid-override**)                                                          |
-| **egress-customer-tpid** (_0..10000_; Default:**0x8100**)                                                                                             | Egress customer TPID override allows custom identification for egress frames with a customer tag. Default value is for tag of 802.1Q frames. |
-| **ingress-service-tpid-override** (_yes \| no_; Default:**!ingress-service-tpid-override**)**ingress-service-tpid** (_0..10000_; Default: **0x88A8**) | 入站服务TPID覆盖允许接受具有自定义服务标签TPID的特定帧。默认值是针对802.1AD帧的服务标签。                                                    |
-| **egress-service-tpid-override** (_yes \| no_; Default:**!egress-service-tpid-override**) **egress-service-tpid** (_0..10000_; Default:**0x88A8**)    | 出站服务TPID覆盖允许对带有服务标签的出站帧进行自定义识别。默认值是针对802.1AD帧的服务标签。                                                  |
+| **egress-customer-tpid** (_0..10000_; Default:**0x8100**)                                                                                             | 出站客户TPID覆盖允许对带有客户标签的出站帧进行自定义识别。默认值为802.1Q帧的标签。          |
+| **ingress-service-tpid-override** (_yes \| no_; Default:**!ingress-service-tpid-override**)**ingress-service-tpid** (_0..10000_; Default: **0x88A8**) | 入站服务TPID覆盖允许接受具有自定义服务标签TPID的特定帧。默认值是针对802.1AD帧的服务标签。   |
+| **egress-service-tpid-override** (_yes \| no_; Default:**!egress-service-tpid-override**) **egress-service-tpid** (_0..10000_; Default:**0x88A8**)    | 出站服务TPID覆盖允许对带有服务标签的出站帧进行自定义识别。默认值是针对802.1AD帧的服务标签。 |
+
 
 | 属性                                                                    | 说明                                                                                                                                                                                                                                                                                                                              |
 | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -185,11 +197,11 @@ ___
 | **queue-custom-drop-counter1-includes** (_counters_; Default: **none**) | 自定义包括计算交换机端口tx-queue-custom1-drop-packet的丢包和tx-queue-custom1-drop-byte计数器的字节。<br>- **red**<br>- **yellow**<br>- **green**<br>- **queue0**<br>- **...**<br>- **queue7**                                                                                                                                     |
 | **policy-drop-counter-includes** (_counters_; Default: **none**)        | 自定义包括为交换机端口策略计算丢弃的数据包--丢弃数据包计数器。<br>- **ingress-policing**<br>- **ingress-acl**<br>- **egress-policing**<br>- **egress-acl**                                                                                                                                                                        |
 
-# 转发数据库
+## 转发数据库
 
 ___
 
-## 单播FDB
+### 单播FDB
 
 单播转发数据库最多支持16318个MAC项。
 
@@ -207,7 +219,7 @@ ___
 | **svl** (_yes \| no_; Default: **no**)                                                                  | 单播FDB学习模式。<br>共享VLAN学习（svl）--学习/查询基于MAC地址--不基于VLAN ID。<br>独立VLAN学习（ivl）--学习/查询是基于MAC地址和VLAN ID。                                                                                                                                                                                                                                                                                                                                                                        |
 | **vlan-id** (_0..4095_)                                                                                 | 单播FDB查询/学习VLAN ID。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
-## 多播FDB
+### 多播FDB
 
 CRS125交换机芯片在MFDB中最多支持1024个项，用于组播转发。对于每个组播数据包，都会在MFDB中进行目的MAC或目的IP的查找。MFDB项不会被自动学习，只能被配置。
 
@@ -223,7 +235,7 @@ CRS125交换机芯片在MFDB中最多支持1024个项，用于组播转发。对
 | **svl** (_yes                             \| no_; Default: **no**) | 多播FDB学习模式。<br>- 共享VLAN学习（svl）--学习/查询基于MAC地址--不基于VLAN ID。<br>- 独立VLAN学习（ivl）--学习/查询是基于MAC地址和VLAN ID。 |
 | **vlan-id** (_0..4095_; Default: **0**)                            | 多播FDB查找VLAN id。如果VLAN学习模式是IVL，VLAN id就是查找id，否则VLAN id = 0。                                                               |
 
-## 保留FDB
+### 保留FDB
 
 Cloud Router Switch支持256个RFDB项。每个RFDB项可以存储带有特定命令的第2层单播或多播MAC地址。
 
@@ -238,11 +250,11 @@ Cloud Router Switch支持256个RFDB项。每个RFDB项可以存储带有特定�
 | **mac-address** (_MAC address_; Default: **00:00:00:00:00:00**)                        | 匹配的MAC地址为保留的FDB项。                                                                                                                                                                                                                                                               |
 | **qos-group** (_none_; Default: **none**)                                              | 从QoS组菜单中定义的QoS组。                                                                                                                                                                                                                                                                 |
 
-# VLAN
+## VLAN
 
 ___
 
-## VLAN表
+### VLAN表
 
 VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，如QoS、隔离、强制VLAN、学习和镜像。
 
@@ -259,7 +271,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 | **svl** (_yes \| no_; Default: **no**)            | FDB查询模式用于UFDB和MFDB中的查询。<br>- 共享VLAN学习（svl）--学习/查询是基于MAC地址，而不是VLAN ID。<br>- 独立VLAN学习（ivl）--学习/查询是基于MAC地址和VLAN ID。 |
 | **vlan-id** (_0..4095_)                           | VLAN成员项的VLAN id。                                                                                                                                             |
 
-## 出站VLAN标签
+### 出站VLAN标签
 
 出站数据包可以被分配不同的VLAN标签格式。当数据包被发送到出站端口（目标端口）时，VLAN标签可以被移除、添加或保持原样。每个端口对出站的VLAN标签格式有专门的控制。标签格式包括。
 
@@ -277,7 +289,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 | **tagged-ports** (_ports_)                          | 在出站处被标记的端口。     |
 | **vlan-id** (_0..4095_)                             | 在出站处被标记的VLAN ID。  |
 
-## 入站/出站VLAN转换
+#3# 入站/出站VLAN转换
 
 入站VLAN转换表允许每个端口有多达15个项。可以从数据包头中选择一个或多个字段，以便在Ingress VLAN Translation表中查找。在第一个匹配项中配置的S-VLAN或C-VLAN或两者都被分配给数据包。
 
@@ -314,7 +326,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 
 如果`VLAN-format`设置为`any`，那么`customer-vid/service-vid`设置为`0`将触发VLAN 0流量的交换规则。在这种情况下，交换机规则将寻找无标签的流量或带有VLAN 0标签的流量，在这种情况下，只有`untagged-or-tagged`会过滤掉VLAN 0流量。
 
-## 基于协议的VLAN
+### 基于协议的VLAN
 
 基于协议的VLAN表用于为每个端口的相关协议包分配VID和QoS属性。
 
@@ -333,7 +345,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 | **set-qos-for** (_all                            \| none                                                                                                                                   \| tagged                                         \| untagged-or-priority-tagged_; Default: **none**) | 适用于QoS分配命令的帧类型。                                                        |
 | **set-service-vid-for** (_all                    \| none                                                                                                                                   \| tagged                                         \| untagged-or-priority-tagged_; Default: **all**)  | 针对不同数据包类型的服务VLAN id分配命令。                                          |
 
-## 基于MAC地址的VLAN
+### 基于MAC地址的VLAN
 
 基于MAC的VLAN表是根据源MAC分配VLAN的。
 
@@ -348,7 +360,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
   
 所有CRS1xx/2xx系列交换机支持多达1024个基于MAC的VLAN项。
 
-## 1:1 VLAN 交换
+### 1:1 VLAN 交换
 
 1:1 VLAN交换可以用来取代匹配数据包的常规L2网桥。当一个数据包碰到一个1:1 VLAN交换项时，该项中的目标端口信息就会被分配给该数据包。UFDB和MFDB项中的匹配目标信息不再适用于该数据包。
 
@@ -361,7 +373,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 | **dst-port** (_port_)                                                 | 匹配1:1 VLAN交换数据包的目的端口。    |
 | **service-vid** (_0..4095_; Default: **0**)                           | 匹配客户的VLAN id，用于1:1 VLAN交换。 |
 
-# 端口隔离/泄露
+## 端口隔离/泄露
 
 ___
 
@@ -401,7 +413,7 @@ CRS交换机支持灵活的多级隔离功能，可用于用户访问控制、�
 | **type** (_dst                                                                                \| src_; Default: **src**)                                                                                                                                                                 | 隔离/泄漏项的查找类型。       <br>- src\-该项适用于端口入站数据包。<br>- dst \-该项适用于端口出站数据包。 |
 | **vlan-profile** (_community1 \| community2 \| isolated \| promiscuous_; Default: **none**)                                                                                                                                                                                              | 匹配的VLAN隔离/泄漏配置文件。                                                                             |
 
-# 聚合
+## 聚合
 
 ___
 
@@ -415,11 +427,11 @@ Cloud Router Switches提供静态链路聚合组，具有硬件自动故障切�
 | **member-ports** (_ports_)                                              | 聚合组的成员端口。   |
 | **name** (_string value_; Default: **trunkX**)                          | 聚合组的名称。       |
 
-# 服务质量
+## 服务质量
 
 ___
 
-## 整形器
+### 整形器
 
 流量整形限制了从接口传出去的流量的速率和突发包大小。整形器由一个令牌桶实现。如果数据包超过了最大速率或突发大小，意味着没有足够的令牌，数据包将被存储到缓冲区，直到有足够的令牌来传输它。
 
@@ -434,7 +446,7 @@ ___
 | **rate** (_integer_; Default: **1M**)                                                                                                                 | 最大速率限制。                                                                                                                                                                                                                                                                                 |
 | **target** (_port                        \| queueX                                                                 \| wrr-groupX_; Default: **port**) | 每个端口（包括CPU端口）都支持三个级别的整形器。<br>- Port level （端口级别）-该项适用于交换机芯片端口。<br>- WRR group level （WRR组级别）--该项适用于端口上的2个加权轮询队列组之一（wrr-group0, wrr-group1）。<br>- Queue level （队列级别）-该项适用于端口上8个队列之一（queue0 - queue7）。 |
 
-## 入站端口监控器
+### 入站端口监控器
 
 **子菜单:** `/interface ethernet switch ingress-port-policer`
 
@@ -452,7 +464,7 @@ ___
 | **rate** (_integer_)                                                                                                                                                                                                                                                                                                                                    | 最大速率限制。                                                                                                                                                                                                   |
 | **yellow-action** (_drop                                                                             \| forward                                                                                                                                                                                                          \| remark_; Default: **drop**) | 对超出的流量进行了处理。                                                                                                                                                                                         |
 
-## QoS组
+### QoS组
 
 全局QoS组表用来为基于VLAN、协议和MAC的QoS组指定配置。
 
@@ -468,7 +480,7 @@ ___
 | **pcp** (_0..7_; Default: **none**)                                                                                                                                                                                                                                                  | QoS组的PCP新值。                                                                        |
 | **priority** (_0..15_; Default: **0**)                                                                                                                                                                                                                                               | 内部优先级是一种局部的优先级，用于将流量分类到端口上的不同出站队列。(1为最高，15为最低) |
 
-## DSCP QOS映射
+### DSCP QOS映射
 
 全局DSCP到QOS的映射表用于从数据包的DSCP到表中配置的新的QoS属性的映射。
 
@@ -481,7 +493,7 @@ ___
 | **pcp** (_0..7_)                                                                                                       | DSCP到QOS映射项的PCP新值。                              |
 | **priority** (_0..15_)                                                                                                 | DSCP到QOS映射项的内部优先级新值。                       |
 
-## DSCP到DSCP映射
+### DSCP到DSCP映射
 
 全局DSCP到DSCP映射表用于从数据包的原始DSCP到表中配置的新DSCP值的映射。
 
@@ -491,7 +503,7 @@ ___
 | ---------------------- | ---------------------------- |
 | **new-dscp** (_0..63_) | DSCP到DSCP映射项的DSCP新值。 |
 
-## 监控器QoS映射
+### 监控器QoS映射
 
 **子菜单:** `/interface ethernet switch policer-qos-map`
 
@@ -504,7 +516,7 @@ ___
 | **pcp-for-red** (_0..7_; Default: **0**)      | 红色数据包的监控器PCP重映射值。  |
 | **pcp-for-yellow** (_0..7_; Default: **0**)   | 黄色数据包的监控器PCP重映射值。  |
 
-# 访问控制表
+## 访问控制表
 
 ___
 
@@ -600,7 +612,7 @@ ACL数据包过滤绕过部分。
 | **isolation-filter-bypass** (_yes      \| no_; Default: **no**) | 允许绕过隔离表进行匹配数据包。只适用于入站策略表。                   |
 | **egress-vlan-translate-bypass** (_yes \| no_; Default: **no**) | 允许绕过出站VLAN转换表来匹配数据包。                                 |
 
-## ACL监控器
+### ACL监控器
 
 **子菜单:** `/interface ethernet switch acl policer`
 
@@ -625,7 +637,7 @@ ACL数据包过滤绕过部分。
 | **new-pcp-for-red** (_0..7 \| remap_)                                                                                                                                                            | 用于红色丢弃优先级数据包的新PCP。                                                                                                                                                                                                                  |
 | **new-dscp-for-red** (_0..63 \| remap_)                                                                                                                                                          | 用于红色丢弃优先级数据包的新DSCP。                                                                                                                                                                                                                 |
 
-# 参考
+## 参考文档
 
 ___
 

@@ -1,6 +1,6 @@
 # 硬件卸载介绍
 
-**第三层硬件卸载**（ **L3HW** ，也称为 IP 交换或硬件路由）允许将某些路由器功能卸载到交换芯片上。 允许路由数据包时达到线速，这对于 CPU 来说是不可能的。
+**第三层硬件卸载**（ L3HW也称为 IP 交换或硬件路由）允许将某些路由器功能卸载到交换芯片上。 这样路由数据包可以达到线速，这对 CPU 来说是不可能的。
 
 ## 交换配置
 
@@ -534,17 +534,17 @@ Columns: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE
 | **CRS328-24P-4S+**     | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
 | **CRS328-4C-20S-4S+**  | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
 
-_ <sup>1</sup> 由于可以卸载的路由总量有限，具有较高网络掩码的前缀优先由硬件转发（例如 /32、/30、/29 等），任何 其他不适合 HW 表的前缀将由 CPU 处理。 直接连接的主机被卸载为 /32 (IPv4) 或 /128 (IPv6) 路由前缀。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
+<sup>1</sup> _由于可以卸载的路由总量有限，具有较高网络掩码的前缀优先由硬件转发（例如 /32、/30、/29 等），任何 其他不适合 HW 表的前缀将由 CPU 处理。 直接连接的主机被卸载为 /32 (IPv4) 或 /128 (IPv6) 路由前缀。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
 
-_ <sup>2</sup>IPv4 和 IPv6 路由表共享相同的硬件内存。_
+<sup>2</sup> _IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
-_ <sup>3</sup> 如果路由的路径多于硬件 ECMP 限制 (X)，则只有前 X 条路径被卸载。_
+<sup>3</sup> _如果路由的路径多于硬件 ECMP 限制 (X)，则只有前 X 条路径被卸载。_
 
 ### CRS3xx、CRS5xx：交换机 DX8000 和 DX4000 系列
 
 以下设备基于 **Marvell 98DX8xxx、98DX4xxx** 交换芯片或 **98DX325x** 型号。
 
-**Fasttrack** 连接 <sup>2,3,4</sup>
+**Fasttrack** 连接 <sup>2,3,4</sup>  
 
 | 型号                                     | 交换芯片                  | 发布版本 | IPv4 Routes <sup>1</sup> | IPv4 Hosts <sup>7</sup> | IPv6 Routes<sup>8</sup> | IPv6 Hosts<sup>7</sup> | Nexthops | **Fasttrack** **连接<sup>2,3,4</sup>** | NAT entries <sup>2,5</sup> |
 | ---------------------------------------- | ------------------------- | -------- | ------------------------ | ----------------------- | ----------------------- | ---------------------- | -------- | -------------------------------------- | -------------------------- |
@@ -556,21 +556,21 @@ _ <sup>3</sup> 如果路由的路径多于硬件 ECMP 限制 (X)，则只有前 
 | **CRS504-4XQ**                           | **98DX4310**              | 7.1      | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
 | **CRS518-16XS-2XQ**                      | **98DX8525**              | 7.3      | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
 
-_ <sup>1</sup> 取决于路由表的复杂性。 整个字节 IP 前缀（/8、/16、/24 等）比其他前缀（例如 /22）占用更少的硬件空间。 从 **RouterOS v7.3** 开始，当路由 HW 表变满时，只有具有较长子网前缀的路由（/30、/29、/28 等）会被卸载，而 CPU 会处理较短的前缀。 在 RouterOS v7.2 及之前的版本中，Routing HW 内存溢出导致了未定义的行为。 用户可以通过路由过滤器（对于动态路由）或抑制静态路由的硬件卸载来微调要卸载的路由。 IPv4 和 IPv6 路由表共享相同的硬件内存。_
+<sup>1</sup> _取决于路由表的复杂性。 整个字节 IP 前缀（/8、/16、/24 等）比其他前缀（例如 /22）占用更少的硬件空间。 从 **RouterOS v7.3** 开始，当路由 HW 表变满时，只有具有较长子网前缀的路由（/30、/29、/28 等）会被卸载，而 CPU 会处理较短的前缀。 在 RouterOS v7.2 及之前的版本中，Routing HW 内存溢出导致了未定义的行为。 用户可以通过路由过滤器（对于动态路由）或抑制静态路由的硬件卸载来微调要卸载的路由。 IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
-_ <sup>2</sup> 当达到 Fasttrack 或 NAT 条目的 HW 限制时，其他连接将回退到 CPU。 MikroTik 的智能连接卸载算法确保流量最大的连接被卸载到硬件。_
+<sup>2</sup> _当达到 Fasttrack 或 NAT 条目的 HW 限制时，其他连接将回退到 CPU。 MikroTik 的智能连接卸载算法确保流量最大的连接被卸载到硬件。_
 
-_ <sup>3</sup> Fasttrack 连接与 ACL 规则共享相同的硬件内存。 根据复杂程度，一条ACL规则可能会占用3-6个Fasttrack连接的内存。_
+<sup>3</sup> _Fasttrack 连接与 ACL 规则共享相同的硬件内存。 根据复杂程度，一条ACL规则可能会占用3-6个Fasttrack连接的内存。_
 
-_ <sup>4</sup>_ _MPLS 与 Fasttrack 连接共享硬件内存。 此外，启用 MPLS 需要分配整个内存区域，否则可以存储多达 768 (0.75K) 个 Fasttrack 连接。 这同样适用于桥接端口扩展器。 但是，MPLS 和 BPE 可能使用相同的内存区域，因此同时启用它们不会使 Fasttrack 连接的限制加倍。_
+<sup>4</sup> _MPLS 与 Fasttrack 连接共享硬件内存。 此外，启用 MPLS 需要分配整个内存区域，否则可以存储多达 768 (0.75K) 个 Fasttrack 连接。 这同样适用于桥接端口扩展器。 但是，MPLS 和 BPE 可能使用相同的内存区域，因此同时启用它们不会使 Fasttrack 连接的限制加倍。_
 
-_ <sup>5</sup> 如果 Fasttrack 连接需要网络地址转换，则会创建硬件 NAT 条目。 硬件同时支持SRCNAT和DSTNAT._
+<sup>5</sup> _如果 Fasttrack 连接需要网络地址转换，则会创建硬件 NAT 条目。 硬件同时支持SRCNAT和DSTNAT._
 
-_ <sup>6</sup> 交换芯片具有 DX8000 系列的功能集。_
+<sup>6</sup> _交换芯片具有 DX8000 系列的功能集。_
 
-_ <sup>7</sup> DX4000/DX8000交换芯片将直连主机、IPv4/32、IPv6/128路由条目存储在FDB表中，而不是路由表中。 HW 内存在常规 FDB L2 条目 (MAC)、IPv4 和 IPv6 地址之间共享。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
+<sup>7</sup> _DX4000/DX8000交换芯片将直连主机、IPv4/32、IPv6/128路由条目存储在FDB表中，而不是路由表中。 HW 内存在常规 FDB L2 条目 (MAC)、IPv4 和 IPv6 地址之间共享。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
 
-_ <sup>8</sup> IPv4 和 IPv6 路由表共享相同的硬件内存。_
+<sup>8</sup> _IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
 ### CCR2000
 
@@ -579,4 +579,4 @@ _ <sup>8</sup> IPv4 和 IPv6 路由表共享相同的硬件内存。_
 | **CCR2116-12G-4S+**     | **98DX3255** <sup>1</sup> | 7.1      | 16K - 36K   | 16K        | 4K - 6K     | 8K         | 8K       | 2.25K             | 2.25K       |
 | **CCR2216-1G-12XS-2XQ** | **98DX8525**              | 7.1      | 60K - 120K  | 64K        | 15K - 20K   | 32K        | 8k       | 4.5K              | 4K          |
 
-_ <sup>1</sup> 交换芯片具有DX8000系列的特性集。_
+<sup>1</sup> _交换芯片具有DX8000系列的特性集。_
