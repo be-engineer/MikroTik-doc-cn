@@ -221,7 +221,7 @@ ___
 
 ### 多播FDB
 
-CRS125交换机芯片在MFDB中最多支持1024个项，用于组播转发。对于每个组播数据包，都会在MFDB中进行目的MAC或目的IP的查找。MFDB项不会被自动学习，只能被配置。
+CRS125交换机芯片在MFDB中最多支持1024个项，用于组播转发。对于每个组播数据包，都会在MFDB中进行目的MAC或目的IP的查找。MFDB项不会自动学习，只能配置。
 
 **子菜单:** `/interface ethernet switch multicast-fdb`
 
@@ -324,7 +324,7 @@ VLAN表支持4096个项，用于存储VLAN成员信息以及其他VLAN信息，�
 | **tagged**                    | 接受：<br>- 标签流量<br>- 设置了优先权的标签流量                                                                 |
 | **untagged-or-tagged**        | 接受：<br>- 未标记的流量<br>- 标签流量<br>- 已设置优先级的标签流量                                               |
 
-如果`VLAN-format`设置为`any`，那么`customer-vid/service-vid`设置为`0`将触发VLAN 0流量的交换规则。在这种情况下，交换机规则将寻找无标签的流量或带有VLAN 0标签的流量，在这种情况下，只有`untagged-or-tagged`会过滤掉VLAN 0流量。
+如果 `VLAN-format` 设置为 `any` ，那么 `customer-vid/service-vid` 设置为 `0` 将触发VLAN 0流量的交换规则。在这种情况下，交换机规则将寻找无标签的流量或带有VLAN 0标签的流量，在这种情况下，只有 `untagged-or-tagged` 会过滤掉VLAN 0流量。
 
 ### 基于协议的VLAN
 

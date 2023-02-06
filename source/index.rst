@@ -11,9 +11,9 @@ github地址：https://github.com/be-engineer/MikroTik-doc-cn 喜欢的请不吝
 友情链接：
 -----------------
 
-1. 偶然发现一个 `pve7.3中文翻译说明`_ 还没细看,感觉不错，喜欢的也请给他们一个赞
+1. 偶然发现一个 `pve7.3中文帮助`_ 还没细看,感觉不错，喜欢的也请给他们一个赞
 
-.. _`pve7.3中文翻译说明`: https://pve-doc-cn.readthedocs.io/zh_CN/latest/
+.. _`pve7.3中文帮助`: https://pve-doc-cn.readthedocs.io/zh_CN/latest/
 
 2. RouterOS 7.6修改内容，了解新版本增加了哪些功能。 `What's new in V7.6`_ 
 

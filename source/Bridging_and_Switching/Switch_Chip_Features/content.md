@@ -16,11 +16,11 @@ Routerboards上有几种交换芯片，它们有不同的功能。大多数只�
 
 **说明**
 
-1. 对于QCA8337, Atheros8327, Atheros8316, Atheros8227和Atheros7240，Tx/Rx速率限制可以通过`"/interface ethernet"`菜单上的`bandwidth`属性来改变，更多细节见[Ethernet manual](https://help.mikrotik.com/docs/display/ROS/Ethernet)。对于RTL8367、88E6393X、88E6191X和MT7621，可以通过"`/interface ethernet switch port'"菜单上的`egress-rate'和`ingress-rate'属性来改变Tx/Rx速率限制。
-2. MAC地址可以学习到指定的数量，但是RouterOS中没有交换机主机表的内容，不支持静态主机配置。 
-3. [Bridge HW vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)是在RouterOS 7.1rc1（RTL8367）和7.1rc5（MT7621）版本中添加的。交换机不支持其他 "ether-type "0x88a8或0x9100（只支持0x8100），也不支持 "tag-stacking"。使用这些功能将禁用HW卸载。
+1. 对于QCA8337, Atheros8327, Atheros8316, Atheros8227和Atheros7240，Tx/Rx速率限制可以通过 `/interface ethernet` 菜单上的 `bandwidth` 属性来改变，更多细节见 [Ethernet manual](https://help.mikrotik.com/docs/display/ROS/Ethernet)。对于RTL8367、88E6393X、88E6191X和MT7621，可以通过 `/interface ethernet switch port` 菜单上的 `egress-rate` 和 `ingress-rate` 属性来改变Tx/Rx速率限制。
+2. MAC地址可以学习到指定的数量，但是RouterOS中没有交换机主机表的内容，不支持静态主机配置。
+3. [Bridge HW vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 是在RouterOS 7.1rc1（RTL8367）和7.1rc5（MT7621）版本中添加的。交换机不支持其他 "ether-type "0x88a8或0x9100（只支持0x8100），也不支持 "tag-stacking"。使用这些功能将禁用HW卸载。
 
-Cloud Router Switch（CRS）系列设备集成了先进的交换芯片，它们支持多种功能。关于CRS1xx/CRS2xx系列设备的交换芯片功能，请查看[CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835)手册，对于CRS3xx系列设备，请查看[CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)手册。
+Cloud Router Switch（CRS）系列设备集成了先进的交换芯片，它们支持多种功能。关于CRS1xx/CRS2xx系列设备的交换芯片功能，请查看 [CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835) 手册，对于CRS3xx系列设备，请查看 [CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features) 手册。
 
 | RouterBoard                                                                                                                                                                                              | 交换芯片说明                                                                 |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -92,16 +92,13 @@ ___
 
 #### 交换所有端口功能
 
-在RB450G/RB435G/RB850Gx2设备上的Ether1端口有一个功能，允许它被移除/添加到默认的交换机组中，这个设置在`/interface ethernet switch`菜单中。默认情况下，ether1端口将包括在交换机组中。
+在RB450G/RB435G/RB850Gx2设备上的Ether1端口有一个功能，允许它被移除/添加到默认的交换机组中，这个设置在 `/interface ethernet switch` 菜单中。默认情况下，ether1端口将包括在交换机组中。
 
 ![](https://help.mikrotik.com/docs/download/attachments/15302988/Switch4.png?version=1&modificationDate=1583499374411&api=v2)
 
-| 属性                                                  | 说明 |
-| ----------------------------------------------------- | ---- |
-| **switch-all-ports** (no _ \| yes_; Default: **yes**) |
-仅在RB450G/RB435G/RB850Gx2设备上改变ether1交换机组。
-- `yes` - ether1是交换机的一部分，支持交换机分组和所有其他高级Atheros8316/Atheros8327功能，包括扩展统计（`/interface ethernet print stats`）。
-- `no` - ether1不是交换机的一部分，让它成为一个独立的以太网端口，这样增加了它在桥接和路由模式下对其他端口的吞吐量，但取消了这个端口上的交换特性。 |
+| 属性                                                  | 说明                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **switch-all-ports** (no _ \| yes_; Default: **yes**) | 仅在RB450G/RB435G/RB850Gx2设备上改变ether1交换机组。<br>- `yes` - ether1是交换机的一部分，支持交换机分组和所有其他高级Atheros8316/Atheros8327功能，包括扩展统计（`/interface ethernet print stats`）。<br>- `no` - ether1不是交换机的一部分，让它成为一个独立的以太网端口，这样增加了它在桥接和路由模式下对其他端口的吞吐量，但取消了这个端口上的交换特性。 |
 
 ### 端口镜像
 
@@ -116,6 +113,7 @@ ___
 | **mirror-egress-target** (_name \| none_; Default: **none**) | 选择一个单一的镜像出口目标端口，只适用于**88E6393X**和**88E6191X**交换芯片。来自 "mirror-egress"（见端口菜单中的属性）的镜像数据包发送至所选端口。                           |
 
 **子菜单:** `/interface ethernet switch rule`
+
 | 属性                                                           | 说明                                                                                                |
 | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | **mirror** (_no                      \| yes_; Default: **no**) | 是否向`mirror-target`端口发送数据包副本。                                                           |
@@ -149,7 +147,7 @@ set switch1 mirror-source=ether2 mirror-target=ether3
 
 本菜单下的属性用于为支持VLAN表的交换芯片配置VLAN交换和过滤选项。这些属性只适用于支持VLAN表的交换芯片，请查看 [交换芯片特性](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction) 确定你的设备支持该功能。
 
-入站流量被认为是被送**入**某个端口的流量，这个端口有时被称为**入站端口**。出口流量是指从某一端口**发送**的流量，这个端口有时被称为**出站**端口。区分它们对于正确设置VLAN过滤是非常重要的，因为有些属性只适用于入站或出站流量。
+入站流量被认为是被送 **入** 某个端口的流量，这个端口有时被称为 **入站端口** 。出口流量是指从某一端口 **发送** 的流量，这个端口有时被称为 **出站** 端口。区分它们对于正确设置VLAN过滤是非常重要的，因为有些属性只适用于入站或出站流量。
 
 | 属性                                                                                        | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -157,7 +155,7 @@ set switch1 mirror-source=ether2 mirror-target=ether3
 | **vlan-header** (_add-if-missing \| always-strip \| leave-as-is_; Default: **leave-as-is**) | 设置在端口上对出站流量进行的操作。<br>- `add-if-missing`- 在出站流量上增加一个VLAN标签，并使用入站端口的默认VLAN-id。用于聚合端口。<br>- `always-strip`- 在出站流量中删除一个VLAN标签。用于接入端口。<br>- `leave-as-is`-不在出站流量上增加或删除VLAN标签。用于混合端口。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **default-vlan-id** (_auto \| integer: 0..4095_; Default: **auto**)                         | 在端口上的所有未标记的入站流量上添加一个具有指定VLAN ID的VLAN标签，应与端口上的vlan-header设置为`always-strip`一起使用，以配置该端口为访问端口。对于混合端口，默认的vlan-id被用来标记未标记的流量。如果两个端口有相同的default-vlan-id，那么VLAN标签就不会被添加，因为交换芯片认为流量是在接入端口之间转发的。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-在**QCA8337**和**Atheros8327**交换芯片上，要使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
+在 **QCA8337** 和 **Atheros8327** 交换芯片上，要使用默认的 `vlan-header=leave-as-is` 属性。交换芯片将通过`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id` 只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
 
 ## VLAN表
 
@@ -165,7 +163,7 @@ VLAN表为具有特定802.1Q标签的数据包指定了某些转发规则。这�
 
 基于VLAN ID的转发考虑到了动态学习的MAC地址或在主机表中手动添加的MAC地址。QCA8337和Atheros8327交换芯片还支持独立VLAN学习（IVL），它同时基于MAC地址和VLAN ID进行学习，因此允许同一MAC用于多个VLAN。
 
-没有VLAN标签的数据包就像有VLAN标签的端口`default-vlan-id`一样处理。如果配置了`vlan-mode=check`或`vlan=mode=secure`，为了转发没有VLAN标签的数据包，必须根据`default-vlan-id`在VLAN表中增加一个具有相同VLAN ID的条目。
+没有VLAN标签的数据包就像有VLAN标签的端口 `default-vlan-id` 一样处理。如果配置了 `vlan-mode=check` 或 `vlan=mode=secure` ，为了转发没有VLAN标签的数据包，必须根据 `default-vlan-id` 在VLAN表中增加一个具有相同VLAN ID的条目。
 
 | 属性                                                                   | 说明                                                                      |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -175,17 +173,17 @@ VLAN表为具有特定802.1Q标签的数据包指定了某些转发规则。这�
 | **switch** (_name_; Default: **none**)                                 | 各个VLAN项针对的交换机的名称。                                            |
 | **vlan-id** (_integer: 0..4095_; Default: )                            | 某些交换机端口配置的VLAN ID。                                             |
 
-> 带有**MT7621**, **RTL8367**, **88E6393X**, **88E6191X**交换芯片的设备在RouterOS v7中支持[HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。在"/interface ethernet switch "菜单上不能进行VLAN相关配置。
+> 带有 **MT7621**, **RTL8367**, **88E6393X**, **88E6191X** 交换芯片的设备在RouterOS v7中支持 [HW offloaded vlan-filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 。在"/interface ethernet switch "菜单上不能进行VLAN相关配置。
 
 VLAN转发
 
-`vlan-mode`和`vlan-header`以及VLAN表都可以用来配置VLAN标记、取消标记和过滤，有多种组合，每种组合都能达到不同的效果。下面的表格说明在每个VLAN模式下，当入站端口收到某种流量时，什么样的流量将通过出站端口发送出去。
+`vlan-mode` 和 `vlan-header` 以及VLAN表都可以用来配置VLAN标记、取消标记和过滤，有多种组合，每种组合都能达到不同的效果。下面的表格说明在每个VLAN模式下，当入站端口收到某种流量时，什么样的流量将通过出站端口发送出去。
 
 **注：**
 
-- **L** `vlan-header`设置为`leave-as-is`
-- **S** `vlan-header`设置为`always-strip`
-- **A** - `vlan-header'设置为`add-if-missing'
+- **L** -`vlan-header` 设置为 `leave-as-is`
+- **S** -`vlan-header` 设置为 `always-strip`
+- **A** - `vlan-header` 设置为 `add-if-missing`
 - **U** - 无标记的流量被发送出去
 - **T** - 标签流量被发送出去，入站端口上已经有一个标签
 - **TA** - 标签流量被发送出去，添加一个标签在入站端口上
@@ -193,6 +191,57 @@ VLAN转发
 - **DE** -因为在VLAN表中没有找到出站端口，所以出站端口的流量被丢弃
 - **VID match** - 在VLAN表中，入站流量的VLAN标签的VLAN ID存在
 - **Port match** - 入站端口在VLAN表中有适当的VLAN ID
+
+<table>
+<tr>
+    <td rowspan="2">VLAN Mode = disabled</td>
+    <td colspan="3">Egress port not present in VLAN Table</td>
+    <td colspan="3">Egress port is present in VLAN Table</td>
+</tr>
+<tr>
+    <td>L</td>
+    <td>S</td>
+    <td>A</td>
+    <td>L</td>
+    <td>S</td>
+    <td>A</td>
+</tr>
+<tr>
+    <td>Untagged traffic</td>
+    <td>U</td>
+    <td>U</td>
+    <td>TA</td>
+    <td>U</td>
+    <td>U</td>
+    <td>TA</td>
+</tr>
+<tr>
+    <td>Tagged traffic; no VID match</td>
+    <td>T</td>
+    <td>U</td>
+    <td>T</td>
+    <td colspan="3"></td>
+</tr>
+<tr>
+    <td>Tagged traffic; VID match; no Port match</td>
+    <td>T</td>
+    <td>U</td>
+    <td>T</td>
+    <td>T</td>
+    <td>U</td>
+    <td>T</td>    
+</tr>
+<tr>
+    <td>Tagged traffic; VID match; Port match</td>
+    <td>T</td>
+    <td>U</td>
+    <td>T</td>
+    <td>T</td>
+    <td>U</td>
+    <td>T</td>    
+</tr>
+
+</table>
 
 <table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col></colgroup><tbody><tr><td rowspan="2" class="confluenceTd"><em>VLAN Mode = disabled</em></td><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port not present in VLAN Table</th><th colspan="3" style="text-align: center;" class="confluenceTh">Egress port is present in VLAN Table</th></tr><tr><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th><th style="text-align: center;" class="confluenceTh">L</th><th style="text-align: center;" class="confluenceTh">S</th><th style="text-align: center;" class="confluenceTh">A</th></tr><tr><th style="text-align: center;" class="confluenceTh">Untagged traffic</th><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td><td class="confluenceTd">U</td><td class="confluenceTd">U</td><td class="confluenceTd">TA</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; no VID match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td colspan="3" class="confluenceTd"><br></td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; no Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr><tr><th style="text-align: center;" class="confluenceTh">Tagged traffic; VID match; Port match</th><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td><td class="confluenceTd">T</td><td class="confluenceTd">U</td><td class="confluenceTd">T</td></tr></tbody></table>
 
