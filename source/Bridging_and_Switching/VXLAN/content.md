@@ -50,10 +50,23 @@ ___
 
 首先，在两个路由器上创建VXLAN接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vxlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vxlan1</code> <code class="ros value">port</code><code class="ros plain">=8472</code> <code class="ros value">vni</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
+```shell
+/interface vxlan
+add name=vxlan1 port=8472 vni=10
+
+```
 
 然后在两台路由器上配置VTEP，分别配置IPv4目标地址。两台设备都应该有一条通往目的地址的有效路由。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Router1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vxlan vteps</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=vxlan1</code> <code class="ros value">remote-ip</code><code class="ros plain">=192.168.10.10</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># Router2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface vxlan vteps</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=vxlan1</code> <code class="ros value">remote-ip</code><code class="ros plain">=192.168.20.20</code></div></div></td></tr></tbody></table>
+```shell
+# Router1
+/interface vxlan vteps
+add interface=vxlan1 remote-ip=192.168.10.10
+ 
+# Router2
+/interface vxlan vteps
+add interface=vxlan1 remote-ip=192.168.20.20
+
+```
 
 配置完成。可以将VXLAN接口纳入与其他以太网接口组成的网桥。

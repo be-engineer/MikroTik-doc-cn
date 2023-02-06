@@ -10,7 +10,12 @@ RouterOS 备份功能可以保存当前设备的配置，然后可以在相同�
 
 **子菜单:** `/system backup save`
 
-<table class="wrapped relative-table confluenceTable" style="margin-left: 14.4318px;width: 99.391%;"><colgroup><col style="width: 43.4818%;"><col style="width: 56.5182%;"></colgroup><tbody><tr><th class="confluenceTh">属性</th><th class="confluenceTh">说明</th></tr><tr><td class="confluenceTd"><strong>dont-encrypt</strong><span>&nbsp;</span>(<em>yes | no</em>; Default:<span>&nbsp;</span><strong>no</strong>)</td><td class="confluenceTd">禁用备份文件加密。注意，由于RouterOS v6.43没有提供密码 ，备份文件不会加密。</td></tr><tr><td class="confluenceTd"><strong>encryption</strong><span>&nbsp;</span>(<em>aes-sha256 | rc4</em>; Default:<span>&nbsp;</span><strong>aes-sha256</strong>)</td><td class="confluenceTd">用于加密备份文件的加密算法。注意，这不认为是一种安全的加密方法，仅出于与旧 RouterOS 版本兼容的原因才可用。</td></tr><tr><td class="confluenceTd"><strong>name</strong><span>&nbsp;</span>(<em>string</em>; Default:<span>&nbsp;</span><strong>[identity]-[date]-[time].backup</strong>)</td><td class="confluenceTd">备份文件名。</td></tr><tr><td class="confluenceTd"><strong>password</strong><span>&nbsp;</span>(<em>string</em>; Default: )</td><td class="confluenceTd">备份文件的密码。注意，由于RouterOS v6.43没有提供密码 ，备份文件不会加密。</td></tr></tbody></table>
+| 属性                                                                                 | 说明                                                                                                       |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| dont-encrypt (yes                                       \| no; Default: no)          | 禁用备份文件加密。注意，由于RouterOS v6.43没有提供密码 ，备份文件不会加密。                                |
+| encryption (aes-sha256                                  \| rc4; Default: aes-sha256) | 用于加密备份文件的加密算法。注意，这不认为是一种安全的加密方法，仅出于与旧 RouterOS 版本兼容的原因才可用。 |
+| name (string; Default: [identity]-[date]-[time].backup)                              | 备份文件名。                                                                                               |
+| password (string; Default: )                                                         | 备份文件的密码。注意，由于RouterOS v6.43没有提供密码 ，备份文件不会加密。                                  |
 
 > 如果在早于 v6.43 的 RouterOS 版本中未提供密码，则备份文件将使用当前用户的密码加密，除非使用了 dont-encrypted 属性或当前用户的密码为空。
 

@@ -95,16 +95,16 @@ chain=srcnat action=masquerade src-address=10.5.50.0/24
 
 该菜单用于管理路由器的 HotSpot 服务器。 可以在以太网、无线、VLAN 和网桥接口上运行 HotSpot。 每个接口允许一个 HotSpot 服务器。 在桥接接口上配置HotSpot时，将HotSpot接口设置为桥接接口，而不是桥接端口，不要将公共接口添加到桥接端口。 你可以手动将 HotSpot 服务器添加到 _/ip/hotspot_ 菜单，但建议运行 _/ip/hotspot/setup_，这会添加所有必要的设置。
 
-| 参数                                                      | 说明                                                                                                                                                           |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **name** (text)                                           | HotSpot 服务器名称或标识符                                                                                                                                     |
-| **address-pool** (name/none; default: _none_)             | 用于将 HotSpot 客户端 _任意_IP 地址改为有效地址。 用于为不愿更改其网络设置的移动客户端提供公共网络访问                                                         |
-| **idle-timeout** (time/none; default: _5m_)               | 未经授权客户的非活动期。 当没有来自该客户端的流量时（客户端计算机应该关闭），一旦超时，用户就会从 HotSpot 主机列表中删除，其用过的地址变为可用                 |
-| **keepalive-timeout** (time/none; default: _none_)        | 主机停留多长时间才从 HotSpot 中删除的值                                                                                                                        |
-| **login-timeout** (time/none; default: _none_)            | 一段时间后，如果主机未被系统授权，则主机条目将从主机表中删除。 循环重复，直到主机登录系统。 如果出现主机在未授权主机表中停留时间过长后无法登录的情况，请启用。 |
-| **interface** (name of an interface)                      | 运行 HotSpot 的接口                                                                                                                                            |
-| **addresses-per-mac** (integer**/**unlimited; default: 2) | 当多个 HotSpot 客户端连接一个 MAC 地址时，允许与 MAC 地址绑定的 IP 地址数                                                                                      |
-| **profile** (name; default: **_default_)**                | HotSpot 服务器默认的 HotSpot 配置文件，位于 _/ip/hotspot/profile_                                                                                              |
+| 参数                                                        | 说明                                                                                                                                                           |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **name** (text)                                             | HotSpot 服务器名称或标识符                                                                                                                                     |
+| **address-pool** (name/none; default: _none_)               | 用于将 HotSpot 客户端 _任意_IP 地址改为有效地址。 用于为不愿更改其网络设置的移动客户端提供公共网络访问                                                         |
+| **idle-timeout** (time/none; default: _5m_)                 | 未经授权客户的非活动期。 当没有来自该客户端的流量时（客户端计算机应该关闭），一旦超时，用户就会从 HotSpot 主机列表中删除，其用过的地址变为可用                 |
+| **keepalive-timeout** (time/none; default: _none_)          | 主机停留多长时间才从 HotSpot 中删除的值                                                                                                                        |
+| **login-timeout** (time/none; default: _none_)              | 一段时间后，如果主机未被系统授权，则主机条目将从主机表中删除。 循环重复，直到主机登录系统。 如果出现主机在未授权主机表中停留时间过长后无法登录的情况，请启用。 |
+| **interface** (name of an interface)                        | 运行 HotSpot 的接口                                                                                                                                            |
+| **addresses-per-mac** (integer **/** unlimited; default: 2) | 当多个 HotSpot 客户端连接一个 MAC 地址时，允许与 MAC 地址绑定的 IP 地址数                                                                                      |
+| **profile** (name; default: **_default_**)                  | HotSpot 服务器默认的 HotSpot 配置文件，位于 _/ip/hotspot/profile_                                                                                              |
 
 只读参数
 

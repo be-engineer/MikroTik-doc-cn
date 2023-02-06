@@ -24,7 +24,12 @@ IEEE 802.1Q标准保留了有特殊用途的VLAN ID，以下VLAN ID不应该用�
 
 原始的802.1Q只允许一个VLAN头，Q-in-Q允许两个或更多的VLAN头。在RouterOS中，Q-in-Q可以通过在另一个VLAN接口上添加一个VLAN接口来进行配置。例子。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan1</code> <code class="ros value">vlan-id</code><code class="ros plain">=11</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=vlan2</code> <code class="ros value">vlan-id</code><code class="ros plain">=12</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add name=vlan1 vlan-id=11 interface=ether1
+add name=vlan2 vlan-id=12 interface=vlan1
+
+```
   
 如果任何数据包通过'vlan2'接口发送，两个VLAN标签将被添加到以太网头中 - '11'和'12'。
 
@@ -61,29 +66,97 @@ R2和R4的配置如下所示。
 
 R2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running, S - slave</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MTU&nbsp;&nbsp; ARP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-ID INTERFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 R&nbsp; VLAN2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1500&nbsp; enabled&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /interface vlan> add name=VLAN2 vlan-id=2 interface=ether1 disabled=no
+ 
+[admin@MikroTik] /interface vlan> print
+Flags: X - disabled, R - running, S - slave
+ #    NAME                  MTU   ARP        VLAN-ID INTERFACE               
+0 R  VLAN2                 1500  enabled    2       ether1
+
+```
 
 R4:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface vlan&gt; </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running, S - slave</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MTU&nbsp;&nbsp; ARP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VLAN-ID INTERFACE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 R&nbsp; VLAN2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1500&nbsp; enabled&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /interface vlan> add name=VLAN2 vlan-id=2 interface=ether1 disabled=no
+ 
+[admin@MikroTik] /interface vlan> print
+Flags: X - disabled, R - running, S - slave
+ #    NAME                  MTU   ARP        VLAN-ID INTERFACE               
+0 R  VLAN2                 1500  enabled    2       ether1
+
+```
 
 下一步是为VLAN接口分配IP地址。
 
 R2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.10.3/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid, D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NETWORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BROADCAST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros color1">10.0.1.4/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.0.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.0.1.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros color1">10.20.0.1/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.20.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.20.0.255&nbsp;&nbsp;&nbsp;&nbsp; pc1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros color1">10.10.10.3/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.10.10.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.10.10.255&nbsp;&nbsp;&nbsp; vlan2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] ip address> add address=10.10.10.3/24 interface=VLAN2
+[admin@MikroTik] ip address> print
+Flags: X - disabled, I - invalid, D - dynamic
+  #   ADDRESS            NETWORK         BROADCAST       INTERFACE
+  0   10.0.1.4/24        10.0.1.0        10.0.1.255      ether1
+  1   10.20.0.1/24       10.20.0.0       10.20.0.255     pc1
+  2   10.10.10.3/24      10.10.10.0      10.10.10.255    vlan2
+ 
+[admin@MikroTik] ip address>
+
+```
 
 R4:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.10.5/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">[admin@MikroTik] ip address&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid, D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NETWORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BROADCAST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros color1">10.0.1.5/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.0.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.0.1.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros color1">10.30.0.1/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.30.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.30.0.255&nbsp;&nbsp;&nbsp;&nbsp; pc2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; </code><code class="ros color1">10.10.10.5/24</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">10.10.10.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.10.10.255&nbsp;&nbsp;&nbsp; vlan2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] ip address> add address=10.10.10.5/24 interface=VLAN2
+ [admin@MikroTik] ip address> print
+ Flags: X - disabled, I - invalid, D - dynamic
+   #   ADDRESS            NETWORK         BROADCAST       INTERFACE
+   0   10.0.1.5/24        10.0.1.0        10.0.1.255      ether1
+   1   10.30.0.1/24       10.30.0.0       10.30.0.255     pc2
+   2   10.10.10.5/24      10.10.10.0      10.10.10.255    vlan2
+ 
+[admin@MikroTik] ip address>
 
-在这点上，应该可以从R2路由器ping到R4路由器，反之亦然。
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros string">"Ping from R2 to R4:"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.5</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.5 64 byte ping</code><code class="ros constants">: ttl=255 time=4 ms</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.5 64 byte ping</code><code class="ros constants">: ttl=255 time=1 ms</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">2 packets transmitted, 2 packets received, 0% packet loss</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 1/2.5/4 ms</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros string">"From R4 to R2:"</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.3</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.3 64 byte ping</code><code class="ros constants">: ttl=255 time=6 ms</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">10.10.10.3 64 byte ping</code><code class="ros constants">: ttl=255 time=1 ms</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">2 packets transmitted, 2 packets received, 0% packet loss</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 1/3.5/6 ms</code></div></div></td></tr></tbody></table>
+这样应该可以从R2路由器ping到R4路由器，反之亦然。
+
+```shell
+"Ping from R2 to R4:"
+ 
+[admin@MikroTik] ip address> /ping 10.10.10.5
+ 
+10.10.10.5 64 byte ping: ttl=255 time=4 ms
+ 
+10.10.10.5 64 byte ping: ttl=255 time=1 ms
+ 
+2 packets transmitted, 2 packets received, 0% packet loss
+ 
+round-trip min/avg/max = 1/2.5/4 ms
+ 
+ 
+"From R4 to R2:"
+ 
+[admin@MikroTik] ip address> /ping 10.10.10.3
+10.10.10.3 64 byte ping: ttl=255 time=6 ms
+10.10.10.3 64 byte ping: ttl=255 time=1 ms
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 1/3.5/6 ms
+
+```
   
 为了确定VLAN设置是否正常工作，尝试从R2 ping R1。如果ping是超时的，那么VLAN就成功隔离了。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros string">"From R2 to R1:"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip address&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.10.10.2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">10.10.10.2 </code><code class="ros functions">ping </code><code class="ros plain">timeout</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">10.10.10.2 </code><code class="ros functions">ping </code><code class="ros plain">timeout</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">3 packets transmitted, 0 packets received, 100% packet loss</code></div></div></td></tr></tbody></table>
+```shell
+"From R2 to R1:"
+ 
+[admin@MikroTik] ip address> /ping 10.10.10.2
+10.10.10.2 ping timeout
+10.10.10.2 ping timeout
+3 packets transmitted, 0 packets received, 100% packet loss
+
+```
 
 ### VLAN间的路由
 
@@ -101,11 +174,23 @@ R4:
 
 创建VLAN接口。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN2</code> <code class="ros value">vlan-id</code><code class="ros plain">=2</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN3</code> <code class="ros value">vlan-id</code><code class="ros plain">=3</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=VLAN4</code> <code class="ros value">vlan-id</code><code class="ros plain">=4</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+```shell
+/interface vlan
+add name=VLAN2 vlan-id=2 interface=ether1 disabled=no
+add name=VLAN3 vlan-id=3 interface=ether1 disabled=no
+add name=VLAN4 vlan-id=4 interface=ether1 disabled=no
+
+```
   
 添加IP地址到VLAN:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.20.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.30.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.10.40.1/24</code> <code class="ros value">interface</code><code class="ros plain">=VLAN4</code></div></div></td></tr></tbody></table>
+```shell
+/ip address
+add address=10.10.20.1/24 interface=VLAN2
+add address=10.10.30.1/24 interface=VLAN3
+add address=10.10.40.1/24 interface=VLAN4
+
+```
 
 ### RouterOS /32和IP非数字地址
 
@@ -115,8 +200,20 @@ R4:
 
 RouterA:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.22.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=1</code> <code class="ros value">name</code><code class="ros plain">=vlan1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.22.0.1/32</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code> <code class="ros value">network</code><code class="ros plain">=10.23.0.1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=10.23.0.1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.23.0.0/24</code></div></div></td></tr></tbody></table>
+```shell
+/ip address add address=10.22.0.1/24 interface=ether1
+/interface vlan add interface=ether2 vlan-id=1 name=vlan1
+/ip address add address=10.22.0.1/32 interface=vlan1 network=10.23.0.1
+/ip route add gateway=10.23.0.1 dst-address=10.23.0.0/24
+
+```
 
 RouterB:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.23.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">vlan-id</code><code class="ros plain">=1</code> <code class="ros value">name</code><code class="ros plain">=vlan1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.23.0.1/32</code> <code class="ros value">interface</code><code class="ros plain">=vlan1</code> <code class="ros value">network</code><code class="ros plain">=10.22.0.1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=10.22.0.1</code> <code class="ros value">dst-address</code><code class="ros plain">=10.22.0.0/24</code></div></div></td></tr></tbody></table>
+```shell
+/ip address add address=10.23.0.1/24 interface=ether1
+/interface vlan add interface=ether2 vlan-id=1 name=vlan1
+/ip address add address=10.23.0.1/32 interface=vlan1 network=10.22.0.1
+/ip route add gateway=10.22.0.1 dst-address=10.22.0.0/24
+
+```

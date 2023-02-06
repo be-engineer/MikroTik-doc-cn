@@ -8,7 +8,10 @@
 
 ![](https://help.mikrotik.com/docs/download/attachments/328149/licence.png?version=1&modificationDate=1574161824111&api=v2)
 
-> RouterOS 许可方案基于软件 ID / 系统 ID，其中：<br>- RouterBOARD software-id 绑定到存储介质（HDD、NAND）。<br>- x86 软件 ID 绑定到 MBR<br>- CHR system-id 绑定到 MBR 和 UUID
+> RouterOS 许可方案基于软件 ID / 系统 ID，其中：  
+- RouterBOARD software-id 绑定到存储介质（HDD、NAND）。
+- x86 软件 ID 绑定到 MBR 
+- CHR system-id 绑定到 MBR 和 UUID
 
 可以从 CLI 系统控制台查看许可信息：
 
@@ -20,11 +23,11 @@
 [admin@RB1100] >
 ```
 
-或者从[WinBox](https://help.mikrotik.com/docs/display/ROS7/Winbox),  [WebFig](https://help.mikrotik.com/docs/display/ROS7/Webfig)菜单查看.
+或者从 [WinBox](https://help.mikrotik.com/docs/display/ROS7/Winbox),  [WebFig](https://help.mikrotik.com/docs/display/ROS7/Webfig) 菜单查看.
 
 ## 许可证等级
 
-安装后 RouterOS 以**试用模式**运行。 你有 24 小时的时间注册 Level1（免费演示）或购买 Level 4,5 或 6 许可证并粘贴有效密钥。
+安装后 RouterOS 以 **试用模式** 运行。 你有 24 小时的时间注册 Level1（免费演示）或购买 Level 4,5 或 6 许可证并粘贴有效密钥。
 
 第 3 级仅包含无线站（客户端或 CPE）许可证。 _对于 x86 PC，Level3 不能单独购买。_
 
@@ -32,7 +35,19 @@ Level 2 是旧版（pre 2.8）许可证格式的过渡许可证。 这些许可�
 
 许可证级别之间的差异如下表所示。
 
-<table><colgroup><col><col><col><col><col><col><col></colgroup><tbody><tr><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">等级号</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">0 (试用)</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">1 (免费演示)</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">3 (WISP CPE)</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">4 (WISP)</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">5 (WISP)</strong></th><th title="Background colour : Grey" data-highlight-colour="grey"><strong title="">6 (控制器)</strong></th></tr><tr><td><strong>价格</strong></td><td><a href="https://www.mikrotik.com/download.html" rel="nofollow">no key</a></td><td><a href="https://mikrotik.com/client/" rel="nofollow">registration required</a></td><td><span>not for sale</span></td><td><span>$45</span></td><td><span>$95</span></td><td><span>$250</span></td></tr><tr><td><strong>Wireless AP mode (PtM)</strong></td><td>24h trial</td><td>-</td><td>no</td><td>yes</td><td>yes</td><td>yes</td></tr><tr><td><strong>PPPoE tunnels</strong></td><td>24h trial</td><td>1</td><td>200</td><td>200</td><td>500</td><td>unlimited</td></tr><tr><td><strong>PPTP tunnels</strong></td><td>24h trial</td><td>1</td><td>200</td><td>200</td><td>500</td><td>unlimited</td></tr><tr><td><strong>L2TP tunnels</strong></td><td>24h trial</td><td>1</td><td>200</td><td>200</td><td>500</td><td>unlimited</td></tr><tr><td><strong>OVPN tunnels</strong></td><td>24h trial</td><td>1</td><td>200</td><td>200</td><td>unlimited</td><td>unlimited</td></tr><tr><td colspan="1"><strong>EoIP tunnels</strong></td><td colspan="1">24h trial</td><td colspan="1">1</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td></tr><tr><td colspan="1"><strong>VLAN interfaces</strong></td><td colspan="1">24h trial</td><td colspan="1">1</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td></tr><tr><td colspan="1"><strong>Queue rules</strong></td><td colspan="1">24h trial</td><td colspan="1">1</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td><td colspan="1">unlimited</td></tr><tr><td><strong>HotSpot active users</strong></td><td>24h trial</td><td>1</td><td>1</td><td>200</td><td>500</td><td>unlimited</td></tr><tr><td><strong>User manager active sessions</strong></td><td>24h trial</td><td>1</td><td>10</td><td>20</td><td>50</td><td>Unlimited</td></tr></tbody></table>
+| 等级号                       | 0 (试用)                                         | 1 (免费演示)                                          | 3 (WISP CPE) | 4 (WISP)  | 5 (WISP)  | 6 (控制器) |
+| ---------------------------- | ------------------------------------------------ | ----------------------------------------------------- | ------------ | --------- | --------- | ---------- |
+| 价格                         | [no key](https://www.mikrotik.com/download.html) | [registration required](https://mikrotik.com/client/) | not for sale | $45       | $95       | $250       |
+| Wireless AP mode (PtM)       | 24h trial                                        | -                                                     | no           | yes       | yes       | yes        |
+| PPPoE tunnels                | 24h trial                                        | 1                                                     | 200          | 200       | 500       | unlimited  |
+| PPTP tunnels                 | 24h trial                                        | 1                                                     | 200          | 200       | 500       | unlimited  |
+| L2TP tunnels                 | 24h trial	1                                      | 200                                                   | 200          | 500       | unlimited |
+| OVPN tunnels                 | 24h trial                                        | 1                                                     | 200          | 200       | unlimited | unlimited  |
+| EoIP tunnels                 | 24h trial                                        | 1                                                     | unlimited    | unlimited | unlimited | unlimited  |
+| VLAN interfaces              | 24h trial                                        | 1                                                     | unlimited    | unlimited | unlimited | unlimited  |
+| Queue rules                  | 24h trial                                        | 1                                                     | unlimited    | unlimited | unlimited | unlimited  |
+| HotSpot active users         | 24h trial                                        | 1                                                     | 1            | 200       | 500       | unlimited  |
+| User manager active sessions | 24h trial                                        | 1                                                     | 10           | 20        | 50        | Unlimited  |
 
 所有许可证：
 
@@ -51,17 +66,17 @@ ___
 
 Perpetual 是终身许可证（一次购买，永久使用）。 可以将永久许可证转移到另一个 CHR 实例。 正在运行的 CHR 实例会指示必须访问帐户服务器以更新其许可证的时间。 如果 CHR 实例无法续订许可证，它将表现为试用期结束，不再允许将 RouterOS 升级到新版本。
 
-授权正在运行的试用系统，**必须**从 CHR 手动运行“/system license renew”命令以激活。 否则系统将不知道你已在帐户中获取了许可证。 如果你不在系统试用时间之前执行此操作，试用就会结束，只能进行全新的 CHR 安装，请求新的试用，然后使用获得的许可证对其进行授权。
+授权正在运行的试用系统，**必须** 从 CHR 手动运行“/system license renew”命令以激活。 否则系统将不知道你已在帐户中获取了许可证。 如果你不在系统试用时间之前执行此操作，试用就会结束，只能进行全新的 CHR 安装，请求新的试用，然后使用获得的许可证对其进行授权。
 
-<table><colgroup><col><col><col><col></colgroup><tbody><tr><th>许可证</th><th>速度限制</th><th>价格</th><th colspan="1">说明</th></tr><tr><td>Free</td><td>1Mbit</td><td>FREE</td><td colspan="1">免费许可证允许 CHR 无限期运行。每个接口的上传速度限制为 1Mbps。 CHR 提供的所有其他功能都可以不受限制地使用。要使用它，要做的就是从我们的下载页面下载磁盘映像文件并创建一个虚拟客户机。</td></tr><tr><td>P1</td><td>1Gbit</td><td>$45</td><td colspan="1">P1（perpetual-1）许可证级别允许 CHR 无限期运行。每个接口的上传速度限制为 1Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。可以将 p1 升级到 p10 或 p-unlimited，购买升级后，以前的许可证将可供以后在你的帐户上使用。</td></tr><tr><td>P10</td><td>10Gbit</td><td>$95</td><td colspan="1">P10 (perpetual-10) 许可证级别允许 CHR 无限期运行。每个接口的上传速度限制为 10Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。购买升级后，可以将 p10 升级到 p-unlimited ，以前的许可证可供以后在你的帐户上使用。</td></tr><tr><td>P-Unlimited</td><td>Unlimited</td><td><p>$250</p></td><td colspan="1">p-unlimited（perpetual-unlimited）许可证级别允许 CHR 无限期运行。它是最高级别的许可证，没有强制限制。</td></tr><tr><td colspan="1">60-day Trial</td><td colspan="1"><br></td><td colspan="1">FREE</td><td colspan="1"><p>除了有限的免费安装，你还可以通过 60 次试用来测试 P1/P10/PU 许可证的提升速度。
+| 许可证       | 速度限制  | 价格                                                                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------ | --------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Free         | 1Mbit     | FREE                                                                          | 免费许可证允许 CHR 无限期运行。每个接口的上传速度限制为 1Mbps。 CHR 提供的所有其他功能都可以不受限制地使用。要使用它，要做的就是从我们的下载页面下载磁盘映像文件并创建一个虚拟客户机。                                                                                                                                                                                                                                                                                                                                                                                                          |
+| P1           | 1Gbit     | $45                                                                           | P1（perpetual-1）许可证级别允许 CHR 无限期运行。每个接口的上传速度限制为 1Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。可以将 p1 升级到 p10 或 p-unlimited，购买升级后，以前的许可证将可供以后在你的帐户上使用。                                                                                                                                                                                                                                                                                                                                                                          |
+| P10          | 10Gbit    | $95                                                                           | P10 (perpetual-10) 许可证级别允许 CHR 无限期运行。每个接口的上传速度限制为 10Gbps。 CHR 提供的所有其他功能都可以不受限制地使用。购买升级后，可以将 p10 升级到 p-unlimited ，以前的许可证可供以后在你的帐户上使用。                                                                                                                                                                                                                                                                                                                                                                              |
+| P-Unlimited  | Unlimited | $250                                                                          | p-unlimited（perpetual-unlimited）许可证级别允许 CHR 无限期运行。它是最高级别的许可证，没有强制限制。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 60-day Trial | FREE      | 除了有限的免费安装，你还可以通过 60 次试用来测试 P1/P10/PU 许可证的提升速度。 | 必须在 MikroTik.com 上注册一个帐户。然后从路由器请求所需的试用许可级别，这会把路由器 ID 分配给你的帐户，并允许从该帐户购买许可证。 所有付费许可证均可试用。 试用期为从获取之日起的 60 天，超过此时间后，你的许可证菜单会显示“限制升级”，意味着 RouterOS 无法再升级。<br>注意，如果你计划购买所选许可证，则必须在 60 天试用期结束前购买。 如果试用已结束，并且在 2 个月内没有购买，该设备将不再出现在你的 MikroTik 帐户中。 必须在规定的时间内购买新的 CHR 来安装。<br>要申请试用许可证，必须从 CHR 设备命令行运行命令“/system license renew”。 系统将要求提供 mikrotik.com 帐户的用户名和密码。 |
 
-必须在 MikroTik.com 上注册一个帐户。 然后从路由器请求所需的试用许可级别，这会把路由器 ID 分配给你的帐户，并允许从该帐户购买许可证。 所有付费许可证均可试用。 试用期为从获取之日起的 60 天，超过此时间后，你的许可证菜单会显示“限制升级”，意味着 RouterOS 无法再升级。
-
-请注意，如果你计划购买所选许可证，则必须在 60 天试用期结束前购买。 如果试用已结束，并且在 2 个月内没有购买，该设备将不再出现在你的 MikroTik 帐户中。 必须在规定的时间内购买新的 CHR 来安装。
-
-要申请试用许可证，必须从 CHR 设备命令行运行命令“/system license renew”。 系统将要求提供 mikrotik.com 帐户的用户名和密码。</p></td></tr></tbody></table>
-
-> **警告：**如果你计划使用多个相同类型的虚拟系统，下一台机器可能具有与原始机器相同的 SystemID。 这可能会发生在某些云提供商身上，例如 Linode。 为避免这种情况，请在首次启动后运行命令“`/system license generate-new-id`”，然后再申请试用许可证。 请注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果你已经获得付费或试用许可证，请不要使用该功能，因为无法再更新当前密钥。<br>要使用多个虚拟机，请从我们的网页下载磁盘映像，并根据你需要的虚拟机制作尽可能多的副本。 然后从每个虚拟磁盘映像制作新的虚拟机系统。<br>确保在运行或注册下载的文件之前制作磁盘映像的副本。
+> **警告：** 如果你计划使用多个相同类型的虚拟系统，下一台机器可能具有与原始机器相同的 SystemID。 这可能会发生在某些云提供商身上，例如 Linode。 为避免这种情况，请在首次启动后运行命令“`/system license generate-new-id`”，然后再申请试用许可证。 请注意，只有当 CHR 在免费类型的 RouterOS 许可证上运行时，才能使用此功能。 如果你已经获得付费或试用许可证，请不要使用该功能，因为无法再更新当前密钥。<br>要使用多个虚拟机，请从我们的网页下载磁盘映像，并根据你需要的虚拟机制作尽可能多的副本。 然后从每个虚拟磁盘映像制作新的虚拟机系统。<br>确保在运行或注册下载的文件之前制作磁盘映像的副本。
 
 ___
 
@@ -73,8 +88,9 @@ ___
 
 ### 更换密钥请求
 
-**1)** 转到 [mikrotik.com](https://mikrotik.com/) 中的帐户管理并填写“[支持联系表](https://mikrotik.com/client/support)” 或直接写邮件至[support@mikrotik.com](mailto:support@mikrotik.com)
+**1)** 转到 [mikrotik.com](https://mikrotik.com/) 中的帐户管理并填写 “[支持联系表](https://mikrotik.com/client/support)” 或直接写邮件至 [support@mikrotik.com](mailto:support@mikrotik.com)
 - 请提供有关为什么需要更换钥匙的详细信息
+
 **2)** 将所需信息发送给 MikroTik 支持部门。
 **3)** 在支持人员确认替换密钥已添加到你的帐户后，重新检查你的帐户。 选择“Make a key from replacement key”
 
@@ -83,7 +99,9 @@ ___
 **4)** 选择你希望执行更换的适当许可级别
 **5)** 输入新的“software-ID”
 **6)** 按照“Add license replacement to cart”说明结帐并完成付款
+
 ![](https://help.mikrotik.com/docs/download/attachments/328149/Replacement_license_2.png?version=1&modificationDate=1571228301481&api=v2)
+
 **7)** 一封包含新许可证的电子邮件将发送到你的邮箱。
 
 - 你还可以在“Purchased YYYY”文件夹下的“Search and view all keys”部分找到新生成的密钥，其中“YYYY”是当前年份
@@ -98,15 +116,15 @@ ___
 
 MikroTik 设备预装了许可证，无需购买。
 
-要获得更高级别的许可证，或获得 x86 PC 安装的许可证，必须注册一个[我们网页上的帐户](https://www.mikrotik.com/client)，然后在其中选择“ Purchase a RouterOS license key”。
+要获得更高级别的许可证，或获得 x86 PC 安装的许可证，必须注册一个 [我们网页上的帐户](https://www.mikrotik.com/client)，然后在其中选择“ Purchase a RouterOS license key”。
 
 ### 如果我在别处购买了密钥
 
-你必须联系向你出售许可证的公司，他们将提供支持。
+联系向你出售许可证的公司，他们会提供支持。
 
 ### 如果我有许可证并想把它放在另一个帐户上？
 
-你可以在 [ Virtual Folders](https://wiki.mikrotik.com/wiki/Virtual_Folders "虚拟文件夹") 的帮助下授予对密钥的访问权限
+可以在 [虚拟文件夹](https://wiki.mikrotik.com/wiki/Virtual_Folders "虚拟文件夹") 的帮助下授予对密钥的访问权限
 
 唯一一种可以转移到另一个帐户的许可证是预付费密钥，它是从 MUM 购买或获得的。 培训赠送的预付密钥不可转让。
 要转移购买的预付费密钥，请导航至 MikroTik 帐户上“ROUTEROS KEYS”部分中的“Transfer prepaid keys”。

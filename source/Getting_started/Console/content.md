@@ -10,59 +10,65 @@
 
 例如，可以执行 **/ip route print** 命令：
 
-`[admin@MikroTik] > ip route` `print`
+```shell
+[admin@MikroTik] > ip route print
 
-`Flags` `: X - disabled, A - active, D - dynamic,`
+Flags : X - disabled, A - active, D - dynamic,
 
-`C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,`
+C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,
 
-`B - blackhole, U - unreachable, P - prohibit`
+B - blackhole, U - unreachable, P - prohibit
 
-`0 A S` `0.0.0.0/0` `r 10.0.3.1 1 bridge1`
+0 A S 0.0.0.0/0 r 10.0.3.1 1 bridge1
 
-`1 ADC` `1.0.1.0/24` `1.0.1.1 0 bridge1`
+1 ADC 1.0.1.0/24 1.0.1.1 0 bridge1
 
-`2 ADC` `1.0.2.0/24` `1.0.2.1 0 ether3`
+2 ADC 1.0.2.0/24 1.0.2.1 0 ether3
 
-`3 ADC` `10.0.3.0/24` `10.0.3.144 0 bridge1`
+3 ADC 10.0.3.0/24 10.0.3.144 0 bridge1
 
-`4 ADC` `10.10.10.0/24` `10.10.10.1 0 wlan1`
+4 ADC 10.10.10.0/24 10.10.10.1 0 wlan1
 
-`[admin@MikroTik] >`
+[admin@MikroTik] >
+```
 
 无需在每个命令前输入 /**ip route** 路径，只需输入一次路径即可进入层次结构的特定分支。 因此，上面的例子也可以这样执行：
 
-`[admin@MikroTik] > ip route`
+```shell
+[admin@MikroTik] > ip route
 
-`[admin@MikroTik] ip route>` `print`
+[admin@MikroTik] ip route> print
 
-`Flags` `: X - disabled, A - active, D - dynamic,`
+Flags : X - disabled, A - active, D - dynamic,
 
-`C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,`
+C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,
 
- `B - blackhole, U - unreachable, P - prohibit`
+ B - blackhole, U - unreachable, P - prohibit
 
-`DST-ADDRESS PREF-SRC G GATEWAY DIS INTE...`
+DST-ADDRESS PREF-SRC G GATEWAY DIS INTE...
 
-`0 A S` `0.0.0.0/0` `r 10.0.3.1 1 bridge1`
+0 A S 0.0.0.0/0 r 10.0.3.1 1 bridge1
 
-`1 ADC` `1.0.1.0/24` `1.0.1.1 0 bridge1`
+1 ADC 1.0.1.0/24 1.0.1.1 0 bridge1
 
-`2 ADC` `1.0.2.0/24` `1.0.2.1 0 ether3`
+2 ADC 1.0.2.0/24 1.0.2.1 0 ether3
 
-`3 ADC` `10.0.3.0/24` `10.0.3.144 0 bridge1`
+3 ADC 10.0.3.0/24 10.0.3.144 0 bridge1
 
-`4 ADC` `10.10.10.0/24` `10.10.10.1 0 wlan1 [`
+4 ADC 10.10.10.0/24 10.10.10.1 0 wlan1 [
 
-`admin@MikroTik] ip route>`
+admin@MikroTik] ip route>
+```
 
 请注意，提示会发生变化，以反映你此时在菜单层次结构中所处的位置。 要移动到顶层，请输入“**/**”
 
-`[admin@MikroTik] > ip route`
+```shell
+[admin@MikroTik] > ip route
 
-`[admin@MikroTik] ip route>` `/`
+[admin@MikroTik] ip route> /
 
-`[admin@MikroTik] >`
+[admin@MikroTik] >
+```
 
 要向上移动一级，请键入“**..**”
 
@@ -72,29 +78,31 @@
 
 你还可以使用 **/** 和 **..** 从其他菜单级别执行命令而不更改当前级别：
 
-`[admin@MikroTik] ip route>` `/` `ping` `10.0.0.1`
+```shell
+[admin@MikroTik] ip route> / ping 10.0.0.1
 
-`10.0.0.1` `ping` `timeout`
+10.0.0.1 ping timeout
 
-`2 packets transmitted, 0 packets received, 100% packet loss`
+2 packets transmitted, 0 packets received, 100% packet loss
 
-`[admin@MikroTik] ip firewall nat> .. service-port print`
+[admin@MikroTik] ip firewall nat> .. service-port print
 
-`Flags` `: X - disabled, I - invalid`
+Flags : X - disabled, I - invalid
 
-`0 ftp 21`
+0 ftp 21
 
-`1 tftp 69`
+1 tftp 69
 
-`2 irc 6667`
+2 irc 6667
 
-`3 h323`
+3 h323
 
-`4 sip`
+4 sip
 
-`5 pptp`
+5 pptp
 
-`[admin@MikroTik] ip firewall nat>`
+[admin@MikroTik] ip firewall nat>
+```
 
 ## 项目名称和编号
 
@@ -104,47 +112,49 @@
 
 ### 项目名称
 
-一些列表中的项目具有分配给每个项目的特定名称。 例如**interface**或**user**级别。 可以使用项目名称而不是项目编号。
+一些列表中的项目具有分配给每个项目的特定名称。 例如 **interface** 或 **user** 级别。 可以使用项目名称而不是项目编号。
 
 在按名称访问项目之前，不必使用 **print** 命令，与数字相反，名称不是由控制台内部分配的，而是项目的属性。 因此，他们不会自行改变。 然而，当多个用户同时更改路由器的配置时，可能会出现各种难以理解的情况。 通常，项目名称比数字更“稳定”，也更能提供信息，因此在编写控制台脚本时你应该更喜欢它们而不是数字。
 
 ### 项目编号
 
-项目编号由打印命令分配并且不是固定的 - 两个连续的打印命令可能会对项目进行不同的排序。 但是最后打印命令的结果会被记住，因此，一旦分配，即使在**添加**、**删除**和**移动**操作之后（自版本 3 起，**移动** 操作不会对项目重新编号）。 项目编号是在每个会话的基础上分配的，它们将保持不变，直到退出控制台或执行下一个打印命令。 此外，会为每个项目列表单独分配编号，因此 **ip address print** 不会更改接口列表的编号。
+项目编号由打印命令分配并且不是固定的 - 两个连续的打印命令可能会对项目进行不同的排序。 但是最后打印命令的结果会被记住，因此，一旦分配，即使在 **添加**、**删除**和 **移动** 操作之后（自版本 3 起，**移动** 操作不会对项目重新编号）。 项目编号是在每个会话的基础上分配的，它们将保持不变，直到退出控制台或执行下一个打印命令。 此外，会为每个项目列表单独分配编号，因此 **ip address print** 不会更改接口列表的编号。
 
 从版本 3 开始，无需运行 **print** 命令即可使用项目编号。 就像执行了 **print** 命令一样分配数字。
 
 可以将多个项目指定为某些命令的目标。 几乎在任何地方都可以写项目的数量，也可以写一个数字列表。
 
-`[admin@MikroTik] > interface` `print`
+```shell
+[admin@MikroTik] > interface print
 
-`Flags` `: X - disabled, D - dynamic, R - running`
+Flags : X - disabled, D - dynamic, R - running
 
-`0 R ether1 ether 1500`
+0 R ether1 ether 1500
 
-`1 R ether2 ether 1500`
+1 R ether2 ether 1500
 
-`2 R ether3 ether 1500`
+2 R ether3 ether 1500
 
-`3 R ether4 ether 1500`
+3 R ether4 ether 1500
 
-`[admin@MikroTik] > interface` `set` `0,1,2` `mtu` `=1460`
+[admin@MikroTik] > interface set 0,1,2 mtu =1460
 
-`[admin@MikroTik] > interface print`
+[admin@MikroTik] > interface print
 
- `Flags` `: X - disabled, D - dynamic, R - running`
+ Flags : X - disabled, D - dynamic, R - running
 
-`0 R ether1 ether 1460`
+0 R ether1 ether 1460
 
-`1 R ether2 ether 1460`
+1 R ether2 ether 1460
 
-`2 R ether3 ether 1460`
+2 R ether3 ether 1460
 
-`3 R ether4 ether 1500`
+3 R ether4 ether 1500
 
-`[admin@MikroTik] >`
+[admin@MikroTik] >
+```
 
-**警告：**不要在脚本中使用项目编号，这不是**scheduler. scripts**中编辑项目的可靠方法。最好使用查找命令。 更多信息见[此处](https://wiki.mikrotik.com/wiki/Manual:Scripting "Manual:Scripting")。另请参阅[脚本示例](https://wiki.mikrotik.com/wiki/Manual:Scripting-examples)。
+**警告：** 不要在脚本中使用项目编号，这不是 **scheduler. scripts** 中编辑项目的可靠方法。最好使用查找命令。 更多信息见 [此处](https://wiki.mikrotik.com/wiki/Manual:Scripting "Manual:Scripting")。另请参阅 [脚本示例](https://wiki.mikrotik.com/wiki/Manual:Scripting-examples)。
 
 ## 快速输入
 
@@ -158,15 +168,17 @@ _/interface set e_**[Tab\]_** 变成 **/interface set ether_**
 
 如果你只输入了公共部分，则按一次 Tab 键无效。 但是第二次按下它会以紧凑的形式显示所有可能的命令：
 
-`[admin@MikroTik] > interface` `set` `e[Tab]_`
+```shell
+[admin@MikroTik] > interface set e[Tab]_
 
-`[admin@MikroTik] > interface` `set` `ether[Tab]_`
+[admin@MikroTik] > interface set ether[Tab]_
 
-`[admin@MikroTik] > interface` `set` `ether[Tab]_`
+[admin@MikroTik] > interface set ether[Tab]_
 
-`ether1 ether5`
+ether1 ether5
 
-`[admin@MikroTik] > interface` `set` `ether_`
+[admin@MikroTik] > interface set ether_
+```
 
 **[Tab]** 键几乎可以在控制台有线索的任何上下文中使用 - 命令名称、参数名称、只有几个可能值的参数（例如某些列表中的项目名称或 防火墙和 NAT 规则中的协议名称）。 但不能填写数字、IP 地址和类似值。
 
@@ -176,23 +188,25 @@ _/interface set e_**[Tab\]_** 变成 **/interface set ether_**
 
 等于:
 
-`[admin@MikroTik] >` `ping` `10.0.0.1 count 3 size 100`
+`[admin@MikroTik] > ping 10.0.0.1 count 3 size 100`
 
 不仅可以补全名称的开头，还可以补全名称的任何字符串：如果没有完全匹配，控制台将开始查找字符串并补全为多个单词名称的第一个字母的单词，或者仅包含此字符串的字母。 如果找到单个这样的词，则在光标位置完成。 例如：
 
-`[admin@MikroTik] > interface x[TAB]_`
+```shell
+[admin@MikroTik] > interface x[TAB]_
 
-`[admin@MikroTik] > interface` `export` `_`
+[admin@MikroTik] > interface export _
 
-`[admin@MikroTik] > interface mt[TAB]_`
+[admin@MikroTik] > interface mt[TAB]_
 
-`[admin@MikroTik] > interface monitor-traffic _`
+[admin@MikroTik] > interface monitor-traffic _
+```
 
 ## 常规命令
 
 几乎所有菜单级别都有一些通用命令，即：**print, set, remove, add, find, get, export, enable, disable, comment, move**。 这些命令在不同的菜单级别具有相似的行为。
 
-- **add** - 通常具有与**set** 相同的所有参数，除了项目编号参数。 它添加一个具有指定值的新项目，通常在项目列表的末尾，在项目相关的地方。 必须提供一些必需的属性，例如新地址的接口，而其他属性将设置为默认值，除非明确指定它们。
+- **add** - 通常具有与 **set** 相同的所有参数，除了项目编号参数。 它添加一个具有指定值的新项目，通常在项目列表的末尾，在项目相关的地方。 必须提供一些必需的属性，例如新地址的接口，而其他属性将设置为默认值，除非明确指定它们。
   - 通用参数
          - _copy-from_ \- 复制现有项目。 它从另一个项目中获取新项目属性的默认值。 如果不想进行精确复制，可以为某些属性指定新值。 复制有名称的项目时，通常必须为副本指定一个新名称
          - _place-before_ \- 将新项目放在具有指定位置的现有项目之前。 不需要在将项目添加到列表后使用移动命令。
@@ -222,7 +236,9 @@ _/interface set e_**[Tab\]_** 变成 **/interface set ether_**
 - **set** \- 允许你更改一般参数或项目参数的值。 set 命令的参数名称与你可以更改的值相对应。 利用?或双击 [Tab] 查看所有参数的列表。 如果此命令级别中有一个项目列表，则 set 有一个操作参数，该参数接受要设置的项目（或数字列表）的数量。 此命令不返回任何内容。
 - **reset** - 将参数重置为默认值
 
-> 可以组合命令，这里是同一命令的两个变体，它们通过查找注释来设置新的防火墙过滤器条目：<br> /ip firewall/filter/add chain=forward place-before=[find where comment=CommentX\]  <br> /ip/firewall/filter/add chain=forward place-before="CommentX"
+> 可以组合命令，这里是同一命令的两个变体，它们通过查找注释来设置新的防火墙过滤器条目：  
+/ip firewall/filter/add chain=forward place-before=[find where comment=CommentX\]  
+/ip/firewall/filter/add chain=forward place-before="CommentX"
 
 ## 模式
 
@@ -234,7 +250,7 @@ _/interface set e_**[Tab\]_** 变成 **/interface set ether_**
 
 Control-C 中断; Control-D 注销（如果输入行为空）; Control-K 从光标清除到行尾; Control-X 切换安全模式; Control-V 切换热锁模式; F6切换窗口; F1 或?显示上下文相关的帮助。 如果前一个字符是\，则插入?;Tab 执行自动补全。 第二次按下时，显示可能的补全。Delete 删除光标处的字符 Control-H 或 Backspace 删除光标前的字符并将光标移回一个位置。Control-\ 在光标处分行， 在光标位置插入换行符， 显示两个结果行中的第二行。Control-B 或左键向后一个字符; Control-F 或右键向前移动一个字符; Control-P 或上键转到上一行， 如果这是第一行输入，则从历史记录中调用之前的输入。 Control-N 或 下键转到下一行， 如果这是最后一行输入，则从历史读取下一条输入。Control-A 或 Home 将光标移动到该行的开头。 如果光标已经在行首，则转到当前输入的第一行的开头。Control-E 或 End 将光标移动到行尾。 如果光标已经在行尾，则将其移动到当前输入的最后一行的末尾。Control-L 或 F5 重置终端并重绘屏幕。
 
-**向上**、**向下**和**分割**键将光标留在行尾。
+**向上**、**向下** 和 **分割** 键将光标留在行尾。
 
 ### 内置帮助
 
@@ -246,29 +262,33 @@ Control-C 中断; Control-D 注销（如果输入行为空）; Control-K 从光�
 
 按 **[CTRL]+[X]** 进入安全模式。 要保存更改并退出安全模式，请再次按 **[CTRL]+[X]**。 要退出而不保存所做的更改，请按 **[CTRL]+[D]**
 
-`[admin@MikroTik] ip route>[CTRL]+[X]`
+```shell
+[admin@MikroTik] ip route>[CTRL]+[X]
 
-`[Safe Mode taken]`
+[Safe Mode taken]
 
-`[admin@MikroTik] ip route<SAFE>`
+[admin@MikroTik] ip route<SAFE>
+```
 
 [![](https://help.mikrotik.com/docs/download/attachments/8978498/703px-2009-04-06_1317%20%281%29.png?version=1&modificationDate=1602153910731&api=v2)](https://wiki.mikrotik.com/wiki/File:2009-04-06_1317.png)
 
-显示消息**Safe Mode Taken**并提示更改以反映该会话现在处于安全模式。 当路由器处于安全模式时，如果安全模式会话异常终止，所做的所有配置更改（也来自其他登录会话）将自动撤消。 你可以在系统历史记录中看到所有这些将被自动撤消标记为 **F** 标志的更改：
+显示消息 **Safe Mode Taken** 并提示更改以反映该会话现在处于安全模式。 当路由器处于安全模式时，如果安全模式会话异常终止，所做的所有配置更改（也来自其他登录会话）将自动撤消。 你可以在系统历史记录中看到所有这些将被自动撤消标记为 **F** 标志的更改：
 
-`[admin@MikroTik] ip route>`
+```shell
+[admin@MikroTik] ip route>
 
-`[Safe Mode taken]`
+[Safe Mode taken]
 
-`[admin@MikroTik] ip route<SAFE>` `add`
+[admin@MikroTik] ip route<SAFE> add
 
-`[admin@MikroTik] ip route<SAFE>` `/system history` `print`
+[admin@MikroTik] ip route<SAFE> /system history print
 
-`Flags` `: U - undoable, R - redoable, F - floating-` `undo`
+Flags : U - undoable, R - redoable, F - floating- undo
 
-`ACTION BY POLICY`
+ACTION BY POLICY
 
-`F route added admin write`
+F route added admin write
+```
 
 现在，如果 telnet 连接（或 winbox 终端）被切断，一段时间后（TCP 超时为 **9** 分钟）所有在安全模式下所做的更改都将被撤消。 通过 **[Ctrl]+[D]** 退出会话也会撤消所有安全模式更改，而 **/quit** 则不会。
 
@@ -276,7 +296,7 @@ Control-C 中断; Control-D 注销（如果输入行为空）; Control-K 从光�
 
 `[admin@MikroTik] >`
 
-`Hijacking Safe Mode from someone - unroll` `/release/don't take it [u/r/d]:`
+Hijacking Safe Mode from someone - unroll /release/don't take it [u/r/d]:
 
 - [u] - 撤消所有安全模式更改，并将当前会话置于安全模式。
 - [r] - 保留所有当前安全模式更改，并将当前会话置于安全模式。 安全模式的前所有者会收到有关此的通知：
@@ -295,16 +315,18 @@ Control-C 中断; Control-D 注销（如果输入行为空）; Control-K 从光�
 
 要进入/退出HotLock模式，请按 **[CTRL]+[V]**。
 
-`[admin@MikroTik]` `/ip address> [CTRL]+[V]`
+`[admin@MikroTik] /ip address> [CTRL]+[V]`
 
-`[admin@MikroTik]` `/ip address>>`
+`[admin@MikroTik] /ip address>>`
 
-Double`>>` 表示已启用 HotLock 模式。 例如，如果输入`/in e`，它将自动完成为
+Double >> 表示已启用 HotLock 模式。 例如，如果输入/in e，它将自动完成为
 
-`[admin@MikroTik]` `/ip address>> /interface ethernet`
+`[admin@MikroTik] /ip address>> /interface ethernet`
 
 F6 键在终端底部启用一个菜单，其中显示了常用的组合键及其用法。
 
-`[admin@RB493G] >`
+```shell
+[admin@RB493G] >
 
- `tab compl ? F1 help ^V hotlk ^X safe ^C brk ^D` `quit`
+tab compl ? F1 help ^V hotlk ^X safe ^C brk ^D quit
+```

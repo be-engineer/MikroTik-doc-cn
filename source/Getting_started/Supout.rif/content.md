@@ -26,4 +26,4 @@
 
 要生成此文件，请在命令行中键入：
 
-`/system sup-out``put` `name``=supout.rif`
+`/system sup-out put name =supout.rif`

@@ -6,7 +6,7 @@
 
 - 从命令行界面运行命令 **“/system reset-configuration”**；
 
-- 从图形用户界面中的 **System -> Reset Configuration**菜单执行此操作；
+- 从图形用户界面中的 **System -> Reset Configuration** 菜单执行此操作；
 
 ## 使用复位按钮
 
@@ -49,7 +49,7 @@ RouterBOARD 设备配有一个多功能的复位按钮：
 
 ## 旧型号的跳线重置
 
-**下面**的图显示了 RB133C 等较旧 RouterBOARD 上复位跳线的位置：
+**下面** 的图显示了 RB133C 等较旧 RouterBOARD 上复位跳线的位置：
 
 ![](https://help.mikrotik.com/docs/download/attachments/24805498/CRW_5184.jpg?version=1&modificationDate=1587635093645&api=v2)  
 

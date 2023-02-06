@@ -34,8 +34,8 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 
 你可以通过以下方式升级 RouterOS：
 
-- Winbox – 将文件拖放到**File**菜单
-- WebFig - 从**File**菜单上传文件
+- Winbox – 将文件拖放到 **File** 菜单
+- WebFig - 从 **File** 菜单上传文件
 - FTP - 上传文件到根目录
 - The Dude – [在这里查看手册](https://wiki.mikrotik.com/wiki/Upgrading_RouterOS_with_Dude   "Upgrading RouterOS with Dude")
 
@@ -44,11 +44,11 @@ RouterOS 版本在几个“发布链”中发布：长期版、稳定版和测�
 #### 手动升级过程
 
 - 第一步 - 访问 [www.mikrotik.com](https://www.mikrotik.com/) 并前往下载页面，选择安装 RouterOS 的系统类型。
-- 下载**Combined package**，它包括 RouterOS 的所有功能
+- 下载 **Combined package**，它包括 RouterOS 的所有功能
 
 ##### 使用 Winbox
 
-选择你的系统类型，并下载升级包。 使用 Winbox 连接到路由器，用鼠标选择下载的文件，然后将其拖到**File**菜单。 如果已经存在一些文件，请确保将包放在根菜单中，而不是热点文件夹中！ 开始上传。
+选择你的系统类型，并下载升级包。 使用 Winbox 连接到路由器，用鼠标选择下载的文件，然后将其拖到 **File** 菜单。 如果已经存在一些文件，请确保将包放在根菜单中，而不是热点文件夹中！ 开始上传。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328142/Winb2.jpg?version=1&modificationDate=1585911212956&api=v2)
 
@@ -150,14 +150,15 @@ Dude 应用程序可以帮助你通过单击每个路由器来升级整个 Route
 
 ### NetInstall
 
-[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall)是最常用的安装工具。 它可以在Windows 或带有 Wine 的 Linux 上运行（需要超级用户权限）。
+[NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 是最常用的安装工具。 它可以在Windows 或带有 Wine 的 Linux 上运行（需要超级用户权限）。
 
 你可以在 [www.mikrotik.com](https://www.mikrotik.com/download) 下载 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall)。
 
 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 也用于先前安装失败、损坏或访问密码丢失的情况下重新安装 RouterOS。
 
 你的设备必须支持从以太网启动，并且必须有从 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 计算机到目标设备的直接以太网连接。 所有 RouterBOARD 都要支持 PXE 网络启动，如果 RouterOS 可操作，则必须在 RouterOS“routerboard”菜单中启用，或者在引导加载程序设置中启用。 为此，你需要一根串口线。
-**注意：**对于没有串口，没有RouterOS接入的RouterBOARD设备，reset键也可以启动PXE启动模式。 有关详细信息，请参阅 RouterBOARD 手册。
+
+**注意：** 对于没有串口，没有RouterOS接入的RouterBOARD设备，reset键也可以启动PXE启动模式。 有关详细信息，请参阅 RouterBOARD 手册。
 
 [NetInstall](https://help.mikrotik.com/docs/display/ROS/Netinstall) 也可以直接在连接到 Netinstall Windows 机器的磁盘 (USB/CF/IDE/SATA) 上安装 RouterOS。 安装后只需将磁盘移动到路由器机器并从中启动。
 
@@ -183,11 +184,11 @@ Dude 应用程序可以帮助你通过单击每个路由器来升级整个 Route
 
 ### 光盘安装
 
-# RouterOS 安装包类型
+## RouterOS 安装包类型
 
 RouterOS 支持许多不同的功能，并且由于每个安装都需要支持一组特定的功能，因此可以使用包系统添加或删除某些功能组。 因此，用户能够控制可用的功能和安装的大小。 安装包仅由 MikroTik 提供，不允许第 3 方制作。
 
-## 软件包列表
+### 软件包列表
 
  | 软件包名称         | 说明                                                                                            |
  | ------------------ | ----------------------------------------------------------------------------------------------- |
@@ -213,7 +214,7 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要支持�
  | **kvm**            | 启用 KVM 虚拟化                                                                                 |
  | **routeros**       | 组合 RouterOS 包。包括系统、热点、无线、ppp、安全、mpls、高级工具、dhcp、路由器板、ipv6、路由。 |
 
-## 使用包
+### 使用包
 
 已执行命令的操作将仅在重新启动时应用。 在此之前，用户可以自由安排或恢复设置的操作。
 

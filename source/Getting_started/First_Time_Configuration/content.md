@@ -3,21 +3,21 @@
 路由器有两种类型:
 
 - 使用默认配置。
-- 没有默认配置。当找不到具体配置时,IP地址192.168.88.1/24被设置在ether1或combo1或sfp1上。
+- 没有默认配置。当找不到具体配置时,IP地址192.168.88.1/24将设置在ether1或combo1或sfp1上。
 
 有关当前默认配置的更多信息,请参见设备随附的“快速指南”文档。 快速指南文档包括有关首次连接使用哪些端口以及如何插入设备的信息。
 
 本文介绍了如何从头开始设置设备,因此我们将要求你清除所有默认值。
 
-首次使用默认用户名**admin**和**无密码**(对于某些型号,请检查贴纸上的用户密码)连接到路由器时,系统将要求你重置或保留默认配置(即使默认配置仅有一个IP地址)。 由于本文假设路由器上没有配置,你应该在出现提示时按键盘上的“r”或单击WinBox中的“删除配置”按钮将其删除。
+首次使用默认用户名 **admin** 和 **无密码** (对于某些型号,请检查贴纸上的用户密码)连接到路由器时,系统将要求你重置或保留默认配置(即使默认配置仅有一个IP地址)。 由于本文假设路由器上没有配置,你应该在出现提示时按键盘上的“r”或单击WinBox中的“删除配置”按钮将其删除。
 
 ## 无默认配置的路由器
 
 如果路由器上没有默认配置，则有几种选择，这里我们将使用一种适合我们需求的方法。
 
-将路由器的 ether1 端口连接到 WAN 电缆并将你的 PC 连接到 ether2。现在打开 WinBox 并在邻居发现中查找你的路由器。请参阅[Winbox文章](https://help.mikrotik.com/docs/display/ROS/Winbox#Winbox-StartingWinbox)中的详细示例。
+将路由器的 ether1 端口连接到 WAN 电缆并将你的 PC 连接到 ether2。现在打开 WinBox 并在邻居发现中查找你的路由器。请参阅 [Winbox文章](https://help.mikrotik.com/docs/display/ROS/Winbox#Winbox-StartingWinbox) 中的详细示例。
 
-如果你在列表中看到路由器，单击 MAC 地址，然后单击**连接**。
+如果你在列表中看到路由器，单击 MAC 地址，然后单击 **连接**。
 
 确保绝对干净的路由器的最简单方法是运行
 
@@ -45,8 +45,8 @@
 
 如果你更喜欢WinBox/WeBfig作为配置工具：
 
-- 打开**Bridge** 窗口，选择**Bridge** 选项卡；
-- 点击 **+** 按钮，将打开一个新对话框，输入网桥名称**local**并点击**OK**；
+- 打开 **Bridge** 窗口，选择 **Bridge** 选项卡；
+- 点击 **+** 按钮，将打开一个新对话框，输入网桥名称 **local** 并点击 **OK**；
 - 选择 **Port** 选项卡并单 **+** 按钮，将打开一个新对话框；
 - 从下拉列表选择接口 **ether2** 和网桥 **local** ，然后单击 **OK** 按钮应用设置；
 - 关闭桥接对话框。
@@ -153,7 +153,7 @@ PPPoE 连接也为你提供一个动态 IP 地址，并可以动态配置 DNS �
 Winbox/Webfig 操作：
 
 - 打开 **PPP** 窗口，应选择 **Interfaces** 选项卡；
-- 点击 **+** 按钮，从下拉列表中选择**PPPoE客户端**，打开一个新对话框；
+- 点击 **+** 按钮，从下拉列表中选择 **PPPoE客户端**，打开一个新对话框；
 - 从下拉列表中选择接口 **ether1**，然后单击 **OK** 按钮应用设置。
   
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_add_pppoe.png?version=1&modificationDate=1569856189121&api=v2&effects=drop-shadow)
@@ -184,9 +184,9 @@ Winbox/Webfig 操作：
 
 `173.194.32.49                              56  55 12ms`
 
-如果一切设置正确，两种情况下的 ping 都应该不会失败。
+如果设置正确，两种情况下的 ping 都不会失败。
 
-如果失败，请参考[故障排除](https://10.55.8.167/?t=ros_v7&c=1&a=configuring#Troubleshooting)部分
+如果失败，请参考 [故障排除](https://10.55.8.167/?t=ros_v7&c=1&a=configuring#Troubleshooting) 部分
 
 ## 保护路由器
 
@@ -228,7 +228,7 @@ MikroTik 路由器需要配置密码，我们建议使用密码生成器工具�
 
 ## MAC地址连接访问
 
-默认情况下，mac 服务器在所有接口上运行，因此我们将禁用默认的 **所有** 条目并添加一个本地接口以禁止来自 WAN 端口的 MAC 连接。 MAC Telnet 服务器功能允许你对接口“列表”加限制。
+默认情况下，mac 服务器在所有接口上运行，因此将禁用默认的 **所有** 条目并添加一个本地接口以禁止来自 WAN 端口的 MAC 连接。 MAC Telnet 服务器功能允许你对接口“列表”加限制。
 
 首先，创建一个接口列表：
 
@@ -249,13 +249,12 @@ MikroTik 路由器需要配置密码，我们建议使用密码生成器工具�
 Winbox/Webfig 操作：
 
 - 打开 **Interfaces → Interface List → Lists** 窗口并点击“+”添加新列表；
-- 在**Name**字段中输入接口列表名称“listBridge”，然后单击**确定**；
-- 返回**Interfaces →** **Interfaces list**部分并点击“+”；
-- 从下拉**List**选项中选择“listBridge”，然后从下拉**Interfaces **选项中选择“local”，然后单击**OK**；
-- 打开**Tools -> Mac Server** 窗口；
+- 在 **Name**字段中输入接口列表名称“listBridge”，然后单击**确定**；
+- 返回 **Interfaces →** **Interfaces list**部分并点击“+”；
+- 从下拉**List**选项中选择“listBridge”，然后从下拉 **Interfaces** 选项中选择“local”，然后单击**OK**；
+- 打开 **Tools -> Mac Server** 窗口；
 - 单击 **“MAC Telnet Server”** 按钮，将打开一个新对话框；
 - 从下拉列表中选择新创建的列表“listBridge”，然后单击“**OK**”按钮应用设置。
-
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/image2021-12-7_9-59-33.png?version=1&modificationDate=1638863965880&api=v2)
 
@@ -303,9 +302,9 @@ _x.x.x.x/yy - 允许访问路由器的 IP 和子网。_
 
 - 打开 **Ip -> Firewall**窗口, 点击**Filter rules** 标签;
 - 点击 **+** 按键, 打开一个新的对话框;
-- 选择chain input, 点击**Connection state,** 选择**established** 和**related**复选框;
-- 点击**Action**标签，确保**action accept**被选中;
-- 点击**Ok** 按钮应用设置.
+- 选择chain input, 点击 **Connection state,** 选择 **established** 和 **related**复选框;
+- 点击 **Action** 标签，确保 **action accept**被选中;
+- 点击 **Ok** 按钮应用设置.
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_fw.png?version=1&modificationDate=1569856324140&api=v2&effects=drop-shadow)
 
@@ -433,10 +432,10 @@ RouterOS 为 SSH 使用更强的加密，大多数较新的程序都使用它，
 
 - 打开无线窗口，选择 wlan1 接口，然后点击 _enable_ 按钮；
 - 双击无线接口打开配置对话框；
-- 在配置对话框中单击**Wireless**选项卡，然后单击右侧的**Advanced Mode**按钮。 当你单击该按钮时，将出现其他配置参数，并且该按钮的描述将更改为**Simple Mode**；
+- 在配置对话框中单击 **Wireless** 选项卡，然后单击右侧的 **Advanced Mode** 按钮。 当你单击该按钮时，将出现其他配置参数，并且该按钮的描述将更改为 **Simple Mode**；
 - 选择屏幕截图中显示的参数，国家设置和 SSID 除外。 可能还要选择不同的频率和天线增益；
 - 接下来，单击 **HT** 选项卡并确保选择了两个chain；
-- 单击**OK**按钮应用设置。
+- 单击 **OK** 按钮应用设置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_wlan_iface.png?version=1&modificationDate=1569856463320&api=v2&effects=drop-shadow)
 
@@ -526,4 +525,4 @@ ping 工具只说目的地是 **unreachable**，但没有更详细的信息可�
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/troubleshoot_if_ping_fails.jpg?version=1&modificationDate=1582275155077&api=v2)
 
-> 如果不确定如何配置网关设备，请联系 MikroTik 的官方[顾问](https://mikrotik.com/consultants) 以获得配置支持。
+> 如果不确定如何配置网关设备，请联系 MikroTik 的官方 [顾问](https://mikrotik.com/consultants) 以获得配置支持。

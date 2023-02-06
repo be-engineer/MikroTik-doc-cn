@@ -8,22 +8,76 @@
 
 用一个简单的例子来演示添加防火墙规则以及如何撤消和重做：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; add chain=forward action=drop</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, I - invalid; D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">log-prefix=""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">1 chain=forward action=drop</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; /system/history/print</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">Flags: U - undoable, R - redoable, F - floating-undo</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">Columns: ACTION, BY, POLICy</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text plain">ACTION BY POLIC</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text plain">F filter rule added admin write</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">U --- write</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@v7_ccr_bgp] /ip/firewall/filter> add chain=forward action=drop
+[admin@v7_ccr_bgp] /ip/firewall/filter> print
+Flags: X - disabled, I - invalid; D - dynamic
+0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no
+log-prefix=""
+ 
+1 chain=forward action=drop
+ 
+[admin@v7_ccr_bgp] /ip/firewall/filter> /system/history/print
+Flags: U - undoable, R - redoable, F - floating-undo
+Columns: ACTION, BY, POLICy
+ACTION BY POLIC
+F filter rule added admin write
+U --- write
+[admin@v7_ccr_bgp] /ip/firewall/filter>
+
+```
 
 这里添加了防火墙规则，在“/system history”中可以看到所做的一切。
 
 现在撤消：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; /undo</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, I - invalid; D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">log-prefix=""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@v7_ccr_bgp] /ip/firewall/filter> /undo
+[admin@v7_ccr_bgp] /ip/firewall/filter> print
+Flags: X - disabled, I - invalid; D - dynamic
+0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no
+log-prefix=""
+ 
+[admin@v7_ccr_bgp] /ip/firewall/filter>
+
+```
 
 如你所见，防火墙规则消失了。
 现在重做最后的操作：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; /redo</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, I - invalid; D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">log-prefix=""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">1 chain=forward action=drop</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /ip/firewall/filter&gt;</code></div></div></td></tr></tbody></table>
-  
-系统历史能够显示在撤消或重做期间执行的确切 CLI 命令，即使我们从 GUI 执行操作。例如，从 WinBox 添加 TCP 接受规则后的详细历史输出：
+```shell
+[admin@v7_ccr_bgp] /ip/firewall/filter> /redo
+[admin@v7_ccr_bgp] /ip/firewall/filter> print
+Flags: X - disabled, I - invalid; D - dynamic
+0 X chain=input action=drop protocol=icmp src-address=10.155.101.1 log=no
+log-prefix=""
+ 
+1 chain=forward action=drop
+ 
+[admin@v7_ccr_bgp] /ip/firewall/filter>
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt; print detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: U - undoable, R - redoable, F - floating-undo</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">/ip firewall filter add action=accept chain=forward disabled=no log=no \</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">log-prefix="" protocol=tcp</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *4 action="filter rule added" by="admin"</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:51:05</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">F redo=/ip firewall filter add action=accept chain=forward</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">undo=/ip firewall filter remove *3 action="filter rule added" by="admin"</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">policy=write time=oct/10/2019 18:49:03</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">U redo="" undo="" action="---" by="" policy=write time=sep/27/2019 13:07:35</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /system/history&gt;</code></div></div></td></tr></tbody></table>
+```
+  
+系统历史显示在撤消或重做期间执行的确切 CLI 命令，即使我们从 GUI 执行操作。例如，从 WinBox 添加 TCP 接受规则后的详细历史输出：
+
+```shell
+[admin@v7_ccr_bgp] /system/history> print detail
+Flags: U - undoable, R - redoable, F - floating-undo
+ F redo=
+      /ip firewall filter add action=accept chain=forward disabled=no log=no \
+          log-prefix="" protocol=tcp
+    undo=/ip firewall filter remove *4 action="filter rule added" by="admin"
+    policy=write time=oct/10/2019 18:51:05
+ 
+ F redo=/ip firewall filter add action=accept chain=forward
+    undo=/ip firewall filter remove *3 action="filter rule added" by="admin"
+    policy=write time=oct/10/2019 18:49:03
+ 
+ 
+U redo="" undo="" action="---" by="" policy=write time=sep/27/2019 13:07:35
+[admin@v7_ccr_bgp] /system/history>
+
+```
 
 ## 安全模式
 
@@ -107,13 +161,42 @@ RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用�
 
 例如，从 `/ip address` 菜单导出配置并将其保存到文件中：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /ip address print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled, I - invalid, D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NETWORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BROADCAST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INTERFACE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0&nbsp;&nbsp; 10.1.0.172/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.1.0.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.1.0.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">1&nbsp;&nbsp; 10.5.1.1/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.5.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.5.1.255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /ip address export file=address</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /file print</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SIZE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CREATION-TIME</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">0&nbsp; address.rsc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; script&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 315&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dec/23/2003 13:21:48</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /ip address print
+Flags: X - disabled, I - invalid, D - dynamic
+#   ADDRESS            NETWORK         BROADCAST       INTERFACE
+0   10.1.0.172/24      10.1.0.0        10.1.0.255      bridge1
+1   10.5.1.1/24        10.5.1.0        10.5.1.255      ether1
+[admin@MikroTik] > /ip address export file=address
+[admin@MikroTik] > /file print
+# NAME                            TYPE         SIZE       CREATION-TIME
+0  address.rsc                     script       315        dec/23/2003 13:21:48
+[admin@MikroTik] >
+
+```
 
 默认情况下，export 命令只写入用户编辑的配置，RouterOS 默认值被省略。
 
 例如，不会导出 IPSec 默认策略，如果我们更改一个属性，则只会导出更改：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b4] /ip ipsec policy&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: T - template, X - disabled, D - dynamic, I - inactive, * - default</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">0 T * group=default src-address=::/0 dst-address=::/0 protocol=all</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">proposal=default template=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b4] /ip ipsec policy&gt; export</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain"># apr/02/1970 17:59:14 by RouterOS 6.22</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain"># software id = DB0D-LK67</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">#</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b4] /ip ipsec policy&gt; set 0 protocol=gre</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">[admin@rack1_b4] /ip ipsec policy&gt; export</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain"># apr/02/1970 17:59:30 by RouterOS 6.22</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text plain"># software id = DB0D-LK67</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text plain">#</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">/ip ipsec policy</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">set 0 protocol=gre</code></div></div></td></tr></tbody></table>
+```shell
+[admin@rack1_b4] /ip ipsec policy> print
+Flags: T - template, X - disabled, D - dynamic, I - inactive, * - default
+0 T * group=default src-address=::/0 dst-address=::/0 protocol=all
+      proposal=default template=yes
+[admin@rack1_b4] /ip ipsec policy> export
+# apr/02/1970 17:59:14 by RouterOS 6.22
+# software id = DB0D-LK67
+#
+[admin@rack1_b4] /ip ipsec policy> set 0 protocol=gre
+[admin@rack1_b4] /ip ipsec policy> export
+# apr/02/1970 17:59:30 by RouterOS 6.22
+# software id = DB0D-LK67
+#
+/ip ipsec policy
+set 0 protocol=gre
+
+```
 
 注意 **\*** 标志，它表示该条目是系统默认的，无法手动删除。
 
@@ -152,7 +235,14 @@ RouterOS 允许以纯文本格式导出和导入部分配置。 此方法可用�
 
 例如加载保存的配置文件
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; import address.rsc</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Opening script file address.rsc</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">Script file loaded and executed successfully</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > import address.rsc
+Opening script file address.rsc
+ 
+Script file loaded and executed successfully
+[admin@MikroTik] >
+
+```
 
 import命令可以指定以下参数：
 
@@ -172,7 +262,7 @@ import命令可以指定以下参数：
 
 RouterOS 允许使用`/system reset-configuration`命令重置配置
 
-此命令清除路由器的所有配置并设置为出厂默认值，包括登录名和密码（“admin”密码为空，对于某些型号，检查标签上的用户和无线密码）。 有关默认配置的更多详细信息[请参阅表](https://help.mikrotik.com/docs/display/ROS/Default+configurations)。
+此命令清除路由器的所有配置并设置为出厂默认值，包括登录名和密码（“admin”密码为空，对于某些型号，检查标签上的用户和无线密码）。 有关默认配置的更多详细信息 [请参阅](https://help.mikrotik.com/docs/display/ROS/Default+configurations)。
 
 执行配置重置命令后，路由器将重新启动并加载默认配置。
   
@@ -191,7 +281,11 @@ RouterOS 允许使用`/system reset-configuration`命令重置配置
   
 例如，不加载默认配置和跳过备份文件的情况下硬重置配置：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; /system reset-configuration no-defaults=yes skip-backup=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Dangerous! Reset anyway? [y/N]: y</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /system reset-configuration no-defaults=yes skip-backup=yes
+Dangerous! Reset anyway? [y/N]: y
+
+```
 
 用 Winbox：
 

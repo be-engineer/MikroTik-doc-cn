@@ -172,7 +172,7 @@ Flags: X - disabled, D - dynamic
 - `src-port` 和 `dst-port` 支持单个或范围值（例如 `src-port 10` 或 `src-port 10-20`）
 - `src-mac-address` 支持 "xx:xx:xx:xx:xx:xx" 或 "xxxxxxxxxxxx" 格式，并且可以使用 "none" 关键字设置没有任何源 MAC 地址的切换规则（例如 `src-mac-address none`)
 - `src-mac-address`（如果属性尚未设置）、`switch` 和 `ports` 条件参数会自动为每个规则设置
-- 每条规则都应以操作属性结尾，支持的值为**drop** 或**allow**。 如果未设置操作属性，将使用默认的 **allow** 值。
+- 每条规则都应以操作属性结尾，支持的值为 **drop** 或 **allow**。 如果未设置操作属性，将使用默认的 **allow** 值。
 - 单个请求者支持多个规则，它们必须用逗号“,”分隔
 
 下面是 Mikrotik-Switching-Filter 属性和它们创建的动态切换规则的一些示例：

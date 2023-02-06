@@ -92,7 +92,7 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 #### 可用变量列表
 
-**注意：**一些变量使用硬编码的http URL，如果你使用https，你可以用其他方式构造链接，例如$link-status，你可以使用https://$(hostname )/$(target-dir)状态
+**注意：** 一些变量使用硬编码的http URL，如果你用https，可以用其他方式构造链接，例如$link-status，你可以使用https://$(hostname )/$(target-dir)状态
 
 **常用服务器变量：**
 
@@ -276,7 +276,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 在 HTTP-CHAP 方法的情况下，要发送到 HotSpot 网关的结果密码由以下内容的 MD5 散列连接组成：chap-id、用户密码和 chap-challenge（按给定顺序）
 
-如果要直接在链接中使用变量，则必须相应地对它们进行转义。 例如，登录页面**\<a href="https://login.example.com/login?mac=\$(mac)&user=\$(username)"\>link\</a\>** 如果用户名是“123\&456=1 2”，不会 按预期工作。 因此，必须使用其转义版本而不是 \$(user)：\$(user-esc): **\<a href="https://login.server.serv/login?mac=\$(mac-esc )\&user=\$(user-esc)"\>link\</a\>**。 现在相同的用户名将转换为“123%26456%3D1+2”，这是 URL 中“123&456=1 2”的有效表示。 这个技巧可以用于任何变量，而不仅仅是 $(username)。
+如果要直接在链接中使用变量，则必须相应地对它们进行转义。 例如，登录页面 **\<a href="https://login.example.com/login?mac=\$(mac)&user=\$(username)"\>link\</a\>** 如果用户名是“123\&456=1 2”，不会 按预期工作。 因此，必须使用其转义版本而不是 \$(user)：\$(user-esc): **\<a href="https://login.server.serv/login?mac=\$(mac-esc )\&user=\$(user-esc)"\>link\</a\>**。 现在相同的用户名将转换为“123%26456%3D1+2”，这是 URL 中“123&456=1 2”的有效表示。 这个技巧可以用于任何变量，而不仅仅是 $(username)。
 
 注销页面有一个布尔参数“erase-cookie”，它可以是“on”或“true”以在注销时删除用户cookie（这样用户在打开浏览器时就不会自动登录 )。
 
@@ -384,7 +384,7 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
-External authentication[[edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section: External authentication")]
+外部认证 [edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section: External authentication")
 
 另一个例子是让 HotSpot 在远程服务器上进行身份验证（例如，可以执行信用卡收费）：
 
@@ -418,7 +418,7 @@ document.redirect.submit();
 
 - 外部服务器可以通过将 HotSpot 客户端重定向回原始 HotSpot servlet 登录页面并指定正确的用户名和密码来登录 HotSpot 客户端
 
-下面是这样一个页面的示例（它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login)，替换为 HotSpot 路由器的实际地址； 此外，它在成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/)，替换为需要的内容：
+下面是这样一个页面的示例（它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login)，替换为 HotSpot 路由器的实际地址； 此外，成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/)，替换为需要的内容：
 
 ```html
 <html>
@@ -468,7 +468,7 @@ $(endif)
 - 将此用户分配给允许特定/无限数量的同时活动用户的用户配置文件。
 - 复制已在根级别的路由器文件菜单中生成的原始热点目录。
 - 修改此副本目录内容的内容。
-  - 只有一个文件需要修改，即“login.html”。
+  - 只有一个文件需要修改-login.html。
 
 原始内容：
 

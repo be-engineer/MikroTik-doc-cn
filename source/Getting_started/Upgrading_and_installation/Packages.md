@@ -49,7 +49,6 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要特定�
 
 **注意：** 因为 v6.44beta39 安全包依赖于 DHCP 包。
 
-
 ## 使用软件包
 
 **菜单:** _/system package_
@@ -67,31 +66,55 @@ RouterOS 支持许多不同的功能，并且由于每个安装都需要特定�
 
 ## 例子
 
-[此处](https://wiki.mikrotik.com/wiki/Upgrading_RouterOS "升级 RouterOS")描述了升级过程。
+[此处](https://wiki.mikrotik.com/wiki/Upgrading_RouterOS "升级 RouterOS") 描述了升级过程。
 
 ### 列出可用软件包
 
+```shell
+/system package print
+ Flags: X - disabled #
+NAME VERSION SCHEDULED
+ 0 X ipv6 3.13
+1 system 3.13
+2 X mpls 3.13
+3 X hotspot 3.13
+4 routing 3.13
+5 wireless 3.13
+6 X dhcp 3.13
+7 routerboard 3.13
+8 routeros-mipsle 3.13
+9 security 3.13
+10 X ppp 3.13
+11 advanced-tools 3.13
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system package </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led </code><code class="ros comments">#</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">NAME VERSION SCHEDULED</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 X ipv6 3.13</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1 system 3.13</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2 X mpls 3.13</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">3 X hotspot 3.13</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">4 routing 3.13</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">5 wireless 3.13</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">6 X dhcp 3.13</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">7 routerboard 3.13</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">8 routeros-mipsle 3.13</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">9 security 3.13</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">10 X ppp 3.13</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">11 advanced-tools 3.13</code></div></div></td></tr></tbody></table>
-
+```
   
-
 ### 删除包
 
 安排卸载包并重新启动路由器。
 
+```shell
+/system package uninstall ppp; /system reboot;
+Reboot, yes? [y/N]:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system package un</code><code class="ros plain">install ppp; </code><code class="ros constants">/system reboot;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Reboot, yes? [y</code><code class="ros constants">/N]:</code></div></div></td></tr></tbody></table>
+```
 
 ### 禁用包
 
+```shell
+/system package disable hotspot; /system reboot;
+Reboot, yes? [y/N]:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system package </code><code class="ros functions">disable </code><code class="ros plain">hotspot; </code><code class="ros constants">/system reboot;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Reboot, yes? [y</code><code class="ros constants">/N]:</code></div></div></td></tr></tbody></table>
+```
 
 ### 降级
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system package downgrade; /system reboot;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Reboot, yes? [y</code><code class="ros constants">/N]:</code></div></div></td></tr></tbody></table>
+```shell
+/system package downgrade; /system reboot;
+Reboot, yes? [y/N]:
+
+```
 
 ### 取消卸载或禁用操作
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system package unschedule ipv6</code></div></div></td></tr></tbody></table>
+`/system package unschedule ipv6`
