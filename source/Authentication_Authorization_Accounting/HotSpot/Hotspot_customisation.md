@@ -42,31 +42,31 @@
 
 HotSpot 小服务程序识别 5 种不同的请求类型：
 
-1.**request for a remote host**
+1. **request for a remote host**
 
 - 如果用户已登录并且要显示广告，则显示 radvert.html。 此页面重定向到预定的广告页面
 - 如果用户已登录且没有为该用户安排广告，则提供请求的页面
 - 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
 - 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
 
-2.**在HotSpot主机上请求“/”**
+2. **在HotSpot主机上请求“/”**
 
 - 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
 - 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
   
-3.**请求“/login”页面**
+3. **请求“/login”页面**
 
 - 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
 - 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
 - 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
 - 如果出现致命错误，则显示 error.html
 
-4.**请求“/status”页面**
+4. **请求“/status”页面**
 
 - 如果用户已登录，则显示 status.html
 - 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
 
-5.**请求“/logout”页面**
+5. **请求“/logout”页面**
 
 - 如果用户已登录，则显示 logout.html
 - 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面
@@ -384,14 +384,14 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
-外部认证 [edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section: External authentication")
+外部认证 [Edit section](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section:External authentication")
 
 另一个例子是让 HotSpot 在远程服务器上进行身份验证（例如，可以执行信用卡收费）：
 
 - 允许直接访问围墙花园中的外部服务器（基于 HTTP 或基于 IP）
 - 修改 HotSpot servlet 的登录页面以重定向到外部认证服务器。 外部服务器应根据需要修改 RADIUS 数据库
 
-这是放置在 HotSpot 路由器上的此类登录页面的示例（它重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php) ，替换为外部认证服务器的实际地址）：
+这是放置在 HotSpot 路由器上的此类登录页面的示例（重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php)） ，替换为外部认证服务器的实际地址）：
 
 ```html
 <html>
@@ -622,7 +622,7 @@ HTTPS 代理监听64875端口.
 
 ```
 
-为授权用户提供HTTP代理服务。 经过身份验证的用户请求可能需要接受透明代理（“通用代理”技术和广告功能）。 此 http 标记自动放置在 HotSpot HTTP 代理（侦听 64874 端口的代理）检测到的服务器的 HTTP 代理请求上，作为对未知代理服务器的 HTTP 代理请求。 这样做是为了让具有某些代理设置的用户可以使用 HotSpot 网关，而不是用户在其计算机中配置的[可能在其原始网络之外不可用] 代理服务器。 当广告应该显示给用户，以及从配置文件配置为透明代理其请求的用户发出的任何 HTTP 请求上，也会应用此标记。
+为授权用户提供HTTP代理服务。 经过身份验证的用户请求可能需要接受透明代理（“通用代理”技术和广告功能）。 此 http 标记自动放置在 HotSpot HTTP 代理（侦听 64874 端口的代理）检测到的服务器的 HTTP 代理请求上，作为对未知代理服务器的 HTTP 代理请求。 这样做是为了让具有某些代理设置的用户可以使用 HotSpot 网关，而不是用户在其计算机中配置的 **可能在其原始网络之外不可用** 代理服务器。 当广告应该显示给用户，以及从配置文件配置为透明代理其请求的用户发出的任何 HTTP 请求上，也会应用此标记。
 
 ```
 15 I chain=hs-auth action=jump jump-target=hs-smtp dst-port=25 protocol=tcp
