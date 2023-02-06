@@ -2,13 +2,13 @@
 
 **第三层硬件卸载**（**L3HW**，也称为 IP 交换或硬件路由）允许将某些路由器功能卸载到交换芯片上。 允许路由数据包时达到线速，这对于 CPU 来说是不可能的。
 
-# 交换配置
+## 交换配置
 
 要启用第 3 层硬件卸载，请为交换机设置 **l3-hw-offloading=yes**：
 
 `/interface/ethernet/switch set 0 l3-hw-offloading=yes`
 
-## 交换机端口配置
+### 交换机端口配置
 
 可以为每个物理交换机端口配置第 3 层硬件卸载。 例如：
 
@@ -48,7 +48,7 @@
 
 现有连接可能不受“l3-hw-offloading”设置更改的影响。
 
-## L3HW 设置
+### L3HW 设置
 
 L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
@@ -66,7 +66,7 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 | ----------------------------------------- | ------------------------------------------------------ |
 | **hw-supports-fasttrack** (__yes \| no__) | 指示硬件（交换芯片）是否支持 FastTrack HW Offloading。 |
 
-## 接口列表
+### 接口列表
 
 无法直接使用接口列表来控制 `l3-hw-offloading`，因为接口列表可能包含虚拟接口（例如 VLAN），而 `l3-hw-offloading` 设置必须仅应用于物理交换机端口。 例如，如果有两个 VLAN 接口（vlan20 和 vlan30）运行在同一个交换机端口（trunk 端口）上，则不可能在 vlan20 上启用硬件路由，而在 vlan30 上保持禁用。
 
@@ -85,7 +85,7 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 请注意，由于硬件路由控制中不直接使用接口列表，**修改接口列表也不会自动反映到 l3hw 更改中**。 例如，将交换机端口添加到“LAN”接口列表不会自动在其上启用“l3-hw-offloading”。 用户必须重新运行上述脚本才能应用更改。
 
-## MTU
+### MTU
 
 硬件支持多达 8 个 MTU 配置文件，这意味着用户可以为接口设置多达 8 个不同的 MTU 值：默认 1500 + 七个自定义值。
 
@@ -102,7 +102,7 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 ```
 
-## 二层依赖
+### 二层依赖
 
 第 3 层硬件处理位于第 2 层硬件处理之上。 因此，L3HW 卸载需要在底层接口上进行 L2HW 卸载。 后者默认启用，但也有一些例外。 例如，CRS3xx 设备仅支持一个硬件网桥。 如果有多个网桥，其他的由CPU处理，不受L3HW约束。
 
@@ -140,7 +140,7 @@ L3HW 设置菜单已在 RouterOS 版本 7.6 中引入。
 
 ```
 
-## MAC telnet 和 RoMON
+### MAC telnet 和 RoMON
 
 在 **98DX8xxx**、**98DX4xxx** 或 **98DX325x** 交换机芯片上启用 L3HW 卸载时，MAC telnet 和 RoMON 存在限制。 来自这些协议的数据包将被丢弃并且不会到达 CPU，因此对设备的访问将失败。
 
@@ -162,7 +162,7 @@ add mac-protocol=0x88BF ports=sfp-sfpplus2 redirect-to-cpu=yes switch=switch1
 
 ```
 
-## VLAN间路由
+### VLAN间路由
 
 由于L3HW依赖于L2HW，而L2HW是做VLAN处理的，所以Inter-VLAN_hardware_routing需要底层有硬件桥接。 即使特定 VLAN 只有一个标记端口成员，后者也必须是网桥成员。 不要直接在交换机端口上分配 VLAN 接口！ 否则，L3HW 卸载失败，流量将由 CPU 处理：
 
@@ -185,7 +185,7 @@ add mac-protocol=0x88BF ports=sfp-sfpplus2 redirect-to-cpu=yes switch=switch1
 
 对于 VLAN 间路由，网桥接口必须是每个可路由的“/interface/bridge/vlan/”条目的标记成员。
 
-## L3HW MAC 地址范围限制（仅限 DX2000/DX3000 系列）
+### L3HW MAC 地址范围限制（仅限 DX2000/DX3000 系列）
 
 Marvell Prestera DX2000 和 DX3000 交换芯片有一个硬件限制，即只允许为每个接口配置 MAC 地址的最后一个（最不重要的）八位字节。 其他五个（最重要的）八位字节是全局配置的，因此对于所有接口（交换机端口、网桥、VLAN）必须相等。 换句话说，MAC 地址必须采用“**XX:XX:XX:XX:XX:??**”格式，其中：
 
@@ -200,9 +200,9 @@ Marvell Prestera DX2000 和 DX3000 交换芯片有一个硬件限制，即只允
 - 网桥本身。
 - VLAN 接口（默认使用网桥的 MAC 地址）。
 
-# 路由配置
+## 路由配置
 
-## 抑制硬件卸载
+### 抑制硬件卸载
 
 默认情况下，所有路由都参与成为硬件候选路由。 为了进一步微调要卸载的流量，每个路由都有一个选项可以禁用/启用**`suppress-hw-offload`**。
 
@@ -225,9 +225,9 @@ Columns: DST-ADDRESS, GATEWAY, DISTANCE
 
 H-flag并不表示该route实际上是HW offloaded，它只是表示route可以被选为HW offloaded。
 
-## 路由过滤器
+### 路由过滤器
 
-对于 OSFP 和 BGP 等动态路由协议，可以使用[路由过滤器](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=74678285) 来抑制 HW 卸载。 例如，要抑制所有 OSFP 实例路由上的 HW 卸载，请使用“**`suppress-hw-offload yes`**”属性：
+对于 OSFP 和 BGP 等动态路由协议，可以使用 [路由过滤器](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=74678285) 来抑制 HW 卸载。 例如，要抑制所有 OSFP 实例路由上的 HW 卸载，请使用 **`suppress-hw-offload yes`** 属性：
 
 ```shell
 /routing/ospf/instance
@@ -237,7 +237,7 @@ add chain="ospf-input" rule="set suppress-hw-offload yes; accept"
 
 ```
 
-## 卸载 Fasttrack 连接
+### 卸载 Fasttrack 连接
 
 防火墙过滤规则具有 Fasttrack 的 **`hw-offload`** 选项，允许微调连接卸载。 由于 Fasttrack 连接的硬件内存非常有限，我们可以选择要卸载的连接类型，因此受益于接近线速的流量。 下一个示例仅卸载 TCP 连接，而 UDP 数据包通过 CPU 路由并且不占用 HW 内存：
 
@@ -249,7 +249,7 @@ add action=accept chain=forward connection-state=established,related
 
 ```
 
-## 无状态硬件防火墙
+### 无状态硬件防火墙
 
 虽然连接跟踪和状态防火墙只能由 CPU 执行，但硬件可以通过 [交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 执行无状态防火墙。 下一个示例阻止（在硬件级别）从 ether1 访问 MySQL 服务器，并重定向到来自 ether2 和 ether3 的 CPU/防火墙数据包：
 
@@ -260,7 +260,7 @@ add switch=switch1 dst-address=10.0.1.2/32 dst-port=3306 ports=ether2,ether3 red
 
 ````
 
-## 交换规则 (ACL) 与 Fasttrack 硬件卸载
+### 交换规则 (ACL) 与 Fasttrack 硬件卸载
 
 一些防火墙规则可以通过 [交换规则 (ACL)](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 和 CPU [防火墙过滤器](https://help.mikrotik.com/docs/display/ROS/Filter) + Fasttrack HW 卸载。 这两个选项都提供接近线速的性能。 问题是使用哪一个？
 
@@ -282,9 +282,9 @@ add switch=switch1 ports=sfp-sfpplus1 vlan-id=10 dst-address=10.0.0.0/8 new-dst-
 
 使用 `**redirect-to-cpu=yes**` 定义 ACL 规则，而不是设置交换机端口的 `l3-hw-offloading=no` 以减少进入 CPU 的流量。
 
-# 配置示例
+## 配置示例
 
-## 上游端口在防火墙/NAT 后面的 VLAN 间路由
+### 上游端口在防火墙/NAT 后面的 VLAN 间路由
 
 此示例演示了如何从接近线速的 VLAN 间路由中获益，同时保持防火墙和 NAT 在上游端口上运行。 此外，到上游端口的 Fasttrack 连接也被卸载到硬件，将流量速度提高到接近线速。 VLAN 间流量完全由硬件路由，不进入 CPU/防火墙，因此不占用 Fasttrack 连接的硬件内存。
 
@@ -410,11 +410,11 @@ add action=masquerade chain=srcnat out-interface-list=WAN
 - 来自/到 WAN 端口的流量首先由 CPU/防火墙处理。 然后 Fasttrack 连接被卸载到硬件 _（硬件加速 L4 状态防火墙）。_NAT适用于CPU_ 和 HW 处理的数据包。
 - 到管理端口的流量受防火墙保护。
 
-# 典型的错误配置
+## 典型的错误配置
 
 以下是配置第 3 层硬件卸载的典型用户错误。
 
-## 交换机端口上的 VLAN 接口
+### 交换机端口上的 VLAN 接口
 
 `/interface vlan add name=vlan10 vlan-id=10 interface=sfp-sfpplus1`
 
@@ -427,7 +427,7 @@ add action=masquerade chain=srcnat out-interface-list=WAN
 
 ```
 
-## 不将网桥接口添加到/in/br/vlan
+### 不将网桥接口添加到/in/br/vlan
 
 对于 VLAN 间路由，桥接接口本身需要添加到给定 VLAN 的标记成员中。 在下一个示例中，VLAN 间路由在 VLAN 10 和 11 之间工作，但数据包不会路由到 VLAN 20。
 
@@ -441,13 +441,13 @@ add bridge=bridge1 vlan-ids=20 tagged=sfp-sfpplus1 untagged=sfp-sfpplus4,sfp-sfp
 
 上面的例子并不总是出错。 有时，你可能希望设备在某些或全部 VLAN 中充当简单的 L2 交换机。 只要确定你是故意这样设置，而不是因为错误。
 
-## 创建多个网桥
+### 创建多个网桥
 
 这些设备仅支持一个硬件桥。 如果创建了多个网桥，则只有一个网桥获得硬件卸载。 对于 L2，这意味着其他网桥是软件转发，在 L3HW 的情况下，多个网桥可能会导致未定义的行为。
 
 与其创建多个网桥，不如创建一个并使用 VLAN 过滤隔离 L2 网络。
 
-## 使用不属于交换机的端口
+### 使用不属于交换机的端口
 
 有些设备有两个交换芯片或直接连接到 CPU 的管理端口。 例如，**CRS312-4C+8XG** 有一个 **ether9** 端口连接到单独的交换芯片。 尝试将此端口添加到网桥或将其包含在 L3HW 设置中会导致意外结果。 记得留下管理端口进行管理！
 
@@ -479,11 +479,11 @@ Columns: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE
 
 ```
 
-## 过度依赖 Fasttrack HW 卸载
+### 过度依赖 Fasttrack HW 卸载
 
 由于 Fasttrack HW Offloading 以零配置开销提供接近线速的性能，因此用户倾向于将其用作默认解决方案。 但是，HW Fasttrack 连接的数量非常有限，将其他流量留给 CPU。 尝试尽可能使用硬件路由，通过交换机 ACL 规则将 CPU 流量减少到最低，然后使用防火墙过滤规则微调要卸载的 Fasttrack 连接。
 
-# L3HW 功能支持
+## L3HW 功能支持
 
 - **HW** \- 支持该功能并将其卸载到硬件。
 - **CPU** \- 该功能受支持但由软件 (CPU) 执行
@@ -514,65 +514,65 @@ Columns: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE
 
 只有下表中列出的设备支持 L3 硬件卸载。
 
-# L3HW 设备支持
+## L3HW 设备支持
 
 只有下表中列出的设备支持 L3 硬件卸载。
 
-## CRS3xx：交换机 DX3000 和 DX2000 系列
+### CRS3xx：交换机 DX3000 和 DX2000 系列
 
-以下设备基于 **Marvell **98DX224S、98DX226S**** 或 ****98DX3236**** 交换芯片型号。 这些设备不支持 Fasttrack 或 NAT 连接卸载。
+以下设备基于 **Marvell 98DX224S、98DX226S** 或 **98DX3236** 交换芯片型号。 这些设备不支持 Fasttrack 或 NAT 连接卸载。
 
 > **98DX3255** 和 **98DX3257** 型号是例外，它们具有 DX8000 而非 DX3000 系列的功能集。
 
-| 型号                   | 交换芯片         | ==发布版本== | IPv4 Route Prefixes<sup>1</sup> | IPv6 Route Prefixes<sup>2</sup> | Nexthops | ECMP paths per prefix<sup>3</sup> |
-| ---------------------- | ---------------- | ------------ | ------------------------------- | ------------------------------- | -------- | --------------------------------- |
-| **CRS305-1G-4S+**      | ****98DX3236**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS310-1G-5S-4S+**   | ****98DX226S**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS318-1Fi-15Fr-2S** | ****98DX224S**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS318-16P-2S+**     | ****98DX226S**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS326-24G-2S+**     | ****98DX3236**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS328-24P-4S+**     | ****98DX3236**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
-| **CRS328-4C-20S-4S+**  | ****98DX3236**** | 7.1          | 13312                           | 3328                            | 4K       | 8                                 |
+| 型号                   | 交换芯片     | 发布版本 | IPv4 Route Prefixes<sup>1</sup> | IPv6 Route Prefixes<sup>2</sup> | Nexthops | ECMP paths per prefix<sup>3</sup> |
+| ---------------------- | ------------ | -------- | ------------------------------- | ------------------------------- | -------- | --------------------------------- |
+| **CRS305-1G-4S+**      | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS310-1G-5S-4S+**   | **98DX226S** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS318-1Fi-15Fr-2S** | **98DX224S** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS318-16P-2S+**     | **98DX226S** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS326-24G-2S+**     | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS328-24P-4S+**     | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
+| **CRS328-4C-20S-4S+**  | **98DX3236** | 7.1      | 13312                           | 3328                            | 4K       | 8                                 |
 
-_<sup>1</sup> 由于可以卸载的路由总量有限，具有较高网络掩码的前缀优先由硬件转发（例如 /32、/30、/29 等），任何 其他不适合 HW 表的前缀将由 CPU 处理。 直接连接的主机被卸载为 /32 (IPv4) 或 /128 (IPv6) 路由前缀。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings)_ 限制。
+_ <sup>1</sup> 由于可以卸载的路由总量有限，具有较高网络掩码的前缀优先由硬件转发（例如 /32、/30、/29 等），任何 其他不适合 HW 表的前缀将由 CPU 处理。 直接连接的主机被卸载为 /32 (IPv4) 或 /128 (IPv6) 路由前缀。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
 
-_<sup>2</sup>IPv4 和 IPv6 路由表共享相同的硬件内存。_
+_ <sup>2</sup>IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
-_<sup>3</sup> 如果路由的路径多于硬件 ECMP 限制 (X)，则只有前 X 条路径被卸载。_
+_ <sup>3</sup> 如果路由的路径多于硬件 ECMP 限制 (X)，则只有前 X 条路径被卸载。_
 
-## CRS3xx、CRS5xx：交换机 DX8000 和 DX4000 系列
+### CRS3xx、CRS5xx：交换机 DX8000 和 DX4000 系列
 
-以下设备基于 **Marvell 98DX8xxx**、**98DX4xxx** 交换芯片或 **98DX325x** 型号。
+以下设备基于 **Marvell 98DX8xxx、98DX4xxx** 交换芯片或 **98DX325x** 型号。
 
-**Fasttrack** **连接 <sup>2,3,4</sup>**
+**Fasttrack** 连接 <sup>2,3,4</sup>
 
-| 型号                                     | 交换芯片                      | ==发布版本== | IPv4 Routes <sup>1</sup> | IPv4 Hosts <sup>7</sup> | IPv6 Routes<sup>8</sup> | IPv6 Hosts<sup>7</sup> | Nexthops | **Fasttrack** **连接<sup>2,3,4</sup>** | NAT entries <sup>2,5</sup> |
-| ---------------------------------------- | ----------------------------- | ------------ | ------------------------ | ----------------------- | ----------------------- | ---------------------- | -------- | -------------------------------------- | -------------------------- |
-| **CRS317-1G-16S+**                       | ****98DX8216****              | 7.1          | 120K - 240K              | 64K                     | 30K - 40K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
-| **CRS309-1G-8S+**                        | ****98DX8208****              | 7.1          | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 4.5K                                   | 3.9K                       |
-| **CRS312-4C+8XG**                        | ****98DX8212****              | 7.1          | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
-| **CRS326-24S+2Q+**                       | ****98DX8332****              | 7.1          | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
-| **CRS354-48G-4S+2Q+, CRS354-48P-4S+2Q+** | ****98DX3257 <sup>6</sup>**** | 7.1          | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
-| **CRS504-4XQ**                           | ****98DX4310****              | 7.1          | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
-| **CRS518-16XS-2XQ**                      | **98DX8525**                  | 7.3          | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
+| 型号                                     | 交换芯片                  | 发布版本 | IPv4 Routes <sup>1</sup> | IPv4 Hosts <sup>7</sup> | IPv6 Routes<sup>8</sup> | IPv6 Hosts<sup>7</sup> | Nexthops | **Fasttrack** **连接<sup>2,3,4</sup>** | NAT entries <sup>2,5</sup> |
+| ---------------------------------------- | ------------------------- | -------- | ------------------------ | ----------------------- | ----------------------- | ---------------------- | -------- | -------------------------------------- | -------------------------- |
+| **CRS317-1G-16S+**                       | **98DX8216**              | 7.1      | 120K - 240K              | 64K                     | 30K - 40K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
+| **CRS309-1G-8S+**                        | **98DX8208**              | 7.1      | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 4.5K                                   | 3.9K                       |
+| **CRS312-4C+8XG**                        | **98DX8212**              | 7.1      | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
+| **CRS326-24S+2Q+**                       | **98DX8332**              | 7.1      | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
+| **CRS354-48G-4S+2Q+, CRS354-48P-4S+2Q+** | **98DX3257 <sup>6</sup>** | 7.1      | 16K - 36K                | 16K                     | 4K - 6K                 | 8K                     | 8K       | 2.25K                                  | 2.25K                      |
+| **CRS504-4XQ**                           | **98DX4310**              | 7.1      | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
+| **CRS518-16XS-2XQ**                      | **98DX8525**              | 7.3      | 60K - 120K               | 64K                     | 15K - 20K               | 32K                    | 8K       | 4.5K                                   | 4K                         |
 
-_<sup>1</sup> 取决于路由表的复杂性。 整个字节 IP 前缀（/8、/16、/24 等）比其他前缀（例如 /22）占用更少的硬件空间。 从 **RouterOS v7.3** 开始，当路由 HW 表变满时，只有具有较长子网前缀的路由（/30、/29、/28 等）会被卸载，而 CPU 会处理较短的前缀。 在 RouterOS v7.2 及之前的版本中，Routing HW 内存溢出导致了未定义的行为。 用户可以通过路由过滤器（对于动态路由）或抑制静态路由的硬件卸载来微调要卸载的路由。 IPv4 和 IPv6 路由表共享相同的硬件内存。_
+_ <sup>1</sup> 取决于路由表的复杂性。 整个字节 IP 前缀（/8、/16、/24 等）比其他前缀（例如 /22）占用更少的硬件空间。 从 **RouterOS v7.3** 开始，当路由 HW 表变满时，只有具有较长子网前缀的路由（/30、/29、/28 等）会被卸载，而 CPU 会处理较短的前缀。 在 RouterOS v7.2 及之前的版本中，Routing HW 内存溢出导致了未定义的行为。 用户可以通过路由过滤器（对于动态路由）或抑制静态路由的硬件卸载来微调要卸载的路由。 IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
-_<sup>2</sup> 当达到 Fasttrack 或 NAT 条目的 HW 限制时，其他连接将回退到 CPU。 MikroTik 的智能连接卸载算法确保流量最大的连接被卸载到硬件。_
+_ <sup>2</sup> 当达到 Fasttrack 或 NAT 条目的 HW 限制时，其他连接将回退到 CPU。 MikroTik 的智能连接卸载算法确保流量最大的连接被卸载到硬件。_
 
-_<sup>3</sup> Fasttrack 连接与 ACL 规则共享相同的硬件内存。 根据复杂程度，一条ACL规则可能会占用3-6个Fasttrack连接的内存。_
+_ <sup>3</sup> Fasttrack 连接与 ACL 规则共享相同的硬件内存。 根据复杂程度，一条ACL规则可能会占用3-6个Fasttrack连接的内存。_
 
-_<sup>4</sup>_ _MPLS 与 Fasttrack 连接共享硬件内存。 此外，启用 MPLS 需要分配整个内存区域，否则可以存储多达 768 (0.75K) 个 Fasttrack 连接。 这同样适用于桥接端口扩展器。 但是，MPLS 和 BPE 可能使用相同的内存区域，因此同时启用它们不会使 Fasttrack 连接的限制加倍。_
+_ <sup>4</sup>_ _MPLS 与 Fasttrack 连接共享硬件内存。 此外，启用 MPLS 需要分配整个内存区域，否则可以存储多达 768 (0.75K) 个 Fasttrack 连接。 这同样适用于桥接端口扩展器。 但是，MPLS 和 BPE 可能使用相同的内存区域，因此同时启用它们不会使 Fasttrack 连接的限制加倍。_
 
-_<sup>5</sup> 如果 Fasttrack 连接需要网络地址转换，则会创建硬件 NAT 条目。 硬件同时支持SRCNAT和DSTNAT._
+_ <sup>5</sup> 如果 Fasttrack 连接需要网络地址转换，则会创建硬件 NAT 条目。 硬件同时支持SRCNAT和DSTNAT._
 
-_<sup>6</sup> 交换芯片具有 DX8000 系列的功能集。_
+_ <sup>6</sup> 交换芯片具有 DX8000 系列的功能集。_
 
-_<sup>7</sup> DX4000/DX8000交换芯片将直连主机、IPv4/32、IPv6/128路由条目存储在FDB表中，而不是路由表中。 HW 内存在常规 FDB L2 条目 (MAC)、IPv4 和 IPv6 地址之间共享。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings)_ 限制。
+_ <sup>7</sup> DX4000/DX8000交换芯片将直连主机、IPv4/32、IPv6/128路由条目存储在FDB表中，而不是路由表中。 HW 内存在常规 FDB L2 条目 (MAC)、IPv4 和 IPv6 地址之间共享。 主机数量也受 [IP 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings) / [IPv6 设置](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv6Settings) 限制。
 
-_<sup>8</sup> IPv4 和 IPv6 路由表共享相同的硬件内存。_
+_ <sup>8</sup> IPv4 和 IPv6 路由表共享相同的硬件内存。_
 
-# CCR2000
+### CCR2000
 
 | 型号                    | 交换芯片                  | ==发布版本== | IPv4 Routes | IPv4 Hosts | IPv6 Routes | IPv6 Hosts | Nexthops | **Fasttrack** **连接** | NAT entries |
 | ----------------------- | ------------------------- | ------------ | ----------- | ---------- | ----------- | ---------- | -------- | ---------------------- | ----------- |

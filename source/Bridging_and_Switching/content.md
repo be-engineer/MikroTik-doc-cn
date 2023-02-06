@@ -116,7 +116,7 @@ RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓�
 
 > 在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
 
-> STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
+> STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol) 文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
 
 ## 每个端口的STP
 
@@ -126,7 +126,7 @@ RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓�
 
 ### 创建边缘端口
 
-Setting a bridge port as an edge port will restrict it from sending BPDUs and will ignore any received BPDUs:
+把一个网桥端口设置为边缘端口将限制其发送 BPDU， 并忽略任何收到的 BPDU。
 
 ```shell
 /interface bridge
@@ -245,8 +245,7 @@ ___
 | **tag-stacking** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | 强制将所有数据包视为未标记的数据包。入口端口上的数据包将使用另一个 VLAN 标记进行标记，无论 VLAN 标记是否已存在，数据包将使用与 `pvid` 值匹配的 VLAN ID 进行标记，并将使用在 `ether-type` 中指定的 EtherType。此属性仅在 vlan-filtering 设置为 yes 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **trusted** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | 启用后，它允许通过此端口向 DHCP 服务器转发 DHCP 数据包。主要用于限制未经授权的服务器为用户提供恶意信息。此属性仅在 `dhcp-snooping` 设置为 `yes` 时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **unknown-multicast-flood** (_yes \| no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 更改桥接端口上的多播泛洪选项，仅控制出口流量。启用时，网桥允许将多播数据包泛滥到指定的网桥端口，但禁用时，网桥会限制多播流量泛滥到指定的网桥端口。该设置会影响所有多播流量，包括非 IP、IPv4、IPv6 和链路本地多播范围（例如 224.0.0.0/24 和 ff02::1）。<br>请注意，启用“igmp-snooping”时并且检测到 IGMP/MLD 查询器，网桥将自动限制未知 IP 多播被淹没，因此对于 IGMP/MLD 侦听设置来说，该设置不是强制性的。<br>当此设置与 `igmp-snooping` 一起使用时，唯一桥接端口上允许的多播流量是 MDB 表中的已知多播。                                                                                                                                                                                                                                                          |
-
-| **unknown-unicast-flood** (_yes \| no_; Default: **yes**) |更改桥接端口上的未知单播洪水选项，仅控制出口流量。启用时，网桥允许将未知的单播数据包泛洪到指定的网桥端口，但禁用时，网桥将限制未知的单播流量泛洪到指定的网桥端口。<br>如果主机表中未学习到 MAC 地址，然后流量被认为是未知的单播流量，将被淹没到所有端口。一旦收到桥接端口上的数据包，MAC 地址就会被学习，源 MAC 地址将被添加到桥接主机表中。由于要求网桥至少在网桥端口上接收到一个数据包才能学习到MAC地址，因此建议使用静态网桥主机表项，以避免在学习到MAC地址之前丢包。 |
+| **unknown-unicast-flood** (_yes \| no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 更改桥接端口上的未知单播洪水选项，仅控制出口流量。启用时，网桥允许将未知的单播数据包泛洪到指定的网桥端口，但禁用时，网桥将限制未知的单播流量泛洪到指定的网桥端口。<br>如果主机表中未学习到 MAC 地址，然后流量被认为是未知的单播流量，将被淹没到所有端口。一旦收到桥接端口上的数据包，MAC 地址就会被学习，源 MAC 地址将被添加到桥接主机表中。由于要求网桥至少在网桥端口上接收到一个数据包才能学习到MAC地址，因此建议使用静态网桥主机表项，以避免在学习到MAC地址之前丢包。                                                                                                                                                                                                                                                                                         |
 
 ## 示例
 
@@ -415,7 +414,7 @@ add bridge=bridge interface=ether2 mac-address=4C:5E:0C:4D:12:43
 
 ___
 
-当启用[IGMP/MLD snooping](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403)时，网桥将开始监听IGMP/MLD通信，创建组播数据库（MDB） )条目并根据收到的信息做出转发决定。具有链路本地组播目标地址 224.0.0.0/24 和 ff02::1 的数据包不受限制，并且始终在所有端口和 VLAN 上泛洪。要查看学习到的多播数据库条目，请使用 `print` 命令。
+当启用 [IGMP/MLD snooping](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 时，网桥将开始监听IGMP/MLD通信，创建组播数据库（MDB） )条目并根据收到的信息做出转发决定。具有链路本地组播目标地址 224.0.0.0/24 和 ff02::1 的数据包不受限制，并且始终在所有端口和 VLAN 上泛洪。要查看学习到的多播数据库条目，请使用 `print` 命令。
 
 **子菜单:** `/interface bridge mdb`
 
@@ -516,14 +515,21 @@ ___
 
 以下是支持硬件卸载 (+) 或禁用硬件卸载 (-) 的设备和功能列表：
 
-<table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col><col><col></colgroup><tbody><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">RouterBoard/[Switch Chip] Model</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Features in Switch menu</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bridge STP/RSTP</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bridge MSTP</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bridge IGMP Snooping</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bridge DHCP Snooping</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bridge VLAN Filtering</strong></td><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%"><strong title="">Bonding <sup>4, 5</sup></strong></td><td class="highlight-grey confluenceTd" data-highlight-colour="grey" title="Background color : "><strong title="">Horizon <sup>4</sup></strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">CRS3xx, CRS5xx series</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7">CCR2116, CCR2216</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">CRS1xx/CRS2xx series</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong title="">+<sup><span>&nbsp;</span><small>2</small></sup></strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong title="">+<span>&nbsp;</span><sup><small>1</small></sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">[QCA8337]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong title="">+<span>&nbsp;</span><sup><small>2</small></sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">[Atheros8327]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong title="">+<span>&nbsp;</span><sup><small>2</small></sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">[Atheros8316]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td>
-<td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong title="">+<span>&nbsp;</span><sup><small>2</small></sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7">[Atheros8227]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">[Atheros7240]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7">[IPQ-PPE]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7" title="Background colour : Light grey 100%">[ICPlus175D]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong title="">+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7">[MT7621]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr><tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7">[RTL8367]</td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;"><strong title="">+ <sup>3</sup></strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;"><strong title="">-</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr>
-<tr><td class="highlight-#f4f5f7 confluenceTd" data-highlight-colour="#f4f5f7"><p>[88E6393X, <span style="color: rgb(23,43,77);">88E6191X</span>]</p></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#fffae6 confluenceTd" data-highlight-colour="#fffae6" style="text-align: center;" title="Background color : Light yellow 35%"><strong><strong title="">+ <sup>3</sup></strong></strong></td><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" style="text-align: center;" title="Background color : Light green 35%"><strong>+</strong></td><td class="highlight-#ffebe6 confluenceTd" data-highlight-colour="#ffebe6" style="text-align: center;" title="Background color : Light red 35%"><strong title="">-</strong></td></tr></tbody></table>
+| RouterBoard/[Switch Chip] Model | Features in Switch menu | Bridge STP/RSTP | Bridge MSTP    | Bridge IGMP Snooping | Bridge DHCP Snooping | Bridge VLAN Filtering | Bonding <sup>4，5</sup> | Horizon <sup>4</sup> |
+| ------------------------------- | ----------------------- | --------------- | -------------- | -------------------- | -------------------- | --------------------- | ----------------------- | -------------------- |
+| CRS3xx, CRS5xx series           | +                       | +               | +              | +                    | +                    | +                     | +                       | -                    |
+| CCR2116, CCR2216                | +                       | +               | +              | +                    | +                    | +                     | +                       | -                    |
+| CRS1xx/CRS2xx series            | +                       | +               | -              | + <sup>2</sup>       | +  <sup>1</sup>      | -                     | -                       | -                    |
+| [QCA8337]                       | +                       | +               | -              | -                    | +  <sup>2</sup>      | -                     | -                       | -                    |
+| [Atheros8327]                   | +                       | +               | -              | -                    | +  <sup>2</sup>      | -                     | -                       | -                    |
+| [Atheros8316]                   | +                       | +               | -              | -                    | +  <sup>2</sup>      | -                     | -                       | -                    |
+| [Atheros8227]                   | +                       | +               | -              | -                    | -                    | -                     | -                       | -                    |
+| [Atheros7240]                   | +                       | +               | -              | -                    | -                    | -                     | -                       | -                    |
+| [IPQ-PPE]                       | +                       | -               | -              | -                    | -                    | -                     | -                       | -                    |
+| [ICPlus175D]                    | +                       | -               | -              | -                    | -                    | -                     | -                       | -                    |
+| [MT7621, MT7531]                | +                       | + <sup>3</sup>  | + <sup>3</sup> | -                    | -                    | + <sup>3</sup>        | -                       | -                    |
+| [RTL8367]                       | +                       | + <sup>3</sup>  | + <sup>3</sup> | -                    | -                    | + <sup>3</sup>        | -                       | -                    |
+| [88E6393X, 88E6191X ]           | +                       | +               | +              | +                    | +                    | + <sup>3</sup>        | +                       | -                    |
 
 脚注：
 
@@ -536,7 +542,7 @@ ___
 
 5. 只有 802.3ad 和 balance-xor 模式可以进行 HW 卸载。其他绑定模式不支持HW卸载。
   
-从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 切换为你的设备配置。 Bridge Hardware Offloading 应视为端口切换，但具有更多可能的功能。通过启用硬件卸载，你允许内置交换芯片使用其交换逻辑处理数据包。下图说明切换发生在任何与软件相关的操作之前。
+从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 切换为你的设备配置。 Bridge Hardware Offloading 应视为端口切换，但具有更多可能的功能。通过启用硬件卸载，你允许内置交换芯片使用其交换逻辑处理数据包。下图说明切换发生在任何与软件相关的操作之前。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/image2022-2-14_14-57-37.png?version=1&modificationDate=1644843359301&api=v2)
 
@@ -588,13 +594,13 @@ ___
 
 自 RouterOS v6.41 起的网桥 VLAN 过滤在网桥内提供 VLAN 感知的第 2 层转发和 VLAN 标记修改。 这组功能使桥接操作更像传统的以太网交换机，并且与桥接 VLAN 接口时的配置相比，可以克服生成树兼容性问题。 强烈建议桥接 VLAN 过滤配置符合 STP (IEEE 802.1D)、RSTP (IEEE 802.1W) 标准，并且必须在 RouterOS 中启用 MSTP (IEEE 802.1s) 支持。
 
-主要的 VLAN 设置是“vlan-filtering”，它全局控制网桥中的 VLAN 感知和 VLAN 标记处理。 如果配置了`vlan-filtering=no`，网桥会忽略VLAN标签，工作在共享VLAN学习（SVL）模式，不能修改数据包的VLAN标签。 打开 vlan-filtering 会启用所有桥接 VLAN 相关功能和独立 VLAN 学习 (IVL) 模式。 除了加入用于二层转发的端口外，网桥本身也是一个接口，因此它具有端口 VLAN ID（pvid）。
+主要的 VLAN 设置是“vlan-filtering”，它全局控制网桥中的 VLAN 感知和 VLAN 标记处理。 如果配置了 `vlan-filtering=no` ，网桥会忽略VLAN标签，工作在共享VLAN学习（SVL）模式，不能修改数据包的VLAN标签。 打开 vlan-filtering 会启用所有桥接 VLAN 相关功能和独立 VLAN 学习 (IVL) 模式。 除了加入用于二层转发的端口外，网桥本身也是一个接口，因此它具有端口 VLAN ID（pvid）。
 
-> 目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据[基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
+> 目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
 
 ## 网桥VLAN表
 
-网桥 VLAN 表表示具有出口 VLAN 标记操作的每个 VLAN 端口映射。 ‘tagged’ 端口发送带有相应 VLAN ID 标签的帧。 `untagged` 端口在发送帧之前移除 VLAN 标签。 将“frame-types”设置为“admit-all”或“admit-only-untagged-and-priority-tagged”的桥接端口将自动添加为“pvid”VLAN 的未标记端口。
+网桥 VLAN 表表示具有出口 VLAN 标记操作的每个 VLAN 端口映射。 `tagged` 端口发送带有相应 VLAN ID 标签的帧。 `untagged` 端口在发送帧之前移除 VLAN 标签。 将“frame-types”设置为“admit-all”或“admit-only-untagged-and-priority-tagged”的桥接端口将自动添加为“pvid” VLAN 的未标记端口。
 
 **子菜单:** `/interface bridge vlan`
 
@@ -612,7 +618,7 @@ ___
 
 > 当允许访问 CPU 时，你允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护你的设备，使用防火墙过滤规则仅允许访问某些服务。
 
-> 桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解[桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table)的工作原理。
+> 桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解 [桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table) 的工作原理。
 
 ## 桥接端口设置
 
@@ -644,7 +650,7 @@ Flags: X - disabled, I - invalid, D - dynamic, L - local, E - external
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/access_ports.png?version=2&modificationDate=1626780195564&api=v2)
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对设备的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对设备的访问权限。 如果你需要对网桥进行管理访问，请参阅 [管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration) 部分。
 
 ```shell
 /interface bridge
@@ -652,7 +658,7 @@ add name=bridge1 vlan-filtering=no
 
 ```
 
-添加桥接端口并为访问端口指定`pvid`，以将其未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受标记或未标记的数据包。
+添加桥接端口并为访问端口指定 `pvid` ，以将其未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受标记或未标记的数据包。
 
 ```shell
 
@@ -686,7 +692,7 @@ add bridge=bridge1 tagged=ether2 vlan-ids=400
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/hybrid_ports.png?version=2&modificationDate=1626780214236&api=v2)
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅 [管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration) 部分。
 
 ```shell
 /interface bridge
@@ -694,7 +700,7 @@ add name=bridge1 vlan-filtering=no
 
 ```
 
-添加桥接端口并在混合 VLAN 端口上指定`pvid`，以将未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受 ether2 上的标记数据包。
+添加桥接端口并在混合 VLAN 端口上指定 `pvid` ，以将未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受 ether2 上的标记数据包。
 
 ```shell
 /interface bridge port
@@ -719,17 +725,17 @@ add bridge=bridge1 tagged=ether2,ether6,ether7 vlan-ids=400
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-可选步骤是在网桥接口上设置`frame-types=admit-only-vlan-tagged`以禁用默认的未标记 VLAN 1 (`pvid=1`)。
+可选步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged` 以禁用默认的未标记 VLAN 1 (`pvid=1`)。
 
 `/interface bridge set bridge1 frame-types=admit-only-vlan-tagged`
 
-你不必将访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，你可以仅将中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 你必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 你可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的`pvid`，或者将`frame-type` 设置为`accept-only-vlan-tagged` 来规避此行为。
+你不必将访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，你可以仅将中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 你必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 你可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的 `pvid` ，或者将`frame-type` 设置为 `accept-only-vlan-tagged` 来规避此行为。
 
 ## VLAN 示例 - 通过网桥进行 VLAN 间路由
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/vlan_routing.png?version=2&modificationDate=1626780264836&api=v2) 
 
-创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅[管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration)部分。
+创建一个禁用 `vlan-filtering` 的网桥，以避免在完全配置 VLAN 之前失去对路由器的访问权限。 如果你需要对网桥进行管理访问，请参阅 [管理访问配置](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-Managementaccessconfiguration) 部分。
 
 ```shell
 /interface bridge
@@ -737,7 +743,7 @@ add name=bridge1 vlan-filtering=no
 
 ```
 
-添加桥接端口并为 VLAN 访问端口指定`pvid`，以将其未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受未标记的数据包。
+添加桥接端口并为 VLAN 访问端口指定 `pvid` ，以将其未标记的流量分配给预期的 VLAN。 使用 `frame-types` 设置只接受未标记的数据包。
 
 ```shell
 /interface bridge port
@@ -777,7 +783,7 @@ add address=40.0.0.1/24 interface=VLAN400
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-可选步骤是在网桥接口上设置`frame-types=admit-only-vlan-tagged`以禁用默认的未标记 VLAN 1 (`pvid=1`)。
+可选步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged` 以禁用默认的未标记 VLAN 1 (`pvid=1`)。
 
 `/interface bridge set bridge1 frame-types=admit-only-vlan-tagged`
 
@@ -827,7 +833,7 @@ add address=192.168.99.1/24 interface=MGMT
 
 ```
 
-例如，如果你希望允许使用标记的 VLAN 99 流量从端口**ether3**、**ether4、****sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
+例如，如果你希望允许使用标记的 VLAN 99 流量从端口 **ether3**、**ether4**、**sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
 
 ```shell
 /interface bridge vlan
@@ -868,7 +874,7 @@ add bridge=bridge1 tagged=bridge1 untagged=ether2,ether3 vlan-ids=99
 
 ### 为网桥接口更改无标记的 VLAN
 
-如果使用 VLAN 过滤，则可以使用`pvid`设置更改桥接接口的未标记 VLAN ID。 请注意，创建可路由 VLAN 接口并允许在网桥上标记流量是一种更灵活且通常推荐的选项。
+如果使用 VLAN 过滤，则可以使用 `pvid` 设置更改桥接接口的未标记 VLAN ID。 请注意，创建可路由 VLAN 接口并允许在网桥上标记流量是一种更灵活且通常推荐的选项。
 
 首先，在网桥接口上创建一个 IP 地址。
 
@@ -878,7 +884,7 @@ add address=192.168.99.1/24 interface=bridge1
 
 ```
 
-例如，无标记的 **bridge1** 流量应该能够与 VLAN 99 中无标记的 **ether2** 和 **ether3** 端口以及标记的 **sfp-sfpplus1** 端口通信。为了实现这一点，* *bridge1**、**ether2**、**ether3** 应配置相同的 `pvid` 并添加 sfp-sfpplus1 作为标记成员。
+例如，无标记的 **bridge1** 流量应该能够与 VLAN 99 中无标记的 **ether2** 和 **ether3** 端口以及标记的 **sfp-sfpplus1** 端口通信。为了实现这一点，**bridge1**、**ether2**、**ether3** 应配置相同的 `pvid` 并添加 sfp-sfpplus1 作为标记成员。
 
 ```shell
 /interface bridge
@@ -899,11 +905,11 @@ add bridge=bridge1 tagged=sfp-sfpplus1 untagged=bridge1,ether2,ether3 vlan-ids=9
 
 ## VLAN隧道（QinQ）
 
-由于 RouterOS v6.43，RouterOS 网桥符合 IEEE 802.1ad，并且可以根据服务 VLAN ID (0x88A8) 而不是客户 VLAN ID (0x8100) 来过滤 VLAN ID。 可以应用与 IEEE 802.1Q VLAN 过滤相同的原理（可以使用相同的设置示例）。 下面是一个常见的**提供商网桥**的拓扑结构：
+由于 RouterOS v6.43，RouterOS 网桥符合 IEEE 802.1ad，并且可以根据服务 VLAN ID (0x88A8) 而不是客户 VLAN ID (0x8100) 来过滤 VLAN ID。 可以应用与 IEEE 802.1Q VLAN 过滤相同的原理（可以使用相同的设置示例）。 下面是一个常见的 **提供商网桥** 的拓扑结构：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Provider_bridge.png?version=3&modificationDate=1615376897236&api=v2)
 
-在此示例中，**R1**、**R2**、**R3、**和**R4** 可能通过 802.1Q (CVID) 发送任何 VLAN 标记的流量，但**SW1** 和* *SW2** 需要隔离路由器之间的流量，使得 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4** 通信。 为此，你可以使用 SVID 标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先在网桥上启用 `802.1ad` VLAN 协议，在 **SW1** 和 **SW2** 上使用这些命令：
+在此示例中，**R1**、**R2**、**R3** 和 **R4** 可能通过 802.1Q (CVID) 发送任何 VLAN 标记的流量，但**SW1** 和 **SW2** 需要隔离路由器之间的流量，使得 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4** 通信。 为此，你可以使用 SVID 标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先在网桥上启用 `802.1ad` VLAN 协议，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 
@@ -930,15 +936,15 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，在**SW1** 和**SW2 上使用这些命令：**
+配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，在 **SW1** 和 **SW2** 上使用这些命令：
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
 > 通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你应该确保设置管理端口。 使用不同 EtherType 的区别在于你必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
 
-> 配置`ether-type=0x8100`时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType`0x8100`。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
+> 配置 `ether-type=0x8100` 时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType `0x8100` 。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
 
-> 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在`ether-type`设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
+> 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在 `ether-type` 设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
 
 > 具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
 
@@ -948,7 +954,7 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Tag_stacking.png?version=3&modificationDate=1615376914770&api=v2)
 
-在此示例中，**R1**、**R2**、**R3、**和**R4**可能发送任何标记了 VLAN 的流量，它可以是 802.1ad、802.1Q 或任何其他类型的流量， 但是 **SW1** 和 **SW2** 需要以一种方式隔离路由器之间的流量，即 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4**。 为此，你可以使用新的 CVID 标签标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先选择合适的 EtherType，在 **SW1** 和 **SW2** 上使用这些命令：
+在此示例中，**R1**、**R2**、**R3** 和 **R4** 可能发送任何标记了 VLAN 的流量，它可以是 802.1ad、802.1Q 或任何其他类型的流量， 但是 **SW1** 和 **SW2** 需要以一种方式隔离路由器之间的流量，即 **R1** 只能与 **R3** 通信，而 **R2** 只能与 **R4** 。 为此，你可以使用新的 CVID 标签标记所有入口流量，并仅允许特定端口上的这些 VLAN。 首先选择合适的 EtherType，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -956,7 +962,7 @@ add name=bridge1 vlan-filtering=no ether-type=0x8100
 
 ```
 
-在此设置中，**ether1** 和**ether2** 将忽略任何存在的 VLAN 标记并添加新的 VLAN 标记，使用 `pvid` 参数标记每个端口上的所有入口流量并允许 `tag-stacking `在这些端口上，在 **SW1** 和 **SW2** 上使用这些命令：
+在此设置中，**ether1** 和 **ether2** 将忽略任何存在的 VLAN 标记并添加新的 VLAN 标记，使用 `pvid` 参数标记每个端口上的所有入口流量并允许 `tag-stacking` 在这些端口上，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge port
@@ -966,7 +972,7 @@ add interface=ether3 bridge=bridge1
 
 ```
 
-在桥接 VLAN 表中指定标记和未标记端口，你只需指定外部标记的 VLAN ID，在**SW1** 和**SW2** 上使用这些命令：
+在桥接 VLAN 表中指定标记和未标记端口，你只需指定外部标记的 VLAN ID，在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge vlan
@@ -975,21 +981,21 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在**SW1** 和**SW2** 上使用这些命令：
+配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在 **SW1** 和 **SW2** 上使用这些命令：
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
 通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你要确保设置了一个管理端口。
 
-# 快速转发
+## 快速转发
 
 ___
 
 快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 你可以在下面找到要激活快进必须满足的条件列表：
 
-- Bridge 已将`fast-forward`设置为`yes`
+- Bridge 已将 `fast-forward` 设置为 `yes`
 - Bridge 只有 2 个运行端口
-- 两个桥接端口都支持 [Fast Path](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS#heading-FastPath)，Fast Path 在端口上和桥接器上都处于活动状态
+- 两个桥接端口都支持 [Fast Path](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS#heading-FastPath) ，Fast Path 在端口上和桥接器上都处于活动状态
 - 禁用桥接硬件卸载
 - 桥接 VLAN 过滤已禁用
 - 网桥 DHCP 侦听已禁用
@@ -997,7 +1003,7 @@ ___
 - `unknown-unicast-flood` 设置为 `yes`
 - `broadcast-flood` 设置为 `yes`
 - 网桥的 MAC 地址与来自其中一个网桥从端口的 MAC 地址相匹配
-- 两个端口的`horizon`都设置为`none`
+- 两个端口的 `horizon` 都设置为 `none`
 
 > 快速转发禁用 MAC 学习，这是为了实现更快的数据包转发而设计的。 MAC 学习可防止流量泛洪多个接口，但当数据包只能通过一个接口发送时，则不需要 MAC 学习。
 
@@ -1039,13 +1045,13 @@ ___
 
 禁用或启用快进将暂时禁用所有桥接端口以使设置生效。 每当在生产环境中更改此属性时都必须考虑到这一点，因为它可能导致所有数据包暂时丢弃。
 
-# IGMP/MLD 侦听
+## IGMP/MLD 侦听
 
 ___
 
 从 RouterOS 版本 6.41 开始，网桥支持 IGMP/MLD 侦听。 它控制多播流并防止不必要端口上的多播泛滥。 它的设置位于桥接菜单中，并且在每个桥接界面中独立工作。 软件驱动的实现适用于所有带有 RouterOS 的设备，但 CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片也支持 IGMP/MLD 侦听和硬件卸载。 请参阅 [IGMP/MLD 侦听手册](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 的更多详细信息。
 
-# DHCP 侦听和 DHCP 选项 82
+## DHCP 侦听和 DHCP 选项 82
 
 ___
 
@@ -1090,19 +1096,19 @@ set [find where name="bridge"] dhcp-snooping=yes add-dhcp-option82=yes
 
 对于 CRS3xx、CRS5xx 系列交换机和 CCR2116、CR2216 路由器，当创建硬件卸载绑定接口时，DHCP 监听将不起作用。
 
-# 控制器网桥和端口扩展器
+## 控制器网桥和端口扩展器
 
 ___
 
 控制器网桥 (CB) 和端口扩展器 (PE) 是 RouterOS 中用于 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器的 IEEE 802.1BR 标准实施。 它允许使用 PE 设备虚拟扩展 CB 端口，并从单个控制设备管理这些扩展接口。 这样的配置提供了简化的网络拓扑结构、灵活性、增加的端口密度和易管理性。 请参阅 [Controller Bridge and Port Extender 手册](https://help.mikrotik.com/docs/display/ROS/Controller+Bridge+and+Port+Extender) 了解更多详情。
 
-# 网桥防火墙
+## 网桥防火墙
 
 ___
 
 网桥防火墙实现数据包过滤，从而提供用于管理进出网桥和通过网桥的数据流的安全功能。
 
-[数据包流程图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 显示了数据包是如何通过路由器处理的。 可以强制网桥流量通过`/ip firewall filter`规则（参见网桥设置）。
+[数据包流程图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 显示了数据包是如何通过路由器处理的。 可以强制网桥流量通过 `/ip firewall filter` 规则（参见网桥设置）。
 
 有两个网桥防火墙表：
 
@@ -1142,7 +1148,7 @@ ___
 | **in-interface-list** (_name_; Default: )                                                                                                                                                                                                                                                                                                                                                                          | Set of interfaces defined in interface list. Works the same as `in-interface`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **ingress-priority** (_integer 0..63_; Default: )                                                                                                                                                                                                                                                                                                                                                                  | 匹配入口数据包的优先级。 优先级可能来自 VLAN、WMM、DSCP 或 MPLS EXP 位。 [更多](https://help.mikrotik.com/docs/display/ROS/WMM+and+VLAN+priority)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **ip-protocol** (_dccp \| ddp \| egp \| encap \| etherip \| ggp \| gre \| hmp \| icmp \| icmpv6 \| idpr-cmtp \| igmp \| ipencap \| ipip \| ipsec-ah \| ipsec-esp \| ipv6 \| ipv6-frag \| ipv6-nonxt \| ipv6-opts \| ipv6-route \| iso-tp4 \| l2tp \| ospf \| pim \| pup \| rdp \| rspf \| rsvp \| sctp \| st \| tcp \| udp \| udp-lite \| vmtp \| vrrp \| xns-idp \| xtp_; Default: )                              | IP 协议（当 MAC 协议设置为 IPv4 时）<br>- dccp \- 数据报拥塞控制协议<br>- ddp \- 数据报传送协议<br>- egp \- 外部网关协议<br>- encap \- 封装头<br>- etherip \- IP 内以太网封装<br>- ggp \- 网关到网关协议<br>- gre \- 通用路由封装<br>- hmp \- 主机监控协议<br>- icmp \- IPv4 互联网控制消息协议<br>- icmpv6 \- IPv6 互联网控制消息协议<br>- idpr-cmtp \- 域间策略路由控制消息传输协议<br>- igmp \- 互联网组管理协议<br>- ipencap \- IP 中的 IP（封装）<br>- ipip \- IP 封装协议<br>- ipsec-ah \- IPsec 身份验证标头<br>- ipsec-esp \- IPsec 封装安全负载<br>- ipv6 \- 互联网协议版本 6<br>- ipv6-frag \- IPv6 的片段标头<br>- ipv6-nonxt \- IPv6 没有下一个标头<br>- ipv6-opts \- IPv6 的目标选项<br>- ipv6-route \- IPv6 的路由标头<br>- iso-tp4 \- ISO 传输协议 4 类<br>- l2tp \- 第二层隧道协议<br>- ospf \- 开放最短路径优先<br>- pim \- 协议独立组播<br>- pup\- PARC 通用数据包<br>- rdp \- 可靠数据协议<br>- rspf \- 无线电最短路径优先<br>- rsvp \- 保留协议<br>- sctp \- 流控制传输协议<br>- st \- 互联网流协议<br>- tcp \- 传输控制协议<br>- udp \- 用户数据报协议<br>- udp-lite \- 轻量级用户数据报协议<br>- vmtp \- 通用消息处理协议<br>- vrrp \- 虚拟路由器冗余协议<br>- xns-idp \- Xerox 网络系统互联网数据报协议<br>- xtp \- Xpress 传输协议 |
-| **jump-target** (_name_; Default: )                                                                                                                                                                                                                                                                                                                                                                                | 如果指定了`action=jump`，则采用用户定义的防火墙链来处理数据包。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **jump-target** (_name_; Default: )                                                                                                                                                                                                                                                                                                                                                                                | 如果指定了`action=jump` ，则采用用户定义的防火墙链来处理数据包。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **limit** (_integer/time,integer_; Default: )                                                                                                                                                                                                                                                                                                                                                                      | 将数据包匹配率限制为给定的限制。<br>- count \- 最大平均数据包速率，以每秒数据包数 (pps) 为单位，除非后跟时间选项<br>- time \- 指定测量数据包速率的时间间隔<br>- burst \ - 突发中匹配的数据包数                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **log-prefix** (_text_; Default: )                                                                                                                                                                                                                                                                                                                                                                                 | Defines the prefix to be printed before the logging information.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **mac-protocol** (_802.2 \| arp \| homeplug-av \| ip \| ipv6 \| ipx \| length \| lldp \| loop-protect \| mpls-multicast \| mpls-unicast \| packing-compr \| packing-simple \| pppoe \| pppoe-discovery \| rarp \| service-vlan \| vlan \| integer 0..65535 \| hex 0x0000-0xffff_; Default: )                                                                                                                       | 以太网负载类型（MAC 级协议）。 要匹配 VLAN 封装帧的协议类型（0x8100 或 0x88a8），应使用 vlan-encap 属性。<br>- 802.2 \- 802.2 帧 (0x0004)<br>- arp \- 地址解析协议 (0x0806)<br>- homeplug-av\- HomePlug AV MME (0x88E1)<br>- ip \- 互联网协议版本 4 (0x0800)<br>- ipv6 \- 互联网协议版本 6 (0x86DD)<br>- ipx \- 互联网数据包交换 (0x8137)<br>- length \- 具有长度字段的数据包 (0x0000-0x05DC)<br>- lldp \- 链路层发现协议 (0x88CC)<br>- loop-protect\- 环路保护协议 (0x9003)<br>- mpls-multicast\- MPLS 多播 (0x8848)<br>- mpls-unicast\- MPLS 单播 (0x8847)<br>- packing-compr \- 压缩包 [IP packing](https://wiki.mikrotik.com/wiki/Manual:IP/Packing "Manual:IP/Packing") (0x9001)<br>- packing-simple \- 使用简单 [IP packing](https://wiki.mikrotik.com/wiki/Manual:IP/Packing "Manual:IP/Packing")封装的数据包 (0x9000)<br>- pppoe \- PPPoE 会话阶段 (0x8864)<br>- pppoe-discovery \- PPPoE 发现阶段 (0x8863)<br>- rarp \- 反向地址解析协议 (0x8035)<br>- service-vlan \- 提供商桥接 (IEEE 802.1ad) 和最短路径桥接 IEEE 802.1aq (0x88A8)<br>- vlan \- VLAN 标记帧 (IEEE 802.1Q) 和具有 NNI 兼容性的最短路径桥接 IEEE 802.1aq (0x8100)                                                                                                                |
@@ -1206,7 +1212,7 @@ ___
 | **to-dst-mac-address** (_MAC address_; Default: )                                                                                                                        | 选择`action=dst-nat`时要放入以太网帧中的目标 MAC 地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **to-src-mac-address** (_MAC address_; Default: )                                                                                                                        | 选择`action=src-nat`时要放入以太网帧的源 MAC 地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
-# 参见
+## 参考文档
 
 ___
 

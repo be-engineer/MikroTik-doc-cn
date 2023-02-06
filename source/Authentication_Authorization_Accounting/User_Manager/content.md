@@ -201,6 +201,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 | **shared-secret** (_string_; Default: )                                       | 用于保护 RADIUS 服务器和 RADIUS 客户端之间的通信。 |
 
 **命令**
+
 | 属性                  | 说明                                   |
 | --------------------- | -------------------------------------- |
 | **reset-counters** () | 清除特定 RADIUS 客户端的所有统计信息。 |
@@ -294,7 +295,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 **子菜单:** `/user-manager user group`
 
-用户组定义了多个用户的共同特征，例如允许的身份验证方法和 RADIUS 属性。 用户管理器中已经存在两个组，称为 _default_ 和 _default-anonymous_。
+用户组定义了多个用户的共同特征，例如允许的身份验证方法和 RADIUS 属性。 用户管理器中已经存在两个组，称为 _default_ 和 _default-anonymous_ 。
 
 **属性**
 
@@ -334,7 +335,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 ## WEB接口
 
-每个用户都可以使用 WEB 界面访问他的个人资料。 WEB界面可以通过在路由器的IP或域中添加“/um/”目录来访问，例如[http://example.com/um/](http://router.ip/um/)。 请注意，WEB 界面受 IP 服务“www”和“www-ssl”的影响。 可以使用 CSS、JavaScript 和 HTML 自定义 WEB 界面。
+每个用户都可以使用 WEB 界面访问他的个人资料。 WEB界面可以通过在路由器的IP或域中添加“/um/”目录来访问，例如 [http://example.com/um/](http://router.ip/um/) 。 请注意，WEB 界面受 IP 服务“www”和“www-ssl”的影响。 可以使用 CSS、JavaScript 和 HTML 自定义 WEB 界面。
 
 **可定制的文件参考**
 
@@ -415,7 +416,7 @@ inner-auths=peap-mschap2,ttls-chap,ttls-mschap1,ttls-mschap2,ttls-pap attributes
 
 OTP 取决于时钟，因此请确保正确配置时间设置。
 
-TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用户管理器）上共享一个秘密。 要在 RouterOS 上配置 TOTP，只需为用户设置 _otp-secret_。 例如：
+TOTP 的工作原理是在请求者（客户端）和身份验证服务器（用户管理器）上共享一个秘密。 要在 RouterOS 上配置 TOTP，只需为用户设置 _otp-secret_ 。 例如：
 
 ```shell
 /user-manager user
@@ -453,7 +454,7 @@ generate-voucher voucher-template=printable_vouchers.html [find where name=usern
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/image.png?version=1&modificationDate=1663149747172&api=v2)
 
-要通过WEB浏览器访问/um/目录的PRIVATE路径，必须配置_private-username_和_private-password_。 请参阅**设置**部分。
+要通过WEB浏览器访问/um/目录的PRIVATE路径，必须配置 _private-username_ 和 _private-password_ 。 请参阅**设置**部分。
 
 生成凭证时可以使用不同的变量。 目前支持的变量有：
 
@@ -464,7 +465,7 @@ generate-voucher voucher-template=printable_vouchers.html [find where name=usern
 
 #### 多用户凭证导出
 
-通过使用 _export.xml_ 或 _export.csv_ 作为 _voucher-template_，可以一次生成包含多个或所有用户凭据的 CSV 或 XML 文件。
+通过使用 _export.xml_ 或 _export.csv_ 作为 _voucher-template_ ，可以一次生成包含多个或所有用户凭据的 CSV 或 XML 文件。
 
 ```shell
 /user-manager user
@@ -514,7 +515,7 @@ _![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?ver
 
 ### 购买配置文件
 
-通过使用 WEB 浏览器访问路由器的 _/um/_ 目录登录到用户的私人配置文件后，例如 [http://example.com/um/,](http://example.com/um/,) 他 将能够在各自的菜单中看到所有可用的**配置文件**。 已指定 _price_ 值的配置文件将具有可用的_购买此配置文件_按钮。
+通过使用 WEB 浏览器访问路由器的 _/um/_ 目录登录到用户的私人配置文件后，例如 [http://example.com/um/,](http://example.com/um/,) 他 将能够在各自的菜单中看到所有可用的 **配置文件** 。 已指定 _price_ 值的配置文件将具有可用的_购买此配置文件_按钮。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/buy_profile.PNG?version=1&modificationDate=1657107133572&api=v2)
 
@@ -522,7 +523,9 @@ _![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?ver
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/paypal_purchase.PNG?version=1&modificationDate=1657107263155&api=v2)
 
-付款完成后，用户经理会要求 PayPal 批准交易。 批准后，配置文件将分配给用户使用。！[](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
+付款完成后，用户经理会要求 PayPal 批准交易。 批准后，配置文件将分配给用户使用。
+
+！[](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
 
 ### 从RouterOS v6 迁移
 

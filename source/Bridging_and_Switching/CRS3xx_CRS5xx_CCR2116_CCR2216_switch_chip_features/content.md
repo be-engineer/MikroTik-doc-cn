@@ -12,7 +12,7 @@ CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Forwarding**             | - 用于交换或路由的可配置端口<br>- 完全无阻塞线速交换<br>- 用于第 2 层单播转发的大型单播 FDB<br>- 基于 IVL转发数据库工作<br>- 支持巨型帧<br>- 支持IGMP 侦听<br>- 使用选项 82 的 DHCP 侦听                                                            |
 | **Routing**                | 第 3 层硬件卸载：<br> - IPv4 单播路由<br> - 支持以太网、桥接、绑定和 VLAN 接口<br> - ECMP<br> - Blackholes<br> - 卸载的 Fasttrack 连接（仅适用于某些交换机型号）<br> - 用于 Fasttrack 连接的卸载 NAT（仅适用于某些交换机型号）<br> - 多MTU 配置文件 |
-| **Spanning Tree Protocol** | -   STP<br>-   RSTP<br>-   MSTP                                                                                                                                                                                                                     |
+| **Spanning Tree Protocol** | - STP<br>- RSTP<br>- MSTP                                                                                                                                                                                                                           |
 | **Mirroring**              | 各种类型的镜像：<br>- 基于端口的镜像<br>- 基于 VLAN 的镜像<br>- 基于 MAC 的镜像                                                                                                                                                                     |
 | **VLAN**                   | 完全兼容IEEE802.1Q和IEEE802.1ad VLAN<br>4k 活动 VLAN<br>灵活的 VLAN 分配：<br>- 基于端口的VLAN<br>- 基于协议的VLAN<br>- 基于 MAC 的 VLAN<br>VLAN过滤<br>从任何到任何 VLAN 的转换                                                                    |
 | **Bonding**                | - 支持 802.3ad (LACP) 和 balance-xor 模式<br>- 每个绑定接口最多 8 个成员端口<br>- 硬件自动故障转移和负载均衡<br>- MLAG                                                                                                                              |
@@ -24,10 +24,25 @@ CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成
 
 下表说明了 Cloud Router Switch 型号和 CCR 路由器之间的主要区别。
 
-<table class="wrapped confluenceTable" style="text-align: center;" resolved=""><colgroup><col><col><col><col><col><col><col><col><col><col><col><col></colgroup><tbody><tr><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title=""><u>Model</u></strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Switch Chip</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">CPU</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Cores</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">10G SFP+</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">10G Ethernet</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">25G SFP28</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">40G QSFP+</strong></td><td class="highlight-grey confluenceTd" title="Background color : " data-highlight-colour="grey"><strong title="">100G QSFP28</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">ACL rules</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Unicast FDB entries</strong></td><td class="highlight-grey confluenceTd" title="Background colour : undefined" data-highlight-colour="grey"><strong title="">Jumbo Frame (Bytes)</strong></td></tr><tr><td class="confluenceTd">netPower 15FR (CRS318-1Fi-15Fr-2S)</td><td class="confluenceTd"><strong>Marvell-98DX224S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td>
-<td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">netPower 16P (CRS318-16P-2S+)</td><td class="confluenceTd"><strong>Marvell-98DX226S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS310-1G-5S-4S+ (netFiber 9/IN)</td><td class="confluenceTd"><strong>Marvell-98DX226S</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS326-24G-2S+ (RM/IN)</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS328-24P-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS328-4C-20S-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS305-1G-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3236</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>128</strong></td><td class="confluenceTd"><strong>16,000</strong></td>
-<td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS309-1G-8S+</td><td class="confluenceTd"><strong>Marvell-98DX8208</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>8</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS317-1G-16S+</td><td class="confluenceTd"><strong>Marvell-98DX8216</strong></td><td class="confluenceTd"><strong>800MHz</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS312-4C+8XG</td><td class="confluenceTd"><strong>Marvell-98DX8212</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4 (combo ports)</strong></td><td class="confluenceTd"><strong>8 + 4 (combo ports)</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>512</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS326-24S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX8332</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>24</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>256</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS354-48G-4S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX3257</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>170</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS354-48P-4S+2Q+</td><td class="confluenceTd"><strong>Marvell-98DX3257</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>170</strong></td><td class="confluenceTd"><strong>32,000</strong></td>
-<td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS504-4XQ-IN</td><td class="confluenceTd"><strong>Marvell-98DX4310</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CRS518-16XS-2XQ</td><td class="confluenceTd"><strong>Marvell-98DX8525</strong></td><td class="confluenceTd"><strong>650MHz</strong></td><td class="confluenceTd"><strong>1</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>10218</strong></td></tr><tr><td class="confluenceTd">CCR2116-12G-4S+</td><td class="confluenceTd"><strong>Marvell-98DX3255</strong></td><td class="confluenceTd"><strong>2000MHz</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>4</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>512</strong></td><td class="confluenceTd"><strong>32,000</strong></td><td class="confluenceTd"><strong>9570</strong></td></tr><tr><td class="confluenceTd">CCR2216-1G-12XS-2XQ</td><td class="confluenceTd"><strong>Marvell-98DX8525</strong></td><td class="confluenceTd"><strong>2000MHz</strong></td><td class="confluenceTd"><strong>16</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>12</strong></td><td class="confluenceTd"><strong>-</strong></td><td class="confluenceTd"><strong>2</strong></td><td class="confluenceTd"><strong>1024</strong></td><td class="confluenceTd"><strong>128,000</strong></td><td class="confluenceTd"><strong>9570</strong></td></tr></tbody></table>
+| Model                              | Switch Chip      | CPU     | Cores | 10G SFP+        | 10G Ethernet        | 25G SFP28 | 40G QSFP+ | 100G QSFP28 | ACL rules | Unicast FDB entries | Jumbo Frame (Bytes) |
+| ---------------------------------- | ---------------- | ------- | ----- | --------------- | ------------------- | --------- | --------- | ----------- | --------- | ------------------- | ------------------- |
+| netPower 15FR (CRS318-1Fi-15Fr-2S) | Marvell-98DX224S | 800MHz  | 1     | -               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| netPower 16P (CRS318-16P-2S+)      | Marvell-98DX226S | 800MHz  | 1     | 2               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS310-1G-5S-4S+ (netFiber 9/IN)   | Marvell-98DX226S | 800MHz  | 1     | 4               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS326-24G-2S+ (RM/IN)             | Marvell-98DX3236 | 800MHz  | 1     | 2               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS328-24P-4S+                     | Marvell-98DX3236 | 800MHz  | 1     | 4               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS328-4C-20S-4S+                  | Marvell-98DX3236 | 800MHz  | 1     | 4               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS305-1G-4S+                      | Marvell-98DX3236 | 800MHz  | 1     | 4               | -                   | -         | -         | -           | 128       | 16,000              | 10218               |
+| CRS309-1G-8S+                      | Marvell-98DX8208 | 800MHz  | 2     | 8               | -                   | -         | -         | -           | 1024      | 32,000              | 10218               |
+| CRS317-1G-16S+                     | Marvell-98DX8216 | 800MHz  | 2     | 16              | -                   | -         | -         | -           | 1024      | 128,000             | 10218               |
+| CRS312-4C+8XG                      | Marvell-98DX8212 | 650MHz  | 1     | 4 (combo ports) | 8 + 4 (combo ports) | -         | -         | -           | 512       | 32,000              | 10218               |
+| CRS326-24S+2Q+                     | Marvell-98DX8332 | 650MHz  | 1     | 24              | -                   | -         | 2         | -           | 256       | 32,000              | 10218               |
+| CRS354-48G-4S+2Q+                  | Marvell-98DX3257 | 650MHz  | 1     | 4               | -                   | -         | 2         | -           | 170       | 32,000              | 10218               |
+| CRS354-48P-4S+2Q+                  | Marvell-98DX3257 | 650MHz  | 1     | 4               | -                   | -         | 2         | -           | 170       | 32,000              | 10218               |
+| CRS504-4XQ-IN                      | Marvell-98DX4310 | 650MHz  | 1     | -               | -                   | -         | -         | 4           | 1024      | 128,000             | 10218               |
+| CRS518-16XS-2XQ                    | Marvell-98DX8525 | 650MHz  | 1     | -               | -                   | 16        | -         | 2           | 1024      | 128,000             | 10218               |
+| CCR2116-12G-4S+                    | Marvell-98DX3255 | 2000MHz | 16    | 4               | -                   | -         | -         | -           | 512       | 32,000              | 9570                |
+| CCR2216-1G-12XS-2XQ                | Marvell-98DX8525 | 2000MHz | 16    | -               | -                   | 12        | -         | 2           | 1024      | 128,000             | 9570                |
 
 L3硬件卸载功能和硬件限制，请参考 [功能支持](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWFeatureSupport) 和 [设备支持](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading#L3HardwareOffloading-L3HWDeviceSupport) 用户手册。
 
@@ -156,7 +171,6 @@ add mac-protocol=0x80F3 new-vlan-id=400 ports=ether8 switch=switch1
 
 创建一个新网桥并通过硬件卸载向其添加端口：
 
-
 ```shell
 /interface bridge
 add name=bridge1 vlan-filtering=no
@@ -168,7 +182,6 @@ add interface=ether2 bridge=bridge1 hw=yes
 
 添加 ACL 规则以便在每个方向上转换 VLAN ID：
 
-
 ```shell
 /interface ethernet switch rule
 add new-dst-ports=ether2 new-vlan-id=20 ports=ether1 switch=switch1 vlan-id=10
@@ -178,7 +191,6 @@ add new-dst-ports=ether1 new-vlan-id=10 ports=ether2 switch=switch1 vlan-id=20
 
 将两个 VLAN ID 添加到网桥 VLAN 表中：
 
-
 ```shell
 /interface bridge vlan
 add bridge=bridge1 tagged=ether1 vlan-ids=10
@@ -187,7 +199,6 @@ add bridge=bridge1 tagged=ether2 vlan-ids=20
 ```
 
 允许网桥进行VLAN过滤:
-
 
 ```shell
 /interface bridge set bridge1 vlan-filtering=yes
@@ -361,7 +372,7 @@ add mirror=yes ports=ether1 switch=switch1 dst-address=192.168.88.0/24
 
 ```
 
-还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 找出所有可以用来匹配数据包的参数。
+还有其他选项，请查看 [ACL部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 找出所有可以用来匹配数据包的参数。
 
 ## 流量整形
 
@@ -407,9 +418,9 @@ add ports=ether1 switch=switch1 mac-protocol=ipx rate=10M
 
 ```
 
-还有其他选项，请查看 [ACL 部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL))找出所有用来匹配数据包的参数。
+还有其他选项，请查看 [ACL部分](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-SwitchRules(ACL)) 找出所有用来匹配数据包的参数。
 
-开关规则表用于 QoS 功能，请参阅[此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models)查看每个设备支持多少规则。
+开关规则表用于 QoS 功能，请参阅 [此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 查看每个设备支持多少规则。
 
 ## 流量风暴控制
 
@@ -492,43 +503,41 @@ ___
 
 动作参数:
 
--   copy-to-cpu
--   redirect-to-cpu
--   mirror
--   new-dst-ports (可丢弃的数据包)
--   new-vlan-id
--   new-vlan-priority
--   rate
+- copy-to-cpu
+- redirect-to-cpu
+- mirror
+- new-dst-ports (可丢弃的数据包)
+- new-vlan-id
+- new-vlan-priority
+- rate
 
 Layer2条件参数:
 
--   dst-mac-address
--   mac-protocol
--   src-mac-address
--   vlan-id
--   vlan-header
--   vlan-priority
+- dst-mac-address
+- mac-protocol
+- src-mac-address
+- vlan-id
+- vlan-header
+- vlan-priority
 
 Layer3条件参数:
 
--   dscp
--   protocol
--   IPv4 conditions:
-    -   dst-address
-    -   src-address
--   IPv6 conditions:
-    -   dst-address6
-    -   flow-label
-    -   src-address6
-    -   traffic-class
+- dscp
+- protocol
+- IPv4 conditions:
+  - dst-address
+  - src-address
+- IPv6 conditions:
+  - dst-address6
+  - flow-label
+  - src-address6
+  - traffic-class
 
 Layer4条件参数:
 
--   dst-port
--   src-port
-
+- dst-port
+- src-port
   
-
 > 要使 VLAN 相关匹配器或 VLAN 相关操作参数起作用，你需要在网桥接口上启用 `vlan-filtering` 并确保在这些端口上启用硬件卸载，否则，这些参数将不起作用。
 
 > 当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。

@@ -384,7 +384,7 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
-外部认证 [Edit section](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13 "Edit section:External authentication")
+外部认证 [Edit section](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13)
 
 另一个例子是让 HotSpot 在远程服务器上进行身份验证（例如，可以执行信用卡收费）：
 
