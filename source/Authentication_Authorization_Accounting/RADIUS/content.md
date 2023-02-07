@@ -8,9 +8,9 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 ## RADIUS 客户端
 
- **子菜单:** `/radius`
+ **Sub-menu:** `/radius`
 
-此子菜单允许添加/删除 RADIUS 客户端。
+此Submenu允许添加/删除 RADIUS 客户端。
 
 > 此列表中添加项目的顺序很重要。
 
@@ -90,7 +90,7 @@ last-request-rtt: 0s
 
 ## 从RADIUS连接终端
 
-**子菜单:** `/radius incoming`
+**Sub-menu:** `/radius incoming`
 
 此工具支持从 RADIUS 服务器发送的未经请求的消息。 未经请求的消息扩展了 RADIUS 协议命令，允许终止已经从 RADIUS 服务器连接的会话。 为此，使用了 DM（断开连接消息）。 断开连接消息会导致用户会话立即终止。
 

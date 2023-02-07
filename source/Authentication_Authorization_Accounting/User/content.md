@@ -134,7 +134,7 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
  | **key-owner** (_string_) |
 
 
-当使用“/user ssh-keys private”从此子菜单导入 ssh 密钥时，导入命令将要求你提供三个参数：
+当使用“/user ssh-keys private”从此Submenu导入 ssh 密钥时，导入命令将要求你提供三个参数：
 
 - **private-key-file** - 包含私钥的路由器根目录中的文件名。
 - **public-key-file** - 包含公钥的路由器根目录中的文件名。

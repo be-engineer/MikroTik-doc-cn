@@ -121,7 +121,7 @@ ___
 
 本节介绍控制网桥的设置和监控选项。
 
-**子菜单:** `/interface bridge port-controller`
+**Sub-menu:** `/interface bridge port-controller`
 
 | 属性                                                | 说明                                                                                                          |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -145,7 +145,7 @@ Flags: I - inactive
 
 ```
 
-**子菜单:** `/interface bridge port-controller device`
+**Sub-menu:** `/interface bridge port-controller device`
 
 | 属性                                           | 说明                           |
 | ---------------------------------------------- | ------------------------------ |
@@ -184,7 +184,7 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
 
 ```
 
-**子菜单:** `/interface bridge port-controller port`
+**Sub-menu:** `/interface bridge port-controller port`
 
 | 属性                                                                                           | 说明                   |
 | ---------------------------------------------------------------------------------------------- | ---------------------- |
@@ -226,7 +226,7 @@ ___
 
 本节介绍端口扩展器的设置。
 
-**子菜单:** `/interface bridge port-extender`
+**Sub-menu:** `/interface bridge port-extender`
 
 | 属性                                                 | 说明                                                                                                         |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |

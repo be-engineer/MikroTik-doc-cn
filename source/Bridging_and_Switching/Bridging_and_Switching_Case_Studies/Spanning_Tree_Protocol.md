@@ -265,7 +265,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 ### MST实例
 
-**子菜单:** `/interface bridge msti`.
+**Sub-menu:** `/interface bridge msti`.
 
 本节用于将多个 VLAN ID 分成一个实例，以便在 MSTP 区域内为每个 VLAN 组创建不同的根桥。
 
@@ -278,7 +278,7 @@ MSTP的选举过程可以分为两个部分，即区域内和区域间。为了�
 
 ### MST 覆盖
 
-**子菜单：** `/interface bridge port mst-override`。
+**Sub-menu：** `/interface bridge port mst-override`。
 
 本节用于为MSTP区域内的每个VLAN映射选择所需路径。
 

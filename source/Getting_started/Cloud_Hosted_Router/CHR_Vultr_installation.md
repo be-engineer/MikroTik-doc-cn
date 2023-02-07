@@ -1,4 +1,4 @@
-## CHR Vultr 安装
+# CHR Vultr 安装
 
 Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/datacenter-locations/)，你可以选择部署 MikroTik CHR 以获得最佳[速率和延迟](https:// nj-us-ping.vultr.com/）。
 按照以下步骤在 Vultr 上安装 MikroTik CHR。

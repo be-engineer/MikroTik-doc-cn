@@ -228,7 +228,7 @@ ether1 ether5
     - _brief_ \- 强制打印命令使用表格输出形式
     - _detail_ \- 强制打印命令使用 property=value 输出形式
     - _count-only_ \- 显示项目数
-    - _file_ \- 将特定子菜单的内容打印到路由器上的文件中。
+    - _file_ \- 将特定Submenu的内容打印到路由器上的文件中。
     - _interval_ \- 每隔 interval 秒更新 _print_ 命令的输出。
     - _oid_ \- 打印可从 SNMP 访问的属性的 OID 值
     - _without-paging_ \- 在每屏之后不停止地打印输出。

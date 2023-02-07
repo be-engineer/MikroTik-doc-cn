@@ -1,6 +1,6 @@
 # 概述
 
-**子菜单:** `/ppp`
+**Sub-menu:** `/ppp`
 
 MikroTik RouterOS 提供可扩展的身份验证、授权和记帐 (AAA) 功能。
 
@@ -10,9 +10,9 @@ MikroTik RouterOS 提供可扩展的身份验证、授权和记帐 (AAA) 功能�
 
 ## 用户配置文件
 
-**子菜单：** `/ppp profile`
+**Sub-menu：** `/ppp profile`
 
-PPP 配置文件用于定义存储在“/ppp secret”子菜单下的用户访问记录的默认值。 `/ppp secret` 用户数据库中的设置会覆盖相应的 `/ppp profile` 设置，但当指定为本地地址或远程地址参数时，单个 IP 地址始终优先于 IP 池。
+PPP 配置文件用于定义存储在“/ppp secret”Submenu下的用户访问记录的默认值。 `/ppp secret` 用户数据库中的设置会覆盖相应的 `/ppp profile` 设置，但当指定为本地地址或远程地址参数时，单个 IP 地址始终优先于 IP 池。
 
 **属性**
 
@@ -68,7 +68,7 @@ _incoming-filter_ 和 _outgoing-filter_ 参数将动态跳转规则添加到链 
 
 ## 用户数据库
 
-**子菜单：** `/ppp secret`
+**Sub-menu：** `/ppp secret`
 
 PPP 用户数据库存储 PPP 用户访问记录以及分配给每个用户的 PPP 用户配置文件。
 
@@ -92,9 +92,9 @@ PPP 用户数据库存储 PPP 用户访问记录以及分配给每个用户的 P
 
 ## 活跃用户
 
-**子菜单：** `/ppp active`
+**Sub-menu：** `/ppp active`
 
-此子菜单允许监视活动（已连接）用户。
+此Submenu允许监视活动（已连接）用户。
 
 `/ppp active print` 命令将显示所有当前连接的用户。
 
@@ -118,9 +118,9 @@ PPP 用户数据库存储 PPP 用户访问记录以及分配给每个用户的 P
 
 ## 远程 AAA
 
-**子菜单：** `/ppp aaa`
+**Sub-menu：** `/ppp aaa`
 
-此子菜单中的设置允许设置 RADIUS 计费和身份验证。 请注意，只有在本地用户数据库中找不到所需的用户名时，才会查询 RADIUS 用户数据库。
+此Submenu中的设置允许设置 RADIUS 计费和身份验证。 请注意，只有在本地用户数据库中找不到所需的用户名时，才会查询 RADIUS 用户数据库。
 
 **属性**
 

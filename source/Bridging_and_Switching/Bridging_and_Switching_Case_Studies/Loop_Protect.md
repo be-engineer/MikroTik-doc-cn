@@ -7,7 +7,7 @@
 
 !!!tip 尽管环路保护可以在添加到网桥的接口上工作，但仍然建议使用(R/M)STP而不是环路保护，因为(R/M)STP与大多数交换机兼容，STP变体提供更多的配置选项来微调你的网络。
   
-**子菜单:** `/interface ethernet /interface vlan /interface eoip /interface eoipv6 /interface vxlan`
+**Sub-menu:** `/interface ethernet /interface vlan /interface eoip /interface eoipv6 /interface vxlan`
 
 | 属性                                                                                                                                                                        | 说明                                                          |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |

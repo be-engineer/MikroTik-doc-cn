@@ -522,7 +522,7 @@ $(endif)
 
 ### 概述
 
-除了 /ip hotspot子菜单中明显的动态条目（如主机和活动用户）之外，在激活 HotSpot 服务时，还会在防火墙表中添加一些额外的规则。
+除了 /ip hotspotSubmenu中明显的动态条目（如主机和活动用户）之外，在激活 HotSpot 服务时，还会在防火墙表中添加一些额外的规则。
 
 ### NAT
 
@@ -586,7 +586,7 @@ $(endif)
 
 ```
 
-在 **hs-unauth** 链中，首先将影响 TCP 协议的所有内容放入 `/ip hotspot walled-garden ip` 子菜单中（即，未设置协议或设置为 TCP 的所有内容）。 在这里，我们将 [www.mikrotik.com](http://www.mikrotik.com/) 排除在重定向到登录页面之外。
+在 **hs-unauth** 链中，首先将影响 TCP 协议的所有内容放入 `/ip hotspot walled-garden ip` Submenu中（即，未设置协议或设置为 TCP 的所有内容）。 在这里，我们将 [www.mikrotik.com](http://www.mikrotik.com/) 排除在重定向到登录页面之外。
 
 ```
  9 D chain=hs-unauth action=redirect to-ports=64874 dst-port=80 protocol=tcp
