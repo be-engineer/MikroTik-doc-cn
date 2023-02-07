@@ -4,13 +4,13 @@ ___
 
 Cloud Router Switch功能的基本使用案例和配置实例。
 
-本文适用于CRS1xx和CRS2xx系列交换机，不适用于CRS3xx系列交换机。对于CRS3xx系列设备，请阅读[CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)手册。
+本文适用于CRS1xx和CRS2xx系列交换机，不适用于CRS3xx系列交换机。对于CRS3xx系列设备，请阅读 [CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features) 手册。
 
 ## 端口交换
 
 ___
 
-为了在CRS1xx/2xx系列交换机上设置端口交换，请查看[网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading)页面。
+为了在CRS1xx/2xx系列交换机上设置端口交换，请查看 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 页面。
 
 可以通过使用启用了硬件卸载的多个网桥来创建多个孤立的交换机组，这只在CRS1xx/2xx系列交换机上可以实现。对于更复杂的设置（例如，VLAN过滤），你应该使用端口隔离功能来代替。
 
@@ -45,7 +45,7 @@ add address=192.168.88.1/24 interface=bridge1
 
 如果未启用无效VLAN过滤，则允许从任何端口使用有标记或无标记（**VLAN 0**）流量对设备进行管理访问，但这不是一个好的做法，可能导致安全问题，并在某些情况下导致设备的CPU过载（最常见的是广播类型的流量）。
 
-如果你打算使用无效的VLAN过滤（你应该这样做），那么你要访问的交换机端口必须添加到VLAN表中，以获得未标记的（**VLAN 0**）流量，例如，如果你想从**ether2**访问交换机。
+如果你打算使用无效的VLAN过滤（你应该这样做），那么你要访问的交换机端口必须添加到VLAN表中，以获得未标记的（**VLAN 0**）流量，例如，如果你想从 **ether2** 访问交换机。
 
 ```shell
 /interface ethernet switch vlan
@@ -55,7 +55,7 @@ add vlan-id=0 ports=ether2,switch1-cpu
 
 ## 标签
 
-只允许被标记的流量通过特定的端口对设备进行管理访问是一个更好的做法。例如，如果只允许**VLAN99**通过**ether2**访问设备，你应该首先在VLAN表中添加一个项，允许选定的端口和CPU端口（**switch1-cpu**）转发选定的VLAN ID，由此启用管理访问。
+只允许被标记的流量通过特定的端口对设备进行管理访问是一个更好的做法。例如，如果只允许 **VLAN99** 通过 **ether2** 访问设备，你应该首先在VLAN表中添加一个项，允许选定的端口和CPU端口（**switch1-cpu**）转发选定的VLAN ID，由此启用管理访问。
 
 ```shell
 /interface ethernet switch vlan
@@ -130,7 +130,7 @@ add ports=ether8 customer-vid=0 new-customer-vid=400
 
 ```
 
-当在`/interface ethernet switch ingress-vlan-translation`下创建项目时，交换芯片将在指定端口的入站帧上添加一个VLAN标签。要在同一端口上为出站帧移除VLAN标签，应该在指定有标签的端口上为同一VLAN ID创建`/interface ethernet switch egress-vlan-tag`项。如果一个特定的VLAN只在接入端口之间转发，`/interface ethernet switch egress-vlan-tag`项仍应该在没有任何标记的端口下创建。另一个选择是在`/interface ethernet switch egress-vlan-translation`菜单下创建额外的项，以设置未标记的（VLAN0）流量。
+当在 `/interface ethernet switch ingress-vlan-translation` 下创建项目时，交换芯片将在指定端口的入站帧上添加一个VLAN标签。要在同一端口上为出站帧移除VLAN标签，应该在指定有标签的端口上为同一VLAN ID创建 `/interface ethernet switch egress-vlan-tag` 项。如果一个特定的VLAN只在接入端口之间转发，`/interface ethernet switch egress-vlan-tag` 项仍应该在没有任何标记的端口下创建。另一个选择是在 `/interface ethernet switch egress-vlan-translation` 菜单下创建额外的项，以设置未标记的（VLAN0）流量。
 
 你还必须指定哪些VLAN应该被发送到带VLAN标签的主干端口。使用tagged-ports属性来设置一个聚合端口。
 
@@ -160,7 +160,7 @@ set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether2,ether6,ether7
 
 ```
 
-可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为交换机和路由器。可以在 [CRS-Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router") 指南中找到一个配置实例。
+可以同时使用内置的交换芯片和CPU来创建一个交换机-路由器设置，即一个设备同时作为交换机和路由器。可以在 [CRS-Router](https://wiki.mikrotik.com/wiki/Manual:CRS_Router "Manual:CRS Router") 指南中找到配置实例。
 
 ### 示例 2 (聚合和混合端口)
 
@@ -360,7 +360,7 @@ add name=VLAN400 interface=bridge1 vlan-id=400
 
 ```
 
-请确保 VLAN 接口是在网桥接口之上而不是在任何物理接口之上创建的。如果 VLAN 接口是在从属接口上创建的， 那么数据包可能无法被正确接收， 路由可能会失败。更详细的信息可以在 [VLAN interface on a slave interface] (https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANinterfaceonaslaveinterface) 手册页上找到。
+请确保 VLAN 接口是在网桥接口之上而不是在任何物理接口之上创建的。如果 VLAN 接口是在从属接口上创建的， 那么数据包可能无法被正确接收， 路由可能会失败。更详细的信息可以在 [VLAN interface on a slave interface](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-VLANinterfaceonaslaveinterface) 手册页上找到。
 
 在创建的VLAN接口上添加IP地址。这个例子中，三个192.168.x.1地址被添加到VLAN200、VLAN300和VLAN400接口。
 
@@ -410,7 +410,7 @@ set forward-unknown-vlan=no
 
 ![](https://help.mikrotik.com/docs/download/attachments/103841836/Qinq.jpg?version=1&modificationDate=1653991582909&api=v2)
 
-**CRS-1**。服务提供商网络边缘的第一台交换机必须正确识别端口上来自客户VLAN id的流量，并用入口VLAN转换规则分配新的服务VLAN id。服务提供商VLAN标签的VLAN聚合端口配置在同一个_egress-vlan-tag_表中。和基于端口的基本VLAN配置的主要区别是，CRS交换机芯片必须设置为根据服务（_outer_）VLAN id而不是客户（_inner_）VLAN id进行转发。
+**CRS-1**。服务提供商网络边缘的第一台交换机必须正确识别端口上来自客户VLAN id的流量，并用入口VLAN转换规则分配新的服务VLAN id。服务提供商VLAN标签的VLAN聚合端口配置在同一个 _egress-vlan-tag_ 表中。和基于端口的基本VLAN配置的主要区别是，CRS交换机芯片必须设置为根据服务（_outer_）VLAN id而不是客户（_inner_）VLAN id进行转发。
 
 ```shell
 /interface bridge
@@ -477,9 +477,9 @@ set bridge-type=service-vid-used-as-lookup-vid
 
 ## CVID堆叠
 
-可以使用CRS1xx/CRS2xx系列交换机进行CVID堆叠设置。CRS1xx/CRS2xx系列交换机能够根据有两个CVID标签（双CVID标签）的标记数据包的外部标签进行VLAN过滤，这些交换机还能够在现有的CVID标签之上添加另一个CVID标签（CVID堆叠）。例如，在一个设置中，**ether1**正在接收带有CVID 10的标签数据包，但要求**ether2**用另一个标签CVID 20（VLAN10 in VLAN20）发送这些数据包，同时过滤掉任何其他VLAN，配置如下。
+可以使用CRS1xx/CRS2xx系列交换机进行CVID堆叠设置。CRS1xx/CRS2xx系列交换机能够根据有两个CVID标签（双CVID标签）的标记数据包的外部标签进行VLAN过滤，这些交换机还能够在现有的CVID标签之上添加另一个CVID标签（CVID堆叠）。例如，在一个设置中，**ether1** 正在接收带有CVID 10的标签数据包，但要求 **ether2** 用另一个标签CVID 20（VLAN10 in VLAN20）发送这些数据包，同时过滤掉任何其他VLAN，配置如下。
 
-将**ether1**和**ether2**交换到一起。
+将 **ether1** 和 **ether2** 交换到一起。
 
 ```shell
 /interface bridge
@@ -498,7 +498,7 @@ set bridge-type=service-vid-used-as-lookup-vid
 
 ```
 
-为在**ether1**上有CVID 10标签的数据包添加一个服务标签SVID 20。
+为在 **ether1** 上有CVID 10标签的数据包添加一个服务标签SVID 20。
 
 ```shell
 /interface ethernet switch ingress-vlan-translation
@@ -506,7 +506,7 @@ add customer-vid=10 new-service-vid=20 ports=ether1
 
 ```
 
-指定**ether2**作为SVID 20的标记/聚合端口。
+指定 **ether2** 作为SVID 20的标记/聚合端口。
 
 ```shell
 /interface ethernet switch egress-vlan-tag
@@ -514,7 +514,7 @@ add tagged-ports=ether2 vlan-id=20
 
 ```
 
-允许**ether1**和**ether2**转发SVID 20。
+允许 **ether1** 和 **ether2** 转发SVID 20。
 
 ```shell
 /interface ethernet switch vlan
@@ -522,7 +522,7 @@ add ports=ether1,ether2 vlan-id=20
 
 ```
 
-在**ether2**上将SVID EtherType（0x88a8）覆盖为CVID EtherType（0x8100）。
+在 **ether2** 上将SVID EtherType（0x88a8）覆盖为CVID EtherType（0x8100）。
 
 ```shell
 /interface ethernet switch port
@@ -805,7 +805,8 @@ ___
 
 在严格的优先级调度模式下，最高优先级的队列首先被服务。队列号代表优先级，队列号最高的队列具有最高优先级。流量从最高优先级的队列传输，直到该队列为空，然后转移到下一个最高优先级的队列，以此类推。如果出站端口没有出现拥堵，数据包一收到就被传送。如果在高优先级流量不断到来的端口发生拥堵，低优先级队列就会饿死。
 
-在所有的CRS交换机上，基于MAC的出站流量调度是根据内部优先级进行的，其方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue]。 
+在所有的CRS交换机上，基于MAC的出站流量调度是根据内部优先级进行的，其方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue]。
+
 在这个例子中，主机1（E7:16:34:00:00:01）和主机2（E7:16:34:00:00:02）将拥有较高的优先级1，其余的主机将拥有较低的优先级0，用于在 ether7端口传输流量。请注意，CRS每个端口最多有8个队列。
 
 ```shell
@@ -846,6 +847,7 @@ set ether7 per-queue-scheduling="strict-priority:0,strict-priority:0,strict-prio
 ### 基于MAC的流量整形使用内部优先级
 
 基于MAC的流量整形是根据内部优先级来完成的，方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue] -> [Shaper]。 
+
 在这个例子中，无限流量的优先级是0，有限流量的优先级是1，带宽限制是10Mbit。请注意，CRS每个端口最多有8个队列。
 
 创建一个交换端口组。
@@ -907,9 +909,8 @@ add mac-dst-address=E7:16:34:A1:CD:18 policer=policer1
 
 最好的做法是为被整形器限制的流量分配较低的内部QoS优先级，使其在严格的优先级调度器中也不那么重要。(更高的优先级应该是更重要的和无限的）。
 
-在这个例子中。 
-交换机端口ether6正在使用一个整形器来限制来自ether7和ether8的流量。 
-当链接达到其容量时，具有最高优先级的流量将被首先发送出去。 
+在这个例子中。交换机端口ether6正在使用一个整形器来限制来自ether7和ether8的流量。当链接达到其容量时，具有最高优先级的流量将被首先发送出去。
+
 VLAN10 -> QoS group0 = lowest priority  
 VLAN20 -> QoS group1 = normal priority  
 VLAN30 -> QoS group2 = highest priority
@@ -964,9 +965,9 @@ add port=ether6 rate=10M
 
 ### 基于PCP的流量调度
 
-默认情况下，CRS1xx/CRS2xx系列设备将忽略PCP/CoS/802.1p值，并基于FIFO（先进先出）方式转发数据包。当设备的内部队列未满时，则以先进先出的方式发送数据包，一旦队列满了，则更高优先级的流量就可以先发送出去。考虑一个场景，当**ether1**和**ether2**向**ether3**转发数据，而且**ether3**拥堵时，那么数据包就要被安排好，我们可以配置交换机来保留最低优先级的数据包，直到所有高优先级的数据包被发送出去，这是VoIP类型设置中非常常见的场景，有些流量需要优先处理。
+默认情况下，CRS1xx/CRS2xx系列设备将忽略PCP/CoS/802.1p值，并基于FIFO（先进先出）方式转发数据包。当设备的内部队列未满时，则以先进先出的方式发送数据包，一旦队列满了，则更高优先级的流量就可以先发送出去。考虑一个场景，当 **ether1** 和 **ether2** 向 **ether3** 转发数据，而且 **ether3** 拥堵时，那么数据包就要被安排好，我们可以配置交换机来保留最低优先级的数据包，直到所有高优先级的数据包被发送出去，这是VoIP类型设置中非常常见的场景，有些流量需要优先处理。
 
-为了实现这样的行为，将**ether1**、**ether2、**和**ether3**端口交换到一起。
+为了实现这样的行为，将 **ether1、ether2、** 和 **ether3** 端口交换到一起。
 
 ```shell
 /interface bridge
@@ -978,7 +979,7 @@ add bridge=bridge1 interface=ether3 hw=yes
 
 ```
 
-为每个端口上的每个内部队列启用**严格策略**。
+为每个端口上的每个内部队列启用 **严格策略**。
 
 ```shell
 /interface ethernet switch port
@@ -1032,7 +1033,7 @@ add port=ether5 meter-unit=bit rate=10M
 
 ```
 
-##  流量风暴控制
+## 流量风暴控制
 
 ___
 
@@ -1054,7 +1055,7 @@ add port=ether5 rate=5k meter-unit=packet packet-types=broadcast,arp-or-nd,unreg
 
 ```
 
-## 参考
+## 参考文档
 
 ___
 

@@ -10,7 +10,7 @@
 
 你也可以通过无线链路传输VLAN，把多个VLAN接口放在一个无线接口上。请注意，由于VLAN不是一个完整的隧道协议（即它没有额外的字段来传输发送方和接收方的MAC地址），在VLAN上桥接和在普通无线接口上桥接的限制相同。换句话说，虽然无线客户端可以参与放在无线接口上的VLAN，但不可能让VLAN放在与任何其他接口桥接的站点模式的无线接口上。
 
-# 802.1Q
+## 802.1Q
 
 虚拟局域网（VLAN）最常用的协议是IEEE 802.1Q。它是一个标准化的封装协议，定义了如何在以太网头中插入一个四字节的VLAN标识。
 
@@ -20,7 +20,7 @@
 
 IEEE 802.1Q标准保留了有特殊用途的VLAN ID，以下VLAN ID不应该用于通用VLAN设置。0, 1, 4095
 
-# Q-in-Q
+## Q-in-Q
 
 原始的802.1Q只允许一个VLAN头，Q-in-Q允许两个或更多的VLAN头。在RouterOS中，Q-in-Q可以通过在另一个VLAN接口上添加一个VLAN接口来进行配置。例子。
 
@@ -33,12 +33,12 @@ add name=vlan2 vlan-id=12 interface=vlan1
   
 如果任何数据包通过'vlan2'接口发送，两个VLAN标签将被添加到以太网头中 - '11'和'12'。
 
-# 属性
+## 属性
 
 | 属性                                                                                                | 说明                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **arp** (_disabled \| enabled \| local-proxy-arp \| proxy-arp \| reply-only_; Default: **enabled**) | 地址解析协议设置<br>- `disabled`- 接口将不使用ARP<br>-  `enabled` - 该接口将使用ARP<br>- `local-proxy-arp`- 路由器在接口上执行代理ARP，并向同一接口发送回复。<br>- `proxy-arp`- 路由器在该接口上执行代理ARP，并向其他接口发送回复。<br>- `reply-only `- 接口将只回复来自匹配的IP地址/MAC地址组合的请求，这些组合在IP/ARP表中被输入为静态项。动态项不会自动存储在IP/ARP表中。因此，要使通信成功，必须已经存在一个有效的静态项。 |
-| **arp-timeout** (_auto \| integer_; Default: **auto**)                                              | 在没有收到IP的数据包时，ARP记录在ARP表中保留多长时间。值`auto`等于IP/Settings中`arp-timeout`的值，默认为30s。                                                                                                                                                                                                                                                                                                                  |
+| **arp-timeout** (_auto \| integer_; Default: **auto**)                                              | 在没有收到IP的数据包时，ARP记录在ARP表中保留多长时间。值 `auto` 等于IP/Settings中 `arp-timeout` 的值，默认为30s。                                                                                                                                                                                                                                                                                                              |
 | **disabled** (_yes \| no_; Default: **no**)                                                         | 改变网桥是否被禁用。                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **interface** (_name_; Default: )                                                                   | 接口名称，VLAN将在该接口上工作。                                                                                                                                                                                                                                                                                                                                                                                               |
 | **mtu** (_integer_; Default: **1500**)                                                              | 第三层 最大传输单位                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -48,17 +48,17 @@ add name=vlan2 vlan-id=12 interface=vlan1
 
 MTU应该设置为1500字节，与以太网接口一样。但是，这可能不适合某些以太网卡，它们不支持接收/发送添加了VLAN头的全尺寸以太网数据包（1500字节数据+4字节VLAN头+14字节以太网头）。在这种情况下，可以使用MTU 1496，但要注意，如果要在接口上发送较大的数据包，这将导致数据包碎片化。同时要记住，如果源和目的地之间的路径MTU发现工作不正常，MTU 1496可能会引起问题。
 
-#设置实例
+## 设置实例
 
-##第二层VLAN实例
+### 第二层VLAN实例
 
-可以使用多种可能的配置，但每种配置类型都是为一组特殊的设备设计的，因为有些配置方法会让你获得内置交换芯片的好处，获得更大的吞吐量。请查看[Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南，看看每种类型的设备应该使用哪种配置，以获得最大可能的吞吐量和兼容性，该指南显示了如何设置一个非常基本的VLAN中继/接入端口配置。
+可以使用多种可能的配置，但每种配置类型都是为一组特殊的设备设计的，因为有些配置方法会让你获得内置交换芯片的好处，获得更大的吞吐量。请查看 [Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching)指南，看看每种类型的设备应该使用哪种配置，以获得最大可能的吞吐量和兼容性，该指南显示了如何设置一个非常基本的VLAN中继/接入端口配置。
 
-还有一些其他的方法来设置VLAN标记或VLAN交换，但推荐的方法是使用[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。确保你没有使用任何[已知的第二层错误配置](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration)。
+还有一些其他的方法来设置VLAN标记或VLAN交换，但推荐的方法是使用 [Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering)。确保你没有使用任何 [已知的第二层错误配置](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration)。
 
-## 第三层VLAN实例
+### 第三层VLAN实例
 
-###简单的VLAN路由
+#### 简单的VLAN路由
 
 假设我们有几个MikroTik路由器连接到一个集线器。集线器是一个OSI物理层的设备（如果在路由器之间有一个集线器，那么从L3的角度来看，它与路由器之间的以太网电缆连接是一样的）。为简化起见，假设所有的路由器都使用ether1接口与集线器连接，并分配了IP地址，如下图所示。然后在每个路由器上创建VLAN接口。
 
@@ -158,7 +158,7 @@ round-trip min/avg/max = 1/3.5/6 ms
 
 ```
 
-### VLAN间的路由
+#### VLAN间的路由
 
 如果在交换机上实现了独立的VLAN，那么就需要一个路由器来提供VLAN之间的通信。交换机工作在OSI第二层，所以它只使用以太网头进行转发，不检查IP头。由于这个原因，我们必须使用作为每个VLAN的网关的路由器。没有路由器，主机就无法在自己的VLAN之外进行通信。上述VLAN之间的路由过程被称为VLAN间通信。
 
@@ -192,7 +192,7 @@ add address=10.10.40.1/24 interface=VLAN4
 
 ```
 
-### RouterOS /32和IP非数字地址
+#### RouterOS /32和IP非数字地址
 
 在RouterOS中，要用地址创建一个点对点的隧道，必须使用带有网络掩码'/32'的地址，这实际上带来了与一些供应商的无编号IP地址一样的功能。
 

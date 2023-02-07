@@ -10,13 +10,13 @@ Mikrotik AP和客户端根据分配给它们的优先级对数据包进行分类
 
 数据包的 "较好 "接入类别不一定意味着它将在所有其他 "较差 "接入类别的数据包之前被发送。WMM的工作原理是通过对每个接入类别（EDCF）进行不同的设置来执行DCF方法，这基本上意味着 "更好 "的接入类别有更高的概率获得介质--启用WMM的站可以被认为是4个站，每个接入类别一个，具有 "更好 "接入类别的站使用的设置使它们更有可能在所有争夺介质时获得发送机会（使用更短的回退超时）。细节可以在802.11e和WMM规范中学习。
 
-WMM支持可以通过`wmm-support`设置来启用。它只适用于B和G频段，其他频段将启用它而不管这个设置。 
+WMM支持可以通过 `wmm-support` 设置来启用。它只适用于B和G频段，其他频段将启用它而不管这个设置。
 
 ## VLAN优先权如何工作
 
 ___
 
-VLAN优先级是VLAN标记头中的一个3位字段，称为优先级代码点（PCP），数值在0到7之间。它用于在网桥和交换机上实现QoS。MikroTik设备默认发送的VLAN数据包（本地生成或封装）的优先级为0。 RouterOS网桥转发VLAN标记的数据包时不作任何改变，这意味着收到的具有一定VLAN优先级的VLAN标记数据包将以相同的VLAN优先级离开网桥。唯一的例外是当网桥取消了数据包的标记，在这种情况下，由于VLAN头的缺失，VLAN优先级不会被保留。 
+VLAN优先级是VLAN标记头中的一个3位字段，称为优先级代码点（PCP），数值在0到7之间。它用于在网桥和交换机上实现QoS。MikroTik设备默认发送的VLAN数据包（本地生成或封装）的优先级为0。 RouterOS网桥转发VLAN标记的数据包时不作任何改变，这意味着收到的具有一定VLAN优先级的VLAN标记数据包将以相同的VLAN优先级离开网桥。唯一的例外是当网桥取消了数据包的标记，在这种情况下，由于VLAN头的缺失，VLAN优先级不会被保留。
 
 更多细节可以在 IEEE 802.1p 规范中研究。
 
@@ -26,7 +26,7 @@ ___
 
 数据包的优先级可以通过IP防火墙的mangle规则或网桥过滤器/nat规则的`action=set-priority'来设置。优先级可以设置为一个特定的值，也可以使用 "from-ingress "设置从入口处的优先级中获取。入站优先级是在传入数据包上检测到的优先级值，如果有的话。目前，有两个来源的入站优先级--VLAN头中的优先级和通过无线接口收到的WMM数据包的优先级。对于所有其他的数据包，入站优先级是0。
 
-注意，入站优先级值不会自动复制到IP mangle `priority`值，需要设置正确的规则才能做到。
+注意，入站优先级值不会自动复制到IP mangle `priority` 值，需要设置正确的规则才能做到。
 
 基本上有2种控制优先级的方法--用具有特定匹配器（协议、地址等）的规则分配优先级，或者从入口优先级设置。这两种方法都需要设置正确的规则。
 
@@ -46,7 +46,7 @@ add action=set-priority chain=output new-priority=2 protocol=icmp
 
 ### 自定义优先级映射
 
-有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。我们可以在IP mangle或网桥防火墙/nat规则中使用`ingress-priority`匹配器，只过滤需要的优先级，并使用`new-priority`动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
+有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。我们可以在IP mangle或网桥防火墙/nat规则中使用 `ingress-priority` 匹配器，只过滤需要的优先级，并使用 `new-priority` 动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
 
 ```shell
 /interface bridge filter
@@ -91,7 +91,7 @@ add action=set-priority chain=forward new-priority=from-ingress out-interface=et
 
 ```
 
-同样的原则也适用于另一个方向。RouterOS不会自动将VLAN优先级转换为WMM优先级。同样的规则`new-priority=from-ingress`可以用来将VLAN优先级转换为WMM优先级。 
+同样的原则也适用于另一个方向。RouterOS不会自动将VLAN优先级转换为WMM优先级。同样的规则 `new-priority=from-ingress` 可以用来将VLAN优先级转换为WMM优先级。
 
 RouterOS 网桥转发 VLAN 标记的数据包时，不作任何改变，这意味着收到的具有一定 VLAN 优先级的 VLAN 标记的数据包将以相同的 VLAN 优先级离开网桥。唯一的例外是当网桥取消了数据包的标记，在这种情况下，由于VLAN头的缺失，VLAN优先级不会被保留。
 
@@ -99,7 +99,7 @@ RouterOS 网桥转发 VLAN 标记的数据包时，不作任何改变，这意�
 
 ___
 
-另一种设置VLAN或WMM优先级的方法是使用IP头中的DSCP字段，这只能由IP防火墙的mangle规则来完成，该规则有`new-priority=`from-dscp`或`new-priority=from-dscp-high-3-bits`设置和`set-priority`动作属性。注意，IP头中的DSCP可以有0-63的值，但优先级只有0-7。当使用`new-priority=`from-dscp`设置时，优先级将是DSCP值的3个低位，但当使用`new-priority=from-dscp-high-3-bits`时，优先级将是DSCP值的3个高位。
+另一种设置VLAN或WMM优先级的方法是使用IP头中的DSCP字段，这只能由IP防火墙的mangle规则来完成，该规则有 `new-priority=` from-dscp **或** `new-priority=from-dscp-high-3-bits` 设置和 `set-priority` 动作属性。注意，IP头中的DSCP可以有0-63的值，但优先级只有0-7。当使用 `new-priority= from-dscp` 设置时，优先级将是DSCP值的3个低位，但当使用 `new-priority=from-dscp-high-3-bits` 时，优先级将是DSCP值的3个高位。
 
 请记住，DSCP只能在IP数据包上访问，IP头中的DSCP值应该在某处设置（由客户端设备或IP混合规则）。
 
@@ -121,7 +121,7 @@ add action=set-priority chain=forward new-priority=from-dscp out-interface=wlan2
 
 ___
 
-同样，如果收到的数据包包含 VLAN 或 WMM 优先级，也可以设置 DSCP 值。这可以通过 IP mangle 规则来实现，该规则具有 `new-dscp=from-priority` 或 `new-dscp=from-priority-to-high-3-bits` 设置和 `change-dscp` 动作属性。注意，VLAN或WMM数据包中的优先级可以有0-7的值，但IP头中的DSCP是0-63。当使用`new-dscp=from-priority`设置时，优先级的值将设置DSCP的3个低位，但当使用`new-dscp=from-priority-to-high-3-bits`，优先级的值将设置DSCP的3个高位。
+同样，如果收到的数据包包含 VLAN 或 WMM 优先级，也可以设置 DSCP 值。这可以通过 IP mangle 规则来实现，该规则具有 `new-dscp=from-priority` 或 `new-dscp=from-priority-to-high-3-bits` 设置和 `change-dscp` 动作属性。注意，VLAN或WMM数据包中的优先级可以有0-7的值，但IP头中的DSCP是0-63。当使用 `new-dscp=from-priority` 设置时，优先级的值将设置DSCP的3个低位，但当使用 `new-dscp=from-priority-to-high-3-bits`，优先级的值将设置DSCP的3个高位。
 
 然而，这种设置不能直接使用从收到的VLAN或WMM数据包中的入口优先级。首先需要使用IP mangle或网桥过滤/nat规则设置优先级（在此情况下可以使用入口优先级），然后才能应用DSCP规则。
 

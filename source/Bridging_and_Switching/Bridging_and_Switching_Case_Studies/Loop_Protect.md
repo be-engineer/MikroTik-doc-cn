@@ -7,11 +7,11 @@
 
 !!!tip 尽管环路保护可以在添加到网桥的接口上工作，但仍然建议使用(R/M)STP而不是环路保护，因为(R/M)STP与大多数交换机兼容，STP变体提供更多的配置选项来微调你的网络。
   
-**子菜单:** `/interface ethernet` `/interface vlan` `/interface eoip` `/interface eoipv6 /interface vxlan`
+**子菜单:** `/interface ethernet /interface vlan /interface eoip /interface eoipv6 /interface vxlan`
 
 | 属性                                                                                                                                                                        | 说明                                                          |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **loop-protect** (_on                                             \| off                                                                 \| default_; Default: **default**) | 在选定的接口上启用或禁用环路保护。 **默认**为禁用。           |
+| **loop-protect** (_on                                             \| off                                                                 \| default_; Default: **default**) | 在选定的接口上启用或禁用环路保护。 **默认** 为禁用。          |
 | **loop-protect-send-interval** (_time interval_; Default: **5s**)                                                                                                           | 设置在选定的接口上发送环路保护数据包的频率。                  |
 | **loop-protect-disable-time** (_time interval                     \| 0_; Default: **5m**)                                                                                   | 设置当检测到环路时，所选接口被禁用的时间。 **0** - 代表永久。 |
   

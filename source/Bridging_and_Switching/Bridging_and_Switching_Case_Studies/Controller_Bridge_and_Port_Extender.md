@@ -6,7 +6,7 @@ ___
 
 ![](https://help.mikrotik.com/docs/download/attachments/37224456/CB_summary.png?version=1&modificationDate=1598966520696&api=v2)
 
-控制网桥通过**级联**端口与端口扩展器通信。同样，端口扩展器只通过一个**上行端口**与控制网桥通信。在PE设备上，必须配置控制端口，只有一个端口（最靠近CB）作为上行端口，其他控制端口可以作为上行端口的备份，也可以作为串联的交换机的级联端口（如上图中的端口扩展器2和3）。级联端口和上行端口用于传输和接收控制和网络流量。**扩展端口**是由CB设备控制的接口，它们通常连接到终端主机。扩展端口只传输和接收网络流量。
+控制网桥通过 **级联** 端口与端口扩展器通信。同样，端口扩展器只通过一个 **上行端口** 与控制网桥通信。在PE设备上，必须配置控制端口，只有一个端口（最靠近CB）作为上行端口，其他控制端口可以作为上行端口的备份，也可以作为串联的交换机的级联端口（如上图中的端口扩展器2和3）。级联端口和上行端口用于传输和接收控制和网络流量。 **扩展端口** 是由CB设备控制的接口，它们通常连接到终端主机。扩展端口只传输和接收网络流量。
 
 请看下面每个交换机型号的支持功能。
 
@@ -129,7 +129,7 @@ ___
 | **cascade-ports** (_interfaces;_ Default: **none**) | 将充当级联端口的接口。也支持802.3ad或balance-xor`mode`的绑定接口。                                            |
 | **switch** (_name;_ Default: **none**)              | 作为CB的交换，确保控制和网络流量。 只有在指定了`bridge`和`switch`属性时，CB才会启用，否则，它将处于禁用状态。 |
 
-在CB和PE设备配置和连接后，每个PE设备将自动在设备菜单上可见，使用`print`和`monitor`命令查看更多细节。
+在CB和PE设备配置和连接后，每个PE设备将自动在设备菜单上可见，使用 `print` 和 `monitor` 命令查看更多细节。
 
 ```shell
 [admin@Controller] > interface bridge port-controller device print
@@ -157,7 +157,7 @@ Flags: I - inactive
 | **pe-mac** (_MAC address_)                     | PE设备MAC地址。                |
 | **status** (_active              \| inactive_) | PE设备状态。                   |
 
-此外，每个PE设备接口都可以在端口菜单上进行监控，使用`print`和`monitor`命令查看更多细节。
+此外，每个PE设备接口都可以在端口菜单上进行监控，使用 `print` 和 `monitor` 命令查看更多细节。
 
 ```shell
 
@@ -195,26 +195,30 @@ Flags: I - inactive, X - disabled, R - running, U - upstream-port, C - cascade-p
 | **rate** (_bps_)                                                                               | 连接的数据速率。       |
 | **status** (_link-ok           \| no-link                                         \| unknown_) | PE端口连接状态。       |
 
-控制网桥可以从端口扩展器的端口poe菜单上监控PoE-out相关信息，使用`print`和`monitor`命令查看更多细节。有关PoE-out的更多信息，请访问[PoE-out手册](https://help.mikrotik.com/docs/display/ROS/PoE-Out)。
+控制网桥可以从端口扩展器的端口poe菜单上监控PoE-out相关信息，使用 `print` 和 `monitor` 命令查看更多细节。有关PoE-out的更多信息，请访问 [PoE-out手册](https://help.mikrotik.com/docs/display/ROS/PoE-Out)。
 
-`[admin@Controller] > interface bridge port-controller port poe print`
- `# NAME                                    DEVICE`
- `0 pe1-ether1                              pe1`
- `1 pe1-ether2                              pe1`
- `2 pe1-ether3                              pe1`
- `3 pe1-ether4                              pe1`
- `4 pe1-ether5                              pe1`
- `5 pe1-ether6                              pe1`
- `6 pe1-ether7                              pe1`
+```shell
+[admin@Controller] > interface bridge port-controller port poe print
+ # NAME                                    DEVICE
+ 0 pe1-ether1                              pe1
+ 1 pe1-ether2                              pe1
+ 2 pe1-ether3                              pe1
+ 3 pe1-ether4                              pe1
+ 4 pe1-ether5                              pe1
+ 5 pe1-ether6                              pe1
+ 6 pe1-ether7                              pe1
 
-`...`
+...
+```
 
-`[admin@Controller] > interface bridge port-controller port poe` `monitor` `pe1-ether2,pe1-ether3`
-               `name: pe1-ether2 pe1-ether3`
-     `poe-out-status: powered-on powered-on`
-    `poe-out-voltage: 52.8V      52.9V`
-    `poe-out-current: 123mA      95mA`
-      `poe-out-power: 6.4W       5W`
+```shell
+[admin@Controller] > interface bridge port-controller port poe monitor pe1-ether2,pe1-ether3
+               name: pe1-ether2 pe1-ether3
+     poe-out-status: powered-on powered-on
+    poe-out-voltage: 52.8V      52.9V
+    poe-out-current: 123mA      95mA
+      poe-out-power: 6.4W       5W
+```
 
 ## 端口扩展器设置
 
@@ -224,17 +228,17 @@ ___
 
 **子菜单:** `/interface bridge port-extender`
 
-| 属性                                                 | 说明                                                                                                       |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **control-ports** (_interfaces;_ Default: **none**)  | 将连接到CB（上游端口）或串联其他PE设备（级联端口）的接口。也支持带有802.3ad或balance-xor`mode`的绑定接口。 |
-| **excluded-ports** (_interfaces;_ Default: **none**) | 不会被扩展的接口。                                                                                         |
-| **switch** (_name;_ Default: **none**)               | 将作为扩展器并确保控制和网络流量的交换机。 只有指定该属性时，PE才会启用，否则，将处于禁用状态。            |
+| 属性                                                 | 说明                                                                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **control-ports** (_interfaces;_ Default: **none**)  | 将连接到CB（上游端口）或串联其他PE设备（级联端口）的接口。也支持带有802.3ad或balance-xor `mode` 的绑定接口。 |
+| **excluded-ports** (_interfaces;_ Default: **none**) | 不会被扩展的接口。                                                                                           |
+| **switch** (_name;_ Default: **none**)               | 将作为扩展器并确保控制和网络流量的交换机。 只有指定该属性时，PE才会启用，否则，将处于禁用状态。              |
 
 ## 配置实例
 
 ___
 
-下面介绍了最常见的配置例子。为了使 CB 和 PE 配置正常工作，需要启用网桥 VLAN 过滤，所以一定要先了解过滤原理 - [bridge VLAN filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering), [bridge VLAN table](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table).
+下面介绍了最常见的配置例子。为了使 CB 和 PE 配置正常工作，需要启用网桥 VLAN 过滤，所以一定要先了解过滤原理 - [bridge VLAN filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering), [bridge VLAN table](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table)。
 
 ## CB和PE的基本配置
 
@@ -268,74 +272,76 @@ set control-ports=sfp-sfpplus4 switch=switch1
 
 ```
 
-一旦PE和CB设备完成发现并开始控制和状态协议（CSP），RouterOS将永久地创建新的接口并将它们添加到CB设备的网桥中。接口自动分配PE设备名称，加上默认的接口名称，这些接口名称可以在之后修改。请注意，控制端口和排除端口也会被显示在接口列表中，但它们不会被纳入网桥。 
+一旦PE和CB设备完成发现并开始控制和状态协议（CSP），RouterOS将永久地创建新的接口并将它们添加到CB设备的网桥中。接口自动分配PE设备名称，加上默认的接口名称，这些接口名称可以在之后修改。请注意，控制端口和排除端口也会被显示在接口列表中，但它们不会被纳入网桥。
 
-`[admin@Controller_Bridge] >` `/interface` `print` `where name~``"pe"`
+```
+[admin@Controller_Bridge] > /interface print where name~ "pe"
 
-`Flags``: D - dynamic, X - disabled, R - running, S - slave` 
+Flags: D - dynamic, X - disabled, R - running, S - slave 
 
- `#     NAME                                TYPE       ACTUAL-MTU L2MTU  MAX-L2MTU`
- `0  RS pe1-ether1                          extport          1500  1584`
- `1  RS pe1-ether2                          extport          1500  1584`
- `2  RS pe1-ether3                          extport          1500  1584`
- `3   S pe1-ether4                          extport          1500  1584`
- `4   S pe1-ether5                          extport          1500  1584`
- `5   S pe1-ether6                          extport          1500  1584`
- `6   S pe1-ether7                          extport          1500  1584`
- `7   S pe1-ether8                          extport          1500  1584`
- `8   S pe1-ether9                          extport          1500  1584`
- `9   S pe1-ether10                         extport          1500  1584`
-`10   S pe1-ether11                         extport          1500  1584`
-`11   S pe1-ether12                         extport          1500  1584`
-`12   S pe1-ether13                         extport          1500  1584`
-`13   S pe1-ether14                         extport          1500  1584`
-`14   S pe1-ether15                         extport          1500  1584`
-`15   S pe1-ether16                         extport          1500  1584`
-`16   S pe1-ether17                         extport          1500  1584`
-`17   S pe1-ether18                         extport          1500  1584`
-`18   S pe1-ether19                         extport          1500  1584`
-`19   S pe1-ether20                         extport          1500  1584`
-`20   S pe1-ether21                         extport          1500  1584`
-`21   S pe1-ether22                         extport          1500  1584`
-`22   S pe1-ether23                         extport          1500  1584`
-`23   S pe1-ether24                         extport          1500  1584`
-`24  RS pe1-sfpplus1                        extport          1500  1584`
-`25  RS pe1-sfpplus2                        extport          1500  1584`
-`26  RS pe1-sfpplus3                        extport          1500  1584`
-`27     pe1-sfpplus4                        extport          1500  1584`
-`[admin@Controller_Bridge] > interface bridge port print` 
-`Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload` 
+ #     NAME                                TYPE       ACTUAL-MTU L2MTU  MAX-L2MTU
+ 0  RS pe1-ether1                          extport          1500  1584
+ 1  RS pe1-ether2                          extport          1500  1584
+ 2  RS pe1-ether3                          extport          1500  1584
+ 3   S pe1-ether4                          extport          1500  1584
+ 4   S pe1-ether5                          extport          1500  1584
+ 5   S pe1-ether6                          extport          1500  1584
+ 6   S pe1-ether7                          extport          1500  1584
+ 7   S pe1-ether8                          extport          1500  1584
+ 8   S pe1-ether9                          extport          1500  1584
+ 9   S pe1-ether10                         extport          1500  1584
+10   S pe1-ether11                         extport          1500  1584
+11   S pe1-ether12                         extport          1500  1584
+12   S pe1-ether13                         extport          1500  1584
+13   S pe1-ether14                         extport          1500  1584
+14   S pe1-ether15                         extport          1500  1584
+15   S pe1-ether16                         extport          1500  1584
+16   S pe1-ether17                         extport          1500  1584
+17   S pe1-ether18                         extport          1500  1584
+18   S pe1-ether19                         extport          1500  1584
+19   S pe1-ether20                         extport          1500  1584
+20   S pe1-ether21                         extport          1500  1584
+21   S pe1-ether22                         extport          1500  1584
+22   S pe1-ether23                         extport          1500  1584
+23   S pe1-ether24                         extport          1500  1584
+24  RS pe1-sfpplus1                        extport          1500  1584
+25  RS pe1-sfpplus2                        extport          1500  1584
+26  RS pe1-sfpplus3                        extport          1500  1584
+27     pe1-sfpplus4                        extport          1500  1584
+[admin@Controller_Bridge] > interface bridge port print 
+Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload 
 
- `#     INTERFACE              BRIDGE             HW  PVID PRIORITY  PATH-COST INTERNAL-PATH-COST    HORIZON`
+ #     INTERFACE              BRIDGE             HW  PVID PRIORITY  PATH-COST INTERNAL-PATH-COST    HORIZON
 
- `0   H sfp-sfpplus2           bridge1            yes    1     0x80         10                 10       none`
- `1   H pe1-ether1             bridge1            yes    1     0x80         10                 10       none`
- `2   H pe1-ether2             bridge1            yes    1     0x80         10                 10       none`
- `3   H pe1-ether3             bridge1            yes    1     0x80         10                 10       none`
- `4 I H pe1-ether4             bridge1            yes    1     0x80         10                 10       none`
- `5 I H pe1-ether5             bridge1            yes    1     0x80         10                 10       none`
- `6 I H pe1-ether6             bridge1            yes    1     0x80         10                 10       none`
- `7 I H pe1-ether7             bridge1            yes    1     0x80         10                 10       none`
- `8 I H pe1-ether8             bridge1            yes    1     0x80         10                 10       none`
- `9 I H pe1-ether9             bridge1            yes    1     0x80         10                 10       none`
-`10 I H pe1-ether10            bridge1            yes    1     0x80         10                 10       none`
-`11 I H pe1-ether11            bridge1            yes    1     0x80         10                 10       none`
-`12 I H pe1-ether12            bridge1            yes    1     0x80         10                 10       none`
-`13 I H pe1-ether13            bridge1            yes    1     0x80         10                 10       none`
-`14 I H pe1-ether14            bridge1            yes    1     0x80         10                 10       none`
-`15 I H pe1-ether15            bridge1            yes    1     0x80         10                 10       none`
-`16 I H pe1-ether16            bridge1            yes    1     0x80         10                 10       none`
-`17 I H pe1-ether17            bridge1            yes    1     0x80         10                 10       none`
-`18 I H pe1-ether18            bridge1            yes    1     0x80         10                 10       none`
-`19 I H pe1-ether19            bridge1            yes    1     0x80         10                 10       none`
-`20 I H pe1-ether20            bridge1            yes    1     0x80         10                 10       none`
-`21 I H pe1-ether21            bridge1            yes    1     0x80         10                 10       none`
-`22 I H pe1-ether22            bridge1            yes    1     0x80         10                 10       none`
-`23 I H pe1-ether23            bridge1            yes    1     0x80         10                 10       none`
-`24 I H pe1-ether24            bridge1            yes    1     0x80         10                 10       none`
-`25   H pe1-sfpplus1           bridge1            yes    1     0x80         10                 10       none`
-`26   H pe1-sfpplus2           bridge1            yes    1     0x80         10                 10       none`
-`27   H pe1-sfpplus3           bridge1            yes    1     0x80         10                 10       none`
+ 0   H sfp-sfpplus2           bridge1            yes    1     0x80         10                 10       none
+ 1   H pe1-ether1             bridge1            yes    1     0x80         10                 10       none
+ 2   H pe1-ether2             bridge1            yes    1     0x80         10                 10       none
+ 3   H pe1-ether3             bridge1            yes    1     0x80         10                 10       none
+ 4 I H pe1-ether4             bridge1            yes    1     0x80         10                 10       none
+ 5 I H pe1-ether5             bridge1            yes    1     0x80         10                 10       none
+ 6 I H pe1-ether6             bridge1            yes    1     0x80         10                 10       none
+ 7 I H pe1-ether7             bridge1            yes    1     0x80         10                 10       none
+ 8 I H pe1-ether8             bridge1            yes    1     0x80         10                 10       none
+ 9 I H pe1-ether9             bridge1            yes    1     0x80         10                 10       none
+10 I H pe1-ether10            bridge1            yes    1     0x80         10                 10       none
+11 I H pe1-ether11            bridge1            yes    1     0x80         10                 10       none
+12 I H pe1-ether12            bridge1            yes    1     0x80         10                 10       none
+13 I H pe1-ether13            bridge1            yes    1     0x80         10                 10       none
+14 I H pe1-ether14            bridge1            yes    1     0x80         10                 10       none
+15 I H pe1-ether15            bridge1            yes    1     0x80         10                 10       none
+16 I H pe1-ether16            bridge1            yes    1     0x80         10                 10       none
+17 I H pe1-ether17            bridge1            yes    1     0x80         10                 10       none
+18 I H pe1-ether18            bridge1            yes    1     0x80         10                 10       none
+19 I H pe1-ether19            bridge1            yes    1     0x80         10                 10       none
+20 I H pe1-ether20            bridge1            yes    1     0x80         10                 10       none
+21 I H pe1-ether21            bridge1            yes    1     0x80         10                 10       none
+22 I H pe1-ether22            bridge1            yes    1     0x80         10                 10       none
+23 I H pe1-ether23            bridge1            yes    1     0x80         10                 10       none
+24 I H pe1-ether24            bridge1            yes    1     0x80         10                 10       none
+25   H pe1-sfpplus1           bridge1            yes    1     0x80         10                 10       none
+26   H pe1-sfpplus2           bridge1            yes    1     0x80         10                 10       none
+27   H pe1-sfpplus3           bridge1            yes    1     0x80         10                 10       none
+```
 
 现在，CRS317-1G-16S+设备使用CRS328-24P-4S+设备扩展了其端口，数据包转发可以在所有桥接的端口之间进行。
 
@@ -363,7 +369,7 @@ set control-ports=sfp-sfpplus4 switch=switch1
 
 ```
 
-在CB设备上成功创建扩展端口并添加到网桥后，可以开始配置VLAN相关属性。首先，使用 `pvid` 属性将访问端口配置为各自的 VLAN ID。在"`/interface bridge port`"菜单中使用`print`命令，以找出准确的接口名称。
+在CB设备上成功创建扩展端口并添加到网桥后，可以开始配置VLAN相关属性。首先，使用 `pvid` 属性将访问端口配置为各自的 VLAN ID。在 `/interface bridge port` 菜单中使用 `print` 命令，以找出准确的接口名称。
 
 ```shell
 /interface bridge port
@@ -399,7 +405,7 @@ set [find interface=sfp-sfpplus2] frame-types=admit-only-vlan-tagged ingress-fil
 
 ## 级联多个端口扩展器并使用绑定接口
 
-在这个例子中，两个PE设备（CRS328-24P-4S+和CRS326-24G-2S+）将被添加到CB（CRS317-1G-16S+）。为了增加上行和级联端口的吞吐量，将创建[绑定接口]（https://help.mikrotik.com/docs/display/ROS/Bonding）。见下图。
+在这个例子中，两个PE设备（CRS328-24P-4S+和CRS326-24G-2S+）将被添加到CB（CRS317-1G-16S+）。为了增加上行和级联端口的吞吐量，将创建 [绑定接口](https://help.mikrotik.com/docs/display/ROS/Bonding)。见下图。
 
 ![](https://help.mikrotik.com/docs/download/attachments/37224456/bonding_cascade.png?version=2&modificationDate=1606810698758&api=v2)
 
@@ -440,7 +446,7 @@ set control-ports=bond1 switch=switch1
 
 现在，CRS317-1G-16S+设备已经用额外的48个千兆以太网端口扩展了它的端口，在所有桥接的端口之间可以实现数据包转发。
 
-使用设备菜单中的`monitor`命令来查看PE设备的连接路径。另外，使用端口菜单中的`print`命令，可以看到哪些PE接口被用作上行和级联端口。
+使用设备菜单中的 `monitor` 命令来查看PE设备的连接路径。另外，使用端口菜单中的 `print` 命令，可以看到哪些PE接口被用作上行和级联端口。
 
 ```shell
 [admin@Controller_Bridge] > interface bridge port-controller device monitor [find]

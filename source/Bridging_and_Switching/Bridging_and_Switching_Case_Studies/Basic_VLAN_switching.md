@@ -67,7 +67,7 @@ set drop-if-invalid-or-src-port-not-member-of-vlan-on-ports=ether1,ether2,ether3
 
 ```
 
-更详细的例子可以在 [这里]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN）找到。
+更详细的例子可以在 [这里](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841836#CRS1xx/2xxseriesswitchesexamples-VLAN) 找到。
 
 ## 其他具有内置交换芯片的设备
 
@@ -98,13 +98,13 @@ set switch1-cpu vlan-header=leave-as-is vlan-mode=secure
 
 更详细的例子可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-SetupExamples) 找到。
 
-并非所有带有交换芯片的设备都能在硬件层面进行VLAN交换，请检查每个交换芯片支持的功能，兼容性表可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction)找到 。如果一个设备支持 "VLAN表 "，那么它就能够使用内置的交换芯片进行VLAN交换。你可以通过所提供的链接或使用`/interface ethernet switch print`来查看设备的交换芯片。
+并非所有带有交换芯片的设备都能在硬件层面进行VLAN交换，请检查每个交换芯片支持的功能，兼容性表可以在 [这里](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#SwitchChipFeatures-Introduction) 找到 。如果一个设备支持 "VLAN表 "，那么它就能够使用内置的交换芯片进行VLAN交换。你可以通过所提供的链接或使用 `/interface ethernet switch print` 来查看设备的交换芯片。
 
-在**QCA8337**和**Atheros8327**交换芯片上，应使用默认的`vlan-header=leave-as-is`属性。交换芯片将通过`default-vlan-id`属性来确定哪些端口是接入端口。`default-vlan-id`只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
+在 **QCA8337** 和**Atheros8327** 交换芯片上，应使用默认的 `vlan-header=leave-as-is` 属性。交换芯片将通过 `default-vlan-id` 属性来确定哪些端口是接入端口。`default-vlan-id` 只应在接入/混合端口上使用，以指定未标记的入站流量被分配到哪个VLAN。
 
 这种类型的配置应在RouterBOARD系列设备上使用，这包括RB4xx, RB9xx, RB2011, RB3011, hAP, hEX, cAP和其他设备。
 
-默认情况下，网桥接口的配置是将协议模式设置为`rstp`。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅 [Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 部分查看支持的功能。
+默认情况下，网桥接口的配置是将协议模式设置为 `rstp`。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅 [Bridge Hardware Offloading](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 部分查看支持的功能。
 
 对于有多个交换芯片的设备（例如，RB2011、RB3011、RB1100），每个交换芯片只能在同一交换芯片的端口之间交换VLAN流量，VLAN过滤在不同交换芯片的端口之间不会在硬件层面上发挥作用，这意味着如果你打算使用交换芯片的VLAN过滤，就不应该把所有的端口添加到一个网桥上，交换芯片之间的VLAN将不会得到过滤。你可以在两个交换芯片之间连接电缆来绕过这个硬件限制，另一个选择是使用网桥VLAN过滤，但它禁用了硬件卸载（降低了总吞吐量）。
 
