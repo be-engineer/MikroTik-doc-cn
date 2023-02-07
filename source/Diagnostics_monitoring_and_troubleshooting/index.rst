@@ -23,3 +23,4 @@
    Traceroute/index.rst
    Traffic_Flow/index.rst
    Traffic_Generator/index.rst
+   Watchdog/index.rst
