@@ -1,11 +1,11 @@
-## RouterOS官网文档内容以及翻译进度
+# RouterOS官网文档内容以及翻译进度
 
 | 序号 | 章节                                        | 贡献人      | 进度 | 完成时间               |
 | ---- | ------------------------------------------- | ----------- | ---- | ---------------------- |
 | 1.   | Getting Started                             | be-engineer | 100% | 2023/01/03~2023/01/08  |
 | 2.   | Authentication,  Authorization,  Accounting | be-engineer | 100% | 2023/01/08-2023/01/15  |
 | 3.   | Bridging and Switching                      | be-engineer | 100% | 2023/01/15～2023/02/07 |
-| 4.   | Diagnostics,monitoring and troubleshooting  | be-engineer | 0%   | ?                      |
+| 4.   | Diagnostics,monitoring and troubleshooting  | be-engineer | 80%  | 2023/02/07～?          |
 | 5.   | Extended features                           | be-engineer | 0%   | ?                      |
 | 6.   | Firewall and Quality of Service             | be-engineer | 0%   | ?                      |
 | 7.   | Hardware                                    | be-engineer | 0%   | ?                      |
