@@ -23,7 +23,6 @@ Traffic-Flow支持以下NetFlow格式。
 | **packet-sampling** (_no                             \| yes_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                            | 启用或禁用数据包取样功能。                                                                                                                                                   |
 | **sampling-interval** (_integer_; Default: **0**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | 连续取样的数据包数量。                                                                                                                                                       |
 | **sampling-space** (_integer_; Default: **0**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | 连续忽略的数据包的数量。                                                                                                                                                     |
-信息 
 
 从RouterOS **v7.1rc5** 开始提供数据包取样!
 
@@ -48,9 +47,9 @@ Traffic-Flow支持以下NetFlow格式。
 
 ### 注释
 
-通过查看 [包流量图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS)，可以看到流量是在输入、转发和输出chain栈的末端。即只计算到达这些链之一的流量。
+通过查看 [包流量图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS)，可以看到流量是在输入、转发和输出链的末端。即只计算到达这些链之一的流量。
 
-例如，在交换机上设置了一个镜像端口，将镜像端口连接到路由器上，并将流量设置为计算镜像数据包。不幸的是，这样的设置不会起作用，因为镜像的数据包在到达输入链之前就被丢弃了。
+例如，在交换机上设置了一个镜像端口，将镜像端口连接到路由器上，并将流量设置为计算镜像数据包。但是这样的设置不起作用，因为镜像的数据包在到达输入链之前就被丢弃了。
 
 如果流量经过其他接口和监测接口，其他接口将出现在报告中。
 
@@ -84,7 +83,7 @@ Flags: X - disabled
 
 现在，路由器开始发送带有Traffic-Flow信息的数据包。
 
-注意:在MikroTik上使用ntp-ng，要使用Nprobe，它是付费软件。
+注意:要在MikroTik上使用ntp-ng，需要用Nprobe，它是付费软件。
 
 ### 参考文档
 

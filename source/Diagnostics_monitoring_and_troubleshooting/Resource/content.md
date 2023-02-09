@@ -75,10 +75,10 @@ CPU LOAD IRQ DISK
 ## IRQ
 
 `/system resource irq`
-
   
-菜单显示路由器上所有使用的IRQ。可以在多核系统上设置 [IRQ负载均衡](https://wiki.mikrotik.com/wiki/Manual:System/Resource#IRQ_Load_Balancing)，将IRQ分配给特定的核。IRQ的分配是由硬件完成的，不能从RouterOS中改变。例如，如果所有以太网都被分配到一个IRQ，那么你必须处理硬件问题：升级主板BIOS，在BIOS中手动重新分配IRQ，如果上述方法都没有用，那就只能更改硬件。
-### 属性
+菜单显示路由器上所有使用的IRQ。可以在多核系统上设置 [IRQ负载均衡](https://wiki.mikrotik.com/wiki/Manual:System/Resource#IRQ_Load_Balancing)，将IRQ分配给特定的核。IRQ的分配是由硬件完成的，不能从RouterOS中改变。例如，如果所有以太网都被分配到一个IRQ，那么你必须处理硬件问题：升级主板BIOS，在BIOS中手动重新分配IRQ，如果上述方法都没有用，那就只能改硬件。
+
+属性
 
 | 属性                                   | 说明                                                                                                                                                          |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -89,13 +89,13 @@ CPU LOAD IRQ DISK
 | 属性                       | 说明                                       |
 | -------------------------- | ------------------------------------------ |
 | **active-cpu** (_integer_) | 在多核系统中显示活跃的CPU。                |
-| **count** (_integer_)      | 一些中断。在以太网接口上interrupt=packet。 |
+| **count** (_integer_)      | 中断数量。在以太网接口上interrupt=packet。 |
 | **irq** (_integer_)        | IRQ识别号                                  |
 | **users** (_string_)       | 分配给IRQ的进程                            |
 
-### IRQ负载均衡
+## IRQ负载均衡
 
-## USB
+### USB
 
 `/system resource usb`
 
@@ -109,7 +109,7 @@ device-id="0x0002" speed="480 Mbps" ports=2 usb-version="2.00"
  device-id="0x0001" speed="12 Mbps" ports=2 usb-version="1.10"
 ```
 
-### 属性
+属性
 
 | 属性                         | 说明                                                  |
 | ---------------------------- | ----------------------------------------------------- |
@@ -141,7 +141,7 @@ PCI子菜单显示板卡上所有PCI设备的信息
 6 00:00.0 Freescale Semiconductor Inc MPC8544 (rev: 17) 0
 ```
 
-### 属性
+属性
 
 所有属性只读
 

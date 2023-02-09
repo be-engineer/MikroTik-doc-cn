@@ -1,6 +1,6 @@
 # 概述
 
-分析器工具显示RouterOS中运行的每个进程的CPU使用率。有助于确定哪个进程正在使用大部分的CPU资源。 
+分析器工具显示RouterOS中运行的每个进程的CPU使用率。有助于确定哪个进程在使用大部分的CPU资源。
 可观看 [关于此功能的视频](https://youtu.be/BkRaW14p8_s)。
 
 `[admin@MikroTik] > /tool/profile`。

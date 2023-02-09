@@ -22,7 +22,7 @@
 | **measure-out-of-order** (_yes                            \| no_; Default: ) | 是否测量Out-of-Order数据包。默认值基于CPU类型（多核CPU默认为 **no**；单核CPU默认为 **yes**）。在多核设备上启用属性时，单个数据流只利用单个CPU内核 |
 | **stats-samples-to-keep** (_integer_; Default: **100**)                      | 要收集多少数据实例                                                                                                                                |
 | **test-id** (_integer [0..255]_; Default: **0**)                             |
- 
+
 **只读属性**
 
 | 属性                                                      | 说明                                                 |

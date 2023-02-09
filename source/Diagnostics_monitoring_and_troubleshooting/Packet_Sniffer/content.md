@@ -20,11 +20,11 @@ Columns: NAME, TYPE, SIZE, CREATION-TIME
 9  flash/test.pcap  file 3696  dec/04/2019 10:48:16
 ```
 
-可以从文件部分下载捕获的数据包。然后使用包分析器，如[Wireshark](https://www.wireshark.org/)来分析文件。
+可以从文件菜单下载捕获的数据包。然后使用包分析器，如 [Wireshark](https://www.wireshark.org/)来分析文件。
 
 ![](https://help.mikrotik.com/docs/download/attachments/8323088/sniffer.png?version=1&modificationDate=1575446174645&api=v2)
 
-注意，嗅探到的数据包将在10分钟内可用，如果你需要永久使用，请设置一个 "文件名 "直接保存，或按前面所述用 "保存 "命令。
+注意，嗅探到的数据包在10分钟内可用，如果需要永久使用，请设置一个"文件名"直接保存，或按前面所述用"保存"命令。
 
 **Sub-menu:** `/tool sniffer`
 
@@ -63,7 +63,7 @@ Columns: NAME, TYPE, SIZE, CREATION-TIME
 
 ### 数据包嗅探器快速模式
 
-快速模式将显示结果，因为它们被过滤掉了，有一个有限大小的数据包的缓冲区。有几个属性可以设置为过滤。如果没有设置属性，将使用当前的配置。
+快速模式将显示结果，因为它们被过滤掉了，有一个有限大小的数据包缓冲区。有几个属性可以设置过滤。如果没有设置属性，将使用当前的配置。
 
 ```shell
 [admin@MikroTik] > /tool/sniffer/quick ip-protocol=icmp
@@ -83,7 +83,7 @@ ether1  36.6    86  ->  6C:3B:6B:ED:81:7D  6C:3B:6B:ED:83:63  172.24.24.1     17
 
 ### 数据包嗅探器协议
 
-在这个子菜单中，可以看到所有被嗅探的协议和它们在整个嗅探量中的份额。 
+在这个子菜单中，可以看到所有被嗅探的协议和它们在整个嗅探量中的份额。
 
 ```shell
 [admin@MikroTik] /tool sniffer protocol> print
@@ -102,7 +102,7 @@ ether1  36.6    86  ->  6C:3B:6B:ED:81:7D  6C:3B:6B:ED:83:63  172.24.24.1     17
 
 ### 数据包嗅探器主机
 
-该子菜单显示参与嗅探的数据交换的主机列表。
+子菜单显示参与嗅探的数据交换的主机列表。
 
 ```shell
 [admin@MikroTik] /tool sniffer host> print
@@ -118,7 +118,7 @@ ether1  36.6    86  ->  6C:3B:6B:ED:81:7D  6C:3B:6B:ED:83:63  172.24.24.1     17
 
 ### 数据包嗅探器连接数
 
-在这里可以得到一个在嗅探时间内被监视的连接列表。
+这里可以得到一个在嗅探时间内被监视的连接列表。
 
 ```shell
 [admin@MikroTik] tool sniffer connection> print

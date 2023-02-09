@@ -1,6 +1,6 @@
 # 概述
 
-Ping使用互联网控制消息协议(ICMP)回波消息来确定远程主机是否活动，并确定与之通信时的往返延迟。Ping工具向主机发送ICMP（类型8）消息，并等待ICMP回波（类型0）。事件之间的时间间隔被称为往返时间。如果响应（即所谓的pong）直到该间隔结束还没有到来，我们就认为它已经超时了。报告的第二个重要参数是TTL（生存时间）。是在处理数据包的每台机器上递减的。只有当TTL大于源和目的地之间的路由器数量时，数据包才能到达目的地。
+Ping使用互联网控制消息协议(ICMP)回波消息来确定远程主机是否活动，并确定与之通信时的往返延迟。Ping工具向主机发送ICMP（类型8）消息，并等待ICMP回波（类型0）。事件之间的时间间隔被称为往返时间。如果响应（即所谓的pong）直到该间隔结束还没有到来，我们就认为它已经超时了。报告的第二个重要参数是TTL（生存时间），在处理数据包的每台机器上是递减的。只有当TTL大于源和目的地之间的路由器数量时，数据包才能到达目的地。
 
 ## 快速实例
 
@@ -17,7 +17,7 @@ RouterOS Ping工具可以配置额外的参数，例如：
 - size;
 - ttl;
 
-让我们看看这个非常简单的例子。
+让我们看看这个简单的例子。
 
 ```shell
 [admin@MikroTik] > /tool/ping address=10.155.126.252 count=5 interval=200ms 
@@ -30,7 +30,7 @@ RouterOS Ping工具可以配置额外的参数，例如：
     sent=5 received=5 packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms
 ```
 
-同样，我们可以用更短的CLI命令实现。
+同样，可以用更短的CLI命令实现。
 
 ```shell
 [admin@MikroTik] > /ping 10.155.126.252 count=5 interval=50ms              
@@ -68,7 +68,7 @@ fe80::21a:4dff:fe5d:8e56                56    64  3ms   echo reply
     sent=5 received=5 packet-loss=0% min-rtt=13ms avg-rtt=13ms max-rtt=14ms
 ```
 
-当使用域名和CLI进行Ping时，路由器的DNS将被用来解析地址。当你使用Winbox工具/Ping时，你的计算机的DNS将被用来解析给定的地址。
+当使用域名和CLI进行Ping时，路由器的DNS用来解析地址。当使用Winbox工具/Ping时，计算机的DNS将用来解析给定的地址。
 
 ## MAC Ping
 
