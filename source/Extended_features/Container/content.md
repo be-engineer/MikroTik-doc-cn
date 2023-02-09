@@ -219,3 +219,4 @@ Linux系统上的镜像和对象可以是 [pruned](https://docs.docker.com/engin
 - 启用日志获得容器的输出。
     
    `/container/ set 0 logging =yes`
+   

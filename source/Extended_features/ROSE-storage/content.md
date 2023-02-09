@@ -40,7 +40,7 @@
 
 添加500MB的分区:
 
-`/disk `
+`/disk`
 
 `disk add type =partition parent =sata1 partition-size =500M`。
 
