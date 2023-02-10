@@ -7,7 +7,7 @@
 | 3.   | Bridging and Switching                      | be-engineer | 100% | 2023/01/15～2023/02/07 |
 | 4.   | Diagnostics,monitoring and troubleshooting  | be-engineer | 80%  | 2023/02/07～?          |
 | 5.   | Extended features                           | be-engineer | 80%  | 2023/02/07～?          |
-| 6.   | Firewall and Quality of Service             | be-engineer | 0%   | ?                      |
+| 6.   | Firewall and Quality of Service             | be-engineer | 80%  | 2023/02/09～?          |
 | 7.   | Hardware                                    | be-engineer | 0%   | ?                      |
 | 8.   | High Availability Solutions                 | be-engineer | 0%   | ?                      |
 | 9.   | Internet of Things                          | be-engineer | 0%   | ?                      |

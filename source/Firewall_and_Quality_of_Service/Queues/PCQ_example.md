@@ -1,38 +1,39 @@
-# PCQ example
+# PCQ 示例
 
-Per Connection Queue (PCQ) is a queuing discipline that can be used to dynamically equalize or shape traffic for multiple users, using little administration. It is possible to divide PCQ scenarios into three major groups: equal bandwidth for a number of users, certain bandwidth equal distribution between users, and unknown bandwidth equal distribution between users.
+Per Connection Queue (PCQ) 是一种排队规则，可用于动态均衡或调整多个用户的流量，只需很少的管理。 可以将PCQ场景分为三大类：多个用户的带宽均等分配、用户之间的特定带宽均等分配和用户之间未知带宽的均等分配。
 
-## Equal Bandwidth for a Number of Users
+## 多个用户的带宽相等
 
-Use PCQ type queue when you need to equalize the bandwidth \[and set max limit\] for a number of users. We will set the 64kbps download and 32kbps upload limits.
+当要为多个用户均衡带宽 [并设置最大限制] 时，使用 PCQ 类型队列。 这里将设置 64kbps 下载和 32kbps 上传限制。
 
 ![](https://help.mikrotik.com/docs/download/attachments/137986099/PCQ.jpg?version=1&modificationDate=1658488911159&api=v2)
 
-There are two ways how to make this: using mangle and queue trees, or, using simple queues.
+有两种方法可以做到这一点：使用 mangle 和队列树，或者使用简单队列。
 
-1\. Mark all packets with packet-marks upload/download: (lets consider that ether1-WAN is the public interface to the Internet and ether2-LAN is a local interface where clients are connected):
+1. 用 packet-marks upload/download 标记所有数据包：（假设 ether1-WAN 是互联网的公共接口，ether2-LAN 是客户端连接的本地接口）：
 
-`/ip firewall mangle` `add` `chain``=prerouting` `action``=mark-packet` `\`
+```shell
+/ip firewall mangle add chain =prerouting action =mark-packet 
 
-   `in-interface``=ether2-LAN` `new-packet-mark``=client_upload`
+   in-interface =ether2-LAN new-packet-mark =client_upload
 
-`/ip firewall mangle` `add` `chain``=prerouting` `action``=mark-packet` `\`
+/ip firewall mangle add chain =prerouting action =mark-packet 
 
-   `in-interface``=ether1-WAN` `new-packet-mark``=client_download`
+   in-interface =ether1-WAN new-packet-mark =client_download
+```
 
-2\. Setup two PCQ queue types - one for download and one for upload. _dst-address_ is a classifier for the user's download traffic, and _src-address_ for upload traffic:
+2. 设置两种 PCQ 队列类型 - 一种用于下载，一种用于上传。 _dst-address_ 是用户下载流量的分类器，_src-address_ 是上传流量的分类器：
 
-`/queue type` `add` `name``=``"PCQ_download"` `kind``=pcq` `pcq-rate``=64000` `pcq-classifier``=dst-address`
+`/queue type add name = "PCQ_download" kind =pcq pcq-rate =64000 pcq-classifier =dst-address`
 
-`/queue type` `add` `name``=``"PCQ_upload"` `kind``=pcq` `pcq-rate``=32000` `pcq-classifier``=src-address`
-
+`/queue type add name = "PCQ_upload" kind =pcq pcq-rate =32000 pcq-classifier =src-address`
   
-3\. Finally, two queue rules are required, one for download and one for upload:
+3、最后需要两条队列规则，一条用于下载，一条用于上传：
 
-`/queue tree` `add` `parent``=global` `queue``=PCQ_download` `packet-mark``=client_download`
+`/queue tree add parent =global queue =PCQ_download packet-mark =client_download`
 
-`/queue tree` `add` `parent``=global` `queue``=PCQ_upload` `packet-mark``=client_upload`
+`/queue tree add parent =global queue =PCQ_upload packet-mark =client_upload`
 
-If you don't like using mangle and queue trees, you can skip step 1, do step 2, and step 3 would be to create one simple queue as shown here:
+如果不喜欢使用 mangle 和队列树，可以跳过第 1 步，执行第 2 步，第 3 步将创建一个简单的队列，如下所示：
 
-`/queue simple` `add` `target``=192.168.0.0/24` `queue``=PCQ_upload/PCQ_download`
+`/queue simple add target =192.168.0.0/24 queue =PCQ_upload/PCQ_download`
