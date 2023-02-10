@@ -1,120 +1,172 @@
-# Overview
+# 概述
 
-A queue is a collection of data packets collectively waiting to be transmitted by a network device using a pre-defined structure methodology. Queuing works almost on the same methodology used at banks or supermarkets, where the customer is treated according to its arrival.
+队列是一个数据包的集合，集体等待由网络设备使用预先定义的结构方法进行传输。队列工作原理基本与银行或超市使用的方法相同，即根据客户到来的先后进行处理。
 
-Queues are used to:
+队列用于：
 
-- limit data rate for certain IP addresses, subnets, protocols, ports, etc.;
-- limit peer-to-peer traffic;
-- packet prioritization;
-- configure traffic bursts for traffic acceleration;
-- apply different time-based limits;
-- share available traffic among users equally, or depending on the load of the channel
+- 限制某些IP地址、子网、协议、端口等的速率。
+- 限制点对点的流量。
+- 数据包优先级。
+- 配置流量突发，进行流量加速。
+- 应用不同的基于时间的限制。
+- 在用户之间平等地分享可用的流量，或根据信道的负载情况来分享。
 
-Queue implementation in MikroTik RouterOS is based on Hierarchical Token Bucket (HTB). HTB allows to the creation of a hierarchical queue structure and determines relations between queues. These hierarchical structures can be attached at two different places, the [Packet Flow diagram](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) illustrate both _input_ and _postrouting_ chains.
+MikroTik RouterOS的队列实现是基于分层令牌桶（HTB）。HTB允许创建一个分层的队列结构并确定队列之间的关系。这些分层结构可以连接在两个不同的地方，[数据包流量图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 说明了 _input_ 和 _postrouting_ 链。
 
-There are two different ways how to configure queues in RouterOS:
+在RouterOS中，有两种不同的方法来配置队列：
 
-- **/queue simple** menu - designed to ease configuration of simple, every day queuing tasks (such as single client upload/download limitation, p2p traffic limitation, etc.).
-- **/queue tree** menu - for implementing advanced queuing tasks (such as global prioritization policy, user group limitations). Requires marked packet flows from [**/ip firewall mangle**](https://help.mikrotik.com/docs/display/ROS/Basic+Concepts) facility.
+- **/queue simple** -旨在方便配置简单的、日常的队列任务（如单个客户上传/下载限制、P2P流量限制等）。
+- **/queue tree** - 用于执行高级排队任务（如全局优先策略、用户组限制）。需要从 [/ip firewall mangle](https://help.mikrotik.com/docs/display/ROS/Basic+Concepts) 中标记数据包流量。
 
-## Rate limitation principles
+## 速率限制原则
 
-  
+速率限制用来控制网络接口上发送或接收流量的速率。小于等于指定速率的流量被发送，而超过该速率的流量则被丢弃或延迟。
 
-Rate limiting is used to control the rate of traffic flow sent or received on a network interface. Traffic which rate that is less than or equal to the specified rate is sent, whereas traffic that exceeds the rate is dropped or delayed.
+速率限制可以通过两种方式进行：
 
-Rate limiting can be performed in two ways:
+1. 丢弃所有超过速率限制的数据包 - _**速率限制（丢弃或整形）**_ _（当队列大小=0时，100%的速率限制）_。
+2. 将超过特定速率限制的数据包延迟在队列中，并在可能的情况下传输 _**速率均衡（调度器）**_ （当 _queue-size=unlimited_ 时，100%速率均衡）。
 
-1.  discard all packets that exceed rate limit – _**rate-limiting (dropper or shaper)**_ _(100% rate limiter when queue-size=0)_
-2.  delay packets that exceed specific rate limit in the queue and transmit its when it is possible – _**rate equalizing (scheduler)**_ (100% rate equalizing when _queue-size=unlimited_)
-
-Next figure explains the difference between _rate limiting_ and rate _equalizing_:
+下图解释了 _速率限制_ 和 _速率均衡_ 之间的区别：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8001.png?version=2&modificationDate=1615377025309&api=v2)
 
-As you can see in the first case all traffic exceeds a specific rate and is dropped. In another case, traffic exceeds a specific rate and is delayed in the queue and transmitted later when it is possible, but note that the packet can be delayed only until the queue is not full. If there is no more space in the queue buffer, packets are dropped.
+正如所看到的，在第一种情况下，所有的流量都超过了特定的速率而被丢弃。在另一种情况下，流量超过了特定的速率，在队列中被延迟，以后再传输，但要注意，队列不满时数据包才会被延迟。如果队列缓冲区中没有更多的空间，数据包就会被丢弃。
 
-For each queue we can define two rate limits:
+对于每个队列，可以定义两个速率限制：
 
-- **CIR** (Committed Information Rate) – (**limit-at** in RouterOS) worst-case scenario, the flow will get this amount of traffic rate regardless of other traffic flows. At any given time, the bandwidth should not fall below this committed rate.
-- **MIR** (Maximum Information Rate) – (**max-limit** in RouterOS) best-case scenario, the maximum available data rate for flow, if there is free any part of the bandwidth.
+- **CIR**（承诺信息速率）-（RouterOS中的 **limit-at**）最坏情况下，无论其他流量如何，该流量将获得这个速率。在任何时候带宽都不应该低于这个承诺速率。
+- **MIR** (最大信息速率) - (RouterOS中的**max-limit** ) 最佳情况下，如果有空闲的带宽，流的最大可用速率。
 
-## Simple Queue
+## 简单队列
 
-  
+`/queue simple`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/queue simple</code></div></div></td></tr></tbody></table>
+简单队列是一个简单的方式，用来限制特定目标的流量。此外，可以使用简单队列来建立先进的QoS应用程序，具有有用的功能：
 
-A simple queue is a plain way how to limit traffic for a particular target. Also, you can use simple queues to build advanced QoS applications. They have useful integrated features:
+- 点对点流量排队。
+- 在选定的时间间隔上应用队列规则。
+- 确定优先次序。
+- 使用来自 _/ip firewall mangle_ 的多个数据包标记。
+- 双向流量的整形（调度）（对上传+下载的总量有一个限制）。
 
-- peer-to-peer traffic queuing;
-- applying queue rules on chosen time intervals;
-- prioritization;
-- using multiple packet marks from _/ip firewall mangle_
-- traffic shaping (scheduling) of bidirectional traffic (one limit for the total of upload + download)
+简单的队列有一个严格的顺序-每个数据包必须经过队列，直到到达符合数据包参数条件的队列，或者直到到达队列列表的末端。例如，在有1000个队列的情况下，最后一个队列的数据包将需要通过999个队列才能到达目的地。
 
-Simple queues have a strict order - each packet must go through every queue until it reaches one queue which conditions fit packet parameters or until the end of the queues list is reached. For example, In the case of 1000 queues, a packet for the last queue will need to proceed through 999 queues before it will reach the destination. 
+### 配置示例
 
-### Configuration example
-
-In the following example, we have one SOHO device with two connected units PC and Server.
+在下面的例子中，有一个SOHO设备，有两个连接的单位PC和服务器。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Simple%20Queue.jpg?version=1&modificationDate=1571740133102&api=v2)
 
-We have a 15 Mbps connection available from ISP in this case. We want to be sure the server receives enough traffic, so we will configure a simple queue with a _limit-at_ parameter to guarantee a server to receive 5Mbps:
+在这种情况下，有一个来自ISP的15Mbps的连接。要确保服务器收到足够的流量，需要配置一个简单的队列，其中有一个 _limit-at_ 参数，保证服务器收到5Mbps。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/queue simple</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">limit-at</code><code class="ros plain">=5M/5M</code> <code class="ros value">max-limit</code><code class="ros plain">=15M/15M</code> <code class="ros value">name</code><code class="ros plain">=queue1</code> <code class="ros value">target</code><code class="ros plain">=192.168.88.251/32</code></div></div></td></tr></tbody></table>
+```shell
+/queue simple
+add limit-at=5M/5M max-limit=15M/15M name=queue1 target=192.168.88.251/32
+```
 
-That is all. The server will get 5 Mbps of traffic rate regardless of other traffic flows. If you are using the default configuration, be sure the FastTrack rule is disabled for this particular traffic, otherwise, it will bypass Simple Queues and they will not work.
+这就是全部。服务器将获得5 Mbps的流量速率，而不考虑其他流量。如果使用的是默认配置，要确保为这一特定流量禁用FastTrack规则，否则它将绕过简单队列，无法工作。
 
-## Queue Tree
+## 队列树
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/queue tree</code></div></div></td></tr></tbody></table>
+`/queue tree`
 
-The queue tree creates only a one-directional queue in one of the HTBs. It is also the only way how to add a queue on a separate interface. This way it is possible to ease mangle configuration - you don't need separate marks for download and upload - only the upload will get to the Public interface and only the download will get to a Private interface. The main difference from Simple Queues is that the Queue tree is not ordered - all traffic passes it together.
+队列树只在一个HTB中创建一个单向队列。这也是如何在一个单独的接口上添加队列的唯一方法。这样可以减轻配置上的纠结-不需要为下载和上传做单独的标记-上传会进入公共接口，下载会进入私有接口。与简单队列的主要区别是，队列树不是有序的-所有流量一起通过。
 
-### Configuration example
+### 配置示例
 
-In the following example, we will mark all the packets coming from preconfigured _in-interface-list=LAN_ and will limit the traffic with a queue tree based on these packet marks.
+在下面的例子中，将标记所有来自预先配置的 _in-interface-list=LAN_ 的数据包，并根据这些数据包标记用队列树限制流量。
 
-Let\`s create a firewall address-list:
+创建一个防火墙地址列表：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/ip firewall address-list</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=www.youtube.com</code> <code class="ros value">list</code><code class="ros plain">=Youtube</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip firewall address-list print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, D - dynamic</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; LIST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CREATION-TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIMEOUT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; www.youtube.com&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 D ;;; www.youtube.com</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 216.58.211.14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 D ;;; www.youtube.com</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 216.58.207.238&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 D ;;; www.youtube.com</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 216.58.207.206&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 D ;;; www.youtube.com</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 172.217.21.174&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 D ;;; www.youtube.com</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 216.58.211.142&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:11</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">6 D ;;; www.youtube.com</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 172.217.22.174&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:47:21</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">7 D ;;; www.youtube.com</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">Youtube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 172.217.21.142&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oct</code><code class="ros constants">/17/2019 14:52:21</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /ip firewall address-list
+add address=www.youtube.com list=Youtube
+[admin@MikroTik] > ip firewall address-list print
+Flags: X - disabled, D - dynamic
+ #   LIST                                                       ADDRESS                                                                        CREATION-TIME        TIMEOUT            
+ 0   Youtube                                                    www.youtube.com                                                                oct/17/2019 14:47:11
+ 1 D ;;; www.youtube.com
+     Youtube                                                    216.58.211.14                                                                  oct/17/2019 14:47:11
+ 2 D ;;; www.youtube.com
+     Youtube                                                    216.58.207.238                                                                 oct/17/2019 14:47:11
+ 3 D ;;; www.youtube.com
+     Youtube                                                    216.58.207.206                                                                 oct/17/2019 14:47:11
+ 4 D ;;; www.youtube.com
+     Youtube                                                    172.217.21.174                                                                 oct/17/2019 14:47:11
+ 5 D ;;; www.youtube.com
+     Youtube                                                    216.58.211.142                                                                 oct/17/2019 14:47:11
+ 6 D ;;; www.youtube.com
+     Youtube                                                    172.217.22.174                                                                 oct/17/2019 14:47:21
+ 7 D ;;; www.youtube.com
+     Youtube                                                    172.217.21.142                                                                 oct/17/2019 14:52:21
+```
 
-Mark packets with firewall mangle facility:
+用防火墙mangle标记数据包:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/ip firewall mangle</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=mark-packet</code> <code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">dst-address-list</code><code class="ros plain">=Youtube</code> <code class="ros value">in-interface-list</code><code class="ros plain">=LAN</code> <code class="ros value">new-packet-mark</code><code class="ros plain">=pmark-Youtube</code> <code class="ros value">passthrough</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /ip firewall mangle
+add action=mark-packet chain=forward dst-address-list=Youtube in-interface-list=LAN new-packet-mark=pmark-Youtube passthrough=yes
+```
 
-Configure the queue tree based on previously marked packets:
+根据之前标记的数据包配置队列树:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/queue tree</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">max-limit</code><code class="ros plain">=5M</code> <code class="ros value">name</code><code class="ros plain">=Limiting-Youtube</code> <code class="ros value">packet-mark</code><code class="ros plain">=pmark-Youtube</code> <code class="ros value">parent</code><code class="ros plain">=global</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /queue tree
+add max-limit=5M name=Limiting-Youtube packet-mark=pmark-Youtube parent=global
+```
 
-Check Queue tree stats to be sure traffic is matched:
+检查队列树的统计数据，确保流量是匹配的:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; queue tree </code><code class="ros functions">print </code><code class="ros plain">stats</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"Limiting-Youtube"</code> <code class="ros value">parent</code><code class="ros plain">=global</code> <code class="ros value">packet-mark</code><code class="ros plain">=pmark-Youtube</code> <code class="ros value">rate</code><code class="ros plain">=0</code> <code class="ros value">packet-rate</code><code class="ros plain">=0</code> <code class="ros value">queued-bytes</code><code class="ros plain">=0</code> <code class="ros value">queued-packets</code><code class="ros plain">=0</code> <code class="ros value">bytes</code><code class="ros plain">=67887</code> <code class="ros value">packets</code><code class="ros plain">=355</code> <code class="ros value">dropped</code><code class="ros plain">=0</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > queue tree print stats
+Flags: X - disabled, I - invalid
+ 0   name="Limiting-Youtube" parent=global packet-mark=pmark-Youtube rate=0 packet-rate=0 queued-bytes=0 queued-packets=0 bytes=67887 packets=355 dropped=0
+```
 
-  
+## 队列类型
 
-## Queue Types
+`/queue type`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/queue type</code></div></div></td></tr></tbody></table>
+这个子菜单列出了默认创建的队列类型，允许添加新的用户特定队列。
 
-This sub-menu list by default created queue types and allows to add of new user-specific ones.
+默认情况下，RouterOS创建了以下预定义的队列类型：
 
-By default RouterOS creates the following pre-defined queue types:
+```shell
+[admin@MikroTik] > /queue type print
+Flags: * - default
+ 0 * name="default" kind=pfifo pfifo-limit=50
+ 
+ 1 * name="ethernet-default" kind=pfifo pfifo-limit=50
+ 
+ 2 * name="wireless-default" kind=sfq sfq-perturb=5 sfq-allot=1514
+ 
+ 3 * name="synchronous-default" kind=red red-limit=60 red-min-threshold=10 red-max-threshold=50 red-burst=20 red-avg-packet=1000
+ 
+ 4 * name="hotspot-default" kind=sfq sfq-perturb=5 sfq-allot=1514
+ 
+ 5 * name="pcq-upload-default" kind=pcq pcq-rate=0 pcq-limit=50KiB pcq-classifier=src-address pcq-total-limit=2000KiB pcq-burst-rate=0 pcq-burst-threshold=0 pcq-burst-time=10s pcq-src-address-mask=32
+     pcq-dst-address-mask=32 pcq-src-address6-mask=128 pcq-dst-address6-mask=128
+ 
+ 6 * name="pcq-download-default" kind=pcq pcq-rate=0 pcq-limit=50KiB pcq-classifier=dst-address pcq-total-limit=2000KiB pcq-burst-rate=0 pcq-burst-threshold=0 pcq-burst-time=10s pcq-src-address-mask=32
+     pcq-dst-address-mask=32 pcq-src-address6-mask=128 pcq-dst-address6-mask=128
+ 
+ 7 * name="only-hardware-queue" kind=none
+ 
+ 8 * name="multi-queue-ethernet-default" kind=mq-pfifo mq-pfifo-limit=50
+ 
+ 9 * name="default-small" kind=pfifo pfifo-limit=10
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/queue type </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: * - default</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"default"</code> <code class="ros value">kind</code><code class="ros plain">=pfifo</code> <code class="ros value">pfifo-limit</code><code class="ros plain">=50</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"ethernet-default"</code> <code class="ros value">kind</code><code class="ros plain">=pfifo</code> <code class="ros value">pfifo-limit</code><code class="ros plain">=50</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"wireless-default"</code> <code class="ros value">kind</code><code class="ros plain">=sfq</code> <code class="ros value">sfq-perturb</code><code class="ros plain">=5</code> <code class="ros value">sfq-allot</code><code class="ros plain">=1514</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"synchronous-default"</code> <code class="ros value">kind</code><code class="ros plain">=red</code> <code class="ros value">red-limit</code><code class="ros plain">=60</code> <code class="ros value">red-min-threshold</code><code class="ros plain">=10</code> <code class="ros value">red-max-threshold</code><code class="ros plain">=50</code> <code class="ros value">red-burst</code><code class="ros plain">=20</code> <code class="ros value">red-avg-packet</code><code class="ros plain">=1000</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"hotspot-default"</code> <code class="ros value">kind</code><code class="ros plain">=sfq</code> <code class="ros value">sfq-perturb</code><code class="ros plain">=5</code> <code class="ros value">sfq-allot</code><code class="ros plain">=1514</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pcq-upload-default"</code> <code class="ros value">kind</code><code class="ros plain">=pcq</code> <code class="ros value">pcq-rate</code><code class="ros plain">=0</code> <code class="ros value">pcq-limit</code><code class="ros plain">=50KiB</code> <code class="ros value">pcq-classifier</code><code class="ros plain">=src-address</code> <code class="ros value">pcq-total-limit</code><code class="ros plain">=2000KiB</code> <code class="ros value">pcq-burst-rate</code><code class="ros plain">=0</code> <code class="ros value">pcq-burst-threshold</code><code class="ros plain">=0</code> <code class="ros value">pcq-burst-time</code><code class="ros plain">=10s</code> <code class="ros value">pcq-src-address-mask</code><code class="ros plain">=32</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">pcq-dst-address-mask</code><code class="ros plain">=32</code> <code class="ros value">pcq-src-address6-mask</code><code class="ros plain">=128</code> <code class="ros value">pcq-dst-address6-mask</code><code class="ros plain">=128</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">6 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pcq-download-default"</code> <code class="ros value">kind</code><code class="ros plain">=pcq</code> <code class="ros value">pcq-rate</code><code class="ros plain">=0</code> <code class="ros value">pcq-limit</code><code class="ros plain">=50KiB</code> <code class="ros value">pcq-classifier</code><code class="ros plain">=dst-address</code> <code class="ros value">pcq-total-limit</code><code class="ros plain">=2000KiB</code> <code class="ros value">pcq-burst-rate</code><code class="ros plain">=0</code> <code class="ros value">pcq-burst-threshold</code><code class="ros plain">=0</code> <code class="ros value">pcq-burst-time</code><code class="ros plain">=10s</code> <code class="ros value">pcq-src-address-mask</code><code class="ros plain">=32</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">pcq-dst-address-mask</code><code class="ros plain">=32</code> <code class="ros value">pcq-src-address6-mask</code><code class="ros plain">=128</code> <code class="ros value">pcq-dst-address6-mask</code><code class="ros plain">=128</code></div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">7 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"only-hardware-queue"</code> <code class="ros value">kind</code><code class="ros plain">=none</code></div><div class="line number20 index19 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">8 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"multi-queue-ethernet-default"</code> <code class="ros value">kind</code><code class="ros plain">=mq-pfifo</code> <code class="ros value">mq-pfifo-limit</code><code class="ros plain">=50</code></div><div class="line number22 index21 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">9 * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"default-small"</code> <code class="ros value">kind</code><code class="ros plain">=pfifo</code> <code class="ros value">pfifo-limit</code><code class="ros plain">=10</code></div></div></td></tr></tbody></table>
+所有的RouterBOARD都有默认的队列类型 "**only-hardware-queue**" 和 "kind=none"。"only-hardware-queue "使接口只有硬件传输描述符环形缓冲区，它本身就像一个队列。通常情况下，至少有100个数据包可以在发送描述符环形缓冲区中排队等待发送。对于不同类型的以太网MAC，传输描述符环形缓冲区的大小和可排队的数据包数量各不相同。软件队列对SMP系统不会特别有利，因为它消除了从不同的CPU/cores同步访问它的要求，这是资源密集型的。设置 "only-hardware-queue "需要以太网驱动程序支持，所以它只适用于某些以太网接口，主要是在RouterBOARD上。
 
-All RouterBOARDS have default queue type "**only-hardware-queue"** with "kind=none". "only-hardware-queue" leaves interface with only hardware transmit descriptor ring buffer which acts as a queue in itself. Usually, at least 100 packets can be queued for transmit in transmit descriptor ring buffer. Transmit descriptor ring buffer size and the number of packets that can be queued in it varies for different types of ethernet MACs. Having no software queue is especially beneficial on SMP systems because it removes the requirement to synchronize access to it from different CPUs/cores which is resource-intensive. Having the possibility to set "only-hardware-queue" requires support in an ethernet driver so it is available only for some ethernet interfaces mostly found on RouterBOARDs.
+一个 **multi-queue-ethernet-default** 在SMP系统上是有益的，该系统的以太网接口支持多个传输队列，并且有一个Linux驱动支持多个传输队列。为每个硬件队列配备一个软件队列，也许会减少同步访问它们的时间。
 
-A **"multi-queue-ethernet-default"** can be beneficial on SMP systems with ethernet interfaces that have support for multiple transmit queues and have a Linux driver support for multiple transmit queues. By having one software queue for each hardware queue there might be less time spent on synchronizing access to them.
+only-hardware-queue和multi-queue-ethernet-default的改进只有在没有"/queue tree "条目以特定接口为父级时才会出现。
 
-Improvement from only-hardware-queue and multi-queue-ethernet-default is present only when there is no "/queue tree" entry with a particular interface as a parent.
+### 种类
 
-### Kinds
-
-Queue kinds are packet processing algorithms. Kind describe which packet will be transmitted next in the line. RouterOS supports the following Queueing kinds:
+队列种类是数据包处理算法。类型描述了哪一个数据包将在队列中传送。RouterOS支持以下种类：
 
 - FIFO (BFIFO, PFIFO, MQ PFIFO)
 - RED
@@ -123,263 +175,134 @@ Queue kinds are packet processing algorithms. Kind describe which packet will b
 
 #### FIFO
 
-These kinds are based on the FIFO algorithm (First-In-First-Out). The difference between **PFIFO** and **BFIFO** is that one is measured in packets and the other one in bytes. These queues use **pfifo-limit** and **bfifo-limit** parameters.
+这些种类基于FIFO算法（先进先出）。**PFIFO** 和 **BFIFO** 之间的区别是，一个是以数据包为单位，另一个是以字节为单位。这些队列使用 **pfifo-limit** 和 **bfifo-limit** 参数。
 
-Every packet that cannot be enqueued (if the queue is full), is dropped. Large queue sizes can increase latency but utilize the channel better.
+每一个不能排队的数据包（如果队列已满）都会被丢弃。大的队列规模会增加延迟，但可以更好地利用通道。
 
-**MQ-PFIFO** is _pfifo_ with support for multiple transmit queues. This queue is beneficial on SMP systems with ethernet interfaces that have support for multiple transmit queues and have a Linux driver support for multiple transmit queues (mostly on x86 platforms). This kind uses the **mq-pfifo-limit** parameter.
+**MQ-PFIFO** 是 _pfifo_，支持多个发送队列。这种队列在具有以太网接口的SMP系统上是有益的，这些以太网接口支持多个发送队列，并且有支持多个发送队列的Linux驱动（主要在x86平台）。它使用 **mq-pfifo-limit** 参数。
 
 #### RED
 
-Random Early Drop is a queuing mechanism that tries to avoid network congestion by controlling the average queue size. The average queue size is compared to two thresholds: a minimum (min<sub>th</sub>) and maximum (max<sub>th</sub>) threshold. If the average queue size (avg<sub>q</sub>) is less than the minimum threshold, no packets are dropped. When the average queue size is greater than the maximum threshold, all incoming packets are dropped. But if the average queue size is between the minimum and maximum thresholds packets are randomly dropped with probability P<sub>d</sub> where probability is exact a function of the average queue size: P<sub>d</sub> = P<sub>max</sub>(avg<sub>q</sub> – min<sub>th</sub>)/ (max<sub>th</sub> - min<sub>th</sub>). If the average queue grows, the probability of dropping incoming packets grows too. P<sub>max</sub> - ratio, which can adjust the packet discarding probability abruptness, (the simplest case P<sub>max</sub> can be equal to one. The 8.2 diagram shows the packet drop probability in the RED algorithm.
+Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min<sub>th</sub>) 和最大 (max<sub>th</sub>) 阈值。 如果平均队列大小 (avg<sub>q</sub>) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P<sub>d</sub> 随机丢弃，其中概率是平均队列大小的函数：P<sub>d</sub> = P<sub>max</sub>(avg<sub>q</sub> – min<sub>th</sub>)/ (max<sub>th</sub> - min<sub>th</sub> >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P<sub>max</sub> - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P<sub>max</sub>可以等于1)。
+图8.2显示了丢包概率的RED算法。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8002.png?version=2&modificationDate=1615377059686&api=v2)
 
 #### SFQ
 
-Stochastic Fairness Queuing (SFQ) is ensured by hashing and round-robin algorithms. SFQ is called "Stochastic" because it does not really allocate a queue for each flow, it has an algorithm that divides traffic over a limited number of queues (1024) using a hashing algorithm.
+随机公平队列 (SFQ) 由哈希和循环算法确保。 SFQ 之所以被称为“随机”，是因为它并没有真正为每个流分配一个队列，它有一个算法，使用哈希算法将流量分配到有限数量的队列 (1024) 上。
 
-Traffic flow may be uniquely identified by 4 options (_src-address, dst-address, src-port,_ and _dst-port_), so these parameters are used by the SFQ hashing algorithm to classify packets into one of 1024 possible sub-streams. Then round-robin algorithm will start to distribute available bandwidth to all sub-streams, on each round giving **sfq-allot** bytes of traffic. The whole SFQ queue can contain 128 packets and there are 1024 sub-streams available. The 8.3 diagram shows the SFQ operation:
+流量可以由 4 个选项（_src-address、dst-address、src-port、_ 和 _dst-port_）唯一标识，因此 SFQ 哈希算法使用这些参数将数据包分类到 1024 个可能的子流之一 . 然后循环算法将开始向所有子流分配可用带宽，在每一轮中给出 **sfq-allot** 字节的流量。 整个SFQ队列可以包含128个数据包，有1024个子流可用。  
+图8.3显示了 SFQ 操作：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8003.png?version=2&modificationDate=1615377078449&api=v2)
 
 #### PCQ
 
-PCQ algorithm is very simple - at first, it uses selected classifiers to distinguish one sub-stream from another, then applies individual FIFO queue size and limitation on every sub-stream, then groups all sub-streams together and applies global queue size and limitation.
+PCQ 算法非常简单——首先，它使用选定的分类器将一个子流与另一个子流区分开来，然后对每个子流应用单独的 FIFO 队列大小和限制，然后将所有子流组合在一起并应用全局队列大小和限制 .
 
-PCQ parameters:
+PCQ参数：
 
-- **pcq-classifier** (dst-address | dst-port | src-address | src-port; default: "") : selection of sub-stream identifiers
-- **pcq-rate** (number): maximal available data rate of each sub-steam
-- **pcq-limit** (number): queue size of single sub-stream (in KiB)
-- **pcq-total-limit** (number): maximum amount of queued data in all sub-streams (in KiB)
+- **pcq-classifier** (dst-address | dst-port | src-address | src-port; default: "") : 选择子流标识符
+- **pcq-rate** (数字): 每个子流的最大可用速率
+- **pcq-limit**（数字):单个子流的队列大小（以 KiB 为单位）
+- **pcq-total-limit** (数字): 所有子流中的最大排队量（以 KiB 为单位）
 
- It is possible to assign a speed limitation to sub-streams with the **pcq-rate** option. If "pcq-rate=0" sub-streams will divide available traffic equally.
+可以用 **pcq-rate** 选项为子流分配速度限制。 如果“pcq-rate=0”，子流将平均分配可用流量。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/PCQ_Alg.png?version=3&modificationDate=1615377092954&api=v2)
 
-For example, instead of having 100 queues with 1000kbps limitation for download, we can have one PCQ queue with 100 sub-streams
+例如，有一个 PCQ 队列和 100 个子流，而不是有 100 个下载限制为 1000kbps 的队列
 
-PCQ has burst implementation identical to Simple Queues and Queue Tree:
+PCQ 具有与简单队列和队列树相同的突发实现：
 
-- **pcq-burst-rate** (number): maximal upload/download data rate which can be reached while the burst for substream is allowed
-- **pcq-burst-threshold** (number): this is the value of burst on/off switch
-- **pcq-burst-time** (time): a period of time (in seconds) over which the average data rate is calculated. (This is NOT the time of actual burst)
+- **pcq-burst-rate**（数字）：允许子流突发时可以达到的最大上传/下载数据速率
+- **pcq-burst-threshold**（数字）：这是突发开/关值
+- **pcq-burst-time**（时间）：计算平均速率的时间段（以秒为单位）。 （不是实际突发的时间）
 
-PCQ also allows using different size IPv4 and IPv6 networks as sub-stream identifiers. Before it was locked to a single IP address. This is done mainly for IPv6 as customers from an ISP point of view will be represented by /64 network, but devices in customers network will be /128. PCQ can be used for both of these scenarios and more. PCQ parameters:
+PCQ 还允许用不同大小的 IPv4 和 IPv6 网络作为子流标识符， 在它被锁定到单个 IP 地址之前。 这主要针对 IPv6 完成，因为从 ISP 的角度来看，客户将用 /64 网络表示，但客户网络中的设备是 /128。 PCQ 可用于这两种情况以及更多情况。 PCQ参数：
 
-- **pcq-dst-address-mask** (number): the size of the IPv4 network that will be used as a dst-address sub-stream identifier
-- **pcq-src-address-mask** (number): the size of the IPv4 network that will be used as an src-address sub-stream identifier
-- **pcq-dst-address6-mask** (number): the size of the IPV6 network that will be used as a dst-address sub-stream identifier
-- **pcq-src-address6-mask** (number): the size of the IPV6 network that will be used as an src-address sub-stream identifier
+- **pcq-dst-address-mask**（数字）：用作 dst-address 子流标识符的 IPv4 网络的大小
+- **pcq-src-address-mask**（数字）：用作 src-address 子流标识符的 IPv4 网络的大小
+- **pcq-dst-address6-mask**（数字）：用作 dst-address 子流标识符的 IPV6 网络的大小
+- **pcq-src-address6-mask**（数字）：用作 src-address 子流标识符的 IPV6 网络的大小
 
-  
-
-The following queue kinds CoDel, FQ-Codel, and CAKE available since RouterOS version 7.1beta3.
+以下队列类型 CoDel、FQ-Codel 和 CAKE 从 RouterOS 版本 7.1beta3 开始可用。
 
 #### CoDel
 
-CoDel (Controlled-Delay Active Queue Management) algorithm uses the local minimum queue as a measure of the persistent queue, similarly, it uses a minimum delay parameter as a measure of the standing queue delay. Queue size is calculated using packet residence time in the queue.
+CoDel（Controlled-Delay Active Queue Management）算法使用局部最小队列作为持久队列的度量，类似地，它使用最小延迟参数作为保持队列延迟的度量。 队列大小是使用队列中的数据包停留时间计算的。
 
-**Properties**
+**属性**
 
-| 
-**Property**
-
- | 
-
-**Description**
-
- |     |
- | --- |  |
- |     |
-
-**Property**
-
- | 
-
-**Description**
-
- |                                      |
- | ------------------------------------ |  |
- | **codel-ce-threshold** (_default_: ) |
-
-Marks packets above a configured threshold with ECN.
-
- |
-| **codel-ecn** (_default_: **no**) | 
-
-An option is used to mark packets instead of dropping them.
-
- |
-| **codel-interval** (_default_: **100ms**) | 
-
-Interval should be set on the order of the worst-case RTT through the bottleneck giving endpoints sufficient time to react.
-
- |
-| **codel-limit** (_default_: **1000**) | Queue limit, when the limit is reached, incoming packets are dropped. |
-| **codel-target** (_default_: **5ms**) | 
-
-Represents an acceptable minimum persistent queue delay.
-
- |
+| 属性                                       | 说明                                                                  |
+| ------------------------------------------ | --------------------------------------------------------------------- |
+| **codel-ce-threshold**（_default_：）      | 使用 ECN 标记高于配置阈值的数据包。                                   |
+| **codel-ecn**（_default_：**no**）         | 用于标记数据包而不是丢弃它们。                                        |
+| **codel-interval**（_default_：**100ms**） | 间隔要按照最坏情况 RTT 的顺序设置，通过瓶颈给端点足够的时间做出反应。 |
+| **codel-limit** (_default_: **1000**)      | 队列限制，当达到限制时，传入的数据包将被丢弃。                        |
+| **codel-target** (_default_: **5ms**)      | 表示可接受的最小持续队列延迟。                                        |
 
 #### FQ-Codel
 
-CoDel - Fair Queuing (FQ) with Controlled Delay (CoDel) uses a randomly determined model to classify incoming packets into different flows and is used to provide a fair share of the bandwidth to all the flows using the queue. Each flow is managed using CoDel queuing discipline which internally uses a FIFO algorithm.
+CoDel - 具有受控延迟 (CoDel) 的公平队列 (FQ) 使用随机确定的模型将传入数据包分类到不同的流中，并用于为使用队列的所有流提供公平的带宽份额。 每个流都使用内部 FIFO 算法的 CoDel 排队规则进行管理。
 
-**Properties**
+**属性**
 
-| 
-**Property**
-
- | 
-
-**Description**
-
- |     |
- | --- |  |
- |     |
-
-**Property**
-
- | 
-
-**Description**
-
- |                                         |
- | --------------------------------------- | ----------------------------------------------------------- |
- | **fq-codel-ce-threshold** (_default_: ) | Marks packets above a configured threshold with ECN.        |
- | **fq-codel-ecn** (_default_: **yes**)   | An option is used to mark packets instead of dropping them. |
- | **fq-codel-flows** (default: **1024**)  |
-
-A number of flows into which the incoming packets are classified.
-
- |
-| **fq-codel-interval** (_default_: **100ms**) | Interval should be set on the order of the worst-case RTT through the bottleneck giving endpoints sufficient time to react. |
-| **fq-codel-limit** (_default_: **10240**) | Queue limit, when the limit is reached, incoming packets are dropped. |
-| **fq-codel-memlimit** (default: **32.0MiB**) | 
-
-A total number of bytes that can be queued in this FQ-CoDel instance. Will be enforced from the _fq-codel-limit_ parameter.
-
- |
-| **fq-codel-quantum** (_default_: **1514**) | 
-
-A number of bytes used as 'deficit' in the fair queuing algorithm. Default (1514 bytes) corresponds to the Ethernet MTU plus the hardware header length of 14 bytes.
-
- |
-| **fq-codel-target** (_default_: **5ms**) | Represents an acceptable minimum persistent queue delay. |
+| 属性                                          | 说明                                                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **fq-codel-ce-threshold**（_default_：）      | 使用 ECN 标记高于设定阈值的数据包。                                                               |
+| **fq-codel-ecn**（_default_：**yes**）        | 标记数据包而不是丢弃。                                                                            |
+| **fq-codel-flows**（default：**1024**）       | 传入数据包分类的流的数量。                                                                        |
+| **fq-codel-interval** (_default_: **100ms**)  | 间隔要按照最坏情况 RTT 的顺序设置，通过瓶颈给端点足够的时间做出反应。                             |
+| **fq-codel-limit**（_default_：**10240**）    | 队列限制，当达到限制时，传入的数据包将被丢弃。                                                    |
+| **fq-codel-memlimit**（default：**32.0MiB**） | 可以在此 FQ-CoDel 实例中排队的字节总数。 将从 _fq-codel-limit_ 参数强制执行。                     |
+| **fq-codel-quantum**（_default_：**1514**）   | 在公平队列算法中用作“不足”的字节数。 默认值（1514 字节）对应以太网 MTU 加上 14 字节的硬件头长度。 |
+| **fq-codel-target**（_default_：**5ms**）     | 表示可接受的最小持续队列延迟。                                                                    |
 
 #### CAKE
 
-CAKE - Common Applications Kept Enhanced (CAKE) implemented as a _queue discipline_ (qdisc) for the Linux kernel uses COBALT (AQM algorithm combining Codel and BLUE) and a variant of DRR++ for flow isolation. In other words, Cake’s fundamental design goal is user-friendliness. All settings are optional; the default settings are chosen to be practical in most common deployments. In most cases, the configuration requires only a bandwidth parameter to get useful results,
+CAKE-作为Linux内核的 _queue discipline_ （qdisc）实现的Common Applications Kept Enhanced（CAKE）使用COBALT（结合Codel和BLUE的AQM算法）和DRR++的一个变种进行流量隔离。换句话说，Cake的基本设计目标是用户友好性。所有的设置都是可选的；选择默认设置是为了在大多数常见的部署中更实用。在大多数情况下，配置只需要一个带宽参数就可以得到有用的结果。
 
-**Properties**
+**属性**
 
-| 
-**Property**
+| 属性                                                                                                                              | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **cake-ack-filter** _(default:_ **none** )                                                                                        |
+| **cake-atm** _(default:_ )                                                                                                        | 补偿ATM单元帧，这通常出现在ADSL链路上。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **cake-autorate-ingress** _(yes\/no, default:_ )                                                                                  | 根据到达该qdisc的流量进行自动容量估计。这对蜂窝状链路有可能有用，因为蜂窝状链路的质量往往是随机变化的。 带宽限制参数可结合使用以指定一个初始估计值。整形器定期被设置为略低于估计速率的带宽。 评估器不能估计自己下游链路的带宽。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **cake-bandwidth** _(default：_ )                                                                                                 | 设置整形器带宽。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **cake-diffserv** _(default:_ **diffserv3**)                                                                                      | CAKE可以根据Diffserv字段将流量分为 "tins"。<br>- **diffserv4** 提供一个通用的Diffserv实现，有四个tins：Bulk（CS1），6.25%的阈值，一般为低优先级。Best effort（常规），100%阈值。Video（AF4x、AF3x、CS3、AF2x、CS2、TOS4、TOS1），50%阈值。Voice（CS7、CS6、EF、VA、CS5、CS4），25%阈值。<br>- **diffserv3** 默认提供一个简单的、通用的Diffserv实现，有三个门限。Bulk（CS1），6.25%阈值，一般为低优先级。Best effort（常规），100%阈值。Voice（CS7、CS6、EF、VA、TOS4），25%阈值，减少Codel间隔。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **cake-flowmode** _(dsthost/dual-dsthost/dual-srchost/flowblind/flows/hosts/srchost/triple-isolate, default:_ **triple-isolate**) | - **flowblind** - 禁用流量隔离； 所有流量都通过tin队列。<br>- **srchost** - 流仅由源地址定义。<br>- **dsthost** 流仅由目标地址定义。<br>- **hosts** - 流由源-目标主机对定义。 这是主机隔离，而不是流隔离。<br>- **flows** - 流由源地址、目标地址、传输协议、源端口和目标端口的整个 5 元组定义。 这是 SFQ 和 fq_codel 执行的流隔离类型。<br>- **dual-srchost** 流由 5 元组定义，公平性首先应用于源地址，然后应用于各个流。 适用于从 LAN 到 Internet 的出口流量，它可以防止任何 LAN 主机独占上行链路，无论他们使用多少流量。<br>- **dual-dsthost** 流由 5 元组定义，公平性首先用于目标地址，然后用于各个流。 适用于从 Internet 到 LAN 的入口流量，它可以防止任何 LAN 主机独占下行链路，无论使用多少流量。<br>- **triple-isolate** - 流由 5 元组定义，公平性应用于源 * 和 * 目标地址智能（即不仅仅是主机对），也适用于单个流。<br>- **nat** 指示 Cake 在应用流隔离规则之前执行 NAT 查找，确定数据包的真实地址和端口号，提高 NAT“内部”主机之间的公平性。 这在“flowblind”或“flows”模式下没有实际效果，或者如果 NAT 在不同的主机上执行。<br>- **nonat**（默认）CAKE不会执行 NAT 查找。 流量隔离将使用 Cake 所连接的接口直接可见的地址和端口号来执行。 |
+| **cake-memlimit** _(default:_ )                                                                                                   | 将 Cake 消耗的内存限制为 LIMIT 字节。 默认情况下，限制是根据带宽和 RTT 设置计算的。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **cake-mpu** _( -64 ... 256，default：_ )                                                                                         | 将每个数据包（包括开销）四舍五入到最小长度 BYTES。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **cake-nat** _（default：_ **no**)                                                                                                | 指示 Cake 在应用流隔离规则之前执行 NAT 查找。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **cake-overhead** _( -64 ... 256，default：_ )                                                                                    | 将 BYTES 添加到每个数据包的大小。 BYTES 可能为负数。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **cake-overhead-scheme** _（default：_）                                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **cake-rtt** _（default：_ **100 ms**）                                                                                           | 手动指定 RTT。 默认 100ms 适用于大多数 Internet 流量。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **cake-rtt-scheme** _(datacentre/internet/interplanetary/lan/metro/none/oceanic/regional/satellite, default:_ )                   | - **datacentre** - 仅适用于极高性能的 10GigE+ 网络。 相当于 **RTT 100us**<br>- **lan** - 适用于家庭或办公室的纯以太网（非 Wi-Fi）网络。 在为 Internet 访问链接整形时不要使用它。 相当于 **RTT 1ms**<br>- **metro** - 主要用于单个城市内的交通。 相当于 **RTT** **10ms** **区域性** 适用于主要位于欧洲大小国家/地区内的流量。 相当于 **RTT 30ms**<br>- **internet**（默认）这适用于大多数 Internet 流量。 相当于 **RTT 100ms**<br>- **oceanic** - 对于延迟通常高于平均水平的互联网流量，例如澳大利亚居民遭受的延迟。 相当于 **RTT 300ms**<br>- **satellite** - 用于通过地球静止卫星进行的通信。 相当于 **RTT** **1000ms**<br>- **interplanetary** - 如此命名是因为木星距离地球约 1 光时。 用来（禁用 AQM 操作。 相当于 **RTT 3600s**                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **cake-wash** _（default：_ **no**）                                                                                              | 在优先级队列发生后，用清洗选项清除所有额外的 DiffServ（不包括 ECN 位）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+## 接口队列
 
- | 
+`/queue interface`
 
-**Description**
+在通过接口发送数据之前，由队列处理。 此子菜单列出了 RouterOS 中的所有可用接口，允许更改特定接口的队列类型。 该表是自动生成的。
 
- |     |
- | --- |  |
- |     |
-
-**Property**
-
- | 
-
-**Description**
-
- |                                            |
- | ------------------------------------------ |  |
- | **cake-ack-filter** _(default:_ **none** ) |
- |                                            |
- | **cake-atm** _(default:_ )                 |
-
-Compensates for ATM cell framing, which is normally found on ADSL links.
-
- |
-| **cake-autorate-ingress** _(yes/no, default:_ ) | 
-
-Automatic capacity estimation based on traffic arriving at this qdisc. This is most likely to be useful with cellular links, which tend to change quality randomly.  The Bandwidth Limit parameter can be used in conjunction to specify an initial estimate. The shaper will periodically be set to a bandwidth slightly below the estimated rate.  This estimator cannot estimate the bandwidth of links downstream of itself.
-
- |
-| **cake-bandwidth** _(default:_ ) | Sets the shaper bandwidth. |
-| **cake-diffserv** _(default:_ **diffserv3**) | 
-
-CAKE can divide traffic into "tins" based on the Diffserv field:
-
-- **diffserv4** Provides a general-purpose Diffserv implementation with four tins: Bulk (CS1), 6.25% threshold, generally low priority. Best Effort (general), 100% threshold. Video (AF4x, AF3x, CS3, AF2x, CS2, TOS4, TOS1), 50% threshold. Voice (CS7, CS6, EF, VA, CS5, CS4), 25% threshold.
-    
-- **diffserv3** (default) Provides a simple, general-purpose Diffserv implementation with three tins: Bulk (CS1), 6.25% threshold, generally low priority. Best Effort (general), 100% threshold. Voice (CS7, CS6, EF, VA, TOS4), 25% threshold, reduced Codel interval.
-    
-
- |
-| **cake-flowmode** _(dsthost/dual-dsthost/dual-srchost/flowblind/flows/hosts/srchost/triple-isolate, default:_ **triple-isolate**) | 
-
-- **flowblind** - Disables flow isolation; all traffic passes through a single queue for each tin.
-- **srchost** - Flows are defined only by source address. 
-- **dsthost** Flows are defined only by destination address. 
-- **hosts** - Flows are defined by source-destination host pairs. This is host isolation, rather than flow isolation.
-- **flows** - Flows are defined by the entire 5-tuple of source address, a destination address, transport protocol, source port,and destination port. This is the type of flow isolation performed by SFQ and fq\_codel.
-- **dual-srchost** Flows are defined by the 5-tuple, and fairness is applied first over source addresses, then over individual flows. Good for use on egress traffic from a LAN to the internet, where it'll prevent anyone LAN host from monopolizing the uplink, regardless of the number of flows they use.
-- **dual-dsthost** Flows are defined by the 5-tuple, and fairness is applied first over destination addresses, then over individual flows. Good for use on ingress traffic to a LAN from the internet, where it'll prevent anyone LAN host from monopolizing the downlink, regardless of the number of flows they use.
-- **triple-isolate** \- Flows are defined by the 5-tuple, and fairness is applied over source \*and\* destination addresses intelligently (ie. not merely by host-pairs), and also over individual flows.
-- **nat** Instructs Cake to perform a NAT lookup before applying flow- isolation rules, to determine the true addresses and port numbers of the packet, to improve fairness between hosts "inside" the NAT. This has no practical effect in "flowblind" or "flows" modes, or if NAT is performed on a different host.
-- **nonat** (default) The cake will not perform a NAT lookup. Flow isolation will be performed using the addresses and port numbers directly visible to the interface Cake is attached to.
-
- |
-| **cake-memlimit** _(default:_ ) | 
-
-Limit the memory consumed by Cake to LIMIT bytes. By default, the limit is calculated based on the bandwidth and RTT settings.
-
- |
-| **cake-mpu** _( -64 ... 256, default:_ ) | 
-
-Rounds each packet (including overhead) up to a minimum length BYTES. 
-
- |
-| **cake-nat** _(default:_ **no)** | 
-
-Instructs Cake to perform a NAT lookup before applying a flow-isolation rule.
-
- |
-| **cake-overhead** _( -64 ... 256, default:_ ) | 
-
-Adds BYTES to the size of each packet. BYTES may be negative.
-
- |
-| **cake-overhead-scheme** _(default:_ ) |   
- |
-| **cake-rtt** _(default:_ **100ms** ) | 
-
-Manually specify an RTT. Default 100ms is suitable for most Internet traffic.
-
- |
-| **cake-rtt-scheme** _(datacentre/internet/interplanetary/lan/metro/none/oceanic/regional/satellite, default:_ ) | 
-
-- **datacentre** - For extremely high-performance 10GigE+ networks only. Equivalent to **RTT 100us.**
-- **lan** - For pure Ethernet (not Wi-Fi) networks, at home or in the office. Don't use this when shaping for an Internet access link. Equivalent to **RTT 1ms.**
-- **metro** - For traffic mostly within a single city. Equivalent to **RTT** **10ms.** **regional** For traffic mostly within a European-sized country. Equivalent to **RTT 30ms.**
-- **internet** (default) This is suitable for most Internet traffic. Equivalent to **RTT 100ms.**
-- **oceanic** - For Internet traffic with generally above-average latency, such as that suffered by Australasian residents. Equivalent to **RTT 300ms.**
-- **satellite** - For traffic via geostationary satellites. Equivalent to **RTT** **1000ms.**
-- **interplanetary** - So named because Jupiter is about 1 light-hour from Earth. Use this to (almost) completely disable AQM actions. Equivalent to **RTT 3600s.**
-
- |
-| **cake-wash** _(default:_ **no** ) | 
-
-Apply the wash option to clear all extra DiffServ (but not ECN bits), after priority queuing has taken place.
-
- |
-
-## Interface Queue
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/queue interface</code></div></div></td></tr></tbody></table>
-
-Before sending data over an interface, it is processed by the queue. This sub-menu lists all available interfaces in RouterOS and allows to change queue type for a particular interface. The list is generated automatically.
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; queue interface print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: INTERFACE, QUEUE, ACTIVE-QUEUE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># INTERFACE QUEUE ACTIVE-QUEUE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 ether1 only-hardware-queue only-hardware-queue</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1 ether2 only-hardware-queue only-hardware-queue</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2 ether3 only-hardware-queue only-hardware-queue</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">3 ether4 only-hardware-queue only-hardware-queue</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">4 ether5 only-hardware-queue only-hardware-queue</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">5 ether6 only-hardware-queue only-hardware-queue</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">6 ether7 only-hardware-queue only-hardware-queue</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">7 ether8 only-hardware-queue only-hardware-queue</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">8 ether9 only-hardware-queue only-hardware-queue</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">9 ether10 only-hardware-queue only-hardware-queue</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">10 sfp-sfpplus1 only-hardware-queue only-hardware-queue</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">11 wlan1 wireless-default wireless-default</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">12 wlan2 wireless-default wireless-default&nbsp;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > queue interface print
+Columns: INTERFACE, QUEUE, ACTIVE-QUEUE
+# INTERFACE QUEUE ACTIVE-QUEUE
+0 ether1 only-hardware-queue only-hardware-queue
+1 ether2 only-hardware-queue only-hardware-queue
+2 ether3 only-hardware-queue only-hardware-queue
+3 ether4 only-hardware-queue only-hardware-queue
+4 ether5 only-hardware-queue only-hardware-queue
+5 ether6 only-hardware-queue only-hardware-queue
+6 ether7 only-hardware-queue only-hardware-queue
+7 ether8 only-hardware-queue only-hardware-queue
+8 ether9 only-hardware-queue only-hardware-queue
+9 ether10 only-hardware-queue only-hardware-queue
+10 sfp-sfpplus1 only-hardware-queue only-hardware-queue
+11 wlan1 wireless-default wireless-default
+12 wlan2 wireless-default wireless-default 
+```
