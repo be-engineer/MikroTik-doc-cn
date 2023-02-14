@@ -101,13 +101,13 @@ admin full 0.0.0.0/0 dec/08/2010 16:19:24
 | **interim-update** (_time_; Default: **0s**)                                                             | 临时更新时间间隔                                                                                                                                                                                                                                      |
 | **use-radius** (_yes                                                            \| no_; Default: **no**) | 通过 RADIUS 启用用户身份验证                                                                                                                                                                                                                          |
 
-> 如果你使用的是 RADIUS，则需要在 RADIUS 服务器中启用 CHAP 支持才能使 WinBox 工作
+如果你使用的是 RADIUS，则需要在 RADIUS 服务器中启用 CHAP 支持才能使 WinBox 工作
 
 # SSH密钥
 
  此菜单允许导入用于 ssh 身份验证的公钥。
 
-> 如果添加了用户的 ssh-keys，则不允许用户通过密码通过 ssh 登录
+如果添加了用户的 ssh-keys，则不允许用户通过密码通过 ssh 登录
 
 ## 属性
 

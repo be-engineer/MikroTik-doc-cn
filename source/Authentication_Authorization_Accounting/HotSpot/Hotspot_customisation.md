@@ -18,10 +18,10 @@
   - **password** - 纯文本密码（ PAP 身份验证）或 chap-id 变量、密码和 CHAP 质询的 MD5 哈希（ CHAP 身份验证）。 该值用作试用用户的电子邮件地址
   - **dst** - 重定向前请求的原始 URL。 这将在成功登录时打开
   - **popup** - 是否在成功登录时弹出状态窗口
-  - **radius\<id\>** - 以文本字符串形式把用 \<id\> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
-  - **radius\<id\>u** - 以无符号整数形式把用 \<id\> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
-  - **radius\<id\>-\<vnd-id\>** - 把用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性以文本字符串形式发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失 )
-  - **radius\<id\>-\<vnd-id\>u** - 以无符号整数形式向 RADIUS 服务器发送由 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则会丢失）
+  - **radius<id>** - 以文本字符串形式把用 <id> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
+  - **radius<id>u** - 以无符号整数形式把用 <id> 标识的属性发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失）
+  - **radius <id>-<vnd-id>** - 把用 <id> 和供应商 ID <vnd-id> 标识的属性以文本字符串形式发送到 RADIUS 服务器（如果使用 RADIUS 身份验证；否则会丢失 )
+  - **radius<id\>-<vnd-id>u** - 以无符号整数形式向 RADIUS 服务器发送由 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则会丢失）
 - **md5.js** - MD5 密码散列的 JavaScript。 与http-chap登录方式配合使用
 - **alogin.html** - 客户端登录后显示的页面。它弹出状态页面并将浏览器重定向到最初请求的页面（在被重定向到 HotSpot 登录页面之前）
 - **status.html** - 状态页面，显示客户端的统计信息。 可以自动显示广告
@@ -165,14 +165,14 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 **RADIUS 相关变量：**
 
-- **radius\<id\>** - 以文本字符串形式显示用 \<id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
-- **radius\<id\>u** - 以无符号整数形式显示用 \<id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
-- **radius\<id\>-\<vnd-id\>** - 以文本字符串形式显示用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
-- **radius\<id\>-\<vnd-id\>u** - 以无符号整数形式显示用 \<id\> 和供应商 ID \<vnd-id\> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
+- **radius<id>** - 以文本字符串形式显示用 <id> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
+- **radius<id>u** - 以无符号整数形式显示用 <id> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
+- **radius<id>-<vnd-id>** - 以文本字符串形式显示用 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则为“”）
+- **radius<id>-<vnd-id>u** - 以无符号整数形式显示用 <id> 和供应商 ID <vnd-id> 标识的属性（如果使用 RADIUS 身份验证；否则为“0”）
 
 #### 使用变量
 
-\$(if <var_name>) 语句可以在这些页面中使用。 如果 \<var_name\> 的值不是空字符串，则将包含以下内容。 它等价于 \$(if \<var_name\> != "") 也可以进行等价比较： \$(if \<var_name\> == \<value\>) 这些语句在 \$(elif \<var_name\>)、\$(else) 或 \$(endif)。 在一般情况下，它看起来像这样：
+\$(if <var_name>) 语句可以在这些页面中使用。 如果 <var_name> 的值不是空字符串，则将包含以下内容。 它等价于 \$(if <var_name> != "") 也可以进行等价比较： \$(if <var_name> == <value>) 这些语句在 \$(elif <var_name>)、\$(else) 或 \$(endif)。 在一般情况下，它看起来像这样：
 
 ```shell
 some content, which will always be displayed

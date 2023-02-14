@@ -522,7 +522,7 @@ Columns: NAME, SWITCH, L3-HW-OFFLOADING, STORM-RATE
 
 以下设备基于 **Marvell 98DX224S、98DX226S** 或 **98DX3236** 交换芯片型号。 这些设备不支持 Fasttrack 或 NAT 连接卸载。
 
-> **98DX3255** 和 **98DX3257** 型号是例外，它们具有 DX8000 而非 DX3000 系列的功能集。
+**98DX3255** 和 **98DX3257** 型号是例外，它们具有 DX8000 而非 DX3000 系列的功能集。
 
 | 型号                   | 交换芯片     | 发布版本 | IPv4 Route Prefixes<sup>1</sup> | IPv6 Route Prefixes<sup>2</sup> | Nexthops | ECMP paths per prefix<sup>3</sup> |
 | ---------------------- | ------------ | -------- | ------------------------------- | ------------------------------- | -------- | --------------------------------- |

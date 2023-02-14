@@ -96,7 +96,7 @@ add address=10.1.2.3 secret=radiussecret service=dot1x
 
 ```
 
-> 如果通过公网进行RADIUS通信，建议使用RadSec进行RADIUS通信。 更多信息请见：[RADIUS](https://help.mikrotik.com/docs/display/ROS/RADIUS)
+如果通过公网进行RADIUS通信，建议使用RadSec进行RADIUS通信。 更多信息请见：[RADIUS](https://help.mikrotik.com/docs/display/ROS/RADIUS)
 
 添加新的 dot1x 服务器实例。
 
@@ -244,7 +244,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 
 ```
 
-> 动态交换规则仅适用于支持交换规则的路由器板——CRS3xx、CRS5xx 系列交换机、CCR2116、CCR2216 以及带有 QCA8337、Atheros8327 和 Atheros8316 交换芯片的设备。 CRS1xx/2xx 系列交换机不支持此功能。 每个设备的最大规则数，请参阅 [CRS3xx、CRS5xx、CCR2116、CCR2216 表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 和 [基本交换芯片表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#heading-Introduction)
+动态交换规则仅适用于支持交换规则的路由器板——CRS3xx、CRS5xx 系列交换机、CCR2116、CCR2216 以及带有 QCA8337、Atheros8327 和 Atheros8316 交换芯片的设备。 CRS1xx/2xx 系列交换机不支持此功能。 每个设备的最大规则数，请参阅 [CRS3xx、CRS5xx、CCR2116、CCR2216 表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 和 [基本交换芯片表](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features#heading-Introduction)
 
 ## RouterOS 请求者配置
 

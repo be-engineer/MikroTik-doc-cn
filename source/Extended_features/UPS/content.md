@@ -23,7 +23,7 @@ MikroTik RouterOS上的UPS监控功能支持
 | 5                  | Ground  |           | 4               |
 | 7                  | CTS     | IN        | 6               |
 
-如果使用RouterBOARD设备，请确保 "RouterBOOT设置键 "设置为 _Delete_ 而不是默认的 _Any key_。这是为了避免在RouterBOARD启动过程中UPS设备向串口发送一些数据而意外打开设置菜单。可以在启动时在RouterBOOT选项中完成，或者通过Winbox中的RouterBoard设置完成。
+如果使用RouterBOARD设备，请确保 "RouterBOOT设置键"设置为 _Delete_ 而不是默认的 _Any key_。这是为了避免在RouterBOARD启动过程中UPS设备向串口发送一些数据而意外打开设置菜单。可以在启动时在RouterBOOT选项中完成，或者通过Winbox中的RouterBoard设置完成。
 
 ```shell
 Select key which will enter setup on boot:

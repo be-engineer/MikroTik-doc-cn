@@ -39,7 +39,7 @@ Flags: K - private-key; L - crl; C - smart-card-key; A - authority; I - issued, 
            key-usage=digital-signature,key-encipherment,data-encipherment,key-cert-sign,crl-sign,tls-server,tls-client 
 ```
 
-> 如果删除 CA 证书，则链中所有颁发的证书也将被删除。
+如果删除 CA 证书，则链中所有颁发的证书也将被删除。
 
 ## 签署证书
 
@@ -67,7 +67,7 @@ Columns: NAME, COMMON-name, FINGERPRINT
 
 ```
 
-> 密钥签名过程的时间取决于特定证书的密钥大小。 如果值为 4k 或更高，则可能需要大量时间才能在基于 CPU 的功能较弱的设备上签署此特定证书。
+密钥签名过程的时间取决于特定证书的密钥大小。 如果值为 4k 或更高，则可能需要大量时间才能在基于 CPU 的功能较弱的设备上签署此特定证书。
 
 ## 导出证书
 

@@ -65,7 +65,7 @@ RouterOS只支持SMB v1.0 和 v2.002
 
 现在检查结果。
 
-- 检查常规服务设置。
+- 检查常规服务设置：
 
 ```shell
 [admin@MikroTik] /ip smb> print
@@ -76,7 +76,7 @@ RouterOS只支持SMB v1.0 和 v2.002
    interfaces: all
 ```
 
-- SMB user settings:
+- SMB用户设置:
 
 ```shell
 [admin@MikroTik] /ip smb> users print
@@ -86,7 +86,7 @@ Flags: * - default, X - disabled
 1    mtuser       mtpasswd      no
 ```
 
-- And finally SMB shares settings:
+- 最终的SMB共享设置:
 
 ```shell
 [admin@MikroTik] /ip smb> share print

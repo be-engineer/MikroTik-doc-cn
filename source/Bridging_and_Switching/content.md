@@ -58,7 +58,7 @@ ___
 | **transmit-hold-count** (_integer: 1..10_; Default: **6**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 端口传输状态机用于限制传输速率的传输保持计数。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **vlan-filtering** (_yes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \| no_; Default: **no**) | 全局启用或禁用网桥的 VLAN 功能。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
-> 更改某些属性可能会导致网桥暂时禁用所有端口。每当在生产环境中更改此类属性时都必须考虑到这一点，因为它可能导致所有数据包被暂时丢弃。这些属性包括“vlan-filtering”、“protocol-mode”、“igmp-snooping”、“fast-forward”等。
+更改某些属性可能会导致网桥暂时禁用所有端口。每当在生产环境中更改此类属性时都必须考虑到这一点，因为它可能导致所有数据包被暂时丢弃。这些属性包括“vlan-filtering”、“protocol-mode”、“igmp-snooping”、“fast-forward”等。
 
 ## 示例  
 
@@ -114,15 +114,15 @@ ___
 
 RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓扑。对于只有 2 个网桥的小型网络，STP 不会带来很多好处，但对于较大的网络，正确配置 STP 非常重要，将 STP 相关值保留为默认值可能会导致网络完全无法访问，即使是单个网桥发生故障。为了实现适当的无环路和冗余拓扑，有必要正确设置网桥优先级、端口路径成本和端口优先级。
 
-> 在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
+在 RouterOS 中，可以为网桥优先级设置 0 到 65535 之间的任何值，IEEE 802.1W 标准规定网桥优先级必须以 4096 为步长。这可能会导致不支持此类的设备之间出现不兼容问题值。为避免兼容性问题，建议仅使用这些优先级：0、4096、8192、12288、16384、20480、24576、28672、32768、36864、40960、45056、49152、53248、57344、61440
 
-> STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol) 文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
+STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，可以使用其中任何一个，一些设备能够使用硬件卸载来运行其中一些协议，有关哪些设备支持它的详细信息可以在硬件卸载部分找到。 STP 被认为是过时和缓慢的，它在所有网络拓扑中几乎完全被 RSTP 取代，RSTP 向后兼容 STP。对于依赖于 VLAN 的网络拓扑，建议使用 MSTP，因为它是一种 VLAN 感知协议，并且能够对每个 VLAN 组进行负载均衡。在设计支持 STP 的网络时应考虑很多因素，更详细的案例研究可以在 [生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol) 文章。在 RouterOS 中，`protocol-mode` 属性控制使用的 STP 变体。根据 IEEE 802.1ad 标准，来自网桥的 BPDU符合 IEEE 802.1Q 与 IEEE 802.1ad 网桥不兼容，这意味着相同的网桥 VLAN 协议应该在单个第 2 层域中的所有网桥上使用，否则 (R/M)STP 将无法正常运行。
 
 ## 每个端口的STP
 
 在某些情况下，你可能希望限制单个或多个端口上的 STP 功能。你可以在下面找到一些针对不同用例的示例。
 
-> 更改默认 (R/M)STP 功能时要小心，确保你了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
+更改默认 (R/M)STP 功能时要小心，确保你了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
 
 ### 创建边缘端口
 
@@ -152,7 +152,7 @@ add action=drop chain=output dst-mac-address=01:80:C2:00:00:00/FF:FF:FF:FF:FF:FF
 
 ```
 
-> 你可以使用接口列表来指定多个接口。
+你可以使用接口列表来指定多个接口。
 
 ### 丢弃已接收的BPDU包
 
@@ -176,7 +176,7 @@ add action=drop mac-dst-address=01:80:C2:00:00:00 src-ports=ether1
 
 在此示例中，所有在 **ether1** 上收到的 BPDU 都被丢弃。
 
-> 如果你打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果你仅在一侧阻塞了 BPDU，则端口将不断摆动。
+如果你打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果你仅在一侧阻塞了 BPDU，则端口将不断摆动。
 
 ### 启用BPDU防护
 
@@ -211,7 +211,7 @@ ___
 | **bridge-fast-forward-packets** (_integer_; Default: _)_                           | 显示由网桥 Fast Forward 转发的数据包计数。                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **bridge-fast-forward-bytes** (_integer_; Default: _)_                             | 显示由网桥 Fast Forward 转发的字节数。                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-> 如果你想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，你还应该启用适当的属性。
+如果你想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，你还应该启用适当的属性。
 
 # 端口设置
 
@@ -314,7 +314,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-> 移动接口列表时的第二个参数被认为是“before id”，第二个参数指定将选择的接口列表移动到哪个接口列表之前。当移动第一个接口列表代替第二个接口列表时，该命令将无效，因为第一个列表将移动到第二个列表之前，无论哪种方式都是当前状态。
+移动接口列表时的第二个参数被认为是“before id”，第二个参数指定将选择的接口列表移动到哪个接口列表之前。当移动第一个接口列表代替第二个接口列表时，该命令将无效，因为第一个列表将移动到第二个列表之前，无论哪种方式都是当前状态。
 
 ## 桥接端口监控
 
@@ -511,7 +511,7 @@ ___
 
 在以前的版本（RouterOS v6.41 之前）中，你必须使用 master-port 属性来同时切换多个端口，但在 RouterOS v6.41 中，此属性被桥接硬件卸载功能所取代，它允许你切换端口和使用一些桥功能，例如，[生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)。
 
-> 从以前的版本（RouterOS v6.41 之前）升级时，旧的主端口配置会自动转换为新的**桥硬件卸载**配置。从较新版本（RouterOS v6.41 和更新版本）降级到旧版本（在 RouterOS v6.41 之前）配置不会转换回来，取而代之的是没有硬件卸载的网桥，在这种情况下，你需要重新配置设备以使用旧的主端口配置。
+从以前的版本（RouterOS v6.41 之前）升级时，旧的主端口配置会自动转换为新的**桥硬件卸载**配置。从较新版本（RouterOS v6.41 和更新版本）降级到旧版本（在 RouterOS v6.41 之前）配置不会转换回来，取而代之的是没有硬件卸载的网桥，在这种情况下，你需要重新配置设备以使用旧的主端口配置。
 
 以下是支持硬件卸载 (+) 或禁用硬件卸载 (-) 的设备和功能列表：
 
@@ -554,9 +554,9 @@ ___
 - [CRS3xx, CRS5xx series switches and CCR2116, CCR2216 routers](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)
 - [non-CRS series switches](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features)
 
-> 某些网桥和以太网端口属性与交换芯片设置直接相关，更改此类属性可以触发**交换芯片重置**，这将暂时禁用交换芯片上的所有以太网端口以使设置生效，这每当更改生产环境中的属性时都必须考虑。这些属性包括 DHCP 侦听、IGMP 侦听、VLAN 过滤、L2MTU、流量控制等（可以触发交换芯片重置的具体设置取决于设备的型号）。
+某些网桥和以太网端口属性与交换芯片设置直接相关，更改此类属性可以触发**交换芯片重置**，这将暂时禁用交换芯片上的所有以太网端口以使设置生效，这每当更改生产环境中的属性时都必须考虑。这些属性包括 DHCP 侦听、IGMP 侦听、VLAN 过滤、L2MTU、流量控制等（可以触发交换芯片重置的具体设置取决于设备的型号）。
 
-> [CRS1xx/2xx 系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835#CRS1xx/2xxseriesswitches-Multipleswitchgroups) 支持每个交换芯片的多个硬件卸载网桥。所有其他设备每个交换芯片仅支持一个硬件卸载网桥。使用 hw=yes/no 参数选择哪个网桥将使用硬件卸载。
+[CRS1xx/2xx 系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835#CRS1xx/2xxseriesswitches-Multipleswitchgroups) 支持每个交换芯片的多个硬件卸载网桥。所有其他设备每个交换芯片仅支持一个硬件卸载网桥。使用 hw=yes/no 参数选择哪个网桥将使用硬件卸载。
 
 ## 示例
 
@@ -586,7 +586,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-> RouterOS v6.41 和更新版本中的端口切换是使用网桥配置完成的。在 RouterOS v6.41 之前，端口切换是使用 master-port 属性完成的。
+RouterOS v6.41 和更新版本中的端口切换是使用网桥配置完成的。在 RouterOS v6.41 之前，端口切换是使用 master-port 属性完成的。
 
 # 网桥VLAN过滤
 
@@ -596,7 +596,7 @@ ___
 
 主要的 VLAN 设置是“vlan-filtering”，它全局控制网桥中的 VLAN 感知和 VLAN 标记处理。 如果配置了 `vlan-filtering=no` ，网桥会忽略VLAN标签，工作在共享VLAN学习（SVL）模式，不能修改数据包的VLAN标签。 打开 vlan-filtering 会启用所有桥接 VLAN 相关功能和独立 VLAN 学习 (IVL) 模式。 除了加入用于二层转发的端口外，网桥本身也是一个接口，因此它具有端口 VLAN ID（pvid）。
 
-> 目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
+目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
 
 ## 网桥VLAN表
 
@@ -612,13 +612,13 @@ ___
 | **untagged** (_interfaces_; Default: **none**)                            | 出口中带有 VLAN 标记删除操作的接口列表。 此设置接受逗号分隔值。 例如 `untagged=ether3，ether4`                  |
 | **vlan-ids** (_integer 1..4094_; Default: **1**)                          | 特定端口配置的 VLAN ID 列表。 此设置接受 VLAN ID 范围以及逗号分隔值。 例如 `vlan-ids=100-115,120,122,128-130`。 |
 
-> `vlan-ids` 参数可用于指定一组或范围的 VLAN，但在单个网桥 VLAN 表条目中指定多个 VLAN 应仅用于标记端口的端口。 如果为访问端口指定了多个 VLAN，则无论 PVID 值如何，标记的数据包都可能通过错误的访问端口作为未标记的数据包发送出去。
+`vlan-ids` 参数可用于指定一组或范围的 VLAN，但在单个网桥 VLAN 表条目中指定多个 VLAN 应仅用于标记端口的端口。 如果为访问端口指定了多个 VLAN，则无论 PVID 值如何，标记的数据包都可能通过错误的访问端口作为未标记的数据包发送出去。
 
-> 使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，你需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，这会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），这可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，你需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
+使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，你需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，这会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），这可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，你需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
 
-> 当允许访问 CPU 时，你允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护你的设备，使用防火墙过滤规则仅允许访问某些服务。
+当允许访问 CPU 时，你允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护你的设备，使用防火墙过滤规则仅允许访问某些服务。
 
-> 桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解 [桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table) 的工作原理。
+桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解 [桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table) 的工作原理。
 
 ## 桥接端口设置
 
@@ -940,13 +940,13 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-> 通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你应该确保设置管理端口。 使用不同 EtherType 的区别在于你必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
+通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你应该确保设置管理端口。 使用不同 EtherType 的区别在于你必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
 
-> 配置 `ether-type=0x8100` 时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType `0x8100` 。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
+配置 `ether-type=0x8100` 时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType `0x8100` 。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
 
-> 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在 `ether-type` 设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
+目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在 `ether-type` 设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
 
-> 具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
+具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
 
 ## 标签堆叠
 
@@ -1005,9 +1005,9 @@ ___
 - 网桥的 MAC 地址与来自其中一个网桥从端口的 MAC 地址相匹配
 - 两个端口的 `horizon` 都设置为 `none`
 
-> 快速转发禁用 MAC 学习，这是为了实现更快的数据包转发而设计的。 MAC 学习可防止流量泛洪多个接口，但当数据包只能通过一个接口发送时，则不需要 MAC 学习。
+快速转发禁用 MAC 学习，这是为了实现更快的数据包转发而设计的。 MAC 学习可防止流量泛洪多个接口，但当数据包只能通过一个接口发送时，则不需要 MAC 学习。
 
-> 启用硬件卸载时禁用快进。 硬件卸载在激活时可以实现全写速度性能，因为它将使用内置交换芯片（如果你的设备上存在），快进使用 CPU 转发数据包。 比较吞吐量结果时，你会得到这样的结果：Hardware offloading > Fast Forward > Fast Path > Slow Path。
+启用硬件卸载时禁用快进。 硬件卸载在激活时可以实现全写速度性能，因为它将使用内置交换芯片（如果你的设备上存在），快进使用 CPU 转发数据包。 比较吞吐量结果时，你会得到这样的结果：Hardware offloading > Fast Forward > Fast Path > Slow Path。
 
 可以检查快速转发处理了多少数据包：
 
@@ -1025,7 +1025,7 @@ ___
 
 ```
 
-> 如果数据包由 Fast Path 处理，则快速转发未激活。 数据包计数可用作 快速转发是否处于活动状态的指示器。
+如果数据包由 Fast Path 处理，则快速转发未激活。 数据包计数可用作 快速转发是否处于活动状态的指示器。
 
 从 RouterOS 6.44 开始，可以监控快速转发状态，例如：
 

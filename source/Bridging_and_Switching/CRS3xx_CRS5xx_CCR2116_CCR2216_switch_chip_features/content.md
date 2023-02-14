@@ -4,7 +4,7 @@ ___
 
 CCR3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器具有高度集成的交换机，配备高性能 CPU 和功能丰富的数据包处理器。这些设备可以设计成各种以太网应用，包括非管理型交换机、第 2 层管理型交换机、运营商交换机、VLAN 间路由器和有线统一数据包处理器。
 
-> 本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于 [CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835) 。
+本文适用于CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器，不适用于 [CRS1xx/CRS2xx系列交换机](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835) 。
 
 ## 特性
 
@@ -291,7 +291,7 @@ ___
 
 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在硬件级别上使用带有选项 82 的 DHCP 侦听。 交换机将创建动态ACL规则来捕获DHCP数据包并将它们重定向到主CPU进行进一步处理。 要查看更多详细信息，请访问 [DHCP 侦听和 DHCP 选项 82](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-DHCPSnoopingandDHCPOption82) 手册。
 
-> 创建硬件卸载绑定接口时，DHCP 侦听将不起作用。
+创建硬件卸载绑定接口时，DHCP 侦听将不起作用。
 
 ## 控制器桥和端口扩展器
 
@@ -439,10 +439,9 @@ ___
 | **limit-unknown-unicasts** (_yes                    \| no_; Default: **no**)  | 在一个交换端口上限制未知的单播流量                           |
 | **storm-rate** (_integer 0..100_; Default: **100**)                           | 广播、未知多播和未知单播流量的数量被限制在链接速度的百分比。 |
  
-> 采用Marvell-98DX3236交换芯片的设备无法区分未知组播流量和所有组播流量。 例如，当使用 `limit-unknown-multicasts` 和 `storm-rate` 时，CRS326-24G-2S+ 将限制所有多播流量。 对于其他设备，例如 CRS317-1G-16S+，`limit-unknown-multicasts` 参数将仅限制未知多播流量（不在`/interface bridge mdb` 中的地址）。
+采用Marvell-98DX3236交换芯片的设备无法区分未知组播流量和所有组播流量。 例如，当使用 `limit-unknown-multicasts` 和 `storm-rate` 时，CRS326-24G-2S+ 将限制所有多播流量。 对于其他设备，例如 CRS317-1G-16S+，`limit-unknown-multicasts` 参数将仅限制未知多播流量（不在`/interface bridge mdb` 中的地址）。
 
 例如，要限制 ether1 (1Gbps) 上 1% (10Mbps) 的广播和未知单播流量，请使用以下命令：
-
 
 ```shell
 /interface ethernet switch port
@@ -458,7 +457,7 @@ ___
 
 目前只有使用 RouterOS v6.41 及更新版本的 CRS317-1G-16S+ 和 CRS309-1G-8S+ 能够硬件卸载某些 MPLS 功能。 `CRS317-1G-16S+` 和 `CRS309-1G-8S+` 内置交换芯片无法从数据包中弹出 MPLS 标签，在 PE-P-PE 设置中，必须使用显式 null 或禁用 TTL 传播 MPLS网络实现硬件卸载。
 
-> 自 RouterOS v7 以来，MPLS 硬件卸载已被删除。
+自 RouterOS v7 以来，MPLS 硬件卸载已被删除。
 
 ## 交换规则(ACL)
 
@@ -466,9 +465,9 @@ ___
 
 访问控制列表包含入口策略和出口策略引擎。 请参阅 [此表](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Models) 查看每个设备支持多少条规则。 它是一种基于第 2 层、第 3 层和第 4 层协议头条件进行线速数据包过滤、转发和修改的高级工具。
 
-> 为每个收到的数据包检查 ACL 规则，直到找到匹配项。 如果有多个规则可以匹配，那么只会触发第一个规则。 没有任何操作参数的规则是接受数据包的规则。
+为每个收到的数据包检查 ACL 规则，直到找到匹配项。 如果有多个规则可以匹配，那么只会触发第一个规则。 没有任何操作参数的规则是接受数据包的规则。
 
-> 当交换机 ACL 规则被修改（例如添加、删除、禁用、启用或移动）时，现有的交换机规则将在短时间内处于非活动状态。 这可能会导致在 ACL 规则修改期间发生一些数据包泄漏。
+当交换机 ACL 规则被修改（例如添加、删除、禁用、启用或移动）时，现有的交换机规则将在短时间内处于非活动状态。 这可能会导致在 ACL 规则修改期间发生一些数据包泄漏。
   
 **Sub-menu:** `/interface ethernet switch rule`
 
@@ -538,9 +537,9 @@ Layer4条件参数:
 - dst-port
 - src-port
   
-> 要使 VLAN 相关匹配器或 VLAN 相关操作参数起作用，你需要在网桥接口上启用 `vlan-filtering` 并确保在这些端口上启用硬件卸载，否则，这些参数将不起作用。
+要使 VLAN 相关匹配器或 VLAN 相关操作参数起作用，你需要在网桥接口上启用 `vlan-filtering` 并确保在这些端口上启用硬件卸载，否则，这些参数将不起作用。
 
-> 当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。
+当网桥接口 ether-type 设置为 0x8100 时，VLAN 相关的 ACL 规则与 0x8100 (CVID) 数据包相关，这包括 vlan-id 和 new-vlan-id。 当网桥接口 `ether-type` 设置为 `0x88a8` 时，ACL 规则与 0x88A8（SVID）数据包相关。
 
 ## 端口安全
 
@@ -549,7 +548,6 @@ ___
 可以限制单个交换机端口上允许的 MAC 地址。 例如，要在交换机端口上允许 64:D1:54:81:EF:8E MAC 地址，首先将多个端口一起交换，此示例中64:D1:54:81:EF:8E 将位于后面 **ether1**。
 
 创建一个 ACL 规则允许给定的 MAC 地址并丢弃 **ether1** 上的所有其他流量（对于入口流量):
-
 
 ```shell
 /interface ethernet switch rule
