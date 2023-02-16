@@ -4,7 +4,7 @@
 
 有两种方法可以设置过滤：
 
-  - 允许特定流量，放弃其他
+  - 允许特定流量，丢弃其他的
   - 只丢弃恶意流量，其他都允许
 
 两种方法都有优缺点，例如，从安全的角度来看，第一种方法更安全，但每当需要接受新服务的流量时，需要管理员输入。这种策略提供了对流量的良好控制，减少了由于服务配置错误而发生漏洞的可能性。
@@ -19,7 +19,7 @@
 - **forward** - 处理通过路由器的数据包
 - **output** - 处理来自路由器的数据包，并通过其中一个接口离开路由器。通过路由器的数据包不按照输出链的规则处理。
 
-当处理一个链时，规则按照从上到下的顺序从该链中取出。如果一个数据包符合规则的条件，那么就对它进行指定的操作，并且不再处理该链中的其他规则（穿透操作例外）。如果数据包没有匹配内置链中的任何规则，那么它就被接受。 RouterOS中更详细的数据包处理在 [Packet Flow in RouterOS](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 图中描述。
+处理一个链时，规则按照从上到下的顺序从该链中取出。如果数据包符合规则条件，那么就对它进行指定的操作，并且不再处理该链中的其他规则（穿透操作例外）。如果数据包没有匹配内置链中的任何规则，那就被接受。 RouterOS中更详细的数据包处理在 [Packet Flow in RouterOS](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 图中描述。
 
 ## IPv4
 
@@ -193,4 +193,4 @@ Flags : X - disabled, I - invalid, D - dynamic
 
 ## 示例
 
-关于如何正确保护你的设备的例子，可以在 [建立你的第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 中找到!
+关于如何正确保护你的设备的例子，可以在 [建立第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 中找到!

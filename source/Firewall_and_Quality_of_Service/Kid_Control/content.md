@@ -16,7 +16,7 @@
 | **rate-limit** (_string_)                                            | 流量的最大可用速率。                                   |
 | **tur-mon,tur-tue,tur-wed,tur-thu,tur-fri,tur-sat,tur-sun** (_time_) | 无限时速率。选择一天中的时间，这时上网无限制。         |
 
-无时间限制的速率参数比速率限制参数有更高的优先权。
+无时间限制的速率比速率限制参数有更高的优先权。
 
 ## 设备
 
@@ -31,7 +31,7 @@
 | **user** (_string_)               | 将设备附加到哪个配置文件中     |
 | **reset-counters** (_[id, name]_) | 重置字节数增加和减少的计数器。 |
 
-## Application example
+## 应用例子
 
 以下例子将限制Peters手机的访问。
 

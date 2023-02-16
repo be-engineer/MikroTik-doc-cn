@@ -49,7 +49,7 @@ NAT只匹配连接的第一个数据包，连接跟踪会记住这个动作，�
 
 `/ip firewall nat add chain=srcnat src-address=10.0.0.0/24 action=masquarade out-interface=WAN`
 
-每次接口断开连接或IP地址改变时，路由器会清除所有和该接口相关的伪装连接跟踪条目，这样可以改善公共IP改变后的系统恢复时间。如果用 _srcnat_ 代替 _masquerade_，连接跟踪条目仍然存在，连接会在链接失败后简单地恢复。
+每次接口断开连接或IP地址改变时，路由器会清除所有和该接口相关的伪装连接跟踪条目，这样可以改善公共IP改变后的系统恢复时间。如果用 _srcnat_ 代替 _masquerade_ ，连接跟踪条目仍然存在，连接会在链接失败后简单地恢复。
 
 但是这可能会导致一些不稳定的链接问题，当主链接发生故障后，连接被路由到不同的链接。这样，会发生以下情况。
 
@@ -111,7 +111,14 @@ RFC指出，CGN可以确定地将客户的私人地址（在CGN面向客户的�
 
 在RouterOS中，可以用一些脚本函数来完成算法。举个例子：
 
-<table class="wrapped confluenceTable" style="text-align: left;" resolved=""><colgroup><col><col></colgroup><tbody><tr><td class="confluenceTd"><strong>Inside IP</strong></td><td class="confluenceTd"><strong>Outside IP/Port range</strong></td></tr><tr><td class="confluenceTd">100.64.1.1</td><td class="confluenceTd">2.2.2.2:2000-2099</td></tr><tr><td class="confluenceTd">100.64.1.2</td><td class="confluenceTd">2.2.2.2:2100-2199</td></tr><tr><td class="confluenceTd">100.64.1.3</td><td class="confluenceTd">2.2.2.2:2200-2299</td></tr><tr><td class="confluenceTd">100.64.1.4</td><td class="confluenceTd">2.2.2.2:2300-2399</td></tr><tr><td class="confluenceTd">100.64.1.5</td><td class="confluenceTd">2.2.2.2:2400-2499</td></tr><tr><td class="confluenceTd">100.64.1.6</td><td class="confluenceTd">2.2.2.2:2500-2599</td></tr></tbody></table>
+| Inside IP  | Outside IP/Port range |
+| ---------- | --------------------- |
+| 100.64.1.1 | 2.2.2.2:2000-2099     |
+| 100.64.1.2 | 2.2.2.2:2100-2199     |
+| 100.64.1.3 | 2.2.2.2:2200-2299     |
+| 100.64.1.4 | 2.2.2.2:2300-2399     |
+| 100.64.1.5 | 2.2.2.2:2400-2499     |
+| 100.64.1.6 | 2.2.2.2:2500-2599     |
 
 可以写一个自动添加这种规则的函数，而不用手工编写NAT映射。
 
@@ -222,9 +229,9 @@ add action=masquerade chain=srcnat dst-address=10.0.0.3 out-interface=LAN protoc
 
 在配置了上面的规则后：
 
-1.客户发送一个源IP地址为10.0.0.2的数据包到443端口的目的IP地址172.16.16.1，请求一些网络资源。
+1. 客户发送一个源IP地址为10.0.0.2的数据包到443端口的目的IP地址172.16.16.1，请求一些网络资源。
 2. 路由器将该数据包目标NAT到10.0.0.3，并相应地替换数据包中的目标IP地址。它还对数据包进行源NAT处理，并将数据包中的源IP地址替换为其LAN接口上的IP地址。目的IP地址是10.0.0.3，源IP地址是10.0.0.1。
-3.网络服务器回复请求，并将源IP地址为10.0.0.3的回复发回路由器的LAN接口IP地址为10.0.0.1。
+3. 网络服务器回复请求，并将源IP地址为10.0.0.3的回复发回路由器的LAN接口IP地址为10.0.0.1。
 4. 路由器确定该数据包是以前连接的一部分，并撤消了源和目的NAT，并将原来的目的IP地址10.0.0.3放入源IP地址域，而将原来的源IP地址172.16.16.1放入目的IP地址域
 
 ## IPv4

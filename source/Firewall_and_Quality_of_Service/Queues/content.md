@@ -24,8 +24,8 @@ MikroTik RouterOS的队列实现是基于分层令牌桶（HTB）。HTB允许创
 
 速率限制可以通过两种方式进行：
 
-1. 丢弃所有超过速率限制的数据包 - _**速率限制（丢弃或整形）**_ _（当队列大小=0时，100%的速率限制）_。
-2. 将超过特定速率限制的数据包延迟在队列中，并在可能的情况下传输 _**速率均衡（调度器）**_ （当 _queue-size=unlimited_ 时，100%速率均衡）。
+1. 丢弃所有超过速率限制的数据包 - _**速率限制(丢弃或整形)**_ _（当队列大小=0时，100%的速率限制)_ 。
+2. 将超过特定速率限制的数据包延迟在队列中，并在可能的情况下传输 _**速率均衡(调度器)**_ （当 _queue-size=unlimited_ 时，100%速率均衡）。
 
 下图解释了 _速率限制_ 和 _速率均衡_ 之间的区别：
 
@@ -35,8 +35,8 @@ MikroTik RouterOS的队列实现是基于分层令牌桶（HTB）。HTB允许创
 
 对于每个队列，可以定义两个速率限制：
 
-- **CIR**（承诺信息速率）-（RouterOS中的 **limit-at**）最坏情况下，无论其他流量如何，该流量将获得这个速率。在任何时候带宽都不应该低于这个承诺速率。
-- **MIR** (最大信息速率) - (RouterOS中的**max-limit** ) 最佳情况下，如果有空闲的带宽，流的最大可用速率。
+- **CIR** （承诺信息速率）-（RouterOS中的 **limit-at** ）最坏情况下，无论其他流量如何，该流量将获得这个速率。在任何时候带宽都不应该低于这个承诺速率。
+- **MIR**  (最大信息速率) - (RouterOS中的 **max-limit** ) 最佳情况下，如果有空闲的带宽，流的最大可用速率。
 
 ## 简单队列
 
@@ -183,7 +183,7 @@ only-hardware-queue和multi-queue-ethernet-default的改进只有在没有"/queu
 
 #### RED
 
-Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min<sub>th</sub>) 和最大 (max<sub>th</sub>) 阈值。 如果平均队列大小 (avg<sub>q</sub>) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P<sub>d</sub> 随机丢弃，其中概率是平均队列大小的函数：P<sub>d</sub> = P<sub>max</sub>(avg<sub>q</sub> – min<sub>th</sub>)/ (max<sub>th</sub> - min<sub>th</sub> >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P<sub>max</sub> - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P<sub>max</sub>可以等于1)。
+Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min\<sub>th\</sub>) 和最大 (max\<sub>th\</sub>) 阈值。 如果平均队列大小 (avg\<sub>q\</sub>) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P\<sub>d\</sub> 随机丢弃，其中概率是平均队列大小的函数：P\<sub>d\</sub> = P\<sub>max\</sub>(avg\<sub>q\</sub> – min\<sub>th\</sub>)/ (max\<sub>th\</sub> - min\<sub>th\</sub> >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P\<sub>max\</sub> - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P\<sub>max\</sub>可以等于1)。
 图8.2显示了丢包概率的RED算法。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8002.png?version=2&modificationDate=1615377059686&api=v2)
