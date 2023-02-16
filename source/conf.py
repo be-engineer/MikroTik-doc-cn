@@ -15,9 +15,10 @@ release = '7.x'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'myst_parser',
+    # 'myst_parser',
     # 'recommonmark',
     'sphinx_mdinclude',
+    'sphinx.ext.mathjax',
     'sphinx_markdown_tables'
     # 'sphinxnotes.strike'
 ]

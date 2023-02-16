@@ -183,7 +183,7 @@ only-hardware-queue和multi-queue-ethernet-default的改进只有在没有"/queu
 
 #### RED
 
-Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min\ :sub:`th`>) 和最大 (max<sub>th</sub>) 阈值。 如果平均队列大小 (avg<sub>q</sub>) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P<sub>d</sub> 随机丢弃，其中概率是平均队列大小的函数：P<sub>d</sub> = P<sub>max</sub>(avg<sub>q</sub> – min<sub>th</sub>)/ (max<sub>th</sub> - min<sub>th</sub> >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P<sub>max</sub> - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P<sub>max</sub>可以等于1)。
+Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min\ :sub:`th`>)和最大(max<sub>th</sub>) 阈值。 如果平均队列大小 (avg<sub>q</sub>) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P<sub>d</sub> 随机丢弃，其中概率是平均队列大小的函数：P<sub>d</sub> = P<sub>max</sub>(avg<sub>q</sub> – min<sub>th</sub>)/ (max<sub>th</sub> - min<sub>th</sub> >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P<sub>max</sub> - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P<sub>max</sub>可以等于1)。
 图8.2显示了丢包概率的RED算法。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8002.png?version=2&modificationDate=1615377059686&api=v2)
