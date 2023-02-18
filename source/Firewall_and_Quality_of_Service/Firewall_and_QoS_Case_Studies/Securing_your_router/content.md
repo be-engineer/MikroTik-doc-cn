@@ -1,97 +1,86 @@
 # 概述
 
-The following steps are a recommendation on how to additionally protect your device with already configured [strong firewall rules](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall).
+以下步骤是关于如何用配置好的 [强大防火墙规则](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 来额外保护设备的建议。
 
-## RouterOS version
+## RouterOS版本
 
-Start by upgrading your RouterOS version. Some older releases have had certain weaknesses or vulnerabilities, that have been fixed. Keep your device up to date, to be sure it is secure. Click "check for updates" in Winbox or Webfig, to upgrade. We suggest you follow announcements on our [security announcement blog](https://blog.mikrotik.com/) to be informed about any new security issues.
+首先要升级你的RouterOS版本。一些旧版本有某些弱点或漏洞已经被修复。保持设备最新以确保安全。在Winbox或Webfig中点击 "检查更新"进行升级。建议关注 [安全公告博客](https://blog.mikrotik.com/) 上的公告了解新的安全问题。
 
-## Access to a router
+## 访问路由器
 
-## Access username
+### 访问用户名
 
-Change default username _admin_ to a different name. A custom name helps to protect access to your router if anybody got direct access to your router: 
+把默认的用户名 _admin_ 改成一个不同的名字。如果有人直接访问你的路由器，一个自定义的名字有助于保护对你路由器的访问。
 
-`/user` `add` `name``=myname` `password``=mypassword` `group``=full`
+`/user add name =myname password =mypassword group =full`
+`/user disable admin`
 
-`/user` `disable` `admin`
+### 访问密码
 
-## Access password
+MikroTik路由器需要配置密码，建议使用密码生成工具来创建安全且不重复的密码。安全的密码意思是：
 
-MikroTik routers require password configuration, we suggest using a password generator tool to create secure and non-repeating passwords. With secure password we mean:
+- 至少12个字符。
+- 包括数字、符号、大写和小写字母。
+- 不是字典中的字或字典中字的组合。
 
--   Minimum 12 characters;
--   Include numbers, Symbols, Capital and lower case letters;
--   Is not a Dictionary Word or Combination of Dictionary Words;
+`/user set myname password = "!={Ba3N!" 40TуX+GvKBz?jTLIUcx /,"`
 
-`/user` `set` `myname` `password``=``"!={Ba3N!"``40TуX+GvKBz?jTLIUcx``/,"`
+### RouterOS MAC访问
 
-## RouterOS MAC-access
+RouterOS有内置的选项，可以方便地对网络设备进行管理访问。在生产网络中应关闭特定的服务。**MAC-Telnet, MAC-Winbox,** 和 **MAC-Ping:**
 
-RouterOS has built-in options for easy management access to network devices. The particular services should be shut down on production networks: **MAC-Telnet, MAC-Winbox,** and **MAC-Ping:**
+`/tool mac-server set allowed-interface-list =none`
 
-`/tool mac-server` `set` `allowed-interface-list``=none`
+`/tool mac-server mac-winbox set allowed-interface-list =none`
 
-`/tool mac-server mac-winbox` `set` `allowed-interface-list``=none`
+`/tool mac-server ping set enabled =no`
 
-`/tool mac-server` `ping` `set` `enabled``=no`
+### 邻居发现
 
-## Neighbor Discovery
+MikroTik邻居发现协议用于显示和识别网络中的其他MikroTik路由器，禁用所有接口上的邻居发现。
 
-MikroTik Neighbor discovery protocol is used to show and recognize other MikroTik routers in the network, disable neighbor discovery on all interfaces:
+`/ip neighbor discovery-settings set discover-interface-list =none`
 
-`/ip neighbor discovery-settings` `set` `discover-interface-list``=none`
+### 带宽服务器
 
-## Bandwidth server
+带宽服务器用于测试两个MikroTik路由器之间的吞吐量。在生产环境中禁用它。
 
-A bandwidth server is used to test throughput between two MikroTik routers. Disable it in the production environment:
+`/tool bandwidth-server set enabled =no`
 
-`/tool bandwidth-server` `set` `enabled``=no`
+### DNS 缓存
 
-## DNS cache
+路由器可能启用了 DNS 缓存，它减少了客户端对远程服务器的 DNS 请求的解析时间。如果路由器不需要 DNS 缓存，或者其他路由器用于这种目的，请禁用它。
 
-A router might have DNS cache enabled, which decreases resolving time for DNS requests from clients to remote servers. In case DNS cache is not required on your router or another router is used for such purposes, disable it:
+`/ip dns set allow-remote-requests =no`
 
-`/ip dns` `set` `allow-remote-requests``=no`
+### 其他客户端服务
 
-## Other clients services
+RouterOS可能启用了其他服务（默认的RouterOS配置中被禁用）。MikroTik缓存代理、socks、UPnP和云服务。
 
-RouterOS might have other services enabled (they are disabled by default RouterOS configuration). MikroTik caching proxy, socks, UPnP, and cloud services:
+`/ip proxy set enabled =no`
+`/ip socks set enabled =no`
+`/ip upnp set enabled =no`
+`/ip cloud set ddns-enabled =no update-time =no`
 
-`/ip proxy` `set` `enabled``=no`
+更安全的SSH访问
 
-`/ip socks` `set` `enabled``=no`
+可以用这个命令启用更严格的SSH设置（添加aes-128-ctr，不允许hmac sha1和带sha1的组）。
 
-`/ip upnp` `set` `enabled``=no`
+`/ip ssh set strong-crypto =yes`
 
-`/ip cloud` `set` `ddns-enabled``=no` `update-time``=no`
+## 路由器接口
 
-More Secure SSH access
+### 以太网/SFP接口
 
-It is possible to enable more strict SSH settings (add aes-128-ctr and disallow hmac sha1 and groups with sha1) with this command:
+禁用路由器上所有未使用的接口是一个很好的做法，减少对路由器的非法访问。
 
-`/ip ssh` `set` `strong-crypto``=yes`
+`/interface print`
+`/interface set X disabled =yes`
 
-## Router interface
+其中**X**是未使用的接口数量。
 
-## Ethernet/SFP interfaces
+### LCD
 
-It is good practice to disable all unused interfaces on your router, in order to decrease unauthorized access to your router:
+有些RouterBOARD有一个LCD模块，用于提供信息，设置一个pin码或禁用:
 
-`/interface` `print`
-
-`/interface` `set` `X` `disabled``=yes`
-
-Where **X** numbers of unused interfaces.
-
-## LCD
-
-Some RouterBOARDs have an LCD module for informational purposes, set a pin:
-
-`/lcd/pin/``set` `pin-number``=3659` `hide-pin-number``=yes`
-
-or disable it:
-
-```
-
-```
+`/lcd/pin/ set pin-number =3659 hide-pin-number =yes`

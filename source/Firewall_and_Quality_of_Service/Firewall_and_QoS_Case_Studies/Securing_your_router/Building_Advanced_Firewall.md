@@ -1,12 +1,12 @@
 # 建立高级防火墙
 
-From everything we have learned so far, let's try to build an advanced firewall. In this firewall building example, we will try to use as many firewall features as we can to illustrate how they work and when they should be used the right way.
+根据到现在学到的一切，尝试构建一个高级防火墙。在这个构建防火墙的例子中，尝试使用尽可能多的防火墙功能，来说明它们是如何工作的，以及何时应该以正确的方式使用它们。
 
-Most of the filtering will be done in the RAW firewall, a regular firewall will contain just a basic rule set to accept _established, related,_ and _untracked_ connections as well as dropping everything else not coming from LAN to fully protect the router.
+大部分过滤将在RAW防火墙中完成，普通的防火墙将只包含一个基本的规则集，接受_已建立的、相关的和未跟踪的连接，丢弃所有其他来自非LAN的连接，充分保护路由器。
 
-## Interface Lists
+## 接口列表
 
-Two interface lists will be used **WAN** and **LAN** for easier future management purposes. Interfaces connected to the global internet should be added to the WAN list, in this case, it is _ether1_!
+为了便于今后的管理，用两个接口列表 **WAN** 和 **LAN**。连接到全球互联网的接口添加到WAN列表中，在这种情况下，它是 _ether1_!
 
 ```shell
 /interface list
@@ -17,11 +17,11 @@ Two interface lists will be used **WAN** and **LAN** for easier future managemen
   add comment=defconf interface=ether1 list=WAN
 ```
 
-## Protect the Device
+## 保护设备
 
-The main goal here is to allow access to the router only from LAN and drop everything else.
+这里的主要目标是只允许从局域网访问路由器，而丢弃其他的。
 
-Notice that ICMP is accepted here as well, it is used to accept ICMP packets that passed RAW rules.
+注意，这里也接受ICMP，用来接受通过RAW规则的ICMP数据包。
 
 ```shell
 /ip firewall filter
@@ -30,7 +30,7 @@ Notice that ICMP is accepted here as well, it is used to accept ICMP packets tha
   add action=drop chain=input comment="defconf: drop all not coming from LAN" in-interface-list=!LAN
 ```
 
-IPv6 part is a bit more complicated, in addition, UDP traceroute, DHCPv6 client PD, and IPSec (IKE, AH, ESP) is accepted as per RFC recommendations.
+IPv6部分比较复杂，根据RFC建议，接受UDP跟踪路由、DHCPv6客户端PD和IPSec（IKE、AH、ESP）。
 
 ```shell
 /ipv6 firewall filter
@@ -44,11 +44,11 @@ add action=accept chain=input comment="defconf: accept IPSec ESP" protocol=ipsec
 add action=drop chain=input comment="defconf: drop all not coming from LAN" in-interface-list=!LAN
 ```
 
-## Protect the Clients
+## 保护客户端
 
-Before the actual set of rules, let's create a necessary _address-list_ that contains all IPv4/6 addresses that cannot be forwarded.
+在实际设置规则之前，先创建一个必要的 _地址列表_，其中包含所有不能被转发的IPv4/6地址。
 
-Notice that in this list multicast address range is added. It is there because in most cases multicast is not used. If you intend to use multicast forwarding, then this address list entry should be disabled.
+注意，在这个列表中，添加了多播地址范围。它之所以出现，是因为在大多数情况下不使用多播。如果打算使用多播转发，这个地址列表应该禁用。
 
 ```shell
 /ip firewall address-list
@@ -58,7 +58,7 @@ Notice that in this list multicast address range is added. It is there because i
   add address=255.255.255.255/32 comment="defconf: RFC6890" list=no_forward_ipv4
 ```
 
-In the same case for IPv6, if multicast forwarding is used then the multicast entry should be disabled from the _address-list._
+在IPv6的相同情况下，如果使用多播转发，应该从 _地址列表_ 中禁用多播条目。
 
 ```shell
 /ipv6 firewall address-list
@@ -66,16 +66,16 @@ In the same case for IPv6, if multicast forwarding is used then the multicast en
   add address=ff00::/8  comment="defconf: multicast" list=no_forward_ipv6
 ```
 
-_Forward_ chain will have a bit more rules than input:
+_forward_ 链有比input多的规则。
 
-- accept _established, related_ and _untracked_ connections;
-- FastTrack _established_ and _related_ connections (currently only IPv4);
-- drop _invalid_ connections;
-- drop bad forward IP`s, since we cannot reliably determine in RAW chains which packets are forwarded
-- drop connections initiated from the internet (from the WAN side which is not destination NAT`ed);
-- drop bogon IP`s that should not be forwarded.
+- 接受 _已建立的、相关的_ 和 _未跟踪的_ 连接。
+- 快速跟踪 _已建立的_ 和 _相关的_ 连接（目前只有IPv4）。
+- 丢弃无效的连接。
+- 丢弃坏的转发IP，因为无法在RAW链中可靠地确定哪些数据包被转发。
+- 丢弃从互联网上发起的连接（从没有目标NAT的WAN端）。
+- 丢弃不应该被转发的虚假IP。
 
-We are dropping all non-dstnated IPv4 packets to protect direct attacks on the clients if the attacker knows the internal LAN network. Typically this rule would not be necessary since RAW filters will drop such packets, however, the rule is there for double security in case RAW rules are accidentally messed up.
+如果攻击者知道内部局域网的网络，会丢弃所有非静态的IPv4数据包以保护对客户的直接攻击。通常情况下，这条规则是不必要的，因为RAW过滤器会丢弃这样的数据包，然而，这条规则是为了双重安全，以防RAW规则被不小心弄乱。
 
 ```shell
 /ip firewall filter
@@ -88,7 +88,7 @@ We are dropping all non-dstnated IPv4 packets to protect direct attacks on the c
   add action=drop chain=forward dst-address-list=no_forward_ipv4 comment="defconf: drop bad forward IPs"
 ```
 
-IPv6 _forward_ chain is very similar, except that IPsec and HIP are accepted as per RFC recommendations and ICMPv6 with _hop-limit=1_ is dropped.
+IPv6 _forward_ 链非常相似，除了根据RFC建议接受IPsec和HIP，并丢弃 _hop-limit=1_ 的ICMPv6。
 
 ```shell
 /ipv6 firewall filter
@@ -106,13 +106,13 @@ add action=accept chain=forward comment="defconf: accept all that matches IPSec 
 add action=drop chain=forward comment="defconf: drop everything else not coming from LAN" in-interface-list=!LAN
 ```
 
-Notice the IPsec policy matcher rules. It is very important that IPsec encapsulated traffic bypass fast-track. That is why as an illustration we have added a disabled rule to accept traffic matching IPsec policies. Whenever IPsec tunnels are used on the router this rule should be enabled. For IPv6 it is much more simple since it does not have fast-track support.
+注意IPsec策略匹配器的规则。让IPsec封装的流量绕过快速通道是非常重要的。这就是为什么作为一个例子，添加了一个禁用的规则来接受匹配IPsec策略流量。只要在路由器上使用IPsec隧道，这个规则就应该启用。对于IPv6就简单多了，因为它不支持快速通道。
 
-Another approach to solving the IPsec problem is to add RAW rules, we will talk about this method later in the RAW section
+解决 IPsec 问题的另一种方法是添加 RAW 规则，将在后面的 RAW 部分讨论这种方法
 
-## Masquerade Local Network
+## 伪装本地网络
 
-For local devices behind the router to be able to access the internet, local networks must be masqueraded. In most cases, it is advised to use src-nat instead of masquerade, however in this case when the WAN address is dynamic it is the only option.
+为了使路由器后面的本地设备能够访问互联网，必须对本地网络进行伪装。在大多数情况下，建议使用src-nat而不是masquerade，在这种情况下，WAN地址是动态的，这是唯一的选择。
 
 ```shell
 /ip firewall nat
@@ -120,15 +120,15 @@ For local devices behind the router to be able to access the internet, local net
   add action=masquerade chain=srcnat comment="defconf: masquerade" out-interface-list=WAN
 ```
 
-Notice the disabled policy matcher rule, the same as in firewall filters IPSec traffic must be excluded from being NATed (except specific scenarios where IPsec policy is configured to match NAT`ed address). So whenever IPsec tunnels are used on the router this rule must be enabled. 
+注意禁用的策略匹配器规则与防火墙过滤器一样，IPSec流量必须排除在NAT之外（除了IPsec策略配置为匹配NAT地址的特定场景）。因此，只要在路由器上使用IPsec隧道，这个规则就必须启用。
 
-## RAW Filtering
+## RAW过滤
 
-## IPv4 Address Lists
+## IPv4地址列表
 
-Before setting RAW rules, let's create some address lists necessary for our filtering policy. RFC 6890 will be used as a reference.
+在设置RAW规则之前，创建一些过滤策略所需的地址列表。RFC 6890将被用来作为参考。
 
-First, _address-list_ contains all IPv4 addresses that cannot be used as src/dst/forwarded, etc. (will be dropped immediately if such address is seen)
+首先，_address-list_ 包含所有不能用作src/dst/forwarded等的IPv4地址（如果看到这样的地址，将立即被丢弃）。
 
 ```shell
 /ip firewall address-list
@@ -140,7 +140,7 @@ First, _address-list_ contains all IPv4 addresses that cannot be used as src/ds
   add address=240.0.0.0/4 comment="defconf: RFC6890 reserved" list=bad_ipv4
 ```
 
-Another address list contains all IPv4 addresses that cannot be routed globally.
+另一个地址列表包含所有不能全局路由的IPv4地址。
 
 ```shell
 /ip firewall address-list
@@ -155,7 +155,7 @@ Another address list contains all IPv4 addresses that cannot be routed globally.
   add address=255.255.255.255/32 comment="defconf: RFC6890" list=not_global_ipv4
 ```
 
-And last two address lists for addresses that cannot be as destination or source address.
+最后两个地址列表用于不能作为目的地或源地址的地址。
 
 ```shell
 /ip firewall address-list
@@ -165,20 +165,20 @@ add address=0.0.0.0/8 comment="defconf: RFC6890" list=bad_dst_ipv4
   add address=224.0.0.0/4 comment="defconf: RFC6890" list=bad_dst_ipv4
 ```
 
-## IPv4 RAW Rules
+## IPv4 RAW规则
 
-Raw IPv4 rules will perform the following actions:
+原始IPv4规则将执行以下操作:
 
-- **add disabled "accept" rule** - can be used to quickly disable RAW filtering without disabling all RAW rules;
-- **accept** DHCP discovery - most of the DHCP packets are not seen by an IP firewall, but some of them are, so make sure that they are accepted;
-- **drop** packets that use bogon IP`s;
-- **drop** from invalid SRC and DST IP`s;
-- **drop** globally unroutable IP`s coming from WAN;
-- **drop** packets with source-address not equal to 192.168.88.0/24 (default IP range) coming from LAN;
-- **drop** packets coming from WAN to be forwarded to 192.168.88.0/24 network, this will protect from attacks if the attacker knows internal network;
-- **drop** bad ICMP, UDP, and TCP;
-- **accept** everything else coming from WAN and LAN;
-- **drop** everything else, to make sure that any newly added interface (like PPPoE connection to service provider) is protected against accidental misconfiguration.
+- **添加禁用的 "接受 "规则** - 可用于快速禁用RAW过滤，而无需禁用所有RAW规则。
+- **接受** DHCP发现 - 大多数DHCP数据包不会被IP防火墙看到，但其中一些会被看到，所以要确保它们被接受。
+- **丢弃** 使用虚假IP的数据包。
+- 从无效的SRC和DST IP中 **丢弃** 。
+- **丢弃** 来自广域网的全局性不可路由的IP。
+- **丢弃** 来自LAN的源地址不等于192.168.88.0/24（默认IP范围）的数据包。
+- **丢弃** 来自广域网的数据包，将其转发到192.168.88.0/24网络，如果攻击者知道内部网络，这会保护其免受攻击。
+- **丢弃** 损坏的ICMP、UDP和TCP。
+- **接受** 来自广域网和局域网的所有其他信息。
+- **丢弃** 其他一切，确保任何新增加的接口（如PPPoE连接到服务提供商）得到保护，防止意外的错误配置。
 
 ```shell
 /ip firewall raw
@@ -199,7 +199,7 @@ add action=accept chain=prerouting comment="defconf: accept everything else from
 add action=drop chain=prerouting comment="defconf: drop the rest"
 ```
 
-Notice that we used some optional chains, the first **TCP** chain to drop **TCP** packets known to be _invalid._
+请注意，这里使用了一些可选的链，第一个 **TCP** 链用来丢弃已知 _无效的_ **TCP** 数据包。
 
 ```shell
 /ip firewall raw
@@ -213,7 +213,7 @@ add action=drop chain=bad_tcp comment=defconf protocol=tcp tcp-flags=rst,urg
 add action=drop chain=bad_tcp comment="defconf: TCP port 0 drop" port=0 protocol=tcp
 ```
 
-And another chain for **ICMP**. Note that if you want a very strict firewall then such strict **ICMP** filtering can be used, but in most cases, it is not necessary and simply adds more load on the router's CPU. ICMP rate limit in most cases is also unnecessary since the Linux kernel is already limiting ICMP packets to 100pps.
+而另一条链用于 **ICMP** 。注意，如果想要一个非常严格的防火墙，可以使用严格的 **ICMP** 过滤，但大多数情况下没有必要，它只是给路由器的CPU增加更多的负担。大多数情况下，ICMP速率限制也是不必要的，因为Linux内核已经将ICMP数据包限制在100pps。
 
 ```shell
 /ip firewall raw
@@ -228,9 +228,9 @@ add action=accept chain=icmp4 comment="defconf: time exceeded " icmp-options=11:
 add action=drop chain=icmp4 comment="defconf: drop other icmp" protocol=icmp
 ```
 
-## IPv6 Address Lists
+## IPv6地址列表
 
-List of IPv6 addresses that should be dropped instantly
+应该立即丢弃的IPv6地址列表
 
 ```shell
 /ipv6 firewall address-list
@@ -242,7 +242,7 @@ add address=2001:10::/28 comment="defconf: RFC6890 orchid" list=bad_ipv6
 add address=::/96 comment="defconf: ipv4 compat" list=bad_ipv6
 ```
 
-List of IPv6 addresses that are not globally routable
+不可全局路由的IPv6地址列表
 
 ```shell
 /ipv6 firewall address-list
@@ -252,11 +252,11 @@ add address=2001:2::/48 comment="defconf: RFC6890 Benchmark" list=not_global_ipv
 add address=fc00::/7 comment="defconf: RFC6890 Unique-Local" list=not_global_ipv6
 ```
 
-List of addresses as an invalid destination address
+作为无效目标地址的地址列表
 
 `/ipv6 firewall address-list add address=::/128 comment="defconf: unspecified" list=bad_dst_ipv6`
 
-List of addresses as an invalid source address
+作为无效源地址的地址列表
 
 ```shell
 /ipv6 firewall address-list
@@ -264,17 +264,17 @@ List of addresses as an invalid source address
   add address=ff00::/8  comment="defconf: multicast" list=bad_src_ipv6
 ```
 
-## IPv6 RAW Rules
+## IPv6 RAW规则
 
-Raw IPv6 rules will perform the following actions:
+原始IPv6规则将执行以下操作：
 
-- **add disabled accept rule** - can be used to quickly disable RAW filtering without disabling all RAW rules;
-- **drop** packets that use bogon IPs;
-- **drop** from invalid SRC and DST IPs;
-- **drop** globally unroutable IPs coming from WAN;
-- **drop** bad ICMP;
-- **accept** everything else coming from WAN and LAN;
-- **drop** everything else, to make sure that any newly added interface (like PPPoE connection to service provider) is protected against accidental misconfiguration.
+- **添加禁用的接受规则** - 可用于快速禁用RAW过滤，而无需禁用所有RAW规则。
+- **丢弃** 使用假IP的数据包。
+- **丢弃** 来自无效的SRC和DST IP。
+- **丢弃** 来自广域网的全局无法路由的IP。
+- **丢弃** 损坏的ICMP。
+- **接受** 来自广域网和局域网的其他所有数据。
+- **丢弃** 其他所有数据，确保任何新增加的接口（如PPPoE连接到服务提供商）受到保护，防止意外的错误配置。
 
 ```shell
 /ipv6 firewall raw
@@ -293,7 +293,7 @@ add action=accept chain=prerouting comment="defconf: accept everything else from
 add action=drop chain=prerouting comment="defconf: drop the rest"
 ```
 
-Notice that the optional **ICMP** chain was used. If you want a very strict firewall then such strict **ICMP** filtering can be used, but in most cases, it is not necessary and simply adds more load on the router's CPU. ICMP rate limit in most cases is also unnecessary since the Linux kernel is already limiting ICMP packets to 100pps
+请注意，使用了可选的 **ICMP**链。如果想要一个非常严格的防火墙，可以用这种严格的 **ICMP** 过滤，但大多数情况下是没有必要的，只是给路由器的CPU增加了更多的负载。大多数情况下，ICMP速率限制也是不必要的，因为Linux内核已经将ICMP数据包限制在100pps以内了。
 
 ```shell
 /ipv6 firewall raw

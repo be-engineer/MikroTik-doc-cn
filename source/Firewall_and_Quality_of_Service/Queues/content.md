@@ -205,7 +205,7 @@ PCQ参数：
 
 - **pcq-classifier** (dst-address | dst-port | src-address | src-port; default: "") : 选择子流标识符
 - **pcq-rate** (数字): 每个子流的最大可用速率
-- **pcq-limit**（数字):单个子流的队列大小（以 KiB 为单位）
+- **pcq-limit** (数字):单个子流的队列大小（以 KiB 为单位）
 - **pcq-total-limit** (数字): 所有子流中的最大排队量（以 KiB 为单位）
 
 可以用 **pcq-rate** 选项为子流分配速度限制。 如果“pcq-rate=0”，子流将平均分配可用流量。
