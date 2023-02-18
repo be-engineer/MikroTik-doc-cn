@@ -1,111 +1,88 @@
-# Introduction
+# 连接速率介绍
 
-Connection Rate is a firewall matcher that allows capturing traffic based on the present speed of the connection.
+连接速率是一个防火墙匹配器，允许根据目前的连接速度来捕获流量。
 
-## Theory
+## 理论
 
-Each entry in the connection tracking table represents bidirectional communication. Every time packet gets associated with a particular entry, the packet size value (including IP header) is added to the "connection-bytes" value for this entry. (in other words "connection-bytes" includes both - upload and download).
+连接跟踪表中的每个条目代表双向通信。每当数据包与一个特定的条目关联时，数据包的大小值（包括IP头）就会添加到这个条目的 "连接字节 "值中。(换句话说，"连接字节 "包括上传和下载）。
 
-Connection Rate calculates the speed of connection based on the change of "connection-bytes". The connection rate is recalculated every second and does not have any averages.
+连接速率根据 "连接字节 "的变化计算连接速度。连接速度每秒钟都会重新计算，没有任何平均数。
 
-Both options "connection-bytes" and "connection-rate" work only with TCP and UDP traffic. (you need to specify a protocol to activate these options). In the "connection-rate" you can specify a range of speed that you like to capture:
+"连接字节"和 "连接速率 "这两个选项只对TCP和UDP流量起作用。(要指定一个协议来激活这些选项）。在 "连接率"中可以指定一个想捕捉的速度范围。
 
-`ConnectionRate` `::= [!]From-To`
+```shell
+ConnectionRate ::= [!]From-To
+  From,To ::= 0..4294967295    (integer number)
+```
 
-  `From,To` `::= 0..4294967295    (integer number)`
+## 规则实例
 
-## Rule Example
-
-These rules will capture TCP/UDP traffic that was going through the router when the connection speed was below 100kbps:
+这些规则将捕获连接速度低于100kbps时通过路由器的TCP/UDP流量。
 
 `/ip firewall filter`
+`add action =accept chain =forward connection-rate =0-100k protocol =tcp`
+`add action =accept chain =forward connection-rate =0-100k protocol =udp`
 
-`add` `action``=accept` `chain``=forward` `connection-rate``=0-100k` `protocol``=tcp`
+## 应用实例-流量优先级的确定
 
-`add` `action``=accept` `chain``=forward` `connection-rate``=0-100k` `protocol``=udp`
+连接速率可以用各种不同的方式来实现，但最常见的设置是检测和设置较低的优先级给 "重度连接"（长时间保持高速率的连接（如P2P、HTTP、FTP下载）。这样做可以优先考虑所有其他流量，通常包括VOIP和HTTP浏览以及在线游戏。
 
-## Application Example - Traffic Prioritization
+这个例子中描述的方法可以和其他方法一起使用，以检测和优先处理流量。由于连接率选项没有任何平均数，需要确定识别 "重度连接 "的余量是多少。假设一个正常的HTTP浏览连接长度小于500kB（4Mb），VOIP要求的速度不超过200kbps，那么在第一个500kB之后仍然有超过200kbps速度的每个连接都可以被认为是 "重度"。
 
-Connection-rate can be used in various different ways, that still need to be realized, but the most common setup will be to detect and set lower priorities to the "heavy connections" (connections that maintain a fast rate for long periods of time (such as P2P, HTTP, FTP downloads). By doing this you can prioritize all other traffic that usually includes VOIP and HTTP browsing and online gaming.
+(网络中可能有不同的HTTP浏览的 "连接字节 "和不同的VOIP的 "连接速率"，所以，在用这个例子之前，请自己研究)
 
-The method described in this example can be used together with other ways to detect and prioritize traffic. As the connection-rate option does not have any averages we need to determine what will be the margin that identifies "heavy connections". If we assume that a normal HTTP browsing connection is less than 500kB (4Mb) long and VOIP requires no more than 200kbps speed, then every connection that after the first 500kB still has more than 200kbps speed can be assumed as "heavy".
+在这个例子中，假设有一个6Mbps的上传和下载连接到ISP。
 
-(You might have different "connection-bytes" for HTTP browsing and different "connection-rate" for VOIP in your network - so, please, do your own research before applying this example)
-
-For this example, let's assume that we have a 6Mbps upload and download connection to ISP.
-
-## Quick Start for Impatient
+## 不耐烦的人快速开始
 
 `/ip firewall mangle`
 
-`add` `chain``=forward` `action``=mark-connection` `connection-mark``=!heavy_traffic_conn` `new-connection-mark``=all_conn`
-
-`add` `chain``=forward` `action``=mark-connection` `connection-bytes``=500000-0` `connection-mark``=all_conn` `connection-rate``=200k-100M` `new-connection-mark``=heavy_traffic_conn` `protocol``=tcp`
-
-`add` `chain``=forward` `action``=mark-connection` `connection-bytes``=500000-0` `connection-mark``=all_conn` `connection-rate``=200k-100M` `new-connection-mark``=heavy_traffic_conn` `protocol``=udp`
-
-`add` `chain``=forward` `action``=mark-packet` `connection-mark``=heavy_traffic_conn` `new-packet-mark``=heavy_traffic` `passthrough``=no`
-
-`add` `chain``=forward` `action``=mark-packet` `connection-mark``=all_conn` `new-packet-mark``=other_traffic` `passthrough``=no`
-
+`add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn`
+`add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =tcp`
+`add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =udp`
+`add chain =forward action =mark-packet connection-mark =heavy_traffic_conn new-packet-mark =heavy_traffic passthrough =no`
+`add chain =forward action =mark-packet connection-mark =all_conn new-packet-mark =other_traffic passthrough =no`
 `/queue tree`
+`add name =upload parent =public max-limit =6M`
+`add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
+`add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
+`add name =download parent =local max-limit =6M`
+`add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
+`add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
 
-`add` `name``=upload` `parent``=public` `max-limit``=6M`
+### 解释
 
-`add` `name``=other_upload` `parent``=upload` `limit-at``=4M` `max-limit``=6M` `packet-mark``=other_traffic` `priority``=1`
+在mangle中，要把所有的连接分成两组，然后从这两组中标记数据包。由于讨论的是客户端流量，最合理的标记位置是mangle链的转发。
 
-`add` `name``=heavy_upload` `parent``=upload` `limit-at``=2M` `max-limit``=6M` `packet-mark``=heavy_traffic` `priority``=8`
+请记住，一旦 "重 "连接的优先级降低，队列就会达到最大极限，重连接就会降速，连接速率也会降低。这会导致变为更高的优先级，连接能够在短时间内获得更多的流量，这时连接率将再次提高，将再次导致改变为较低的优先级）。为了避免这种情况，必须确保一旦检测到 "重度连接"，将一直被标记为 "重度连接"。
 
-`add` `name``=download` `parent``=local` `max-limit``=6M`
+### IP 防火墙mangle
 
-`add` `name``=other_download` `parent``=download` `limit-at``=4M` `max-limit``=6M` `packet-mark``=other_traffic` `priority``=1`
-
-`add` `name``=heavy_download` `parent``=download` `limit-at``=2M` `max-limit``=6M` `packet-mark``=heavy_traffic` `priority``=8`
-
-### Explanation
-
-In mangle, we need to separate all connections into two groups, then mark packets from their 2 groups. As we are talking about client traffic most logical place for marking would be the mangle chain forward.
-
-Keep in mind that as soon as a "heavy" connection will have lower priority and queue will hit max-limit - heavy connection will drop speed, and connection-rate will be lower. This will result in a change to higher priority and the connection will be able to get more traffic for a short while, when again connection-rate will raise and that again will result in a change to lower priority). To avoid this we must make sure that once detected "heavy connections" will remain marked as "heavy connections" for all times.
-
-### IP Firewall mangle
-
-This rule will ensure that that "heavy" connections will remain heavy". and mark the rest of the connections with the default connection mark:
+这个规则确保 "重度 "连接将保持"重度"。 并用默认连接标记其余的连接。
 
 `/ip firewall mangle`
+`add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn`
 
-`add` `chain``=forward` `action``=mark-connection` `connection-mark``=!heavy_traffic_conn` `new-connection-mark``=all_conn`
+这两条规则将根据标准来标记所有的重度连接，即每一个在第一个500kB之后仍然有超过200kbps速度的连接可以认为是 "重度"。
 
-These two rules will mark all heavy connections based on our standards, that every connection that after the first 500kB still have more than 200kbps speed can be assumed as "heavy":
-
-`add` `chain``=forward` `action``=mark-connection` `connection-bytes``=500000-0` `\`
-
-    `connection-mark``=all_conn` `connection-rate``=200k-100M` `new-connection-mark``=heavy_traffic_conn` `protocol``=tcp`
-
-`add` `chain``=forward` `action``=mark-connection` `connection-bytes``=500000-0` `\`
-
-    `connection-mark``=all_conn` `connection-rate``=200k-100M` `new-connection-mark``=heavy_traffic_conn` `protocol``=udp`
-
+```shell
+add chain =forward action =mark-connection connection-bytes =500000-0 \
+    connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =tcp
+add chain =forward action =mark-connection connection-bytes =500000-0 \
+    connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =udp
 The last two rules in mangle will simply mark all traffic from corresponding connections:
+add chain =forward action =mark-packet connection-mark =heavy_traffic_conn new-packet-mark =heavy_traffic passthrough =no
+add chain =forward action =mark-packet connection-mark =all_conn new-packet-mark =other_traffic passthrough =no
+```
 
-`add` `chain``=forward` `action``=mark-packet` `connection-mark``=heavy_traffic_conn` `new-packet-mark``=heavy_traffic` `passthrough``=no`
+### 队列
 
-`add` `chain``=forward` `action``=mark-packet` `connection-mark``=all_conn` `new-packet-mark``=other_traffic` `passthrough``=no`
-
-### Queue
-
-This is a simple queue tree that is placed on the Interface HTB - "public" is an interface where your ISP is connected, and "local" is where are your clients. If you have more than 1 "public" or more than 1 "local" you will need to mangle upload and download separately and place the queue tree in global-out:
+这是一个简单的队列树，放在接口HTB上-"public "是ISP连接的接口，而 "local "是客户所在的地方。如果有一个以上的 "public "或一个以上的 "local"，则需要把上传和下载分开，并把队列树放在全局中。
 
 `/queue tree`
-
-`add` `name``=upload` `parent``=public` `max-limit``=6M`
-
-`add` `name``=other_upload` `parent``=upload` `limit-at``=4M` `max-limit``=6M` `packet-mark``=other_traffic` `priority``=1`
-
-`add` `name``=heavy_upload` `parent``=upload` `limit-at``=2M` `max-limit``=6M` `packet-mark``=heavy_traffic` `priority``=8`
-
-`add` `name``=download` `parent``=local` `max-limit``=6M`
-
-`add` `name``=other_download` `parent``=download` `limit-at``=4M` `max-limit``=6M` `packet-mark``=other_traffic` `priority``=1`
-
-`add` `name``=heavy_download` `parent``=download` `limit-at``=2M` `max-limit``=6M` `packet-mark``=heavy_traffic` `priority``=8`
+`add name =upload parent =public max-limit =6M`
+`add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
+`add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
+`add name =download parent =local max-limit =6M`
+`add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
+`add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
