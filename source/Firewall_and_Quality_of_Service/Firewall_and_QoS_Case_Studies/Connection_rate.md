@@ -61,7 +61,7 @@ add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark
 
 这个规则确保 "重度 "连接将保持"重度"。 并用默认连接标记其余的连接。
 
-`/ip firewall mangle`
+`/ip firewall mangle`  
 `add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn`
 
 这两条规则将根据标准来标记所有的重度连接，即每一个在第一个500kB之后仍然有超过200kbps速度的连接可以认为是 "重度"。
