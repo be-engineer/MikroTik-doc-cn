@@ -1,36 +1,36 @@
-# Introduction
+# 基本概念介绍
 
 ![](https://help.mikrotik.com/docs/download/attachments/328229/firewall-fundamental.jpg?version=2&modificationDate=1572439380369&api=v2)
 
-The firewall implements stateful (by utilizing connection tracking) and stateless packet filtering and thereby provides security functions that are used to manage data flow to, from, and through the router. Along with the Network Address Translation (NAT), it serves as a tool for preventing unauthorized access to directly attached networks and the router itself as well as a filter for outgoing traffic.
+防火墙实现了有状态（通过利用连接跟踪）和无状态数据包过滤，从而提供了安全功能，用于管理进出路由器的数据流。与网络地址转换（NAT）一起，可以防止未经授权访问直接连接的网络和路由器本身的工具，也是出站流量的一个过滤器。
 
-Network firewalls keep outside threats away from sensitive data available inside the network. Whenever different networks are joined together, there is always a threat that someone from outside of your network will break into your LAN. Such break-ins may result in private data being stolen and distributed, valuable data being altered or destroyed, or entire hard drives being erased. Firewalls are used as a means of preventing or minimizing the security risks inherent in connecting to other networks. A properly configured firewall plays a key role in efficient and secure network infrastructure deployment.
+网络防火墙使外部威胁远离网络内部的敏感数据。每当不同的网络连接在一起时，总是有一种威胁，即来自网络之外的人闯入你的局域网。这种闯入可能导致私人数据被盗和传播，有价值的数据被改变或破坏，或整个硬盘被删除。防火墙用作防止或尽量减少连接到其他网络的固有安全风险的手段。正确配置的防火墙在高效和安全的网络基础设施部署中发挥着关键作用。
 
-MikroTik RouterOS has a very powerful firewall implementation with features including:
+MikroTik RouterOS有一个非常强大的防火墙，功能包括。
 
-- stateful packet inspection
-- peer-to-peer protocols filtering
-- traffic classification by:
-  - source MAC address
-  - IP addresses (network or list) and address types (broadcast, local, multicast, unicast)
-  - port or port range
-  - IP protocols
-  - protocol options (ICMP type and code fields, TCP flags, IP options, and MSS)
-  - interface the packet arrived from or left through
-  - internal flow and connection marks
-  - DSCP byte
-  - packet content
-  - rate at which packets arrive and sequence numbers
-  - packet size
-  - packet arrival time
+- 状态包检查
+- 点对点协议过滤
+- 通过以下方式进行流量分类
+  - 源MAC地址
+  - IP地址（网络或列表）和地址类型（广播、本地、多播、单播）。
+  - 端口或端口范围
+  - IP协议
+  - 协议选项（ICMP类型和代码域、TCP标志、IP选项和MSS）。
+  - 数据包到达或离开的接口
+  - 内部流量和连接标记
+  - DSCP字节
+  - 数据包内容
+  - 数据包到达的速率和序列号
+  - 数据包大小
+  - 数据包到达时间
 
-And much more!
+还有更多!
 
-## How It works
+## 它如何工作
 
-The firewall operates by means of firewall rules. Each rule consists of two parts - the **matcher** which matches traffic flow against given conditions and the **action** which defines what to do with the matched packet.
+防火墙通过防火墙规则运行。每个规则由两部分组成-**匹配器**，根据给定的条件匹配流量，以及 **动作**，定义如何处理匹配的数据包。
 
-RouterOS utilizes 5 sub-facilities of the firewall:
+RouterOS利用防火墙的5个子功能：
 
 - Connection tracking
 - Filters
@@ -38,36 +38,49 @@ RouterOS utilizes 5 sub-facilities of the firewall:
 - Mangle
 - RAW
 
-### Connection states
+### 连接状态
 
-To completely understand firewall rules, first, you have to understand various states which might apply to a particular network packet. There are five connection states in RouterOS:
+要完全理解防火墙规则，首先必须了解可能适用于特定网络数据包的各种状态。在RouterOS中，有五种连接状态。
 
-- **NEW** - The NEW state tells us that the packet is the first packet that we see. This means that the first packet that the conntrack module sees, within a specific connection, will be matched. For example, if we see an SYN packet and it is the first packet in a connection that we see, it will match;
-- **ESTABLISHED -** The _ESTABLISHED_ state has seen traffic in both directions and will then continuously match those packets. _ESTABLISHED_ connections are fairly easy to understand. The only requirement to get into an _ESTABLISHED_ state is that one host sends a packet and that it, later on, gets a reply from the other host. The _NEW_ state will upon receipt of the reply packet to or through the firewall change to the _ESTABLISHED_ state;
-- **RELATED** \- A connection is considered _RELATED_ when it is related to another already _ESTABLISHED_ connection. For a connection to be considered as _RELATED,_ we must first have a connection that is considered _ESTABLISHED._ The _ESTABLISHED_ connection will then spawn a connection outside of the main connection. The newly spawned connection will then be considered _RELATED,_ for example, a packet that begins the FTP data connection;
-- **INVALID** \- The _INVALID_ state means that the packet can't be identified or that it does not have any state.  It is suggested to _DROP_ everything in this state;
-- **UNTRACKED** \- A packet that was set to bypass connection tracking in the Firewall RAW table;
+- **NEW** - 新状态告诉我们，该数据包是看到的第一个数据包。意味着conntrack模块看到的第一个数据包，在一个特定的连接中被匹配。例如，如果我们看到一个SYN数据包，并且它是看到的一个连接中的第一个数据包，它将被匹配。
+- **ESTABLISHED -** _ESTABLISHED_ 状态在两个方向都看到了流量，然后会持续匹配这些数据包。_ESTABLISHED_ 连接是相当容易理解的。进入 _ESTABLISHED_ 状态的唯一要求是一台主机发送了一个数据包，随后它从另一台主机得到了一个回复。在收到回复数据包后，_NEW_ 状态将改变为_ESTABLISHED_ 状态，或通过防火墙。
+- **RELATED** - 连接被认为是_RELATED_，当它与另一个已经_ESTABLISHED_ 的连接有关。为了使一个连接被认为是 _RELATED_，必须首先有一个被认为是 _ESTABLISHED_ 的连接，然后 _ESTABLISHED_ 连接将在主连接之外产生一个连接。然后新产生的连接将被认为是 _RELATED_，例如，一个开始FTP数据连接的数据包。
+- **INVALID**- _INVALID_ 状态意味着数据包无法被识别，或者没有任何状态。 建议在这种状态下 _DROP_ 一切。
+- **UNTRACKED** - 一个数据包设置为绕过防火墙RAW表中的连接跟踪。  
 
-  
+### 配置实例
 
-### Configuration Example
+看一下保护路由器的基本防火墙设置。默认情况下，RouterOS防火墙接受一切，阻断是通过在所有规则的末尾添加一个过滤规则来丢弃一切。对路由器只想允许ICMP、ssh和Winbox，而丢弃其他的。
 
-Let's look at the basic firewall setup to protect the router. By default RouterOS firewall accepts everything, blocking is achieved by adding a filter rule to drop everything at the end of all rules. For out router we want to allow only ICMP, ssh, and Winbox and drop the rest:
+```shell
+/ip firewall filter
+add chain=input connection-state=invalid action=drop comment="Drop Invalid connections"
+add chain=input connection-state=established,related,untracked action=accept comment="Allow Established/Related/Untracked connections"
+add chain=input protocol=icmp action=accept ;comment="Allow ICMP"
+add chain=input protocol=tcp ports=8291,22 action=accept comment="Allow Winbox and SSH"
+add chain=input action=drop comment="Drop everything else"
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=invalid</code> <code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Drop Invalid connections"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related,untracked</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Allow Established/Related/Untracked connections"</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">protocol</code><code class="ros plain">=icmp</code> <code class="ros value">action</code><code class="ros plain">=accept&nbsp;</code><code class="ros plain">;</code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Allow ICMP"</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">protocol</code><code class="ros plain">=tcp</code> <code class="ros value">ports</code><code class="ros plain">=8291,22</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Allow Winbox and SSH"</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Drop everything else"</code></div></div></td></tr></tbody></table>
+RouterOS还允许在连接跟踪前过滤数据包，并有选择地只发送特定的流量到连接跟踪。这能够大大减少CPU的负荷，并减轻DOS/DDoS攻击。这种规则的配置是在RAW过滤表中完成的。
 
-RouterOS also allows filtering packets before connection tracking and selectively send only specific traffic to connection tracking. This allows us to significantly reduce the load on the CPU and mitigate DOS/DDoS attacks. Configuration of such rules is done in the RAW filtering table.
+额外的 _/ip firewall filter_ 配置例子可在 [建立你的第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 部分找到。
 
-Additional _/ip firewall filter_ configuration examples find under the [Building Your First Firewall](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) section.
+## 连接跟踪
 
-## Connection Tracking
+连接跟踪允许内核跟踪所有的逻辑网络连接或会话，从而将可能构成该连接的所有数据包联系起来。NAT依靠这一信息，以同样的方式翻译所有相关的数据包。连接跟踪可以使用有状态防火墙功能，也可以是无状态协议，如UDP。
 
-Connection tracking allows the kernel to keep track of all logical network connections or sessions, and thereby relate all of the packets which may make up that connection. NAT relies on this information to translate all related packets in the same way. Because of connection tracking, you can use stateful firewall functionality even with stateless protocols such as UDP.
+跟踪的连接列表可以在ipv4的 _/ip firewall connection_ 和IPv6的 _/ipv6 firewall connection_ 中看到。
 
-A list of tracked connections can be seen in the _/ip firewall connection_ for ipv4 and _/ipv6 firewall connection_ for IPv6.
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MirkoTik] </code><code class="ros constants">/ip firewall connection&gt; </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: S - seen-reply, A - assured</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># PR.. SRC-ADDRESS DST-ADDRESS TCP-STATE TIMEOUT</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 udp 10.5.8.176</code><code class="ros constants">:5678 255.255.255.255:5678 0s</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1 udp 10.5.101.3</code><code class="ros constants">:646 224.0.0.2:646 5s</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2 ospf 10.5.101.161 224.0.0.5 9m58s</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">3 udp 10.5.8.140</code><code class="ros constants">:5678 255.255.255.255:5678 8s</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">4 SA tcp 10.5.101.147</code><code class="ros constants">:48984 10.5.101.1:8291 established 4m59s</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MirkoTik] </code><code class="ros constants">/ipv6 firewall connection&gt; </code><code class="ros plain">print</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: S - seen reply, A - assured</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros comments"># PRO.. SRC-ADDRESS DST-ADDRESS TCP-STATE</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">0 udp fe80</code><code class="ros constants">::d6ca:6dff:fe77:3698 ff02::1</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">1 udp fe80</code><code class="ros constants">::d6ca:6dff:fe98:7c28 ff02::1</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">2 ospf fe80</code><code class="ros constants">::d6ca:6dff:fe73:9822 ff02::5</code></div></div></td></tr></tbody></table>
-
+```shell
+[admin@MirkoTik] /ip firewall connection> print
+Flags: S - seen-reply, A - assured
+# PR.. SRC-ADDRESS DST-ADDRESS TCP-STATE TIMEOUT
+0 udp 10.5.8.176:5678 255.255.255.255:5678 0s
+1 udp 10.5.101.3:646 224.0.0.2:646 5s
+2 ospf 10.5.101.161 224.0.0.5 9m58s
+3 udp 10.5.8.140:5678 255.255.255.255:5678 8s
+4 SA tcp 10.5.101.147:48984 10.5.101.1:8291 established 4m59s
+```
   
 Based on connection table entries arrived packet can get assigned one of the connection states: **new, invalid, established, related,** or **untracked**.
 

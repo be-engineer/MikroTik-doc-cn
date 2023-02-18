@@ -33,22 +33,23 @@ ConnectionRate ::= [!]From-To
 
 在这个例子中，假设有一个6Mbps的上传和下载连接到ISP。
 
-## 不耐烦的人快速开始
+## 快速开始
 
-`/ip firewall mangle`
-
-`add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn`
-`add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =tcp`
-`add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =udp`
-`add chain =forward action =mark-packet connection-mark =heavy_traffic_conn new-packet-mark =heavy_traffic passthrough =no`
-`add chain =forward action =mark-packet connection-mark =all_conn new-packet-mark =other_traffic passthrough =no`
-`/queue tree`
-`add name =upload parent =public max-limit =6M`
-`add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
-`add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
-`add name =download parent =local max-limit =6M`
-`add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
-`add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
+```shell
+/ip firewall mangle
+add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn
+add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =tcp
+add chain =forward action =mark-connection connection-bytes =500000-0 connection-mark =all_conn connection-rate =200k-100M new-connection-mark =heavy_traffic_conn protocol =udp
+add chain =forward action =mark-packet connection-mark =heavy_traffic_conn new-packet-mark =heavy_traffic passthrough =no
+add chain =forward action =mark-packet connection-mark =all_conn new-packet-mark =other_traffic passthrough =no
+/queue tree
+add name =upload parent =public max-limit =6M
+add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1
+add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8
+add name =download parent =local max-limit =6M
+add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1
+add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8
+```
 
 ### 解释
 
