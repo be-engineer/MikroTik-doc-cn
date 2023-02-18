@@ -80,10 +80,12 @@ add chain =forward action =mark-packet connection-mark =all_conn new-packet-mark
 
 这是一个简单的队列树，放在接口HTB上-"public "是ISP连接的接口，而 "local "是客户所在的地方。如果有一个以上的 "public "或一个以上的 "local"，则需要把上传和下载分开，并把队列树放在全局中。
 
-`/queue tree`
-`add name =upload parent =public max-limit =6M`
-`add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
-`add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
-`add name =download parent =local max-limit =6M`
-`add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1`
-`add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8`
+```shell
+/queue tree
+add name =upload parent =public max-limit =6M
+add name =other_upload parent =upload limit-at =4M max-limit =6M packet-mark =other_traffic priority =1
+add name =heavy_upload parent =upload limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8
+add name =download parent =local max-limit =6M
+add name =other_download parent =download limit-at =4M max-limit =6M packet-mark =other_traffic priority =1
+add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark =heavy_traffic priority =8
+```
