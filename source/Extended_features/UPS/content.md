@@ -1,6 +1,7 @@
 # 概述
 
 **Sub-menu:** `/system ups`  
+
 **Standards:** `[APC Smart Protocol](http://www.exploits.org/nut/library/protocols/apcsmart.html)`
 
 UPS监控功能支持串行RS232或USB连接的 "智能 "APC UPS设备。UPS监控服务不包含在默认的软件包中，需要下载并手动安装ups.npk软件包。这个功能使网络管理员能够监控UPS，路由器可以 "优雅地 "处理任何断电，不会损坏路由器。这个功能的基本目的是确保路由器在长时间停电后能重新上线。要做到这一点，路由器将监测UPS，并在市电中断和UPS电池剩余电量少于10%时，将自己设置为休眠模式。然后，路由器将继续监测UPS（在休眠模式下），然后在市电恢复时重新启动。如果UPS电池电量耗尽，路由器失去所有电源，当 "市电 "恢复时，路由器将恢复运行。

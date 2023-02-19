@@ -1,6 +1,7 @@
 # 概述
 
 **Sub-menu:** `/container`
+
 **Packages required:** `container`
 
 容器是MikroTik对Linux容器的实现，允许用户在RouterOS中运行容器化环境。容器功能是在RouterOS v7.4beta4中添加的。
@@ -42,7 +43,7 @@
 
 ## 启用容器模式
 
-[Device-mode](https://help.mikrotik.com/docs/display/ROS/Device-mode) limits container use by default, before granting container mode access - make sure your device is fully secured.
+[Device-mode](https://help.mikrotik.com/docs/display/ROS/Device-mode) 默认限制容器的使用，在授予容器模式访问权之前请确保设备是完全安全的。
 
 启用容器模式
 
@@ -141,7 +142,7 @@ amd64
 
 安装后检查是否有额外的架构可用。
 
-应该返回:
+结果:
 
 ```shell
 NAME /NODE DRIVER /ENDPOINT STATUS  PLATFORMS
