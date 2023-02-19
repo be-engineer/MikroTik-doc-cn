@@ -4,11 +4,11 @@
 
 ## 理论
 
-连接跟踪表中的每个条目代表双向通信。每当数据包与一个特定的条目关联时，数据包的大小值（包括IP头）就会添加到这个条目的 "连接字节 "值中。(换句话说，"连接字节 "包括上传和下载）。
+连接跟踪表中的每个条目代表双向通信。每当数据包与一个特定的条目关联时，数据包的大小值（包括IP头）就会添加到这个条目的 "连接字节 "值中。(换句话说，"连接字节 "包括上传和下载)。
 
 连接速率根据 "连接字节 "的变化计算连接速度。连接速度每秒钟都会重新计算，没有任何平均数。
 
-"连接字节"和 "连接速率 "这两个选项只对TCP和UDP流量起作用。(要指定一个协议来激活这些选项）。在 "连接率"中可以指定一个想捕捉的速度范围。
+"连接字节"和 "连接速率 "这两个选项只对TCP和UDP流量起作用。(要指定一个协议来激活这些选项)。在 "连接率"中可以指定一个想捕捉的速度范围。
 
 ```shell
 ConnectionRate ::= [!]From-To
@@ -20,7 +20,9 @@ ConnectionRate ::= [!]From-To
 这些规则将捕获连接速度低于100kbps时通过路由器的TCP/UDP流量。
 
 `/ip firewall filter`
+
 `add action =accept chain =forward connection-rate =0-100k protocol =tcp`
+
 `add action =accept chain =forward connection-rate =0-100k protocol =udp`
 
 ## 应用实例-流量优先级的确定
@@ -62,6 +64,7 @@ add name =heavy_download parent =download limit-at =2M max-limit =6M packet-mark
 这个规则确保 "重度 "连接将保持"重度"。 并用默认连接标记其余的连接。
 
 `/ip firewall mangle`  
+
 `add chain =forward action =mark-connection connection-mark =!heavy_traffic_conn new-connection-mark =all_conn`
 
 这两条规则将根据标准来标记所有的重度连接，即每一个在第一个500kB之后仍然有超过200kbps速度的连接可以认为是 "重度"。

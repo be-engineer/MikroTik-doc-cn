@@ -58,8 +58,11 @@ MikroTik邻居发现协议用于显示和识别网络中的其他MikroTik路由�
 RouterOS可能启用了其他服务（默认的RouterOS配置中被禁用）。MikroTik缓存代理、socks、UPnP和云服务。
 
 `/ip proxy set enabled =no`
+
 `/ip socks set enabled =no`
+
 `/ip upnp set enabled =no`
+
 `/ip cloud set ddns-enabled =no update-time =no`
 
 更安全的SSH访问
@@ -75,6 +78,7 @@ RouterOS可能启用了其他服务（默认的RouterOS配置中被禁用）。M
 禁用路由器上所有未使用的接口是一个很好的做法，减少对路由器的非法访问。
 
 `/interface print`
+
 `/interface set X disabled =yes`
 
 其中**X**是未使用的接口数量。

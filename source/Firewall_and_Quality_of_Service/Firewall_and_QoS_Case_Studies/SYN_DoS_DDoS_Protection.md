@@ -33,13 +33,17 @@ add action=drop chain=prerouting dst-address-list=ddos-targets src-address-list=
 到目前为止，所有的合法流量都通过 "action=return"，但在DoS/DDoS的情况下，"dst-limit "缓冲区将被填满，规则就不会 "捕获 "任何新的流量。下面是下一个规则，用来处理攻击问题。从创建一个攻击者和受害者的列表开始到丢弃这个列表。
 
 `ip /firewall/address-list/ add list =ddos-attackers`
+
 `ip /firewall/address-list/ add list =ddos-targets`
+
 `ip /firewall/raw/ add chain =prerouting action =drop src-address-list =ddos-attackers dst-address-list =ddos-targets`
 
 通过防火墙过滤器，在 "DDoS-攻击者"列表中添加攻击者，在 "ddos-目标"列表中添加受害者:
 
 `/ip/firewall/filter/`
+
 `add action =add-dst-to-address-list address-list =ddos-targets address-list-timeout =10m chain =detect-ddos`
+
 `add action =add-src-to-address-list address-list =ddos-attackers address-list-timeout =10m chain =detect-ddos`
 
 ## SYN攻击
