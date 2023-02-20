@@ -20,7 +20,7 @@
 
 ## 设备
 
-**Sub-menu：** `/ip kid-control device`。
+**Sub-menu：** `/ip kid-control device`
 
 如果有多个设备连接到互联网（手机、平板电脑、游戏机、电视等），该子菜单会包含信息。设备是通过ARP表中检索的MAC地址来识别的，IP地址从那里获取。
 

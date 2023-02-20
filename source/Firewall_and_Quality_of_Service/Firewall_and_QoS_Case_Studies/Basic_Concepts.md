@@ -82,115 +82,90 @@ Flags: S - seen-reply, A - assured
 4 SA tcp 10.5.101.147:48984 10.5.101.1:8291 established 4m59s
 ```
   
-Based on connection table entries arrived packet can get assigned one of the connection states: **new, invalid, established, related,** or **untracked**.
+根据连接表的内容，到达的数据包可以分配到其中一个连接状态。**新的，无效的，已建立的，相关的** 或 **未跟踪的**。
 
-There are two different methods when the packet is considered **new**. The first one is in the case of stateless connections (like UDP) when there is no connection entry in the connection table. The other one is in the case of a stateful protocol (TCP). In this case, a new packet that starts a new connection is always a TCP packet with an _SYN_ flag.
+当数据包是 **新** 的时候，有两种不同的方法。第一种是在无状态连接（如UDP）的情况下，当连接表中没有连接条目时。另一种是在有状态协议（TCP）的情况下。在这种情况下，一个开始新连接的新数据包总是一个带有 _SYN_ 标志的TCP数据包。
 
-If a packet is not new it can belong to either an _established_ or _related_ connection or not belong to any connection making it _invalid_. A packet with an _established_ state, as most of you already guessed, belongs to an existing connection from the connection tracking table. A _related_ state is very similar, except that packet belongs to a connection that is related to one of the existing connections, for example, ICMP error packets or FTP data connection packets.
+如果一个数据包不是新的，它可以属于一个 _已建立_ 或 _相关的_ 连接，或者不属于任何连接，使其 _无效_。一个具有 _established_ 状态的数据包，正如大多数人猜到的，属于连接跟踪表中的一个现有连接。一个 _相关_ 状态非常类似，除了该数据包属于一个与现有连接相关的连接，例如，ICMP错误数据包或FTP数据连接数据包。
 
-Connection state **notrack** is a special case when RAW firewall rules are used to exclude connection from connection tracking. This one rule would make all forwarded traffic bypass the connection tracking engine speeding packet processing through the device.
+连接状态 **不跟踪** 是一种特殊情况，当使用RAW防火墙规则将连接排除在连接跟踪之外。这一个规则将使所有转发的流量绕过连接跟踪引擎，加速通过设备的数据包处理。
 
-Any other packet is considered _invalid_ and in most cases should be dropped.
+任何其他数据包都被认为是 _无效_ 的，在大多数情况下应该被丢弃。
 
-Based on this information we can set a basic set of filter rules to speed up packet filtering and reduce the load on the CPU by accepting _established/related_ packets, dropping _invalid_ packets, and working on more detailed filtering only for _new_ packets.
+基于这些信息，我们可以设置一套基本的过滤规则，通过接受_已建立的/相关的_数据包，丢弃 _无效_ 数据包，只对 _新_ 数据包进行更详细的过滤，从而加快数据包的过滤速度，减少CPU的负荷。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">ip firewall filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=invalid</code> <code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Drop Invalid connections"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related,untracked</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros plain">"Allow Established</code><code class="ros constants">/Related/Untracked connections</code></div></div></td></tr></tbody></table>
+通过www.DeepL.com/Translator（免费版）翻译
 
-Such a rule set must not be applied on routers with asymmetric routing, because asymmetrically routed packets may be considered invalid and dropped.
+```shell
+ip firewall filter
+add chain=input connection-state=invalid action=drop comment="Drop Invalid connections"
+add chain=input connection-state=established,related,untracked action=accept comment="Allow Established/Related/Untracked connections
+```
 
-## FastTrack
+这样的规则集不要用于具有非对称路由的路由器，因为非对称路由的数据包可能被认为是无效的被丢弃。
 
-IPv4 FastTrack handler is automatically used for marked connections. Use firewall action "fasttrack-connection" to mark connections for FastTrack. Currently, only TCP and UDP connections can be actually FastTracked (even though any connection can be marked for FastTrack). IPv4 FastTrack handler supports NAT (SNAT, DNAT, or both).
+## 快速跟踪
 
-Note that not all packets in a connection can be FastTracked, so it is likely to see some packets going through a slow path even though the connection is marked for FastTrack. This is the reason why fasttrack-connection is usually followed by an identical "_action=accept_" rule. FastTrack packets bypass firewall, connection tracking, simple queues, queue tree with _parent=global_, IP accounting, IPSec, hotspot universal client, VRF assignment, so it is up to the administrator to make sure FastTrack does not interfere with other configuration.
+IPv4快速跟踪处理程序被自动用于标记的连接。使用防火墙动作 "fasttrack-connection "来标记快速跟踪的连接。目前，只有TCP和UDP连接可以被实际快速跟踪（尽管任何连接都可以被标记为快速跟踪）。IPv4快速跟踪处理程序支持NAT（SNAT、DNAT，或两者）。
 
-### Requirements
+请注意，一个连接中并非所有的数据包都可以被快速跟踪，因此，即使连接被标记为快速跟踪，也可能会看到一些数据包通过慢速路径。这就是为什么fasttrack-connection后面通常有一个相同的"_action=accept_"规则的原因。快速跟踪数据包会绕过防火墙、连接跟踪、简单队列、带有 _parent=global_ 的队列树、IP计费、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
 
-IPv4 FastTrack is active if the following conditions are met:
+通过www.DeepL.com/Translator（免费版）翻译
 
-- no mesh, metarouter interface configuration;
-- sniffer, torch, or traffic generator is not running;
-- _/tool mac-scan_ is not actively used;
-- _/tool ip-scan_ is not actively used;
-- FastPath and Route cache is enabled under _IP/Settings_
+### 要求
 
-### Example
+如果满足以下条件，IPv4快速跟踪将被激活。
 
-For example, for SOHO routers with factory default configuration, you could FastTrack all LAN traffic with this one rule placed at the top of the Firewall Filter. The same configuration accept rule is required:
+- 没有Mesh、metarouter接口配置。
+- 嗅探器、火炬或流量发生器没有运行。
+- _/tool mac-scan_ 未被积极使用。
+- _/tool ip-scan_ 未被主动使用。
+- 在 _IP/Settings_ 下启用了FastPath和路由缓存。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall filter </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">action</code><code class="ros plain">=fasttrack-connection</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall filter </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">connection-state</code><code class="ros plain">=established,related</code></div></div></td></tr></tbody></table>
+### 示例
 
-- Connection is FastTracked until the connection is closed, timed-out, or router is rebooted.
-- Dummy rules will disappear only after FastTrack firewall rules will be deleted/disabled and the router rebooted.
-- While FastPath and FastTrack both are enabled on the device only one can be active at a time.
+对于有出厂默认配置的SOHO路由器，可以通过放在防火墙过滤器顶部的这一规则来快速跟踪所有的LAN流量。需要同样的配置接受规则。
 
-  
+```shell
+/ip firewall filter add chain=forward action=fasttrack-connection connection-state=established,related
+/ip firewall filter add chain=forward action=accept connection-state=established,related
+```
 
-Queues (except Queue Trees parented to interfaces), firewall filter, and mangle rules will not be applied for FastTracked traffic.
+- 连接被快速跟踪，直到连接被关闭、超时或路由器被重启。
+- 只有在FastTrack防火墙规则被删除/停用和路由器重启后，假规则才会消失。
+- 当设备上的FastPath和FastTrack都被启用时，一次只能激活一个。
 
-## Services
+队列（除非队列树被赋予接口）、防火墙过滤器和混杂规则不会应用于快速跟踪的流量。
 
-This section lists protocols and ports used by various MikroTik RouterOS services. It helps you to determine why your MikroTik router listens to certain ports, and what you need to block/allow in case you want to prevent or grant access to certain services.  
+## 服务
 
-The default services are:
+本节列出了各种MikroTik RouterOS服务所使用的协议和端口。可以帮助确定为什么MikroTik路由器要监听某些端口，以及在想阻止或允许访问某些服务时，需要阻止/允许什么。 
 
-| 
-Property
+默认的服务是：
 
- | 
+| Property    | Description                                                                          |
+| ----------- | ------------------------------------------------------------------------------------ |
+| **telnet**  | Telnet service                                                                       |
+| **ftp**     | FTP service                                                                          |
+| **www**     | Webfig http service                                                                  |
+| **ssh**     | SSH service                                                                          |
+| **www-ssl** | Webfig HTTPS service                                                                 |
+| **api**     | API service                                                                          |
+| **winbox**  | Responsible for Winbox tool access, as well as Tik-App smartphone app and Dude probe |
+| **api-ssl** | API over SSL service                                                                 |
 
-Description
+## 属性
 
- |     |
- | --- ||
- |     |
+注意，不能添加新的服务，只允许对现有的服务进行修改。
 
-Property
+| Property                                                                | Description                                                            |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **address** (_IP address/netmask            \| IPv6/0..128_; Default: ) | 可访问服务的IP/IPv6前缀列表。                                          |
+| **certificate** (_name_; default: **none**)                             | 特定服务使用的证书名称。仅适用于依赖证书的服务（_www-ssl, api-ssl_）。 |
+| **name** (_name_; default: **none**)                                    | 服务名称                                                               |
+| **port** (_integer: 1...65535_; Default: )                              | 特定服务监听的端口。                                                   |
 
- | 
-
-Description
-
- |             |
- | ----------- | ------------------------------------------------------------------------------------ |
- | **telnet**  | Telnet service                                                                       |
- | **ftp**     | FTP service                                                                          |
- | **www**     | Webfig http service                                                                  |
- | **ssh**     | SSH service                                                                          |
- | **www-ssl** | Webfig HTTPS service                                                                 |
- | **api**     | API service                                                                          |
- | **winbox**  | Responsible for Winbox tool access, as well as Tik-App smartphone app and Dude probe |
- | **api-ssl** | API over SSL service                                                                 |
-
-## Properties
-
-Note that it is not possible to add new services, only existing service modifications are allowed.
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- ||
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                             |
- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
- | **address** (_IP address/netmask            | IPv6/0..128_; Default: )                                                                                                                | List of IP/IPv6 prefixes from which the service is accessible. |
- | **certificate** (_name_; default: **none**) | The name of the certificate used by a particular service. Applicable only for services that depend on certificates (_www-ssl, api-ssl_) |
- | **name** (_name_; default: **none**)        | Service name                                                                                                                            |
- | **port** (_integer: 1..65535_; Default: )   | The port particular service listens on                                                                                                  |
-
-To restrict Winbox service access to the device only from the **192.168.88.0/24** subnet, we have to configure the following:
+为了限制Winbox服务只从 **192.168.88.0/24** 子网访问设备，必须配置如下：
 
 ```shell
 [admin@MikroTik] > ip service set [find name~"winbox"] address=192.168.88.0/24
@@ -207,12 +182,12 @@ Flags: X - disabled, I - invalid
 7 XI api-ssl 8729 none
 ```
 
-We recommend disabling unused services.
+建议禁用未使用的服务。
 
-## Address List
+## 地址列表
 
-Firewall address lists allow a user to create lists of IP addresses grouped together under a common name. Firewall filter, Mangle, and NAT facilities can then use those address lists to match packets against them. The address list records can also be updated dynamically via the _action=add-src-to-address-list_ or _action=add-dst-to-address-list_ items found in NAT, Mangle, and Filter facilities.  
-Firewall rules with action _add-src-to-address-list_ or _add-dst-to-address-list_ works in passthrough mode, which means that the matched packets will be passed to the next firewall rules. A basic example of a dynamically created address-list:
+防火墙地址列表允许用户创建IP地址列表，这些地址在一个共同的名称下组合在一起。然后，防火墙过滤器、Mangle和NAT可以使用这些地址列表对数据包进行匹配。地址列表记录也可以通过NAT、Mangle和过滤器中的 _action=add-src-to-address-list_ 或 _action=add-dst-to-address-list_ 项目动态更新。 
+带有 _add-src-to-address-list_ 或 _add-dst-to-address-list_ 动作的防火墙规则在穿透模式下工作，这意味着匹配的数据包将被传递到下一个防火墙规则。一个动态创建地址列表的基本例子:
 
 ```shell
 [admin@MirkoTik] > ip firewall address-list add address=www.mikrotik.com list=MikroTik
@@ -226,14 +201,14 @@ MikroTik 159.148.147.196 oct/09/2019 14:53:14
 
 ## Layer7-protocol
 
-Layer7-protocol is a method of searching for patterns in ICMP/TCP/UDP streams. It collects the first 10 packets of a connection or the first 2KB of a connection and searches for the pattern in the collected data. If the pattern is not found in the collected data, the matcher stops inspecting further. Allocated memory is freed and the protocol is considered unknown. You should take into account that a lot of connections will significantly increase memory and CPU usage. To avoid this, add regular firewall matches to reduce the amount of data passed to layer-7 filters repeatedly.
+Layer7-protocol是一种在ICMP/TCP/UDP数据流中搜索模式的方法。它收集一个连接的前10个数据包或一个连接的前2KB，并在收集的数据中搜索模式。如果在收集的数据中没有找到该模式，匹配器就停止进一步检查。所分配的内存被释放，协议被认为是未知的。要考虑到大量的连接将大大增加内存和CPU的使用。为了避免这种情况，添加定期的防火墙匹配，以减少重复传递给第七层过滤器的数据量。
 
-An additional requirement is that the layer7 matcher must see both directions of traffic (incoming and outgoing). To satisfy this requirement l7 rules should be set in the forward chain. If a rule is set in the input/prerouting chain then the same rule must be also set in the output/postrouting chain, otherwise, the collected data may not be complete resulting in an incorrectly matched pattern.
+一个额外的要求是，第七层匹配器必须看到两个方向的流量（入站和出站）。为了满足这一要求，应在转发链中设置l7规则。如果在input/prerouting链中设置了规则，那么在output/postrouting链中也必须设置同样的规则，否则，收集的数据可能不完整，导致错误的匹配模式。
 
-In this example, we will use a pattern to match RDP packets.
+在这个例子中用一个模式来匹配RDP数据包。
 
 `/ip firewall layer7-protocol add name=rdp regexp="rdpdr.*cliprdr.*rdpsnd"`
 
-If the Layer7 matcher recognizes the connection, then the rule marks this connection as its "own" and other rules do not look at this connection anymore even if the two firewall rules with Layer7 matcher are identical.
+如果Layer7匹配器识别了这个连接，那这个规则就会把这个连接标记为 "自己的"，其他规则就不会再看这个连接，即使两个带有Layer7匹配器的防火墙规则是相同的也如此。
 
-When a user uses HTTPS, Layer7 rules will not be able to match this traffic. **Only unencrypted HTTP can be matched**.
+当用户使用HTTPS时，Layer7规则将无法匹配这个流量。**只有未加密的HTTP可以被匹配**。
