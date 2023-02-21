@@ -52,7 +52,7 @@ add action=drop chain=prerouting dst-address-list=ddos-targets src-address-list=
 
 SYN泛滥是DoS攻击的一种形式，攻击者向目标系统发送连续的SYN请求，试图消耗足够的服务器资源，使系统对合法流量没有反应。幸运的是，在RouterOS中，有专门针对这种攻击的功能。
 
-`/ip/settings/ set tcp-syncookies =yes`。
+`/ip/settings/ set tcp-syncookies =yes`
 
 该功能的工作原理是发送包含一个小的加密哈希值的ACK包，响应的客户端会将其作为SYN-ACK包的一部分回传。如果内核在回复包中没有看到这个 "cookie"，它会认为这个连接是假的，并丢弃。
 
