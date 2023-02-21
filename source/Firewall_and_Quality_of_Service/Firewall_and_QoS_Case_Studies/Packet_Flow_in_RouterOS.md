@@ -270,7 +270,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 2. 通过交换机主机表运行数据包做出转发决定。如果上述结果为真，数据包就会被转发到交换机cpu端口。
 3. 数据包通过交换机-cpu端口流出，会被RouterOS数据包流进一步处理。
 
-![]https://help.mikrotik.com/docs/download/attachments/328227/Detailed_switch_flow_redArrowsv2.png?version=1&modificationDate=1591601576823&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/328227/Detailed_switch_flow_redArrowsv2.png?version=1&modificationDate=1591601576823&api=v2)
 
 任何被交换机芯片泛滥的接收数据包都不会被软件网桥再次泛滥到同一个HW卸载的交换机组。防止重复数据包的形成。
 
@@ -438,7 +438,7 @@ add chain=forward action=accept connection-state=established,related \
 - "/tool ip-scan"没有被主动使用。
 - IP/Settings下的FastPath和Route缓存已启用。
 
-## 视力障碍者的数据包流程
+## 视力障碍者的数据包流
 
 以下是DOCX格式的文件，以优化的方式为视障人士描述了该图。这些描述是由Benetech的Apex CoVantage提供的。它们没有更新。
 
