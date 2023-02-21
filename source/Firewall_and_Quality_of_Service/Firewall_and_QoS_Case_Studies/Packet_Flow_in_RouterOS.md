@@ -1,6 +1,6 @@
 # 了解数据包流
 
-更高级的防火墙设置或复杂的任务，如流量优先级、路由策略，要利用一个以上的RouterOS设施，需要相关知识。这些设施如何协同工作？什么时候发生什么，为什么？
+更高级的防火墙设置或复杂的任务，如流量优先级、路由策略，要利用一个以上的RouterOS设施，需要相关知识。这些设施如何协同工作？什么时候发生，为什么？
 
 RouterOS数据包流程图和流程实例将试图回答这些问题。
 
@@ -50,9 +50,9 @@ RouterOS数据包流程图和流程实例将试图回答这些问题。
 
 RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据包。
 
-- **PREROUTING** 链。这个链中的规则适用于刚刚到达网络接口的数据包。这条链存在于 _nat_、_mangle_ 和 _raw_ 表中。
+- **PREROUTING** 链。这个链中的规则适用于刚刚到达网络接口的数据包。这条链存在于 _nat_ 、_mangle_ 和 _raw_ 表中。
 - **INPUT** 链。这个链中的规则适用于刚刚被交给本地进程的数据包。这条链存在于 _mangle_ 和 _filter_ 表中。
-- **OUTPUT** 链。这里的规则适用于刚刚由进程产生的数据包。这个链存在于 _raw_, _mangle_, _nat_ 和 _filter_ 表中。
+- **OUTPUT** 链。这里的规则适用于刚刚由进程产生的数据包。这个链存在于 _raw_ , _mangle_ , _nat_ 和 _filter_ 表中。
 - **FORWARD** 链。这里的规则适用于任何通过当前主机路由的数据包。这个链只存在于 _mangle_ 和 _filter_ 表中。
 - **POSTROUTING** 链。这个链中的规则适用于刚刚离开网络接口的数据包。这条链存在于 _nat_ 和 _mangle_ 表中。
 
@@ -62,16 +62,16 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 在进一步举例说明之前，先简单解释一下每个方框:
 
-- **Hotspot-in** - 允许捕获会被连接跟踪丢弃的流量 - 这样热点功能就能够提供连接，即使网络设置是一个不完整的块。
+- **Hotspot-in** - 允许捕获被连接跟踪丢弃的流量 - 这样热点功能就能够提供连接，即使网络设置是一个不完整的块。
 - **RAW Prerouting** - RAW表预路由链。
 - **Connection tracking** - 数据包由连接跟踪处理。
 - **Mangle Prerouting** - Mangle prerouting链。
 - **Mangle Input** - Mangle输入链。
 - **Filter Input** - 防火墙过滤器输入链。
 - **HTB Global** - 队列树。
-- **Simple Queues** - 是一个可用于限制特定目标流量的功能。
+- **Simple Queues** - 是一个用于限制特定目标流量的功能。
 - **TTL** - 表示路由数据包的生存时间（TTL）减少1的确切位置，如果TTL变为0，数据包将被丢弃。
-- **Mangle Forward** - Mangle Forward链。
+- **Mangle Forward** - Mangle转发链。
 - **Filter Forward** - 过滤转发链。
 - **Accounting** - 认证、授权和计费功能处理。
 - **RAW Output** - RAW表输出链。
@@ -87,9 +87,9 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 ### 转发
 
-现在，让我们来看看第一个例子，数据包在路由器上被路由，并深入了解数据包的去向。
+现在来看看第一个例子，数据包在路由器上路由，以便深入了解数据包的去向。
 
-数据包进入内接口，路由器确定它是一个IP数据包，需要被路由，这里开始了复杂的过程：
+数据包进入in-interface，路由器确定它是一个IP数据包，需要路由，这里开始了复杂的过程：
 
 1. 数据包进入预路由处理。
    1. 检查是否有热点，并修改数据包用于热点
@@ -117,7 +117,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 ### 输入
 
-我们已经知道，数据包进入接口，路由器判断它是一个IP数据包，需要进行路由，这里开始了复杂的过程：
+前面已经知道，数据包进入接口，路由器判断它是一个IP数据包，需要进行路由，开始了复杂的过程：
 
 1. 当数据包的目的地是路由器时，会发生一个非常类似的过程（路由输入）。数据包进入预路由处理。
     1. 检查是否有热点，并修改数据包用于热点。
@@ -139,7 +139,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 ### 输出
 
-或者当一个数据包从路由器发起时（路由输出）：
+当数据包从路由器发起时（路由输出）：
 
 1. 数据包是由路由器本身发出的
     1. 数据包经过路由表，做出路由决定  
@@ -159,9 +159,9 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/02c_routing_output.png?version=1&modificationDate=1570628337574&api=v2)![](https://help.mikrotik.com/docs/download/attachments/328227/02c_routing_output_chains.png?version=1&modificationDate=1570628357260&api=v2)
 
-## 桥接数据包的流程
+## 桥接数据包流
 
-下面讨论的是RouterOS中的一般桥接过程。大多数数据包将遵循相同的处理路径，但在某些配置中（例如，启用了VLAN过滤、horizon、STP、DHCP或IGMP窥探），有些数据包处理不同。请访问桥接手册了解更多信息。
+下面讨论的是RouterOS中的一般桥接过程。大多数数据包将遵循相同的处理路径，但在某些配置中（例如，启用了VLAN过滤、horizon、STP、DHCP或IGMP嗅探），有些数据包处理会不同。请访问桥接手册了解更多信息。
 
 ### ![](https://help.mikrotik.com/docs/download/attachments/328227/01a_bridging_concept.png?version=1&modificationDate=1570629397406&api=v2)
 
@@ -169,9 +169,9 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 桥接转发是指数据包从一个桥接端口转发到另一个桥接端口时发生的过程，本质上是连接同一网络上的多个设备。设备在接收到内接口的数据包后，确定内接口是一个桥接端口，通过桥接过程。
 
-1. 数据包经过桥接NAT dst-nat链，MAC目的地和优先级可以改变，除此之外，数据包可以被简单地接受、放弃或标记。
+1. 数据包经过桥接NAT dst-nat链，MAC目的地和优先级可以改变，除此之外，数据包可以简单地接受、丢弃或标记。
 2. 检查网桥设置中是否启用了use-ip-firewall选项。
-3. 通过网桥主机表运行数据包，做出转发决定。最终被泛滥的数据包(如广播、组播、未知单播流量)，会在每个网桥端口加倍，然后在网桥转发链中进一步处理。当使用 "vlan-filtering=yes "时，由于"/interface bridge vlan"表不允许的数据包，将在这个阶段丢弃。
+3. 通过网桥主机表运行数据包，做出转发决定。最终被泛滥的数据包(如广播、组播、未知单播流量)会在每个网桥端口加倍，然后在网桥转发链中进一步处理。当使用 "vlan-filtering=yes "时，由于"/interface bridge vlan"表不允许的数据包，将在这个阶段丢弃。
 4. 数据包会经过网桥过滤转发链，在这里可以改变优先级，也可以简单地接受、丢弃或标记数据包。
 5. 检查网桥设置中是否启用了 use-ip-firewall 选项。
 6. 数据包经过网桥NAT src-nat链，其中MAC源和优先级可以改变，除此之外，数据包可以被简单接受、丢弃或标记。
@@ -181,15 +181,15 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 **适用于RouterOS v6：**  
 
-当网桥 "vlan-filtering "启用时，收到的无标记数据包可能会在 "DST-NAT "块之前被封装到VLAN头，意味着这些数据包可以用 "mac-protocol=vlan "和 "vlan-encap "设置来过滤。如果出站接口的 "frame-types "设置为 "admit-all "或 "admit-only-untagged and-priority-tagged"，封装就会发生。
+当网桥 "vlan-filtering "启用时，收到的无标记数据包可能会在 "DST-NAT"块之前封装到VLAN头，意味着这些数据包可以用 "mac-protocol=vlan"和 "vlan-encap"设置来过滤。如果出站接口的 "frame-types"设置为 "admit-all"或 "admit-only-untagged and-priority-tagged"，封装就会发生。
 
-标记的数据包可能在 "桥接决定 "块上被解封，这意味着这些数据包将不再符合 `mac-protocol=vlan` 和 `vlan-encap` 设置。如果数据包的VLAN ID与出站端口的无标记VLAN成员相匹配，就会发生解封装。 
+标记的数据包可能在"桥接决定"块上被解封，这意味着这些数据包将不再符合 `mac-protocol=vlan` 和 `vlan-encap` 设置。如果数据包的VLAN ID与出站端口的无标记VLAN成员相匹配，就会发生解封装。 
   
 **适用于RouterOS v7和更新版本：**
 
-当网桥 `vlan-filtering` 启用时，收到的无标记数据包可能被封装到 "BRIDGING-DECISION "块的VLAN头中，这意味着这些数据包可以使用 `mac-protocol=vlan` 和 `vlan-encap` 设置进行过滤。 如果出站接口的 "frame-types "设置为 "admit-all "或 "admit-only-untagged and-priority-tagged"，就会发生封装。
+当网桥 `vlan-filtering` 启用时，收到的无标记数据包可能被封装到 "BRIDGING-DECISION "块的VLAN头中，这意味着这些数据包可以使用 `mac-protocol=vlan` 和 `vlan-encap` 设置进行过滤。 如果出站接口的 "frame-types"设置为 "admit-all"或 "admit-only-untagged and-priority-tagged"，就会发生封装。
 
-标记的数据包可能在 "BRIDGING DECISION "块上解封装，意味着这些数据包不再符合 `mac-protocol=vlan` 和 `vlan-encap` 设置。如果数据包的VLAN ID与出站端口的无标记VLAN成员相匹配，就会发生解封装。
+标记的数据包可能在 "BRIDGING DECISION"块上解封装，意味着这些数据包不再符合 `mac-protocol=vlan` 和 `vlan-encap` 设置。如果数据包的VLAN ID与出站端口的无标记VLAN成员相匹配，就会发生解封装。
 
 ### 网桥输入
 
@@ -197,7 +197,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 1. 数据包经过网桥NAT dst-nat链，其中MAC目的地和优先级可以改变，除此之外，数据包可以被简单地接受、丢弃或标记。
 2. 检查网桥设置中是否启用了use-ip-firewall 选项。
-3. 通过网桥主机表运行数据包，做出转发决定。目标 MAC 地址与网桥 MAC 地址相匹配的数据包将被传递到网桥输入链。最终被泛滥的数据包 (如广播、组播、未知单播流量)，也会到达网桥输入链，因为网桥接口本身就是众多目的地之一。
+3. 通过网桥主机表运行数据包，做出转发决定。目标 MAC 地址与网桥 MAC 地址匹配的数据包传递到网桥输入链。最终泛滥的数据包 (如广播、组播、未知单播流量)也会到达网桥输入链，因为网桥接口本身就是众多目的地之一。
 4. 数据包经过网桥过滤器输入链，在那里可以改变优先级，或者简单地接受、丢弃或标记数据包。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/04b_bridging_input.png?version=1&modificationDate=1570629442007&api=v2)
@@ -206,9 +206,9 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 网桥输出是当数据包通过一个或多个桥接端口离开设备时发生的过程。最常见的情况是，当一个网桥接口本身试图连接到某个网桥端口的设备时（例如，运行在网桥接口上的 DHCP 服务器响应一个 DHCP 客户端时）。当数据包在其他更高级别的 RouterOS 进程中被处理，并且设备最终确定输出接口是一个网桥时，数据包就会通过网桥进程：
 
-1. 通过桥接主机表运行数据包，做出转发决定。最终被泛滥的数据包（如广播、多播、未知单播流量），会被乘以每个桥接端口，然后在桥接输出链中进一步处理。
+1. 通过桥接主机表运行数据包，做出转发决定。最终泛滥的数据包（如广播、多播、未知单播流量）会乘以网桥端口，然后在网桥输出链中进一步处理。
 2. 数据包经过网桥过滤输出链，优先级可以改变，或者数据包可以简单地接受、丢弃或标记。
-3. 数据包经过网桥NAT src-nat链，其中MAC源和优先级可以改变，除此之外，数据包可以被简单地接受、丢弃或标记。
+3. 数据包经过网桥NAT src-nat链，其中MAC源和优先级可以改变，除此之外，数据包可以简单地接受、丢弃或标记。
 4. 检查网桥设置中是否启用了use-ip-firewall 选项。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/04a_bridging_output.png?version=1&modificationDate=1570629441843&api=v2)
@@ -219,7 +219,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 
 1. 数据包通过网桥的 NAT dst-nat 链。
 2. 启用use-ip-firewall选项后，数据包将在预路由链中进一步处理。
-3. 一个数据包进入预路由处理。
+3. 数据包进入预路由处理。
 4. 通过网桥主机表运行数据包，做出转发决定。
 5. 数据包经过网桥过滤器转发链。
 6. 如果启用use-ip-firewall选项，数据包将在路由转发链中进一步处理。
@@ -241,7 +241,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 ![](https://help.mikrotik.com/docs/download/attachments/328227/Detailed_switch_flow_redArrows.png?version=1&modificationDate=1591601275958&api=v2)
 
 - **switching decision** - 取决于交换机的型号。该块控制所有与交换有关的任务，如主机学习、数据包转发、过滤、速率限制、VLAN标记/untagging、镜像等。某些交换机的配置可以改变数据包的流向。
-- **switch-cpu port** - 一个特殊用途的交换机端口，用于主CPU和其他交换机端口之间的通信。注意，除了交换机菜单，switch-cpu端口不会出现在RouterOS的任何地方，任何与软件有关的配置（如接口列表）都不能用到这个端口。到达CPU的数据包会自动与物理内接口相关联。
+- **switch-cpu port** - 一个特殊用途的交换机端口，用于主CPU和其他交换机端口之间的通信。注意，除了交换机菜单，switch-cpu端口不会出现在RouterOS的任何地方，任何与软件有关的配置（如接口列表）都不能用到这个端口。到达CPU的数据包会自动与物理内接口关联。
 
 然而，硬件卸载并不限制设备只有硬件的有限功能，而是可以同时利用硬件和软件处理的优势。这需要深刻理解数据包如何通过交换芯片，以及它们究竟何时被传递到主CPU。
 
