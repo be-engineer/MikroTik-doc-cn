@@ -8,7 +8,7 @@ RouterOS数据包流程图和流程实例将试图回答这些问题。
 
 - 整体图。
 - 详细的桥接、路由和MPLS流程图。
-- 图中显示了在预路由、输入、转发、输出和后路由中包括哪些设施和什么顺序。
+- 图中显示了在预路由、输入、转发、输出和后路由中包括哪些设施和顺序。
 
 ## 整体包流图
 
@@ -16,11 +16,11 @@ RouterOS数据包流程图和流程实例将试图回答这些问题。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/PacketFlowDiagram_v6_a.svg?version=1&modificationDate=1569859439358&api=v2)
 
-在图的中央有4个方框。桥接、路由、Mpls决策和本地路由器进程。举例来说，如果数据包需要通过路由器进行路由，数据包的流程如下图所示。在不深入了解每个设施的情况下，数据包进入in-interface，路由器确定它是IP流量，需要进行路由，数据包经过所有的路由过程，从out-interface出来。
+在图的中央有4个方框。桥接、路由、Mpls决策和本地路由器进程。举例来说，如果数据包要通过路由器进行路由，数据包的流程如下图所示。在不深入了解每个设施的情况下，数据包进入in-interface，路由器确定它是IP流量，需要进行路由，数据包经过所有的路由过程，从out-interface出来。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/01c_Routing_concept.png?version=1&modificationDate=1569859502606&api=v2)
 
-让我们看一下另一个例子，说明如果数据包的目的地是路由器会发生什么。例如，in-interface收到ICMP（ping）数据包，它的目的地是路由器本身，所以数据包将进行 _local-in_ 处理。数据包处理后，ICMP（ping）回复在路由器内部产生 _local-out_ 处理，并通过外接口发送出去。
+让我们看一下另一个例子，说明如果数据包的目的地是路由器会发生什么。例如，in-interface收到ICMP（ping）数据包，它的目的地是路由器本身，所以数据包将进行 _local-in_ 处理。数据包处理后，ICMP（ping）回复在路由器内部产生 _local-out_ 处理，并通过out-interface发送出去。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/01d_Communication_with_router.png?version=1&modificationDate=1570627553904&api=v2)
 
@@ -36,7 +36,9 @@ RouterOS数据包流程图和流程实例将试图回答这些问题。
 
 现在深入研究桥接、MPLS和路由流内部发生了什么。
 
-![](https://help.mikrotik.com/docs/download/attachments/328227/PacketFlowDiagram_v6_b.svg?version=1&modificationDate=1570627617915&api=v2)A simple explanation of each box before we go further with examples:
+![](https://help.mikrotik.com/docs/download/attachments/328227/PacketFlowDiagram_v6_b.svg?version=1&modificationDate=1570627617915&api=v2)
+
+在进一步举例说明之前，先对每个盒子进行简单的解释:
 
 - **routing decision** - 通过路由表中的路由，找到与数据包的目标IP地址相匹配的路由。匹配时数据包将进一步处理，如果没有匹配，数据包将丢弃。
 - **mpls decision** - 根据MPLS转发表对数据包进行处理。
@@ -428,10 +430,10 @@ add chain=forward action=accept connection-state=established,related \
 
 ### 要求
 
-如果满足以下条件，IPv4快速跟踪将激活。
+如果满足以下条件，IPv4快速跟踪会激活。
 
 - 没有Mesh、metarouter接口配置。
-- 嗅探器、火炬和流量发生器没有运行。
+- 嗅探器、Torch和流量发生器没有运行。
 - "/tool mac-scan"没有被积极使用。
 - "/tool ip-scan"没有被主动使用。
 - IP/Settings下的FastPath和Route缓存已启用。

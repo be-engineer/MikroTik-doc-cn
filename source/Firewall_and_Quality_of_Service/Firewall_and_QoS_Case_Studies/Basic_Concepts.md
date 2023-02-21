@@ -12,10 +12,10 @@ MikroTik RouterOS有一个非常强大的防火墙，功能包括。
 - 点对点协议过滤
 - 通过以下方式进行流量分类
   - 源MAC地址
-  - IP地址（网络或列表）和地址类型（广播、本地、多播、单播）。
+  - IP地址（网络或列表）和地址类型（广播、本地、多播、单播）
   - 端口或端口范围
   - IP协议
-  - 协议选项（ICMP类型和代码域、TCP标志、IP选项和MSS）。
+  - 协议选项（ICMP类型和代码域、TCP标志、IP选项和MSS）
   - 数据包到达或离开的接口
   - 内部流量和连接标记
   - DSCP字节
@@ -24,11 +24,11 @@ MikroTik RouterOS有一个非常强大的防火墙，功能包括。
   - 数据包大小
   - 数据包到达时间
 
-还有更多!
+还有很多!
 
-## 它如何工作
+## 防火墙如何工作
 
-防火墙通过防火墙规则运行。每个规则由两部分组成-**匹配器**，根据给定的条件匹配流量，以及 **动作**，定义如何处理匹配的数据包。
+防火墙通过防火墙规则运行。每个规则由两部分组成 **匹配器**，根据给定的条件匹配流量， **动作** 定义如何处理匹配的数据包。
 
 RouterOS利用防火墙的5个子功能：
 
@@ -42,11 +42,11 @@ RouterOS利用防火墙的5个子功能：
 
 要完全理解防火墙规则，首先必须了解可能适用于特定网络数据包的各种状态。在RouterOS中，有五种连接状态。
 
-- **NEW** - 新状态告诉我们，该数据包是看到的第一个数据包。意味着conntrack模块看到的第一个数据包，在一个特定的连接中被匹配。例如，如果我们看到一个SYN数据包，并且它是看到的一个连接中的第一个数据包，它将被匹配。
-- **ESTABLISHED -** _ESTABLISHED_ 状态在两个方向都看到了流量，然后会持续匹配这些数据包。_ESTABLISHED_ 连接是相当容易理解的。进入 _ESTABLISHED_ 状态的唯一要求是一台主机发送了一个数据包，随后它从另一台主机得到了一个回复。在收到回复数据包后，_NEW_ 状态将改变为_ESTABLISHED_ 状态，或通过防火墙。
-- **RELATED** - 连接被认为是_RELATED_，当它与另一个已经_ESTABLISHED_ 的连接有关。为了使一个连接被认为是 _RELATED_，必须首先有一个被认为是 _ESTABLISHED_ 的连接，然后 _ESTABLISHED_ 连接将在主连接之外产生一个连接。然后新产生的连接将被认为是 _RELATED_，例如，一个开始FTP数据连接的数据包。
-- **INVALID**- _INVALID_ 状态意味着数据包无法被识别，或者没有任何状态。 建议在这种状态下 _DROP_ 一切。
-- **UNTRACKED** - 一个数据包设置为绕过防火墙RAW表中的连接跟踪。  
+- **NEW** - 新状态告诉我们，该数据包是看到的第一个数据包。意味着conntrack模块看到的第一个数据包，在一个特定的连接中被匹配。例如，如果一个SYN数据包是一个连接中的第一个数据包，它将被匹配。
+- **ESTABLISHED -** _ESTABLISHED_ 状态在两个方向都看到了流量，然后会持续匹配这些数据包。_ESTABLISHED_ 连接是相当容易理解的。进入 _ESTABLISHED_ 状态的唯一要求是一台主机发送了一个数据包，随后它从另一台主机得到了一个回复。在收到回复数据包后，_NEW_ 状态将改变为 _ESTABLISHED_ 状态，或通过防火墙。
+- **RELATED** - 连接被认为是 _RELATED_ ，当它与另一个已经 _ESTABLISHED_ 的连接有关。为了使一个连接被认为是 _RELATED_，必须首先有一个被认为是 _ESTABLISHED_ 的连接，然后 _ESTABLISHED_ 连接将在主连接之外产生一个连接。然后新产生的连接将被认为是 _RELATED_ ，例如，一个开始FTP数据连接的数据包。
+- **INVALID**- _INVALID_ 状态意味着数据包无法被识别，或者没有任何状态。 建议丢弃这种状态下的所有流量。
+- **UNTRACKED** - 数据包设置为绕过防火墙RAW表中的连接跟踪。  
 
 ### 配置实例
 
@@ -63,7 +63,7 @@ add chain=input action=drop comment="Drop everything else"
 
 RouterOS还允许在连接跟踪前过滤数据包，并有选择地只发送特定的流量到连接跟踪。这能够大大减少CPU的负荷，并减轻DOS/DDoS攻击。这种规则的配置是在RAW过滤表中完成的。
 
-额外的 _/ip firewall filter_ 配置例子可在 [建立你的第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 部分找到。
+额外的 _/ip firewall filter_ 配置例子可在 [建立第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 部分找到。
 
 ## 连接跟踪
 
@@ -86,15 +86,13 @@ Flags: S - seen-reply, A - assured
 
 当数据包是 **新** 的时候，有两种不同的方法。第一种是在无状态连接（如UDP）的情况下，当连接表中没有连接条目时。另一种是在有状态协议（TCP）的情况下。在这种情况下，一个开始新连接的新数据包总是一个带有 _SYN_ 标志的TCP数据包。
 
-如果一个数据包不是新的，它可以属于一个 _已建立_ 或 _相关的_ 连接，或者不属于任何连接，使其 _无效_。一个具有 _established_ 状态的数据包，正如大多数人猜到的，属于连接跟踪表中的一个现有连接。一个 _相关_ 状态非常类似，除了该数据包属于一个与现有连接相关的连接，例如，ICMP错误数据包或FTP数据连接数据包。
+如果一个数据包不是新的，它可以属于一个 _已建立_ 或 _相关_ 连接，或者不属于任何连接，使其 _无效_ 。一个有 _稳定_ 状态的数据包，正如大多数人猜到的，属于连接跟踪表中的一个现有连接。一个 _相关_ 状态非常类似，除了该数据包属于一个与现有连接相关的连接，例如，ICMP错误数据包或FTP数据连接数据包。
 
-连接状态 **不跟踪** 是一种特殊情况，当使用RAW防火墙规则将连接排除在连接跟踪之外。这一个规则将使所有转发的流量绕过连接跟踪引擎，加速通过设备的数据包处理。
+连接状态 **未跟踪** 是一种特殊情况，当使用RAW防火墙规则将连接排除在连接跟踪之外。这一个规则将使所有转发的流量绕过连接跟踪引擎，加速通过设备的数据包处理。
 
 任何其他数据包都被认为是 _无效_ 的，在大多数情况下应该被丢弃。
 
 基于这些信息，我们可以设置一套基本的过滤规则，通过接受_已建立的/相关的_数据包，丢弃 _无效_ 数据包，只对 _新_ 数据包进行更详细的过滤，从而加快数据包的过滤速度，减少CPU的负荷。
-
-通过www.DeepL.com/Translator（免费版）翻译
 
 ```shell
 ip firewall filter
@@ -109,8 +107,6 @@ add chain=input connection-state=established,related,untracked action=accept com
 IPv4快速跟踪处理程序被自动用于标记的连接。使用防火墙动作 "fasttrack-connection "来标记快速跟踪的连接。目前，只有TCP和UDP连接可以被实际快速跟踪（尽管任何连接都可以被标记为快速跟踪）。IPv4快速跟踪处理程序支持NAT（SNAT、DNAT，或两者）。
 
 请注意，一个连接中并非所有的数据包都可以被快速跟踪，因此，即使连接被标记为快速跟踪，也可能会看到一些数据包通过慢速路径。这就是为什么fasttrack-connection后面通常有一个相同的"_action=accept_"规则的原因。快速跟踪数据包会绕过防火墙、连接跟踪、简单队列、带有 _parent=global_ 的队列树、IP计费、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
-
-通过www.DeepL.com/Translator（免费版）翻译
 
 ### 要求
 
@@ -132,8 +128,8 @@ IPv4快速跟踪处理程序被自动用于标记的连接。使用防火墙动�
 ```
 
 - 连接被快速跟踪，直到连接被关闭、超时或路由器被重启。
-- 只有在FastTrack防火墙规则被删除/停用和路由器重启后，假规则才会消失。
-- 当设备上的FastPath和FastTrack都被启用时，一次只能激活一个。
+- 只有在FastTrack防火墙规则被删除、停用和路由器重启后，假规则才会消失。
+- 当设备上的FastPath和FastTrack都启用时，一次只能激活一个。
 
 队列（除非队列树被赋予接口）、防火墙过滤器和混杂规则不会应用于快速跟踪的流量。
 
@@ -143,16 +139,16 @@ IPv4快速跟踪处理程序被自动用于标记的连接。使用防火墙动�
 
 默认的服务是：
 
-| Property    | Description                                                                          |
-| ----------- | ------------------------------------------------------------------------------------ |
-| **telnet**  | Telnet service                                                                       |
-| **ftp**     | FTP service                                                                          |
-| **www**     | Webfig http service                                                                  |
-| **ssh**     | SSH service                                                                          |
-| **www-ssl** | Webfig HTTPS service                                                                 |
-| **api**     | API service                                                                          |
-| **winbox**  | Responsible for Winbox tool access, as well as Tik-App smartphone app and Dude probe |
-| **api-ssl** | API over SSL service                                                                 |
+| Property    | Description                                                   |
+| ----------- | ------------------------------------------------------------- |
+| **telnet**  | Telnet service                                                |
+| **ftp**     | FTP service                                                   |
+| **www**     | Webfig http service                                           |
+| **ssh**     | SSH service                                                   |
+| **www-ssl** | Webfig HTTPS service                                          |
+| **api**     | API service                                                   |
+| **winbox**  | 负责Winbox工具的访问，以及Tik-App智能手机应用程序和Dude探测器 |
+| **api-ssl** | API over SSL service                                          |
 
 ## 属性
 
@@ -211,4 +207,4 @@ Layer7-protocol是一种在ICMP/TCP/UDP数据流中搜索模式的方法。它�
 
 如果Layer7匹配器识别了这个连接，那这个规则就会把这个连接标记为 "自己的"，其他规则就不会再看这个连接，即使两个带有Layer7匹配器的防火墙规则是相同的也如此。
 
-当用户使用HTTPS时，Layer7规则将无法匹配这个流量。**只有未加密的HTTP可以被匹配**。
+当用户使用HTTPS时，Layer7规则将无法匹配这个流量。**只有未加密的HTTP可以匹配**。
