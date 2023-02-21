@@ -6,7 +6,7 @@ MikroTik RouterOS 提供可扩展的身份验证、授权和记帐 (AAA) 功能�
 
 使用用户数据库和配置文件数据库执行本地身份验证。 给定用户的实际配置是使用用户数据库中的相应用户记录、配置文件数据库中的关联项目以及配置文件数据库中的项目组成的，配置文件数据库中的项目被设置为用户正在验证的给定服务的默认值。 配置文件数据库中的默认配置文件设置具有最低优先级，而用户数据库中的用户访问记录设置具有最高优先级，唯一的例外是特定 IP 地址优先于本地地址和远程地址设置中的 IP 池，稍后描述。
 
-对 RADIUS 身份验证的支持使 ISP 或网络管理员能够在整个大型网络中从一台服务器管理 PPP 用户访问和计费。 MikroTik RouterOS 有一个 [RADIUS 客户端](https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client "Manual:RADIUS Client")，它可以为 PPP、[PPPoE](https://wiki.mikrotik.com/wiki/Manual:Interface/PPPoE“Manual:Interface/PPPoE”），[PPTP]（https://wiki.mikrotik.com/wiki/Manual:Interface/PPTP”Manual:Interface/PPTP”) ， [L2TP](https://wiki.mikrotik.com/wiki/Manual:Interface/L2TP "Manual:Interface/L2TP") 和 ISDN 连接。 从 RADIUS 服务器收到的属性会覆盖默认配置文件中设置的属性，但如果未收到某些参数，则它们会从相应的默认配置文件中获取。
+对 RADIUS 身份验证的支持使 ISP 或网络管理员能够在整个大型网络中从一台服务器管理 PPP 用户访问和审计。 MikroTik RouterOS 有一个 [RADIUS 客户端](https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client "Manual:RADIUS Client")，它可以为 PPP、[PPPoE](https://wiki.mikrotik.com/wiki/Manual:Interface/PPPoE“Manual:Interface/PPPoE”），[PPTP]（https://wiki.mikrotik.com/wiki/Manual:Interface/PPTP”Manual:Interface/PPTP”) ， [L2TP](https://wiki.mikrotik.com/wiki/Manual:Interface/L2TP "Manual:Interface/L2TP") 和 ISDN 连接。 从 RADIUS 服务器收到的属性会覆盖默认配置文件中设置的属性，但如果未收到某些参数，则它们会从相应的默认配置文件中获取。
 
 ## 用户配置文件
 
@@ -120,13 +120,13 @@ PPP 用户数据库存储 PPP 用户访问记录以及分配给每个用户的 P
 
 **Sub-menu：** `/ppp aaa`
 
-此Submenu中的设置允许设置 RADIUS 计费和身份验证。 请注意，只有在本地用户数据库中找不到所需的用户名时，才会查询 RADIUS 用户数据库。
+此Submenu中的设置允许设置 RADIUS审计和身份验证。 请注意，只有在本地用户数据库中找不到所需的用户名时，才会查询 RADIUS 用户数据库。
 
 **属性**
 
 | 属性                                                                   | 说明                                                                                                   |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **accounting** (_yes                         \| no_; Default: **yes**) | 允许RADIUS计费                                                                                         |
+| **accounting** (_yes                         \| no_; Default: **yes**) | 允许RADIUS审计                                                                                         |
 | **interim-update** (_time_; Default: **0s**)                           | 临时更新时间间隔                                                                                       |
 | **use-radius** (_yes                         \| no_; Default: **no**)  | 通过 RADIUS 启用用户身份验证。如果在本地秘密数据库中找不到条目，​​则客户端将通过 RADIUS 进行身份验证。 |
 

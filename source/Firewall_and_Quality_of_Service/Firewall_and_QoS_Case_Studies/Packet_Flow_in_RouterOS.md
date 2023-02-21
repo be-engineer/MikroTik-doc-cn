@@ -73,7 +73,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
 - **TTL** - 表示路由数据包的生存时间（TTL）减少1的确切位置，如果TTL变为0，数据包将被丢弃。
 - **Mangle Forward** - Mangle转发链。
 - **Filter Forward** - 过滤转发链。
-- **Accounting** - 认证、授权和计费功能处理。
+- **Accounting** - 认证、授权和审计功能处理。
 - **RAW Output** - RAW表输出链。
 - **Mangle Output** - Mangle输出链。
 - **Filter Output** - 防火墙过滤器输出链。
@@ -102,7 +102,7 @@ RouterOS由一些默认的链组成。这些链允许在不同点上过滤数据
    1. 检查TTL值。
    2. 通过Mangle转发链处理数据包。
    3. 通过过滤器转发链处理数据包。
-   4. 将数据包发送到计费流程。 
+   4. 将数据包发送到审计流程。 
 4. 一个数据包进入后路由过程。
    1. 通过Mangle后路由链处理数据包。
    2. 通过NAT src-nat链处理数据包。
@@ -384,7 +384,7 @@ vlan过滤网桥上的FastPath不支持有优先级标记的数据包(有VLAN头
 | **RB1100 series** | ether1-11                                                                                                                                                                             |
 | **All devices**   | 以太网接口<br> wireless interfaces<br> bridge interfaces<br> VLAN, VRRP interfaces<br> bonding interfaces (RX only)<br> PPPoE, L2TP interfaces<br> EoIP, GRE, IPIP, VXLAN interfaces. |
 
-EoIP、Gre、IPIP、VXLAN和L2TP接口有每个接口的设置 _allow-fast-path_ 。允许这些接口上的快速路径有一个副作用，即绕过防火墙、连接跟踪、简单队列、parent=global的队列树、IP计费、IPsec、Hotspot通用客户端、通过快速路径封装数据的vrf分配。另外，在FastPath中不接收数据包碎片。
+EoIP、Gre、IPIP、VXLAN和L2TP接口有每个接口的设置 _allow-fast-path_ 。允许这些接口上的快速路径有一个副作用，即绕过防火墙、连接跟踪、简单队列、parent=global的队列树、IP审计、IPsec、Hotspot通用客户端、通过快速路径封装数据的vrf分配。另外，在FastPath中不接收数据包碎片。
 
 可以通过检查 `/interface print detail` 中的fast-path属性值来验证是否支持FastPath。
 
@@ -400,7 +400,7 @@ Fasttrack可以解读为快速路径+连接跟踪。允许把连接标记为 "�
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/fasttrack.png?version=1&modificationDate=1570628705594&api=v2)
 
-快速跟踪数据包可以绕过防火墙、连接跟踪、简单队列、parent=global的队列树、IP流量（6.33中取消了限制）、IP计费、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
+快速跟踪数据包可以绕过防火墙、连接跟踪、简单队列、parent=global的队列树、IP流量（6.33中取消了限制）、IP审计、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
 
 为了把一个连接标记为快速跟踪，实施了新的操作 "_fasttrack-connection_"，用于防火墙过滤和纠错。目前，只有IPv4 TCP和UDP连接可以被快速跟踪，为了维护连接跟踪条目，一些随机数据包仍然会发送到慢速路径上。在设计启用 "快速跟踪 "防火墙时必须考虑到这一点。
 
