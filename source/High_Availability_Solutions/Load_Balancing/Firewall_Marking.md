@@ -237,7 +237,7 @@ PerConnectionClassifier ::= [!]ValuesToHash:Denominator/Remainder
 
 `add gateway =10.112.0.1@main routing-table =to_ISP2 check-gateway =ping`
 
-## 实例4：（NTH）
+## 实例4（NTH）
 
 ## 负载平衡与NTH
 

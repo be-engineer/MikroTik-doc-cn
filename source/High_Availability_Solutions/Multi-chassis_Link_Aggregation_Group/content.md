@@ -1,112 +1,102 @@
-# Introduction
+# 介绍
 
-MLAG (Multi-chassis Link Aggregation Group) implementation in RouterOS allows configuring LACP bonds on two separate devices, while the client device believes to be connected to the same machine. This provides a physical redundancy in case of switch failure. All CRS3xx, CRS5xx series switches, and CCR2116, CCR2216 devices can be configured with MLAG using RouterOS version 7.
+RouterOS中的MLAG（多机箱链路聚合组）允许在两个独立的设备上配置LACP绑定，而客户设备认为是连接到同一台机器上。这在交换机发生故障的情况下提供了物理冗余。所有的CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216设备都可以使用RouterOS V7配置MLAG。
 
-Both peers establish the MLAG interfaces and update the bridge host table over `peer-port` using ICCP (Inter Chassis Control Protocol). RouterOS ICCP does not require an IP configuration, but it should be isolated from the rest of the network using a dedicated untagged VLAN. This untagged VLAN can be configured with `vlan-filtering` and `pvid`. Peer ports can also be configured as LACP bonding interfaces.
+两个对等体使用ICCP（机箱间控制协议）建立MLAG接口并通过 `peer-port` 更新网桥主机表。RouterOS ICCP不需要IP配置，但要用一个专用的无标记VLAN和网络的其他部分隔离。这个无标记的VLAN可以用 `vlan-filtering` 和 `pvid` 来配置。对等端口也可以配置为LACP绑定接口。
 
-When `peer-port` is running and ICCP is established, the primary device election happens. The peer with the lowest bridge MAC address will be acting as a primary device and `system-id` will be selected. This `system-id` is used for STP BPDU bridge identifier and LACP system ID. The MLAG requires enabled STP or RSTP protocol, the MSTP is not supported. Use the same STP priority and the same STP configuration on dual-connected bridge ports on both nodes. When MLAG bridges are elected as STP root, then both devices will show as root bridges under the bridge monitor. 
+当 `peer-port` 运行并建立ICCP时，发生主设备选举动作。有最低网桥MAC地址的对等体会作为主设备，`system-id` 被选中。这个 `system-id ` 用于 STP BPDU 网桥标识和 LACP 系统标识。MLAG要启用STP或RSTP协议，不支持MSTP。在两个节点上的双连接网桥端口使用相同的 STP 优先级和相同的 STP 配置。当 MLAG 网桥选为 STP 根节点时，两台设备在网桥监控器下都会显示为根节点。
 
-The MLAG is not compatible with [L3 hardware offloading](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading). When using MLAG, the L3 hardware offloading must be disabled.
+MLAG与 [L3硬件卸载](https://help.mikrotik.com/docs/display/ROS/L3+Hardware+Offloading) 不兼容。当使用 MLAG 时，L3 硬件卸载必须禁用。
 
 ![](https://help.mikrotik.com/docs/download/attachments/67633179/1.png?version=1&modificationDate=1621431547740&api=v2)
 
-## Quick setup
+## 快速设置
 
-in this example, CRS317 and CRS309 devices are used as MLAG peers and any device with two SFP+ interfaces can be used as an LACP client. The SFP+1 interface is used on both peer nodes to create `peer-port`, and it is used for ICCP,  see a network scheme below.
+在这个例子中，CRS317和CRS309设备用作MLAG对等体，任何有两个SFP+接口的设备都可以用作LACP客户端。SFP+1接口在两个对等节点上用于创建 **对等端口** ，用于ICCP，见下面的网络方案。
 
-![](https://help.mikrotik.com/docs/download/attachments/67633179/2.png?version=1&modificationDate=1621431568977&api=v2)Below are configuration commands to create a regular [LACP bonding](https://help.mikrotik.com/docs/display/ROS/Bonding#Bonding-802.3ad) in RouterOS for the Client device: 
+![](https://help.mikrotik.com/docs/download/attachments/67633179/2.png?version=1&modificationDate=1621431568977&api=v2)
 
-`/interface bonding`
-
-`add` `mode``=802.3ad` `name``=bond1` `slaves``=sfp-sfpplus1,sfp-sfpplus2`
-
-Next, configure bonding interfaces for MLAG on Peer1 and Peer2 devices, use a matching `mlag-id` setting on both peer devices:
+以下是在RouterOS中为客户端设备创建常规 [LACP绑定](https://help.mikrotik.com/docs/display/ROS/Bonding#Bonding-802.3ad) 的配置命令:
 
 `/interface bonding`
 
-`add` `mlag-id``=10` `mode``=802.3ad` `name``=client-bond` `slaves``=sfp-sfpplus2`
+`add mode =802.3ad name =bond1 slaves =sfp-sfpplus1,sfp-sfpplus2`
+
+接下来，在Peer1和Peer2设备上配置MLAG绑定接口，在两个对等设备上使用匹配的 `mlag-id` 设置:
 
 `/interface bonding`
 
-`add` `mlag-id``=10` `mode``=802.3ad` `name``=client-bond` `slaves``=sfp-sfpplus2`
+`add mlag-id =10 mode =802.3ad name =client-bond slaves =sfp-sfpplus2`
 
-Configure bridge with enabled `vlan-filtering`, and add needed interfaces as bridge ports. A dedicated untagged VLAN should be applied for the inter-chassis communication on a peer port, thus a different `pvid` setting is used. Below are configuration commands for Peer1 and Peer2 devices:
+`/interface bonding`
+
+`add mlag-id =10 mode =802.3ad name =client-bond slaves =sfp-sfpplus2`
+
+在配置网桥时启用 `vlan-filtering`，将需要的接口作为网桥端口。专用的无标记VLAN应用于对等端口的机箱间通信，要用不同的 `pvid` 设置。下面是Peer1和Peer2设备的配置命令:
 
 `/interface bridge`
 
-`add` `name``=bridge1` `vlan-filtering``=yes`
+`add name =bridge1 vlan-filtering =yes`
 
 `/interface bridge port`
 
-`add` `bridge``=bridge1` `interface``=sfp-sfpplus1` `pvid``=99`
+`add bridge =bridge1 interface =sfp-sfpplus1 pvid =99`
 
-`add` `bridge``=bridge1` `interface``=client-bond`
+`add bridge =bridge1 interface =client-bond`
 
 `/interface bridge`
 
-`add` `name``=bridge1` `vlan-filtering``=yes`
+`add name =bridge1 vlan-filtering =yes`
 
 `/interface bridge port`
 
-`add` `bridge``=bridge1` `interface``=sfp-sfpplus1` `pvid``=99`
+`add bridge =bridge1 interface =sfp-sfpplus1 pvid =99`
 
-`add` `bridge``=bridge1` `interface``=client-bond`
+`add bridge =bridge1 interface =client-bond`
 
-The MLAG requires enabled STP or RSTP protocol, the MSTP is not supported. Use the same STP priority and the same STP configuration on dual-connected bridge ports on both nodes.
+MLAG需要启用STP或RSTP协议，不支持MSTP。在两个节点的双连接桥接端口上使用相同的STP优先级和相同的STP配置。
 
-In this example, client-bond interfaces are using the default untagged VLAN 1 (the default `pvid=1` is set). In order to send these packets over peer ports, we need to add them as tagged VLAN 1 members. Notice that the default `pvid` value for the peer ports was changed in the previous step, it is important to include the peer ports in all the VLANs that are used on other bridge ports, this includes the untagged and tagged VLANs. Below are configuration commands for both peer devices:
-
-`/interface bridge vlan`
-
-`add` `bridge``=bridge1` `tagged``=sfp-sfpplus1` `vlan-ids``=1`
+在这个例子中，客户端绑定的接口使用默认的无标记VLAN 1（默认 `pvid=1` ）。为了通过对等端口发送数据包，需要把它们添加为有标签的 VLAN 1 成员。注意，对等端口的默认 `pvid` 值在上一步已经改变了，重要的是把对等端口包括在其他网桥端口使用的所有VLAN中，包括无标记和有标记的VLAN。下面是两个对等设备的配置命令:
 
 `/interface bridge vlan`
 
-`add` `bridge``=bridge1` `tagged``=sfp-sfpplus1` `vlan-ids``=1`
+`add bridge =bridge1 tagged =sfp-sfpplus1 vlan-ids =1`
 
-All VLANs used for bridge slave ports must be also configured as tagged VLANs for peer-port, so that peer-port is a member of those VLANs and can forward data.
+`/interface bridge vlan`
 
-Last, specify `bridge` and `peer-port` to enable MLAG. Below are configuration commands for both peer devices:
+`add bridge =bridge1 tagged =sfp-sfpplus1 vlan-ids =1`
+
+所有用于桥接从属端口的VLAN必须同时配置为peer-port的标记VLAN，这样peer-port就是这些VLAN的成员，可以转发数据。
+
+最后，指定“bridge“ 和“peer-port“启用MLAG。下面是两个对等设备的配置命令:
 
 `/interface bridge mlag`
 
-`set` `bridge``=bridge1` `peer-port``=sfp-sfpplus1`
+`set bridge =bridge1 peer-port =sfp-sfpplus1`
 
 `/interface bridge mlag`
 
-`set` `bridge``=bridge1` `peer-port``=sfp-sfpplus1`
+`set bridge =bridge1 peer-port =sfp-sfpplus1`
 
-Additionally, check MLAG status on peer devices and make sure that Client LACP has both interfaces active.
+此外，检查对等设备上的MLAG状态，确保客户端LACP的两个接口都处于活动状态。
 
-`[admin@Peer1] >` `/interface/bridge/mlag/``monitor`   
-
-       `status``: connected`
-
-    `system-id``: 74:4D:28:11:70:6B`
-
-  `active-role``: primary`
-
-`[admin@Peer2] >` `/interface/bridge/mlag/``monitor`          
-
-       `status``: connected`
-
-    `system-id``: 74:4D:28:11:70:6B`
-
-  `active-role``: secondary`
-
-`[admin@Client] >` `/interface bonding` `monitor` `bond1`
-
-                    `mode``: 802.3ad`
-
-            `active-ports``: sfp-sfpplus1,sfp-sfpplus2`
-
-          `inactive-ports``:`
-
-          `lacp-system-id``: 74:4D:28:7B:7F:96`
-
-    `lacp-system-priority``: 65535`
-
-  `lacp-partner-system-id``: 74:4D:28:11:70:6C`
+```shell
+[admin@Peer1] > /interface/bridge/mlag/ monitor   
+       status : connected
+    system-id : 74:4D:28:11:70:6B`
+  active-role : primary
+[admin@Peer2] > /interface/bridge/mlag/ monitor          
+       status : connected
+    system-id : 74:4D:28:11:70:6B
+  active-role : secondary
+[admin@Client] > /interface bonding monitor bond1
+                    mode : 802.3ad
+            active-ports : sfp-sfpplus1,sfp-sfpplus2
+          inactive-ports :
+          lacp-system-id : 74:4D:28:7B:7F:96
+    lacp-system-priority : 65535
+  lacp-partner-system-id : 74:4D:28:11:70:6C
+```
 
 ## MLAG settings and monitoring
 
@@ -114,38 +104,30 @@ This section describes the available MLAG settings and monitoring options.
 
 **Sub-menu:** `/interface bridge mlag`
 
-Use the `monitor` commands to see the current MLAG status.
+| 属性                                           | 说明                                                                                                                                                                                     |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **bridge** (_interface;_ Default: **none**)    | 正在创建 MLAG 的桥接口。                                                                                                                                                                 |
+| **peer-port** (_interface;_ Default: **none**) | 将被用作对等端口的接口。两个对等设备都通过这些对等端口使用机箱间的通信来建立MLAG并更新主机表。对等端口应该使用 `pvid` 设置在不同的无标记VLAN上进行隔离。对等端口可以配置为一个绑定接口。 |
 
-`[admin@Peer1] >` `/interface/bridge/mlag/``monitor`   
+使用 `monitor` 命令查看当前MLAG状态。
 
-       `status``: connected`
+```shell
+[admin@Peer1] > /interface/bridge/mlag/monitor   
+       status: connected
+    system-id: 74:4D:28:11:70:6B
+  active-role: primary
+```
 
-    `system-id``: 74:4D:28:11:70:6B`
-
-  `active-role``: primary`
-
-| Property               | Description |
-| ---------------------- | ----------- |
-| **status** (_connected | connecting  | disabled_) | The MLAG status. |
-|                        |
-
-**system-id** (_MAC address_)
-
- | The lowest MAC address between both peer bridges will be used as the `system-id`. This `system-id` is used for (R)STP BPDU bridge identifier and LACP system ID. |
-| 
-
-**active-role** (_primary | secondary_)
-
- | 
-
-The peer with the lowest bridge MAC address will be acting as a primary device. The `system-id` of the primary device is used for sending the (R)STP BPDU bridge identifier and LACP system ID.
-
- |
+| 属性                                               | 说明                                                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **status** (_connected \| connecting \| disabled_) | MLAG状态。                                                                                              |
+| **system-id** (_MAC address_)                      | 两个对等桥的最低MAC地址将用作 "system-id"。这个 "system-ID "用于(R)STP BPDU网桥标识和LACP系统ID。       |
+| **active-role** (_primary \| secondary_)           | 有最低网桥MAC地址的对等设备会作为主设备。主设备的 "system-id "用来发送(R)STP BPDU网桥标识和LACP系统ID。 |
 
 **Sub-menu:** `/interface bonding`
 
-| Property                                           | Description                                                                                                                                                                                                       |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **mlag-id** (__integer: 0..4294967295_;_ Default:) | Changes MLAG ID for bonding interface. The same MLAG ID should be used on both peer devices to successfully create a single LAG for the client device. The `peer-port` should not be configured with the MLAG ID. |
+| 属性                                             | 说明                                                                                                                   |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **mlag-id** (_integer: 0..4294967295_; Default:) | 更改绑定接口的MLAG ID。两个对等设备上应该使用相同的MLAG ID，以便为客户设备创建一个LAG。`peer-port` 不能配置为MLAG ID。 |
 
-LACP bonding interface and bonding slave ports can be monitored with `monitor` and `monitor-slaves` commands. See more details on [Bonding monitoring](https://help.mikrotik.com/docs/display/ROS/Bonding#Bonding-Bondingmonitoring).
+LACP绑定接口和绑定从属端口可以用 `monitor` 和 `monitor-slaves` 命令监控。更多细节见 [Bonding monitoring](https://help.mikrotik.com/docs/display/ROS/Bonding#Bonding-Bondingmonitoring)。

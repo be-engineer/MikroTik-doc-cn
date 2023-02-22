@@ -1,128 +1,126 @@
-# Basic Setup
+# VRRP基本设置
 
-This is the basic VRRP configuration example.
+基本的VRRP配置例子。
 
-Note
+注意事项
 
-It is recommended to use the same version of RouterOS for all devices with the same VRID used to implement VRRP.
+建议对所有具有相同VRID的设备使用相同版本的RouterOS来实现VRRP。
 
 ![](https://help.mikrotik.com/docs/download/attachments/128221211/Vrrp-simple%20%281%29.jpg?version=1&modificationDate=1659607942284&api=v2)
 
-According to this configuration, as long as the master, R1, is functional, all traffic destined to the external network gets directed to R1. But as soon as R1 fails, R2 takes over as the master and starts handling packets forwarded to the interface associated with IP(R1). In this setup router "R2" is completely idle during the Backup period.
+根据这个配置，只要主站R1是正常的，所有指向外部网络的流量都会引导到R1。一旦R1发生故障，R2就会作为主站接管，并处理转发到与IP（R1）相关的接口数据包。在这个设置中，路由器 "R2 "在备份期间是完全空闲的。
 
-## Configuration
+## 配置
 
-R1 configuration:
+R1 配置:
 
-`/ip address` `add` `address``=192.168.1.10/24` `interface``=ether1`
+`/ip address add address =192.168.1.10/24 interface =ether1`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=49` `priority``=254`
+`/interface vrrp add interface =ether1 vrid =49 priority =254`
 
-`/ip address` `add` `address``=192.168.1.1/32` `interface``=vrrp1`
+`/ip address add address =192.168.1.1/32 interface =vrrp1`
 
-R2 configuration:
+R2 配置:
 
-`/ip address` `add` `address``=192.168.1.20/24` `interface``=ether1`
+`/ip address add address =192.168.1.20/24 interface =ether1`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=49`
+`/interface vrrp add interface =ether1 vrid =49`
 
-`/ip address` `add` `address``=192.168.1.1/32` `interface``=vrrp1`
+`/ip address add address =192.168.1.1/32 interface =vrrp1`
 
-## Testing
+## 测试
 
-First of all, check if both routers have correct flags at VRRP interfaces. On router R1 it should look like this
+首先，检查两个路由器的VRRP接口标志是否正确。在路由器R1上应该是这样的
 
-`/interface vrrp` `print` `detail`
+```shell
+/interface vrrp print detail
+ 0   RM name = "vrrp1" mtu =1500 mac-address =00:00:5E:00:01:31 arp =enabled interface =ether1 vrid =49
+        priority =254 interval =1 preemption-mode =yes authentication =none password = "" on-backup = ""
+        on-master = "" version =3 v3-protocol =ipv4
+```
 
- `0   RM` `name``=``"vrrp1"` `mtu``=1500` `mac-address``=00:00:5E:00:01:31` `arp``=enabled` `interface``=ether1` `vrid``=49`
+路由器R2上:
 
-        `priority``=254` `interval``=1` `preemption-mode``=yes` `authentication``=none` `password``=``""` `on-backup``=``""`
+```shell
+/interface vrrp print detail
+ 0    B name = "vrrp1" mtu =1500 mac-address =00:00:5E:00:01:31 arp =enabled interface =ether1 vrid =49
+        priority =100 interval =1 preemption-mode =yes authentication =none password = ""
+        on-backup = "" on-master = " version =3 v3-protocol =ipv4
+```
 
-        `on-master``=``""` `version``=3` `v3-protocol``=ipv4`
+可以看到两个路由器上的VRRP接口MAC地址是相同的。现在要检查VRRP是否正常工作，尝试从客户端ping虚拟地址并检查ARP条目:
 
-and on router R2:
+`[admin@client] > / ping 192.168.1.1`
 
-`/interface vrrp` `print` `detail`
+`192.168.1.254 64 byte ping : ttl=64 time=10 ms`
 
- `0    B` `name``=``"vrrp1"` `mtu``=1500` `mac-address``=00:00:5E:00:01:31` `arp``=enabled` `interface``=ether1` `vrid``=49`
-
-        `priority``=100` `interval``=1` `preemption-mode``=yes` `authentication``=none` `password``=``""`
-
-        `on-backup``=``""` `on-master``=``"` `version``=3` `v3-protocol``=ipv4`
-
-As you can see VRRP interface MAC addresses are identical on both routers. Now to check if VRRP is working correctly, try to ping the virtual address from a client and check ARP entries:
-
-`[admin@client] >` `/``ping` `192.168.1.1`
-
-`192.168.1.254 64 byte ping``: ttl=64 time=10 ms`
-
-`192.168.1.254 64 byte ping``: ttl=64 time=8 ms`
+`192.168.1.254 64 byte ping : ttl=64 time=8 ms`
 
 `2 packets transmitted, 2 packets received, 0% packet loss`
 
-`round-trip min``/avg/max = 8/9.0/10 ms`
+`round-trip min /avg/max = 8/9.0/10 ms`
 
-`[admin@client]` `/ip arp>` `print`
+`[admin@client] /ip arp> print`
 
-`Flags``: X - disabled, I - invalid, H - DHCP, D - dynamic`
+`Flags : X - disabled, I - invalid, H - DHCP, D - dynamic`
 
  `...`
 
- `1 D 192.168.1.1   00``:00:5E:00:01:31 bridge1`
+ `1 D 192.168.1.1   00 :00:5E:00:01:31 bridge1`
 
-Now unplug the ether1 cable on router R1. R2 will become VRRP master, and the ARP table on a client will not change but traffic will start to flow over the R2 router.
+现在拔掉路由器R1上的ether1电缆。R2将成为VRRP主站，客户端的ARP表不会改变，但流量将开始在R2路由器上流动。
 
-In case VRRP is used with Reverse Path Filtering, then it is recommended that `rp-filter` is set to `loose`, otherwise, the VRRP interface might not be reachable.
+如果VRRP和反向路径过滤一起使用，那么建议把 `rp-filter` 设置为 `loose`，否则，VRRP接口可能无法到达。
 
-## Load sharing
+## 负载共享
 
-In the basic configuration example, R2 is completely idle during the Backup state. This behavior may be considered a waste of valuable resources. In such circumstances, the R2 router can be set as the gateway for some clients.  
-The obvious advantage of this configuration is the establishment of a load-sharing scheme. But by doing so R2 router is not protected by the current VRRP setup.  
-To make this setup work we need two virtual routers.
+在基本配置例子中，R2在备份状态下是完全空闲的。可能会认为是对宝贵资源的浪费。在这种情况下，R2路由器可以设置为一些客户的网关。 
+这种配置的明显优势是建立了一个负载共享方案。但R2路由器没有受到当前VRRP设置的保护。 
+为了使设置工作，需要两个虚拟路由器。
 
 ![](https://help.mikrotik.com/docs/download/attachments/128221211/Vrrp-load-sharing.jpg?version=1&modificationDate=1653990835746&api=v2)
 
-Configuration for V1 virtual router will be identical to a configuration in basic example - R1 is the Master and R2 is the Backup router. In V2 Master is R2 and Backup is R1.  
-With this configuration, we establish load-sharing between R1 and R2; moreover, we create a protection setup by having two routers acting as backups for each other.
+V1虚拟路由器的配置和基本例子中的配置相同-R1是主路由器，R2是备份路由器。在V2中，主站是R2，备份是R1。 
+通过这种配置在R1和R2之间建立了负载共享；此外，让两个路由器互相作为备份来创建一个保护设置。
 
-## Configuration
+## 配置
 
-R1 configuration:
+R1 配置:
 
-`/ip address` `add` `address``=192.168.1.1/24` `interface``=ether1`
+`/ip address add address =192.168.1.1/24 interface =ether1`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=49` `priority``=254`
+`/interface vrrp add interface =ether1 vrid =49 priority =254`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=77`
+`/interface vrrp add interface =ether1 vrid =77`
 
-`/ip address` `add` `address``=192.168.1.253/32` `interface``=vrrp1`
+`/ip address add address =192.168.1.253/32 interface =vrrp1`
 
-`/ip address` `add` `address``=192.168.1.254/32` `interface``=vrrp2`
+`/ip address add address =192.168.1.254/32 interface =vrrp2`
 
-R2 configuration:
+R2 配置:
 
-`/ip address` `add` `address``=192.168.1.2/24` `interface``=ether1`
+`/ip address add address =192.168.1.2/24 interface =ether1`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=49`
+`/interface vrrp add interface =ether1 vrid =49`
 
-`/interface vrrp` `add` `interface``=ether1` `vrid``=77` `priority``=254`
+`/interface vrrp add interface =ether1 vrid =77 priority =254`
 
-`/ip address` `add` `address``=192.168.1.253/32` `interface``=vrrp1`
+`/ip address add address =192.168.1.253/32 interface =vrrp1`
 
-`/ip address` `add` `address``=192.168.1.254/32` `interface``=vrrp2`
+`/ip address add address =192.168.1.254/32 interface =vrrp2`
 
-## VRRP without Preemption
+## VRRP无抢占模式
 
-Each time when the router with a higher priority becomes available it becomes the Master router. Sometimes this is not the desired behavior and can be turned off by setting `preemption-mode=no` in VRRP configuration.
+每次当有较高优先级的路由器可用时，它就会成为主路由器。有时这不是想要的行为，可以通过在VRRP配置中设置 `preemption-mode=no` 来关闭。
 
-## Configuration
+## 配置
 
-We will be using the same setup as in the basic example. The only difference is during configuration set preemption-mode=no. It can be done easily by modifying the existing configuration:
+使用和基本例子相同的设置。唯一的区别是在配置中设置preemption-mode=no。可以通过修改现有配置完成:
 
-`/interface vrrp` `set` `[find]` `preemption-mode``=no`
+`/interface vrrp set [find] preemption-mode =no`
 
-## Testing
+## 测试
 
-Try turning off the R1 router, R2 will become the Master router because it has the highest priority among available routers.
+尝试关闭R1路由器，R2将成为主路由器，因为它在可用的路由器中拥有最高优先级。
 
-Now turn the R1 router on and you will see that the R2 router continues to be the Master even if R1 has the higher priority.
+现在打开R1路由器，你会看到R2路由器继续成为主站，即使R1的优先级更高。
