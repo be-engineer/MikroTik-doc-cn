@@ -1,16 +1,12 @@
-# Summary
+# 概述
 
 ___
 
-Bonding is a technology that allows aggregation of multiple ethernet-like interfaces into a single virtual link, thus getting higher data rates and providing failover. 
+绑定是一种技术，允许把多个类似的以太网接口聚合到一个单一的虚拟链接中，从而获得更高的速率并提供故障转移功能。
 
-Interface bonding does not create an interface with a larger link speed. Interface bonding creates a virtual interface that can load balance traffic over multiple interfaces. More details can be found in the [LAG interfaces and load balancing](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing) page.
+接口绑定并不创建一个具有更大链接速度的接口。接口绑定创建了一个虚拟接口，可以在多个接口上实现流量的负载均衡。更多细节可以在 [LAG接口和负载平衡](https://help.mikrotik.com/docs/display/ROS/Layer2+misconfiguration#Layer2misconfiguration-LAGinterfacesandloadbalancing) 页面中找到。
 
-  
-
-CRS3xx, CRS5xx series switches, and CCR2116, CCR2216 routers support bridge hardware offloading with bonding interfaces. Only `802.3ad` and `balance-xor` bonding modes are hardware offloaded, other bonding modes will use the CPU's resources. The built-in switch chip will always use Layer2+Layer3+Layer4 for a transmit hash policy, changing the transmit hash policy manually will have no effect. See more details on [CRS3xx, CRS5xx, CCR2116, CCR2216 switch chip features](https://help.mikrotik.com/docs/display/ROS/CRS3xx,+CRS5xx,+CCR2116,+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Bonding).
-
-  
+CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器支持带有绑定接口的网桥硬件卸载。只有 "802.3ad "和 "balance-xor"绑定模式是硬件卸载的，其他绑定模式会使用CPU的资源。内置交换芯片始终使用Layer2+Layer3+Layer4的传输散列策略，手动改变传输散列策略没有效果。更多详情请见 [CRS3xx、CRS5xx、CCR2116、CCR2216交换芯片特性](https://help.mikrotik.com/docs/display/ROS/CRS3xx,+CRS5xx,+CCR2116,+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Bonding)
 
 ## Quick Setup Guide
 
@@ -18,85 +14,100 @@ ___
 
 Let us assume that we have two Ethernet interfaces on each router (Router1 and Router2) and want to get the maximum data rate between these two routers. To make this possible, follow these steps:
 
-1.  Make sure that you do not have IP addresses on interfaces that will be enslaved for bonding interface.
-2.  Add bonding interface and IP address on the Router1:
-    
-    [?](https://help.mikrotik.com/docs/display/ROS/Bonding#)
-    
-    <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding </code><code class="ros functions">add </code><code class="ros value">slaves</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">name</code><code class="ros plain">=bond1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=bond1</code></div></div></td></tr></tbody></table>
-    
-3.  Do the same thing on the Router2:
-    
-    [?](https://help.mikrotik.com/docs/display/ROS/Bonding#)
-    
-    <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding </code><code class="ros functions">add </code><code class="ros value">slaves</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">name</code><code class="ros plain">=bond1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.0.2/24</code> <code class="ros value">interface</code><code class="ros plain">=bond1</code></div></div></td></tr></tbody></table>
-    
-4.  Test the link from Router1:
-    
-    [?](https://help.mikrotik.com/docs/display/ROS/Bonding#)
-    
-    <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Router1] &gt; </code><code class="ros functions">ping </code><code class="ros plain">172.16.0.2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">SEQ HOST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SIZE TTL TIME&nbsp; STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">0 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">1 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">2 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">sent</code><code class="ros plain">=3</code> <code class="ros value">received</code><code class="ros plain">=3</code> <code class="ros value">packet-loss</code><code class="ros plain">=0%</code> <code class="ros value">min-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">avg-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">max-rtt</code><code class="ros plain">=0ms</code></div></div></td></tr></tbody></table>
-    
+1. Make sure that you do not have IP addresses on interfaces that will be enslaved for bonding interface.
+2. Add bonding interface and IP address on the Router1:
 
-The bonding interface needs a couple of seconds to get connectivity with its peers.
+```shell
+/interface bonding add slaves=ether1,ether2 name=bond1
+/ip address add address=172.16.0.1/24 interface=bond1
+```
 
-## Link monitoring
+3. 在Router2上做同样的事:
+
+```shell
+/interface bonding add slaves=ether1,ether2 name=bond1
+/ip address add address=172.16.0.2/24 interface=bond1
+```
+
+4. 从Router1测试连接:
+
+```shell
+[admin@Router1] > ping 172.16.0.2
+  SEQ HOST                                 SIZE TTL TIME  STATUS                  
+    0 172.16.0.2                             56  64 0ms 
+    1 172.16.0.2                             56  64 0ms 
+    2 172.16.0.2                             56  64 0ms 
+    sent=3 received=3 packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms
+```
+
+绑定接口需要几秒钟的时间来获得与对等点的连接。
+
+## 链路监控
 
 ___
 
-It is critical that one of the available link monitoring options is enabled. In the above example, if one of the bonded links were to fail, the bonding driver will still continue to send packets over the failed link which will lead to network degradation. Bonding in RouterOS currently supports two schemes for monitoring a link state of slave devices: MII and ARP monitoring. It is not possible to use both methods at the same time due to restrictions in the bonding driver.
+启用其中一个可用的链路监控选项是非常关键的。在上面的例子中，如果其中一个绑定的链路发生故障，绑定驱动仍会继续在故障链路上发送数据包，这会导致网络性能下降。RouterOS中的绑定支持两种方案来监控从属设备的链路状态。MII和ARP监控。由于绑定驱动程序的限制，不能同时使用这两种方法。
 
-### ARP Monitoring
+### ARP监控
 
-ARP monitoring sends ARP queries and uses the response as an indication that the link is operational. The ARP replies are not validated, any received packet by the slave interface will result in the slave interface considered as active. This gives assurance that traffic is actually flowing over the links. If balance-rr and balance-xor modes are set, then the switch should be configured to evenly distribute packets across all links. Otherwise, all replies from the ARP targets will be received on the same link which could cause other links to fail. ARP monitoring is enabled by setting three properties - link-monitoring, arp-ip-targets and arp-interval. The meaning of each option is described later in this article. It is possible to specify multiple ARP targets that can be useful in High Availability setups. If only one target is set, the target itself may go down. Having additional targets increases the reliability of the ARP monitoring.
+ARP监测发送ARP查询，并用响应作为链路运行的指示。ARP回复没有被验证，从属接口收到的任何数据包都会导致从属接口被认为是活动的。这就保证了流量确实在链路上流动。如果设置了balance-rr和balance-xor模式，那么交换机应该配置为在所有链路上均匀地分配数据包。否则，所有来自ARP目标的回复都将在同一个链路上收到，这可能导致其他链路失效。ARP监控是通过设置三个属性来启用的-链路监控、arp-ip-targets和arp-interval。每个选项的含义将在本文后面描述。可以指定多个ARP目标，这在高可用性设置中很有用。如果只设置了一个目标，那么目标本身就可能失效。额外的目标可以增加ARP监控的可靠性。
 
-To enable ARP monitoring on Router1:
+在Router1上启用ARP监控:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bond1]</code> <code class="ros value">link-monitoring</code><code class="ros plain">=arp</code> <code class="ros value">arp-ip-targets</code><code class="ros plain">=172.16.0.2</code></div></div></td></tr></tbody></table>
+`/interface bonding set [find name=bond1] link-monitoring=arp arp-ip-targets=172.16.0.2`
 
-and Router2:
+Router2:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bond1]</code> <code class="ros value">link-monitoring</code><code class="ros plain">=arp</code> <code class="ros value">arp-ip-targets</code><code class="ros plain">=172.16.0.1</code></div></div></td></tr></tbody></table>
+`/interface bonding set [find name=bond1] link-monitoring=arp arp-ip-targets=172.16.0.1`
 
-We will not change the arp-interval value in our example, RouterOS sets arp-interval to 100ms by default. Unplug one of the cables to test if the link monitoring works correctly, you might notice some ping timeouts until arp monitoring detects link failure.
+在这个例子中不会改变arp-interval的值，RouterOS默认将arp-interval设置为100ms。拔掉其中一根电缆，测试链路监控是否正常工作，可能会有一些ping超时，直到arp监控检测到链路故障。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; ping 172.16.0.2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;</code><code class="text plain">SEQ HOST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SIZE TTL TIME&nbsp; STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">0 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">1 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">2 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">3 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">4 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; timeout&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">5 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">6 172.16.0.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp; 64 0ms&nbsp;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">sent=7 received=6 packet-loss=14% min-rtt=0ms avg-rtt=0ms max-rtt=0ms</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > ping 172.16.0.2
+  SEQ HOST                                     SIZE TTL TIME  STATUS                                
+    0 172.16.0.2                                 56  64 0ms 
+    1 172.16.0.2                                 56  64 0ms 
+    2 172.16.0.2                                 56  64 0ms 
+    3 172.16.0.2                                 56  64 0ms 
+    4 172.16.0.2                                              timeout                               
+    5 172.16.0.2                                 56  64 0ms 
+    6 172.16.0.2                                 56  64 0ms 
+    sent=7 received=6 packet-loss=14% min-rtt=0ms avg-rtt=0ms max-rtt=0ms
+```
 
-  
+为了使ARP监控正常工作，不需要在设备上设置任何IP地址，无论在任何接口上设置了什么IP地址，ARP监控都会工作。
 
-For ARP monitoring to work properly it is not required to have any IP address on the device, ARP monitoring will work regardless of the IP address that is set on any interface.
+当使用ARP监控时，即使在和arp-ip-targets相同的子网中的VLAN接口上设置了IP地址，绑定从机也会发出没有VLAN标记的ARP请求。
 
-When ARP monitoring is used, bonding slaves will send out ARP requests without a VLAN tag, even if an IP address is set on a VLAN interface in the same subnet as the arp-ip-targets
+### MII监控
 
-### MII monitoring
+MII监控只监控本地接口的状态。_MII Type 1_ - 设备驱动程序决定一个链接是向上还是向下。如果设备驱动程序不支持这个选项，那么链路就会显示为总是向上。主要的缺点是，MII监控无法判断链路是否真的可以传递数据包，即使链路被检测为向上。MII监控是通过设置变量来配置的，这些变量是link-monitoring和mii-interval。
 
-MII monitoring monitors only the state of the local interface. _MII Type 1_ \- a device driver determines whether a link is up or down. If the device driver does not support this option then the link will appear as always up. The main disadvantage is that MII monitoring can't tell if the link can actually pass packets or not, even if the link is detected as being up. MII monitoring is configured by setting the variables - link-monitoring and mii-interval.
+要在Router1和Router2上启用MII Type1监控:
 
-To enable MII Type1 monitoring on Router1 and Router2:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=bond1]</code> <code class="ros value">link-monitoring</code><code class="ros plain">=mii</code></div></div></td></tr></tbody></table>
+`/interface bonding set [find name=bond1] link-monitoring=mii`
 
 We will leave mii-interval to its default value (100ms). When unplugging one of the cables, the failure will be detected almost instantly compared to ARP link monitoring.
 
-## Bonding modes
+## 绑定模式
 
 ___
 
 ### 802.3ad
 
-802.3ad mode is an IEEE standard also called LACP (Link Aggregation Control Protocol). It includes automatic configuration of the aggregates, so minimal configuration of the switch is needed. This standard also mandates that frames will be delivered in order and connections should not see misordering of packets. The standard also mandates that all devices in the aggregate must operate at the same speed and duplex mode.
+802.3ad模式是一个IEEE标准，也叫LACP（链路聚合控制协议）。包括聚合的自动配置，因此需要对交换机进行最小的配置。标准还规定，帧将按顺序传送，连接不应出现数据包的错误排序。标准还规定，聚合中的所有设备必须以相同的速度和双工模式运行。
 
-LACP balances outgoing traffic across the active ports based on hashed protocol header information and accepts incoming traffic from any active port. The hash includes the Ethernet source and destination address and if available, the VLAN tag, and the IPv4/IPv6 source and destination address. How this is calculated depends on transmit-hash-policy parameter. The ARP link monitoring is not recommended, because the ARP replies might arrive only on one slave port due to transmit hash policy on the LACP peer device. This can result in unbalanced transmitted traffic, so MII link monitoring is the recommended option.
+LACP根据散列的协议头信息在活动端口之间均衡出站流量，并接受来自任何活动端口的入站流量。哈希值包括以太网源和目标地址，如果有的话，还包括VLAN标签，以及IPv4/IPv6源和目标地址。如何计算取决于传输哈希策略参数。不建议使用ARP链路监控，因为LACP对等设备上的发送散列策略，ARP回复可能只到达一个从属端口。可能导致不平衡的传输流量，推荐使用MII链路监控。
 
-The layer-3-and-4 transmit hash mode is not fully compatible with LACP. More details can be found in [https://www.kernel.org/doc/Documentation/networking/bonding.txt](https://www.kernel.org/doc/Documentation/networking/bonding.txt)
+第3和第4层的传输散列模式与LACP不完全兼容。更多细节可以在[https://www.kernel.org/doc/Documentation/networking/bonding.txt](https://www.kernel.org/doc/Documentation/networking/bonding.txt) 中找到。
 
 ### balance-xor
 
-This mode balances outgoing traffic across the active ports based on the hashed protocol header information and accepts incoming traffic from any active port. The mode is very similar to [LACP](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#802.3ad) except that it is not standardized and works with **layer-3-and-4** hash policy. The mode can work together with static Link Aggregation Group (LAG) interfaces.
+这种模式根据散列的协议头信息在活动端口之间平衡出站流量，并接受来自任何活动端口的入站流量。该模式与 [LACP](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#802.3ad) 非常相似，只是它没有标准化，与 **Layer-3和-4** 的哈希策略一起工作。该模式可以和静态链路聚合组（LAG）接口一起工作。
 
 ### balance-rr
 
-If this mode is set, packets are transmitted in sequential order from the first available slave to the last. The balance-rr is the only mode that will send packets across multiple interfaces that belong to the same TCP/IP connection. When utilizing multiple sending and multiple receiving links, packets are often received out of order, which results in segment retransmission, for other protocols such as UDP it is not a problem if a client software can tolerate out-of-order packets. If a switch is used to aggregate links together, then appropriate switch port configuration is required, however many switches do not support balance-rr. [Quick setup guide](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#Quick_Setup_Guide) demonstrates the usage of the balance-rr bonding mode. As you can see, it is quite simple to set up. Balance-rr is also useful for bonding several wireless links, however, it requires equal bandwidth for all bonded links. If the bandwidth of one bonded link drops, then the total bandwidth of bond will be equal to the bandwidth of the slowest bonded link.
+如果设置了这种模式，数据包会按顺序从第一个可用的从机到最后一个进行传输。balance-rr是唯一能在属于同一TCP/IP连接的多个接口上发送数据包的模式。当利用多条发送和多条接收链路时，数据包经常不按顺序接收，这会导致分段重传，对于其他协议，如UDP，如果客户端软件能容忍不按顺序的数据包，这不是问题。如果使用交换机将链路聚合在一起，那么就需要适当的交换机端口配置，然而许多交换机不支持balance-rr。[快速设置指南](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#Quick_Setup_Guide) 演示了balance-rr绑定模式的用法。正如看到的，它的设置非常简单的。Balance-rr对于绑定几个无线链路也很有用，但是，它要求所有被绑定的链路有相同的带宽。如果一个绑定链路的带宽下降了，那么绑定的总带宽将等于最慢的绑定链路的带宽。
 
 ### active-backup
 
@@ -165,9 +176,7 @@ S - synchronization (link is synchronized)
 C - collecting (link is able to collect incoming frames)  
 D - distributing (link is able to distribute outgoing frames)  
 F - defaulted (link is using defaulted partner information, indicated that no LACPDU has been received from the partner)  
-E - expired (link has expired state)
-
- |
+E - expired (link has expired state) |
 | **partner-sys-id** (_MAC address_) | Shows the partner LACP system ID |
 | **partner-sys-priority** (_integer_) | Shows the partner LACP priority |
 | **partner-key** (_integer_) | Shows the partner LACP aggregation key |
@@ -182,10 +191,10 @@ This section describes the available bonding settings. 
 | Property           | Description |
 | ------------------ | ----------- |
 | **arp** (_disabled | enabled     | proxy-arp | reply-only_; Default: **enabled**) | Address Resolution Protocol for the interface. |
--   disabled \- the interface will not use ARP
--   enabled \- the interface will use ARP
--   proxy-arp \- the interface will use the ARP proxy feature
--   reply-only \- the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the "/ip arp" table. No dynamic entries will be automatically stored in the "/ip arp" table. Therefore for communications to be successful, a valid static entry must already exist. |
+- disabled \- the interface will not use ARP
+- enabled \- the interface will use ARP
+- proxy-arp \- the interface will use the ARP proxy feature
+- reply-only \- the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the "/ip arp" table. No dynamic entries will be automatically stored in the "/ip arp" table. Therefore for communications to be successful, a valid static entry must already exist. |
 | **arp-interval** (_time_; Default: **00:00:00.100**) | Time in milliseconds defines how often to monitor ARP requests |
 | **arp-ip-targets** (_IP address_; Default: ) | IP target address which will be monitored if link-monitoring is set to arp. You can specify multiple IP addresses, separated by a comma |
 | **comment** (_string_; Default: ) | Short description of the interface |
@@ -196,9 +205,9 @@ This section describes the available bonding settings. 
 | **lacp-user-key** (_integer: 0..1023_; Default: **0**) | Specifies the upper 10 bits of the port key. The lower 6 bits are automatically assigned based on individual port link speed and duplex. The setting is available only since RouterOS v7.3. |
 | **link-monitoring** (_arp | mii | none_; Default: **mii**) | Method to use for monitoring the link (whether it is up or down)
 
--   arp \- uses Address Resolution Protocol to determine whether the remote interface is reachable
--   mii \- uses Media Independent Interface to determine link status. Link status determination relies on the device driver.
--   none \- no method for link monitoring is used.
+- arp \- uses Address Resolution Protocol to determine whether the remote interface is reachable
+- mii \- uses Media Independent Interface to determine link status. Link status determination relies on the device driver.
+- none \- no method for link monitoring is used.
 
 **Note:** some bonding modes require specific link monitoring to work properly. |
 | **min-links** (_integer: 0..4294967295_; Default: **0**) | How many active slave links needed for bonding to become active |
@@ -206,13 +215,13 @@ This section describes the available bonding settings. 
 | **mlag-id** (__integer: 0..4294967295_;_ Default:) | Changes MLAG ID for bonding interface. The same MLAG ID should be used on both peer devices to successfully create a single MLAG. See more details on [MLAG](https://help.mikrotik.com/docs/display/ROS/Multi-chassis+Link+Aggregation+Group). |
 | **mode** (_802.3ad | active-backup | balance-alb | balance-rr | balance-tlb | balance-xor | broadcast_; Default: **balance-rr**) | Specifies one of the bonding policies
 
--   802.3ad \- IEEE 802.3ad dynamic link aggregation. In this mode, the interfaces are aggregated in a group where each slave shares the same speed. It provides fault tolerance and load balancing. Slave selection for outgoing traffic is done according to the transmit-hash-policy [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#802.3ad)
--   active-backup \- provides link backup. Only one slave can be active at a time. Another slave only becomes active, if the first one fails. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#active-backup)
--   balance-alb \- adaptive load balancing. The same as balance-tlb but received traffic is also balanced. The device driver should have support for changing it's MAC address. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-alb)
--   balance-rr \- round-robin load balancing. Slaves in a bonding interface will transmit and receive data in sequential order. It provides load balancing and fault tolerance. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-rr)
--   balance-tlb \- Outgoing traffic is distributed according to the current load on each slave. Incoming traffic is not balanced and is received by the current slave. If receiving slave fails, then another slave takes the MAC address of the failed slave. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-tlb)
--   balance-xor \- Transmit based on the selected transmit-hash-policy. This mode provides load balancing and fault tolerance. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-xor)
--   broadcast \- Broadcasts the same data on all interfaces at once. This provides fault tolerance but slows down traffic throughput on some slow machines. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#broadcast)
+- 802.3ad \- IEEE 802.3ad dynamic link aggregation. In this mode, the interfaces are aggregated in a group where each slave shares the same speed. It provides fault tolerance and load balancing. Slave selection for outgoing traffic is done according to the transmit-hash-policy [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#802.3ad)
+- active-backup \- provides link backup. Only one slave can be active at a time. Another slave only becomes active, if the first one fails. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#active-backup)
+- balance-alb \- adaptive load balancing. The same as balance-tlb but received traffic is also balanced. The device driver should have support for changing it's MAC address. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-alb)
+- balance-rr \- round-robin load balancing. Slaves in a bonding interface will transmit and receive data in sequential order. It provides load balancing and fault tolerance. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-rr)
+- balance-tlb \- Outgoing traffic is distributed according to the current load on each slave. Incoming traffic is not balanced and is received by the current slave. If receiving slave fails, then another slave takes the MAC address of the failed slave. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-tlb)
+- balance-xor \- Transmit based on the selected transmit-hash-policy. This mode provides load balancing and fault tolerance. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#balance-xor)
+- broadcast \- Broadcasts the same data on all interfaces at once. This provides fault tolerance but slows down traffic throughput on some slow machines. [more>](https://wiki.mikrotik.com/wiki/Manual:Interface/Bonding#broadcast)
 
  |
 | **mtu** (_integer_; Default: **1500**) | Maximum Transmit Unit in bytes. Must be smaller or equal to the smallest L2MTU value of a bonding slave. L2MTU of a bonding interface is determined by the lowest L2MTU value among its slave interfaces |
@@ -222,13 +231,11 @@ This section describes the available bonding settings. 
 | **up-delay** (_time_; Default: **00:00:00**) | If a link has been brought up, the bonding interface is disabled for up-delay time and after this time it is enabled. The value should be a multiple of mii-interval, otherwise, it will be rounded down to the nearest value. This property only has an effect when `link-monitoring` is set to `mii`. |
 | **transmit-hash-policy** (_layer-2 | layer-2-and-3 | layer-3-and-4_; Default: **layer-2**) | Selects the transmit hash policy to use for slave selection in balance-xor and 802.3ad modes
 
--   layer-2 \- Uses XOR of hardware MAC addresses to generate the hash. This algorithm will place all traffic to a particular network peer on the same slave. This algorithm is 802.3ad compliant.
--   layer-2-and-3 \- This policy uses a combination of layer2 and layer3 protocol information to generate the hash. Uses XOR of hardware MAC addresses and IP addresses to generate the hash. This algorithm will place all traffic to a particular network peer on the same slave. For non-IP traffic, the formula is the same as for the layer2 transmit hash policy. This policy is intended to provide a more balanced distribution of traffic than layer2 alone, especially in environments where a layer3 gateway device is required to reach most destinations. This algorithm is 802.3ad compliant.
--   layer-3-and-4 \- This policy uses upper layer protocol information, when available, to generate the hash. This allows for traffic to a particular network peer to span multiple slaves, although a single connection will not span multiple slaves. For fragmented TCP or UDP packets and all other IP protocol traffic, the source and destination port information is omitted. For non-IP traffic, the formula is the same as for the layer2 transmit hash policy. This algorithm is not fully 802.3ad compliant.
+- layer-2 - Uses XOR of hardware MAC addresses to generate the hash. This algorithm will place all traffic to a particular network peer on the same slave. This algorithm is 802.3ad compliant.
+- layer-2-and-3 - This policy uses a combination of layer2 and layer3 protocol information to generate the hash. Uses XOR of hardware MAC addresses and IP addresses to generate the hash. This algorithm will place all traffic to a particular network peer on the same slave. For non-IP traffic, the formula is the same as for the layer2 transmit hash policy. This policy is intended to provide a more balanced distribution of traffic than layer2 alone, especially in environments where a layer3 gateway device is required to reach most destinations. This algorithm is 802.3ad compliant.
+- layer-3-and-4 - This policy uses upper layer protocol information, when available, to generate the hash. This allows for traffic to a particular network peer to span multiple slaves, although a single connection will not span multiple slaves. For fragmented TCP or UDP packets and all other IP protocol traffic, the source and destination port information is omitted. For non-IP traffic, the formula is the same as for the layer2 transmit hash policy. This algorithm is not fully 802.3ad compliant.|
 
- |
+## 参见
 
-## See also
-
--   [Bonding presentation at the MUM](https://wiki.mikrotik.com/images/f/f7/X1-Bondingv01.2006.pdf)
--   [Bonding Examples](https://wiki.mikrotik.com/wiki/Bonding_Examples "Bonding Examples")
+- [Bonding presentation at the MUM](https://wiki.mikrotik.com/images/f/f7/X1-Bondingv01.2006.pdf)
+- [Bonding Examples](https://wiki.mikrotik.com/wiki/Bonding_Examples "Bonding Examples")
