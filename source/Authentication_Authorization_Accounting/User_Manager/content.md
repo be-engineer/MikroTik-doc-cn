@@ -98,7 +98,7 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 
 **Sub-menu:** `/user-manager limitation`
 
-限制由配置文件使用，并由配置文件限制链接在一起。 必须启用 RADIUS 记帐和临时更新，以便在达到 _download-limit_、_upload-limit_ 或 _uptime-limit_ 时在多个限制之间无缝切换或断开活动会话。
+限制由配置文件使用，并由配置文件限制链接在一起。 必须启用 RADIUS 记帐和临时更新，以便在达到 _download-limit_ 、_upload-limit_ 或 _uptime-limit_ 时在多个限制之间无缝切换或断开活动会话。
 
 要从用户管理器断开已激活的会话，必须在 RADIUS 客户端上将_accept_设置为 _yes_。 如果并发会话限制不是无限的（共享用户）并且已达到最大允许数量，则路由器将首先尝试断开旧用户会话。
 
@@ -210,7 +210,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 **Sub-menu:** `/user-manager session`
 
-仅当在 NAS 上启用记帐时才会记录会话。
+仅当在 NAS 上启用计费时才会记录会话。
 
 **只读属性**
 
