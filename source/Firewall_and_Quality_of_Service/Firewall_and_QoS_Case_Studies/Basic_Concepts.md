@@ -106,7 +106,7 @@ add chain=input connection-state=established,related,untracked action=accept com
 
 IPv4快速跟踪处理程序被自动用于标记的连接。使用防火墙动作 "fasttrack-connection "来标记快速跟踪的连接。目前，只有TCP和UDP连接可以被实际快速跟踪（尽管任何连接都可以被标记为快速跟踪）。IPv4快速跟踪处理程序支持NAT（SNAT、DNAT，或两者）。
 
-请注意，一个连接中并非所有的数据包都可以被快速跟踪，因此，即使连接被标记为快速跟踪，也可能会看到一些数据包通过慢速路径。这就是为什么fasttrack-connection后面通常有一个相同的"_action=accept_"规则的原因。快速跟踪数据包会绕过防火墙、连接跟踪、简单队列、带有 _parent=global_ 的队列树、IP审计、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
+请注意，一个连接中并非所有的数据包都可以被快速跟踪，因此，即使连接被标记为快速跟踪，也可能会看到一些数据包通过慢速路径。这就是为什么fasttrack-connection后面通常有一个相同的"_action=accept_"规则的原因。快速跟踪数据包会绕过防火墙、连接跟踪、简单队列、带有 _parent=global_ 的队列树、IP计费、IPSec、热点通用客户端、VRF分配，因此，管理员要确保快速跟踪不干扰其他配置。
 
 ### 要求
 

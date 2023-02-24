@@ -1,6 +1,6 @@
 # 概述
 
-用户管理器是 RouterOS 中的 RADIUS 服务器实现，它为某个服务提供集中的用户身份验证和授权。 拥有中央用户数据库可以更好地跟踪系统用户和客户。 作为一个单独的包，用户管理器可用于包括 SMIPS 在内的所有体系结构，但由于可用空间有限，必须小心。 它支持许多不同的身份验证方法，包括 PAP、CHAP、MS-CHAP、MS-CHAPv2、EAP-TLS、EAP-TTLS 和 EAP-PEAP。 在 RouterOS 中，DHCP、Dot1x、Hotspot、IPsec、PPP、Wireless 是最受益于用户管理器的功能。 每个用户都可以使用 WEB 界面查看他们的帐户统计信息并管理可用的配置文件。 此外，用户可以使用最流行的支付网关 - PayPal 购买他们自己的数据计划（配置文件），使其成为服务提供商的绝佳系统。 可以生成定制报告以简化审计部门的处理。 用户管理器根据 [RFC2865](https://tools.ietf.org/html/rfc2865) 和 [RFC3579](https://tools.ietf.org/html/rfc3579) 中定义的 RADIUS 标准工作。
+用户管理器是 RouterOS 中的 RADIUS 服务器实现，它为某个服务提供集中的用户身份验证和授权。 拥有中央用户数据库可以更好地跟踪系统用户和客户。 作为一个单独的包，用户管理器可用于包括 SMIPS 在内的所有体系结构，但由于可用空间有限，必须小心。 它支持许多不同的身份验证方法，包括 PAP、CHAP、MS-CHAP、MS-CHAPv2、EAP-TLS、EAP-TTLS 和 EAP-PEAP。 在 RouterOS 中，DHCP、Dot1x、Hotspot、IPsec、PPP、Wireless 是最受益于用户管理器的功能。 每个用户都可以使用 WEB 界面查看他们的帐户统计信息并管理可用的配置文件。 此外，用户可以使用最流行的支付网关 - PayPal 购买他们自己的数据计划（配置文件），使其成为服务提供商的绝佳系统。 可以生成定制报告以简化计费部门的处理。 用户管理器根据 [RFC2865](https://tools.ietf.org/html/rfc2865) 和 [RFC3579](https://tools.ietf.org/html/rfc3579) 中定义的 RADIUS 标准工作。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/usermanager.jpg?version=1&modificationDate=1657264766867&api=v2)
 
@@ -216,12 +216,12 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
  | 属性                                            | 说明                                                                                                                                                                             |
  | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **acct-session-id** (_string_)                  | 审计会话的唯一标识。                                                                                                                                                             |
+ | **acct-session-id** (_string_)                  | 计费会话的唯一标识。                                                                                                                                                             |
  | **active** (_yes                        \| no_) | 当前是否使用会话。                                                                                                                                                               |
  | **calling-station-id** (_string_)               | 用户的标识符，通常是 IP 地址或 MAC 地址。                                                                                                                                        |
  | **download** (_Bytes_)                          | 下载的流量。                                                                                                                                                                     |
  | **ended** (_datetime_)                          | 会话结束的日期和时间。 活动会话为空。                                                                                                                                            |
- | **last-accounting-packet** (_datetime_)         | 收到最后一次审计更新的日期和时间。                                                                                                                                               |
+ | **last-accounting-packet** (_datetime_)         | 收到最后一次计费更新的日期和时间。                                                                                                                                               |
  | **nas-ip-address** (_IP address_)               | NAS的IP地址。                                                                                                                                                                    |
  | **nas-port-id** (_string_)                      | 对用户进行身份验证的 NAS 端口的标识符。                                                                                                                                          |
  | **nas-port-type** (_string_)                    | 对用户进行身份验证的端口类型（_physical_ 或 _virtual_）。                                                                                                                        |
@@ -256,7 +256,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 | 属性                                                                      | 说明                                         |
 | ------------------------------------------------------------------------- | -------------------------------------------- |
 | **paypal-allow** (_yes                           \| no_; Default: **no**) | 是否为用户管理器启用 PayPal 功能。           |
-| **paypal-currency** (_string_; Default: **USD**)                          | 对用户审计的 _价格_ 设置相关的货币。         |
+| **paypal-currency** (_string_; Default: **USD**)                          | 对用户计费的 _价格_ 设置相关的货币。         |
 | **paypal-password** (_string_; Default: )                                 | 你的 PayPal API 帐户的密码。                 |
 | **paypal-signature** (_string_; Default: )                                | 你的 PayPal API 帐户的签名。                 |
 | **paypal-use-sandbox** (_yes                     \| no_; Default: **no**) | 是否使用 PayPal 的沙盒环境进行测试。         |

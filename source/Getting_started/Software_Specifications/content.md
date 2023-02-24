@@ -107,8 +107,8 @@ RouterOS 与 MikroTik 硬件预装的完全兼容。如果满足以下要求，�
 
 - 即插即用的网络访问
 - 本地网络客户端身份验证
-- 用户审计
-- RADIUS 支持身份验证和审计
+- 用户计费
+- RADIUS 支持身份验证和计费
 
 ## QoS
 
@@ -151,7 +151,7 @@ RouterOS 与 MikroTik 硬件预装的完全兼容。如果满足以下要求，�
 - SNMP
 - M3P - 用于无线链路和以太网的 MikroTik 数据包打包协议
 - MNDP - MikroTik 邻居发现协议，支持 CDP（Cisco 发现协议）
-- RADIUS认证和审计
+- RADIUS认证和计费
 - TFTP服务器
 - 支持同步接口（仅限 Farsync 卡）（在 v5.x 中删除）
 - 异步——串行 PPP 拨入/拨出，按需拨出
