@@ -4,11 +4,13 @@
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/usermanager.jpg?version=1&modificationDate=1657264766867&api=v2)
 
-## 属性
+### 属性
 
 **Sub-menu:** `/user-manager attribute`
 
-RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权、信息和配置参数。 用户管理器允许发送在“属性”菜单中定义的自定义属性。 RouterOS 有一组已经存在的预定义属性，但也可以在必要时添加其他属性。 预定义属性：
+RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权、信息和配置参数。 用户管理器允许发送在“属性”菜单中定义的自定义属性。 RouterOS 有一组已经存在的预定义属性，但也可以在必要时添加其他属性。 
+
+预定义属性：
 
 | 属性                            | 供应商ID         | 类型ID | 值类型                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 包类型                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------------------------------- | ---------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -70,7 +72,7 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 
 **Sub-menu:** `/user-manager database`
 
-所有 RADIUS 相关信息都存储在单独的用户管理器数据库中，可配置在“数据库”Submenu下。 “Enabled”和“db-path”是唯一没有存储在用户管理器数据库中的参数，它们存储在主 RouterOS 配置表中，这意味着这些参数将受到 RouterOS 配置重置的影响。 其余配置、会话和支付数据存储在设备闪存上的单独 SQLite 数据库中。 在对数据库进行操作时，建议操作前后都进行备份。
+所有 RADIUS 相关信息都存储在单独的用户管理器数据库中，可在“数据库”子菜单下配置。 “Enabled”和“db-path”是唯一没有存储在用户管理器数据库中的参数，它们存储在主 RouterOS 配置表中，意味着这些参数受到 RouterOS 配置重置的影响。 其余配置、会话和支付数据存储在设备闪存上的单独 SQLite 数据库中。 在对数据库进行操作时，建议操作前后都进行备份。
 
 **属性**
 
@@ -100,9 +102,9 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 
 限制由配置文件使用，并由配置文件限制链接在一起。 必须启用 RADIUS 记帐和临时更新，以便在达到 _download-limit_ 、_upload-limit_ 或 _uptime-limit_ 时在多个限制之间无缝切换或断开活动会话。
 
-要从用户管理器断开已激活的会话，必须在 RADIUS 客户端上将_accept_设置为 _yes_。 如果并发会话限制不是无限的（共享用户）并且已达到最大允许数量，则路由器将首先尝试断开旧用户会话。
+要从用户管理器断开已激活的会话，必须在 RADIUS 客户端上将 _accept_ 设置为 _yes_ 。 如果并发会话限制不是无限的（共享用户）并且已达到最大允许数量，则路由器将首先尝试断开旧用户会话。
 
-用户管理器在接受新用户之前尝试断开活动会话（当设置了适当的限制时），这就是为什么在此类设置中建议将 1s 用于/radius client timeout。
+用户管理器在接受新用户之前尝试断开活动会话（当设置了适当的限制时），这就是为什么在此类设置中建议把 /radius client timeout设为1s。
   
 RouterOS 中的 IPsec 服务不支持速率限制。
 
@@ -187,7 +189,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 **Sub-menu:** `/user-manager router`
 
-这里定义了所有可使用 User Manager 作为 RADIUS 服务器的 NAS 设备。
+这里定义了所有可使用用户管理器作为 RADIUS 服务器的 NAS 设备。
 
 **属性**
 
@@ -214,24 +216,24 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
 
 **只读属性**
 
- | 属性                                            | 说明                                                                                                                                                                             |
- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **acct-session-id** (_string_)                  | 计费会话的唯一标识。                                                                                                                                                             |
- | **active** (_yes                        \| no_) | 当前是否使用会话。                                                                                                                                                               |
- | **calling-station-id** (_string_)               | 用户的标识符，通常是 IP 地址或 MAC 地址。                                                                                                                                        |
- | **download** (_Bytes_)                          | 下载的流量。                                                                                                                                                                     |
- | **ended** (_datetime_)                          | 会话结束的日期和时间。 活动会话为空。                                                                                                                                            |
- | **last-accounting-packet** (_datetime_)         | 收到最后一次计费更新的日期和时间。                                                                                                                                               |
- | **nas-ip-address** (_IP address_)               | NAS的IP地址。                                                                                                                                                                    |
- | **nas-port-id** (_string_)                      | 对用户进行身份验证的 NAS 端口的标识符。                                                                                                                                          |
- | **nas-port-type** (_string_)                    | 对用户进行身份验证的端口类型（_physical_ 或 _virtual_）。                                                                                                                        |
- | **started** (_datetime_)                        | 建立会话的日期和时间。                                                                                                                                                           |
- | **status** (_list of statuses_)                 | 会话的可用状态：_start -_accounting message_Start_已收到，_stop -_accounting message_Stop_已收到，_interim -Interim update_已收到，_close-acked_ - session已成功关闭，_expired._ |
- | **terminate-cause** (_string_)                  | 会话关闭原因。                                                                                                                                                                   |
- | **upload** (_Bytes_)                            | 上传的流量。                                                                                                                                                                     |
- | **uptime** (_time_)                             | 会话中记录的总正常运行时间。                                                                                                                                                     |
- | **user** (_string_)                             | 用户名                                                                                                                                                                           |
- | **user-address** (_IP address_)                 | 提供给用户的 IP 地址。                                                                                                                                                           |
+ | 属性                                    | 说明                                                                                                                                                                             |
+ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | **acct-session-id** (_string_)          | 计费会话的唯一标识。                                                                                                                                                             |
+ | **active** (_yes\| no_)                 | 当前是否使用会话。                                                                                                                                                               |
+ | **calling-station-id** (_string_)       | 用户的标识符，通常是 IP 地址或 MAC 地址。                                                                                                                                        |
+ | **download** (_Bytes_)                  | 下载的流量。                                                                                                                                                                     |
+ | **ended** (_datetime_)                  | 会话结束的日期和时间。 活动会话为空。                                                                                                                                            |
+ | **last-accounting-packet** (_datetime_) | 收到最后一次计费更新的日期和时间。                                                                                                                                               |
+ | **nas-ip-address** (_IP address_)       | NAS的IP地址。                                                                                                                                                                    |
+ | **nas-port-id** (_string_)              | 对用户进行身份验证的 NAS 端口的标识符。                                                                                                                                          |
+ | **nas-port-type** (_string_)            | 对用户进行身份验证的端口类型（_physical_ 或 _virtual_）。                                                                                                                        |
+ | **started** (_datetime_)                | 建立会话的日期和时间。                                                                                                                                                           |
+ | **status** (_list of statuses_)         | 会话的可用状态：_start -_accounting message_Start_已收到，_stop -_accounting message_Stop_已收到，_interim -Interim update_已收到，_close-acked_ - session已成功关闭，_expired._ |
+ | **terminate-cause** (_string_)          | 会话关闭原因。                                                                                                                                                                   |
+ | **upload** (_Bytes_)                    | 上传的流量。                                                                                                                                                                     |
+ | **uptime** (_time_)                     | 会话中记录的总正常运行时间。                                                                                                                                                     |
+ | **user** (_string_)                     | 用户名                                                                                                                                                                           |
+ | **user-address** (_IP address_)         | 提供给用户的 IP 地址。                                                                                                                                                           |
 
 ## 设置
 
@@ -454,7 +456,7 @@ generate-voucher voucher-template=printable_vouchers.html [find where name=usern
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/image.png?version=1&modificationDate=1663149747172&api=v2)
 
-要通过WEB浏览器访问/um/目录的PRIVATE路径，必须配置 _private-username_ 和 _private-password_ 。 请参阅**设置**部分。
+要通过WEB浏览器访问/um/目录的PRIVATE路径，必须配置 _private-username_ 和 _private-password_ 。 请参阅 **设置** 部分。
 
 生成凭证时可以使用不同的变量。 目前支持的变量有：
 
@@ -509,17 +511,17 @@ generate-report report-template=report_default.html columns=username,uptime,down
 
 ```
 
-通过使用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/reports/gen\_report\_default.html_ 可获得生成的报告
+用 WEB 浏览器访问路由器的 _/um/PRIVATE/GENERATED/reports/gen\_report\_default.html_ 可获得生成的报告
 
-_![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?version=2&modificationDate=1657102682105&api=v2)_
+![](https://help.mikrotik.com/docs/download/attachments/2555940/Capture.PNG?version=2&modificationDate=1657102682105&api=v2)
 
 ### 购买配置文件
 
-通过使用 WEB 浏览器访问路由器的 _/um/_ 目录登录到用户的私人配置文件后，例如 [http://example.com/um/,](http://example.com/um/,) 他 将能够在各自的菜单中看到所有可用的 **配置文件** 。 已指定 _price_ 值的配置文件将具有可用的_购买此配置文件_按钮。
+用 WEB 浏览器访问路由器的 _/um/_ 目录登录到用户的私人配置文件后，如 [http://example.com/um/,](http://example.com/um/,) 将能够在各自的菜单中看到所有可用的 **配置文件** 。 已指定 _price_ 值的配置文件会有可用的 _购买此配置文件_ 按钮。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/buy_profile.PNG?version=1&modificationDate=1657107133572&api=v2)
 
-按下_购买此配置文件_按钮后，用户将被要求从可用的交易服务提供商中进行选择（目前只有 PayPal 可用），随后将被重定向到 PayPal 的付款处理页面。
+按下 _购买此配置文件_ 按钮后，用户会被要求从可用的交易服务提供商中进行选择（目前只有 PayPal 可用），随后会被重定向到 PayPal 的付款处理页面。
 
 ![](https://help.mikrotik.com/docs/download/attachments/2555940/paypal_purchase.PNG?version=1&modificationDate=1657107263155&api=v2)
 

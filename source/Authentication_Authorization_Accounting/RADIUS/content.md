@@ -41,7 +41,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 
 ### 例子
 
-要为将针对 RADIUS 服务器 (10.0.0.3) 进行身份验证的 HotSpot 和 PPP 服务设置 RADIUS 客户端，你需要执行以下操作：
+要为将针对 RADIUS 服务器 (10.0.0.3) 进行身份验证的 HotSpot 和 PPP 服务设置 RADIUS 客户端，要执行以下操作：
 
 ````shell
 [admin@MikroTik] > /radius add service=hotspot,ppp address=10.0.0.3 secret=ex
@@ -52,7 +52,7 @@ Flags: X - disabled
 
 ````
 
-要使用 RadSec 设置 RADIUS 客户端，你需要执行以下操作：
+要使用 RadSec 设置 RADIUS 客户端，要执行以下操作：
 
 ```shell
 [admin@MikroTik] > /radius add service=hotspot,ppp address=10.0.0.3 secret=radsec protocol=radsec certificate=client.crt
@@ -65,7 +65,7 @@ Flags: X - disabled
 
 确保指定的证书是可信的。
 
-要查看 RADIUS 客户端统计信息，你需要执行以下操作：
+要查看 RADIUS 客户端统计信息，要执行以下操作：
 
 ```shell
 [admin@MikroTik] > /radius monitor 0
@@ -94,7 +94,7 @@ last-request-rtt: 0s
 
 此工具支持从 RADIUS 服务器发送的未经请求的消息。 未经请求的消息扩展了 RADIUS 协议命令，允许终止已经从 RADIUS 服务器连接的会话。 为此，使用了 DM（断开连接消息）。 断开连接消息会导致用户会话立即终止。
 
-RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，它执行与断开连接类似的功能
+RouterOS 不支持 POD (Packet of Disconnect) 另一个 RADIUS 访问请求数据包，执行与断开连接类似的功能
 
 ## 属性
 
