@@ -25,7 +25,7 @@ Token Bucket算法是对一个桶的类比，在这个桶里，以字节为单�
 数据包队列的大小、顺序、数据包如何添加到这个队列，以及数据包何时丢弃是由以下因素决定的：
 
 - **queue-type** - [Queue](https://help.mikrotik.com/docs/display/ROS/Queues)
-- **queue-size** - [Q](http://wiki.mikrotik.com/wiki/Manual:Queue_Size)[ueue Size](https://help.mikrotik.com/docs/display/ROS/Queue+size)
+- **queue-size** - [Queue Size](http://wiki.mikrotik.com/wiki/Manual:Queue_Size)
 
 ## 令牌速率选择（图中黑色部分）
 
@@ -35,7 +35,7 @@ Token Bucket算法是对一个桶的类比，在这个桶里，以字节为单�
 - **max-limit** (_NUMBER/NUMBER_)：允许目标的最大上传/下载速率。
 - **burst-limit** (_NUMBER/NUMBER_)：当 "burst "激活时，允许目标的最大上传/下载速率。
 
-**burst-limit**只有在 'burst' 处于允许状态时才有效-更多信息在这里。[Queue Burst](https://help.mikrotik.com/docs/display/ROS/Queue+Burst)
+**burst-limit** 只有在 'burst' 处于允许状态时才有效-更多信息在这里。[Queue Burst](https://help.mikrotik.com/docs/display/ROS/Queue+Burst)
 
 在 **limit-at** 为最高值的情况下，要发出额外的令牌来补偿所有未从父队列中借入的缺失令牌。
 

@@ -183,8 +183,10 @@ only-hardware-queue和multi-queue-ethernet-default的改进只有在没有"/queu
 
 #### RED
 
-Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min\ :sub:`th`)和最大(min\ :sub:`th`) 阈值。 如果平均队列大小 (avg\ :sub:`q`) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P\ :sub:`d`随机丢弃，其中概率是平均队列大小的函数：P\ :sub:`d` = P\ :sub:`d`(avg\ :sub:`q` – min\ :sub:`th`)/ (max\ :sub:`th` - min\ :sub:`th` >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P\ :sub:`max` - ratio，可以调节丢包概率的陡峭性，（最简单的情况下P\ :sub:`max`可以等于1)。
-图8.2显示了丢包概率的RED算法。<!--这里的下标用markdown格式在rtd上无法识别，改成了rst语法 -->
+<!--这里的下标用markdown格式在rtd上无法识别，改成了rst语法 -->
+Random Early Drop 是一种队列机制，它试图通过控制平均队列大小来避免网络拥塞。 将平均队列大小与两个阈值进行比较：最小 (min\ :sub:`th`)和最大(min\ :sub:`th`) 阈值。 如果平均队列大小 (avg\ :sub:`q`) 小于最小阈值，则不会丢弃任何数据包。 当平均队列大小大于最大阈值时，将丢弃所有传入数据包。 但是，如果平均队列大小介于最小和最大阈值之间，则数据包将以概率 P\ :sub:`d` 随机丢弃，其中概率是平均队列大小的函数：P\ :sub:`d` = P\ :sub:`d`(avg\ :sub:`q` – min\ :sub:`th`)/ (max\ :sub:`th` - min\ :sub:`th` >). 如果平均队列增长，则丢弃传入数据包的概率也会增长。 P\ :sub:`max` - ratio，可以调节丢包概率的陡峭性，（最简单的情况下 P\ :sub:`max` 可以等于1)。
+图8.2显示了丢包概率的RED算法。
+
 
 ![](https://help.mikrotik.com/docs/download/attachments/328088/Image8002.png?version=2&modificationDate=1615377059686&api=v2)
 
@@ -204,9 +206,9 @@ PCQ 算法非常简单——首先，它使用选定的分类器将一个子流�
 PCQ参数：
 
 - **pcq-classifier** (dst-address | dst-port | src-address | src-port; default: "") : 选择子流标识符
-- **pcq-rate** (数字): 每个子流的最大可用速率
-- **pcq-limit** (数字):单个子流的队列大小（以 KiB 为单位）
-- **pcq-total-limit** (数字): 所有子流中的最大排队量（以 KiB 为单位）
+- **pcq-rate**(数字): 每个子流的最大可用速率
+- **pcq-limit**(数字):单个子流的队列大小（以 KiB 为单位）
+- **pcq-total-limit**(数字): 所有子流中的最大排队量（以 KiB 为单位）
 
 可以用 **pcq-rate** 选项为子流分配速度限制。 如果“pcq-rate=0”，子流将平均分配可用流量。
 
@@ -216,16 +218,16 @@ PCQ参数：
 
 PCQ 具有与简单队列和队列树相同的突发实现：
 
-- **pcq-burst-rate**（数字）：允许子流突发时可以达到的最大上传/下载数据速率
-- **pcq-burst-threshold**（数字）：这是突发开/关值
-- **pcq-burst-time**（时间）：计算平均速率的时间段（以秒为单位）。 （不是实际突发的时间）
+- **pcq-burst-rate**(数字)：允许子流突发时可以达到的最大上传/下载数据速率
+- **pcq-burst-threshold**(数字)：这是突发开/关值
+- **pcq-burst-time**(时间)：计算平均速率的时间段（以秒为单位）。 （不是实际突发的时间）
 
 PCQ 还允许用不同大小的 IPv4 和 IPv6 网络作为子流标识符， 在它被锁定到单个 IP 地址之前。 这主要针对 IPv6 完成，因为从 ISP 的角度来看，客户将用 /64 网络表示，但客户网络中的设备是 /128。 PCQ 可用于这两种情况以及更多情况。 PCQ参数：
 
-- **pcq-dst-address-mask**（数字）：用作 dst-address 子流标识符的 IPv4 网络的大小
-- **pcq-src-address-mask**（数字）：用作 src-address 子流标识符的 IPv4 网络的大小
-- **pcq-dst-address6-mask**（数字）：用作 dst-address 子流标识符的 IPV6 网络的大小
-- **pcq-src-address6-mask**（数字）：用作 src-address 子流标识符的 IPV6 网络的大小
+- **pcq-dst-address-mask** （数字）：用作 dst-address 子流标识符的 IPv4 网络的大小
+- **pcq-src-address-mask** （数字）：用作 src-address 子流标识符的 IPv4 网络的大小
+- **pcq-dst-address6-mask** （数字）：用作 dst-address 子流标识符的 IPV6 网络的大小
+- **pcq-src-address6-mask** （数字）：用作 src-address 子流标识符的 IPV6 网络的大小
 
 以下队列类型 CoDel、FQ-Codel 和 CAKE 从 RouterOS 版本 7.1beta3 开始可用。
 

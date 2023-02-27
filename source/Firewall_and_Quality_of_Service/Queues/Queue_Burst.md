@@ -1,16 +1,16 @@
 # 队列突发介绍
 
-突发是一种功能，可以满足队列对额外带宽的要求，即使所要求的速率在有限的时间内大于**MIR**（**max-limit**）。
+突发是一种功能，可以满足队列对额外带宽的要求，即使所要求的速率在有限的时间内大于 **MIR** （**max-limit**）。
 
 只有在最后 **burst-time** 时间内队列的 **average-rate** 小于 **burst-threshold** 时，才能发生突发。如果最后 **burst-time** 时间内队列的 **average-rate** 大于或等于 **burst-threshold**，突发就会停止。
 
 突发机制很简单-如果允许突发，**max-limit** 值将被 **burst-limit** 值取代。当突发被禁止时，**max-limit** 值保持不变。
 
-1. **burst-limit**（数字）：允许突发时可达到的最大上传/下载数据速率。
-2. **burst-time**（时间）：计算平均数据速率的时间段，以秒为单位。(这不是实际突发的时间）。
+1. **burst-limit** （数字）：允许突发时可达到的最大上传/下载数据速率。
+2. **burst-time** （时间）：计算平均数据速率的时间段，以秒为单位。(这不是实际突发的时间）。
 3. **burst-threshold** (数字)：这是突发开/关的值。
-4. **average-rate**（只读）。在 **burst-time** 的每1/16，路由器会计算出每个等级在过去 **burst-time** 时间内的平均速率。
-5. **actual-rate**（只读）：队列的实际流量传输率。
+4. **average-rate** （只读）。在 **burst-time** 的每1/16，路由器会计算出每个等级在过去 **burst-time** 时间内的平均速率。
+5. **actual-rate** （只读）：队列的实际流量传输率。
 
 ## 例子
 
@@ -67,7 +67,7 @@ Values: **limit-at=1M** , **max-limit=2M** , **burst-threshold=1500k** , 
 
 ![](https://help.mikrotik.com/docs/download/attachments/137986091/Burst_time.8.part1.jpg?version=1&modificationDate=1658488707444&api=v2)![](https://help.mikrotik.com/docs/download/attachments/137986091/Burst_time.8.part2.jpg?version=1&modificationDate=1658488716549&api=v2)
 
-If we decrease burst-time to 8 seconds - we are able to see that in this case, bursts are only at the beginning of downloads The average rate is calculated every 1/16th of burst time, so in this case every 0.5 seconds.
+如果将突发时间减少到8秒-可以看到突发只是在下载的开始阶段，平均速率是以每1/16突发时间计算的，在这种情况下，每0.5秒计算一次。
 
 | 时间 | 平均速率                                     | 突发                                                   | 实际速率                   |
 | ---- | -------------------------------------------- | ------------------------------------------------------ | -------------------------- |

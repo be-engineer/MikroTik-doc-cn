@@ -195,7 +195,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 
 #### 发夹式NAT
 
-发夹式网络地址转换（_NAT Loopback_）是指LAN上的设备能够通过网关路由器的公共IP地址访问LAN上的另一台机器。
+发夹式网络地址转换（NAT Loopback）是指LAN上的设备能够通过网关路由器的公共IP地址访问LAN上的另一台机器。
 
 ![](https://help.mikrotik.com/docs/download/attachments/3211299/NAT-setup.jpg?version=3&modificationDate=1572338061900&api=v2)
 
@@ -299,7 +299,7 @@ add action=masquerade chain=srcnat dst-address=10.0.0.3 out-interface=LAN protoc
 | **bytes** (_integer_)   | 规则匹配的字节总数   |
 | **packets** (_integer_) | 规则匹配的数据包总量 |
 
-显示额外的 _只读_ 属性:
+显示额外的只读属性:
 
 ```shell
 [admin@MikroTik] > ip firewall nat print stats all
@@ -377,6 +377,6 @@ Flags: X - disabled, I - invalid, D - dynamic
 | **bytes** (_integer_)   | 规则匹配的字节总数   |
 | **packets** (_integer_) | 规则匹配的数据包总量 |
 
-显示额外的 _只读_ 属性:
+显示额外的只读属性:
 
 `ipv6/firewall/nat/print stats`
