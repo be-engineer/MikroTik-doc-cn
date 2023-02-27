@@ -6,7 +6,7 @@
 
 它定位为一个物联网平台，可以在 [链接](https://thingsboard.io/iot-use-cases/) 中找到各种用例。
 
-从RouterOS用户角度来看，最吸引人的是它可以作为MQTT服务器（MQTT broker）或HTTP服务器使用。这意味着可以使用 [MQTT publish](https://help.mikrotik.com/docs/display/ROS/MQTT) 或[HTTP post](https://help.mikrotik.com/docs/display/ROS/Fetch) 来发布数据。可以用 [这里](https://thingsboard.io/docs/reference/mqtt-api/) 的链接找到ThingsBoard MQTT API指南，用 [这里](https://thingsboard.io/docs/reference/http-api/) 的链接找到HTTP API。
+从RouterOS用户角度来看，最吸引人的是它可以作为MQTT服务器（MQTT broker）或HTTP服务器使用。这意味着可以使用 [MQTT publish](https://help.mikrotik.com/docs/display/ROS/MQTT) 或 [HTTP post](https://help.mikrotik.com/docs/display/ROS/Fetch) 来发布数据。可以用 [这里](https://thingsboard.io/docs/reference/mqtt-api/) 的链接找到ThingsBoard MQTT API指南，用 [这里](https://thingsboard.io/docs/reference/http-api/) 的链接找到HTTP API。
 
 简而言之，可以利用 [脚本](https://help.mikrotik.com/docs/display/ROS/Scripting) 来收集RouterOS的统计数据（如正常运行时间、GPS坐标、数据包统计，以及几乎所有打印到终端的其他信息），然后将这些信息存储到变量中，并从这些变量中构造一个JSON消息。然后通过 [scheduler](https://help.mikrotik.com/docs/display/ROS/Scheduler) 用MQTT或HTTP post将这个消息发送到ThingsBoard上（只要需要就可以运行这个脚本）。可以在 [本指南](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration) 中找到基本脚本例子。
 
@@ -84,7 +84,7 @@ ThingsBoard在 [widgets](https://thingsboard.io/docs/user-guide/ui/widget-librar
 在设置了本指南所示的其余步骤并验证ThingsBoard管理门户在本地工作后 **进一步确保设置** ：
 
 - (a) 确保所有默认的ThingsBoard用户凭证已修改/删除，实施了强密码（参考ThingsBoard文档）。
-- (b) **启用HTTPS**（步骤将在本指南后面解释）。
+- (b) 启用HTTPS（步骤在本指南后面解释）。
 - (c) 最好将HTTPS端口改为非标准端口（参考 ThingsBoard 文档）。
 
 只有提高了安全性之后才能考虑从广域网启用远程访问（通过在 `dst-address` 字段中使用公共IP地址，而不是上面例子中使用的本地IP）。此外，为了进一步提高安全性，可以使用 "src-address "或 "src-address-list "参数，在这里可以输入信任的公共源IP地址（一个已知信任的地址列表，例如，属于你的分支机构，可以从那里访问服务器），需要对安全负责。如果留下一扇门，有人可能会利用它。要有网络知识，并在设置此类方案时了解风险。
@@ -102,7 +102,7 @@ ThingsBoard在 [widgets](https://thingsboard.io/docs/user-guide/ui/widget-librar
 在使用了本指南所示的其余步骤并验证ThingsBoard非SSL MQTT通信在本地工作后 **进一步确保设置** ：
 
 - (a) 考虑从ThingsBoard安装中删除模板设备。
-- (b) **启用SSL MQTT** （该步骤在本指南后面说明）。
+- (b) 启用SSL MQTT （该步骤在本指南后面说明）。
 - (c) 最好将MQTT端口改为非标准端口（参考 ThingsBoard 文档）。
 
 启用SSL MQTT时，可以考虑从广域网打开TCP 8883（这是默认的SSL MQTT端口）（通过在 `dst-address` 字段中使用公共IP地址而不是本地IP，并将 `dst-port` 和 `to-ports` 从1883改为8883）。此外，为了进一步提高安全性，使用 `src-address` 或 `src-address-list` 参数，设置信任的公共IP地址列表。只有配置的受信IP才能与ThingsBoard代理建立MQTT连接。
@@ -123,7 +123,7 @@ Mounts:
 
 ## 获取镜像
 
-为了简化配置，从外部库中获取镜像，也可以通过 [.tar](https://help.mikrotik.com/docs/display/ROS/Container#Container-b)importimagefromPC) 文件导入。
+为了简化配置，从外部库中获取镜像，也可以通过 [.tar]((https://help.mikrotik.com/docs/display/ROS/Container#Container-b)importimagefromPC) 文件导入。
 
 确保有相应的 "注册表URL "设置，限制RAM的使用（如果需要），并为镜像设置一个目录。
 
@@ -143,7 +143,7 @@ Mounts:
 
 ##管理权限
 
-容器启动并安装后，用任何浏览器访问它，方法是 [http://192.168.88.1:9090](http://192.168.88.1:9090/)（其中IP地址是DNAT规则中使用的地址）:
+容器启动并安装后，用任何浏览器访问它，方法是 [http://192.168.88.1:9090](http://192.168.88.1:9090/) （其中IP地址是DNAT规则中使用的地址）:
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920348/image-2023-1-19_14-18-55.png?version=1&modificationDate=1674130728030&api=v2)
 
@@ -168,7 +168,7 @@ Mounts:
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920348/image-2023-1-20_11-24-15.png?version=1&modificationDate=1674206646593&api=v2)
 
-在这些步骤之后，进入RouterOS设置（回到CHR设置），创建一个新的 [MQTT broker](https://help.mikrotik.com/docs/display/ROS/MQTT)（**确保你已经安装了IoT包**，否则将没有这个菜单）:
+在这些步骤之后，进入RouterOS设置（回到CHR设置），创建一个新的 [MQTT broker](https://help.mikrotik.com/docs/display/ROS/MQTT) （**确保已经安装了IoT包**，否则将没有这个菜单）:
 
 `/iot/mqtt/brokers/ add name =tb address =172.18.0.2 port =1883 username =YOUR_TOKEN`
 
@@ -431,7 +431,7 @@ thingsboard.conf    thingsboard.yml
 
 ## 确认HTTPS访问
 
-现在可以访问 [https://your_IP:9090](https://192.168.88.1/)（这里的IP地址是DNAT规则中使用的地址）:
+现在可以访问 [https://your_IP:9090](https://192.168.88.1/) （这里的IP地址是DNAT规则中使用的地址）:
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920348/image-2023-1-30_13-10-45.png?version=1&modificationDate=1675077028174&api=v2)
 
@@ -439,7 +439,7 @@ thingsboard.conf    thingsboard.yml
 
 ## 确认ssl mqtt连接
 
-**不要忘记改变端口转发规则**，该规则显示在 "网络"部分，将 `dst-port` 和 `to-ports` 从1883（标准非SSL MQTT端口）**改为8883**（**SSL MQTT端口**）。
+**不要忘记改变端口转发规则**，该规则显示在"网络"部分，将 `dst-port` 和 `to-ports` 从1883（标准非SSL MQTT端口） **改为8883** （**SSL MQTT端口**）。
 
 在这个例子中将测试 [单向SSL通信访问令牌场景](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#MQTTandThingsBoardconfiguration-One-waySSLcommunicationscenario.1)。
 

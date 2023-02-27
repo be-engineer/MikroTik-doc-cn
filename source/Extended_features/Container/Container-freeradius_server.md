@@ -2,9 +2,9 @@
 
 在RouterOS中引入容器功能，使得在路由器内运行各种任务的各种服务器成为可能。这对那些想减少网络中设备数量的人来说尤其重要。与其在一个单独的设备/机器上运行服务器，为什么不在路由器内运行呢？
 
-[Radius](https://help.mikrotik.com/docs/display/ROS/RADIUS) 是远程认证拨入用户服务的简称。RouterOS支持RADIUS客户端功能，可以对HotSpot、[PPP](https://help.mikrotik.com/docs/display/ROS/PPP)、[PPPoE](https://help.mikrotik.com/docs/display/ROS/PPPoE)、[PPTP](https://help.mikrotik.com/docs/display/ROS/PPTP)、[L2TP](https://help.mikrotik.com/docs/display/ROS/L2TP)和ISDN连接进行认证。这个功能可以将RouterOS连接到Radius服务器，然后，利用服务器的用户数据库进行客户端认证。
+[Radius](https://help.mikrotik.com/docs/display/ROS/RADIUS) 是远程认证拨入用户服务的简称。RouterOS支持RADIUS客户端功能，可以对HotSpot、[PPP](https://help.mikrotik.com/docs/display/ROS/PPP)、[PPPoE](https://help.mikrotik.com/docs/display/ROS/PPPoE)、[PPTP](https://help.mikrotik.com/docs/display/ROS/PPTP)、[L2TP](https://help.mikrotik.com/docs/display/ROS/L2TP) 和ISDN连接进行认证。这个功能可以将RouterOS连接到Radius服务器，然后，利用服务器的用户数据库进行客户端认证。
 
-在这个例子中将展示 **[freeradius/freeradius-server](https://hub.docker.com/r/freeradius/freeradius-server/tags)** 镜像安装。
+这个例子中将展示 [freeradius/freeradius-server](https://hub.docker.com/r/freeradius/freeradius-server/tags) 镜像安装。
 
 ## 概述
 
@@ -52,7 +52,7 @@
 
 ## 获取镜像
 
-为了简化配置，从外部库中获取镜像，也可以通过 [.tar](https://help.mikrotik.com/docs/display/ROS/Container#Container-b)importimagefromPC) 文件导入。
+为了简化配置，从外部库中获取镜像，也可以通过 [.tar]((https://help.mikrotik.com/docs/display/ROS/Container#Container-b)importimagefromPC) 文件导入。
 
 确保有相应的 "注册表URL"设置，限制RAM的使用（如果需要），并为镜像设置一个目录。
 
@@ -92,26 +92,19 @@
 
 第一个文件，"client.conf "可以定义RADIUS客户端。根据 "freeradius "文档，它应该在"/etc/freeradius "目录下......所以，导航到那里并使用 `get` 命令下载它。
 
-`sftp> dir`
-
-`freeradius          pub                     pull                    skins`                  
-
-`sftp> cd freeradius/etc/freeradius`
-
-`sftp> dir`
-
-`README.rst          certs               clients.conf        dictionary          experimental.conf   hints`
-
-`huntgroups          mods -available`      `mods -config`         `mods -enabled`        `panic.gdb           policy.d`
-
-`proxy.conf          radiusd.conf        sites -available`     `sites -enabled`       `templates.conf      trigger.conf`
-`users`
-
-`sftp> get clients.conf`
-
-`Fetching /freeradius/etc/freeradius/clients.conf to clients.conf`
-
-`/freeradius/etc/freeradius/clients.conf                                               100% 8323     1.2MB/s   00:00`
+```shell
+sftp> dir
+freeradius          pub                     pull                    skins                  
+sftp> cd freeradius/etc/freeradius
+sftp> dir
+README.rst          certs               clients.conf        dictionary          experimental.conf   hints              
+huntgroups          mods-available      mods-config         mods-enabled        panic.gdb           policy.d           
+proxy.conf          radiusd.conf        sites-available     sites-enabled       templates.conf      trigger.conf       
+users
+sftp> get clients.conf
+Fetching /freeradius/etc/freeradius/clients.conf to clients.conf
+/freeradius/etc/freeradius/clients.conf                                               100% 8323     1.2MB/s   00:00
+```
 
 用喜欢的文本编辑器（记事本或任何其他）打开 "**clients.conf**"。可以研究这个文件，看看可用的所有选项(另外，请查看 [freeradius.org](https://wiki.freeradius.org/config/Configuration-files))。这个例子显示了一个基本设置，将用下面的行来覆盖整个文件:
 
@@ -128,21 +121,17 @@ radius客户端可以使用任何可能的IP地址进行连接（**ipaddr=0.0.0.
 
 第二个文件，"authorize "允许设置用户。根据 "freeradius "文档，应该在"/etc/freeradius/mods-config/files "下。去那里"找到"该文件:
 
-`sftp> dir`
+```shell
+sftp> dir
+freeradius          pub                     pull                    skins                    
+sftp> cd freeradius/etc/freeradius/mods-config/files
+sftp> dir
+accounting  authorize   dhcp        pre-proxy
+sftp> get authorize
+Fetching /freeradius/etc/freeradius/mods-config/files/authorize to authorize
+/freeradius/etc/freeradius/mods-config/files/authorize                                100% 6594     1.1MB/s   00:00
 
-`freeradius          pub                     pull                    skins`
-
-`sftp> cd freeradius/etc/freeradius/mods -config /files`
-
-`sftp> dir`
-
-`accounting  authorize   dhcp        pre -proxy`
-
-`sftp> get authorize`
-
-`Fetching /freeradius/etc/freeradius/mods -config /files/authorize to authorize`
-
-`/freeradius/etc/freeradius/mods -config /files/authorize                                100% 6594     1.1MB/s   00:00`
+```
 
 用文本编辑器（记事本或任何其他）打开 "**authorize**" 。这个例子显示了一个基本的设置，只需取消注释（删除 "#"符号）下面显示的行（其余的配置/行保持原样）。
 
@@ -154,39 +143,25 @@ radius客户端可以使用任何可能的IP地址进行连接（**ipaddr=0.0.0.
 
 用 `put` 命令把两个文件上传覆盖默认文件:
 
-`sftp> dir`
-
-`freeradius          pub                     pull                    skins`
-
-`sftp> cd freeradius/etc/freeradius`
-
-`sftp> dir`
-
-`README.rst          certs               clients.conf        dictionary          experimental.conf   hints`
-
-`huntgroups          mods -available`      `mods -config`         `mods -enabled`        `panic.gdb           policy.d`
-
-`proxy.conf          radiusd.conf        sites -available`     `sites -enabled`       `templates.conf      trigger.conf`
-
-`users`
-
-`sftp> put clients.conf`
-
-`Uploading clients.conf to /freeradius/etc/freeradius/clients.conf`
-
-`clients.conf                                                                          100%   67    22.3KB/s   00:00`
-
-`sftp> cd mods -config /files`
-
-`sftp> dir`
-
-`accounting  authorize   dhcp        pre -proxy`
-
-`sftp> put authorize`
-
-`Uploading authorize to /freeradius/etc/freeradius/mods -config /files/authorize`
-
-`authorize                                                                             100% 6626     1.6MB/s   00:00`
+```shell
+sftp> dir
+freeradius          pub                     pull                    skins      
+sftp> cd freeradius/etc/freeradius
+sftp> dir
+README.rst          certs               clients.conf        dictionary          experimental.conf   hints              
+huntgroups          mods-available      mods-config         mods-enabled        panic.gdb           policy.d           
+proxy.conf          radiusd.conf        sites-available     sites-enabled       templates.conf      trigger.conf       
+users
+sftp> put clients.conf
+Uploading clients.conf to /freeradius/etc/freeradius/clients.conf
+clients.conf                                                                          100%   67    22.3KB/s   00:00
+sftp> cd mods-config/files
+sftp> dir
+accounting  authorize   dhcp        pre-proxy
+sftp> put authorize
+Uploading authorize to /freeradius/etc/freeradius/mods-config/files/authorize
+authorize                                                                             100% 6626     1.6MB/s   00:00
+```
 
 重启容器:
 

@@ -33,7 +33,7 @@ ___
 
 ___
 
-RouterOS dot1x 服务器充当身份验证器。 启用 dot1x 服务器的接口将阻止除用于身份验证的 EAPOL 数据包之外的所有流量。 客户端认证成功后，该接口将接受所有接收到的流量。 如果接口连接到具有多个主机的共享介质，则当一个客户端成功通过身份验证时，将接受来自所有主机的流量。 可以 [配置动态切换规则](https://help.mikrotik.com/docs/display/ROS/Dot1X#Dot1X-Dynamicsswitchruleconfiguration) 仅接受经过身份验证的用户源 MAC 地址并丢弃所有其他源 MAC 地址。 如果身份验证失败，可以接受具有专用端口 VLAN ID 的流量。
+RouterOS dot1x 服务器充当身份验证器。 启用 dot1x 服务器的接口将阻止除用于身份验证的 EAPOL 数据包之外的所有流量。 客户端认证成功后，该接口将接受所有接收到的流量。 如果接口连接到具有多个主机的共享介质，则当一个客户端成功通过身份验证时，将接受来自所有主机的流量。 可以 [配置动态交換规则](https://help.mikrotik.com/docs/display/ROS/Dot1X#Dot1X-Dynamicsswitchruleconfiguration) 仅接受经过身份验证的用户源 MAC 地址并丢弃所有其他源 MAC 地址。 如果身份验证失败，可以接受具有专用端口 VLAN ID 的流量。
 
 在网桥端口上创建 dot1x 服务器时，网桥应该运行 (R/M)STP，否则来自客户端的 EAP 数据包不会被正确接受。 默认情况下，使用 `protocol-mode=rstp` 创建网桥接口。 如果网桥端口不发送任何 BPDU 或忽略任何接收到的 BPDU，请在网桥端口上使用 edge=yes 配置。
 
@@ -170,12 +170,12 @@ Flags: X - disabled, D - dynamic
 - `mac-protocol`、`src-mac-address`（自 RouterOS 7.2 版本起可用）、`src-address`（IPv4/掩码，自 RouterOS 7.2 版本起可用）、`dst-address`（IPv4/ mask), `protocol` (IPv4) `src-port` (L4, RouterOS 7.2 版本后可用), `dst-port` (L4) 支持条件参数
 - 十六进制或十进制表示法可用于 `mac-protocol` 和 `protocol` 参数（例如 `protocol 17` 或 `protocol 0x11`）
 - `src-port` 和 `dst-port` 支持单个或范围值（例如 `src-port 10` 或 `src-port 10-20`）
-- `src-mac-address` 支持 "xx:xx:xx:xx:xx:xx" 或 "xxxxxxxxxxxx" 格式，并且可以使用 "none" 关键字设置没有任何源 MAC 地址的切换规则（例如 `src-mac-address none`)
+- `src-mac-address` 支持 "xx:xx:xx:xx:xx:xx" 或 "xxxxxxxxxxxx" 格式，并且可以使用 "none" 关键字设置没有任何源 MAC 地址的交換规则（例如 `src-mac-address none`)
 - `src-mac-address`（如果属性尚未设置）、`switch` 和 `ports` 条件参数会自动为每个规则设置
 - 每条规则都应以操作属性结尾，支持的值为 **drop** 或 **allow**。 如果未设置操作属性，将使用默认的 **allow** 值。
 - 单个请求者支持多个规则，它们必须用逗号“,”分隔
 
-下面是 Mikrotik-Switching-Filter 属性和它们创建的动态切换规则的一些示例：
+下面是 Mikrotik-Switching-Filter 属性和它们创建的动态交換规则的一些示例：
 
 ```shell
 # Drop ARP frames (EtherType: 0x0806 or 2054)

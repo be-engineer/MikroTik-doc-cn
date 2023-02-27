@@ -509,7 +509,7 @@ ___
 
 自 RouterOS v6.41 起，如果设备具有内置交换芯片，则可以同时交换多个端口。虽然网桥是一种会消耗 CPU 资源的软件功能，但网桥硬件卸载功能将允许你使用内置交换芯片转发数据包，如果配置正确，这将使你获得更高的吞吐量。
 
-在以前的版本（RouterOS v6.41 之前）中，你必须使用 master-port 属性来同时切换多个端口，但在 RouterOS v6.41 中，此属性被桥接硬件卸载功能所取代，它允许你切换端口和使用一些桥功能，例如，[生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)。
+在以前的版本（RouterOS v6.41 之前）中，你必须使用 master-port 属性来同时交換多个端口，但在 RouterOS v6.41 中，此属性被桥接硬件卸载功能所取代，它允许你交換端口和使用一些桥功能，例如，[生成树协议](https://help.mikrotik.com/docs/display/ROS/Spanning+Tree+Protocol)。
 
 从以前的版本（RouterOS v6.41 之前）升级时，旧的主端口配置会自动转换为新的**桥硬件卸载**配置。从较新版本（RouterOS v6.41 和更新版本）降级到旧版本（在 RouterOS v6.41 之前）配置不会转换回来，取而代之的是没有硬件卸载的网桥，在这种情况下，你需要重新配置设备以使用旧的主端口配置。
 
@@ -542,7 +542,7 @@ ___
 
 5. 只有 802.3ad 和 balance-xor 模式可以进行 HW 卸载。其他绑定模式不支持HW卸载。
   
-从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 切换为你的设备配置。 Bridge Hardware Offloading 应视为端口切换，但具有更多可能的功能。通过启用硬件卸载，你允许内置交换芯片使用其交换逻辑处理数据包。下图说明切换发生在任何与软件相关的操作之前。
+从旧版本（RouterOS v6.41 之前）升级时，只会转换主端口配置。将为每个主端口创建一个网桥。 VLAN 配置未转换且不应更改，请查看 [基本 VLAN 交換](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南以确定应如何进行 VLAN 交換的设备配置。 Bridge Hardware Offloading 应视为端口交換，但具有更多可能的功能。通过启用硬件卸载，你允许内置交换芯片使用其交换逻辑处理数据包。下图说明交換发生在任何与软件相关的操作之前。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/image2022-2-14_14-57-37.png?version=1&modificationDate=1644843359301&api=v2)
 
@@ -560,7 +560,7 @@ ___
 
 ## 示例
 
-从 RouterOS v6.41 开始，使用网桥配置和启用硬件卸载的端口切换：
+从 RouterOS v6.41 开始，使用网桥配置和启用硬件卸载的端口交換：
 
 ```shell
 /interface bridge
@@ -586,7 +586,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-RouterOS v6.41 和更新版本中的端口切换是使用网桥配置完成的。在 RouterOS v6.41 之前，端口切换是使用 master-port 属性完成的。
+RouterOS v6.41 和更新版本中的端口交換是使用网桥配置完成的。在 RouterOS v6.41 之前，端口交換是使用 master-port 属性完成的。
 
 # 网桥VLAN过滤
 
@@ -596,7 +596,7 @@ ___
 
 主要的 VLAN 设置是“vlan-filtering”，它全局控制网桥中的 VLAN 感知和 VLAN 标记处理。 如果配置了 `vlan-filtering=no` ，网桥会忽略VLAN标签，工作在共享VLAN学习（SVL）模式，不能修改数据包的VLAN标签。 打开 vlan-filtering 会启用所有桥接 VLAN 相关功能和独立 VLAN 学习 (IVL) 模式。 除了加入用于二层转发的端口外，网桥本身也是一个接口，因此它具有端口 VLAN ID（pvid）。
 
-目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据 [基本 VLAN 切换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
+目前CRS3xx、CRS5xx系列交换机、CCR2116、CCR2216路由器和RTL8367、88E6393X、88E6191X、MT7621交换机芯片（自RouterOS v7起）可以同时使用网桥VLAN过滤和硬件卸载，其他设备将无法使用 启用桥接 VLAN 过滤时内置交换芯片的优势。 其他设备应根据 [基本 VLAN 交換](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南中描述的方法进行配置。 如果使用不正确的配置方法，你的设备可能会导致网络吞吐量问题。
 
 ## 网桥VLAN表
 
@@ -684,7 +684,7 @@ add bridge=bridge1 tagged=ether2 vlan-ids=400
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-可选步骤是在网桥接口上设置`frame-types=admit-only-vlan-tagged`以禁用默认的未标记 VLAN 1 (`pvid=1`)。
+可选步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged` 以禁用默认的未标记 VLAN 1 (`pvid=1`)。
 
 `/interface bridge set bridge1 frame-types=admit-only-vlan-tagged`
 
@@ -946,7 +946,7 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 目前，CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器能够在 `ether-type` 设置为“0x88a8”时基于 SVID（服务 VLAN ID）标记进行硬件卸载 VLAN 过滤。
 
-具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8`和`0x9100`）进行 VLAN 过滤。
+具有交换芯片 Marvell-98DX3257 的设备（例如 CRS354 系列）不支持在 1Gbps 以太网接口上对其他 VLAN 类型（`0x88a8` 和 `0x9100`）进行 VLAN 过滤。
 
 ## 标签堆叠
 
@@ -1092,7 +1092,7 @@ set [find where name="bridge"] dhcp-snooping=yes add-dhcp-option82=yes
 
 现在两台设备都将分析在桥接端口上接收到哪些 DHCP 消息。 **SW1** 负责添加和删除 DHCP 选项 82。**SW2** 将限制流氓 DHCP 服务器接收任何发现消息，并丢弃来自 ether3 的恶意 DHCP 服务器消息。
 
-目前，CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片完全支持硬件卸载的 DHCP 侦听和选项 82。对于 CRS1xx 和 CRS2xx 系列交换机，可以将 DHCP 侦听与 VLAN 切换一起使用，但随后你 需要确保使用出口 ACL 规则发送带有正确 VLAN 标记的 DHCP 数据包。 其他设备能够使用 DHCP Snooping 和 Option 82 功能以及硬件卸载，但你必须确保设备上没有应用与 VLAN 相关的配置，否则 DHCP Snooping 和 Option 82 可能无法正常工作。 请参阅具有受支持功能的桥接硬件卸载部分。
+目前，CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片完全支持硬件卸载的 DHCP 侦听和选项 82。对于 CRS1xx 和 CRS2xx 系列交换机，可以将 DHCP 侦听与 VLAN 交換一起使用，但随后你 需要确保使用出口 ACL 规则发送带有正确 VLAN 标记的 DHCP 数据包。 其他设备能够使用 DHCP Snooping 和 Option 82 功能以及硬件卸载，但你必须确保设备上没有应用与 VLAN 相关的配置，否则 DHCP Snooping 和 Option 82 可能无法正常工作。 请参阅具有受支持功能的桥接硬件卸载部分。
 
 对于 CRS3xx、CRS5xx 系列交换机和 CCR2116、CR2216 路由器，当创建硬件卸载绑定接口时，DHCP 监听将不起作用。
 

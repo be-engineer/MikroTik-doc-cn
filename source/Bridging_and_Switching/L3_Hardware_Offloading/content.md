@@ -268,7 +268,7 @@ add switch=switch1 dst-address=10.0.1.2/32 dst-port=3306 ports=ether2,ether3 red
 
 如果可以，就始终使用交换规则 (ACL)。
 
-切换规则与 Fastrack 连接共享硬件内存。 但是，硬件资源是为每个 Fasttrack 连接分配的，而单个 ACL 规则可以匹配多个连接。 例如，如果你有一个连接到 sfp-sfpplus1 VLAN 10 的访客 WiFi 网络并且不希望它访问你的内部网络，只需创建一个 ACL 规则：
+交換规则与 Fastrack 连接共享硬件内存。 但是，硬件资源是为每个 Fasttrack 连接分配的，而单个 ACL 规则可以匹配多个连接。 例如，如果你有一个连接到 sfp-sfpplus1 VLAN 10 的访客 WiFi 网络并且不希望它访问你的内部网络，只需创建一个 ACL 规则：
 
 ```shell
 /interface/ethernet/switch/rule

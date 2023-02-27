@@ -91,7 +91,7 @@
 
 ## 统计信息
 
-显示额外的 _只读_ 属性:
+显示额外的只读属性:
 
 ```shell
 /ip firewall filter print stats
@@ -184,7 +184,7 @@ Flags : X - disabled, I - invalid, D - dynamic
 
 `/ipv6/firewall/filter/print/stats`
 
-显示额外的 _只读_ 属性:
+显示额外的只读属性:
 
 | 属性                    | 说明                  |
 | ----------------------- | --------------------- |
