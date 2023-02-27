@@ -43,7 +43,7 @@ RouterOS中的队列是用CPU资源处理的，所以在CPU相对较弱的设备
 
 ## CRS1xx/CRS2xx系列设备
 
-This subsection does not apply to CRS3XX series devices!
+该节不能用于CRS3XX系列设备!
 
 ## 配置方案
 
@@ -57,7 +57,7 @@ This subsection does not apply to CRS3XX series devices!
 
 基于DSCP的流量调度和整形: [QoS DSCP mapping] -> [Priority] -> [Queue] -> [Shaper]
 
-## MAC based traffic scheduling using internal Priority
+## 使用内部优先级进行基于MAC的流量调度
 
 ## 基于MAC的流量调度使用内部优先级
 
@@ -100,7 +100,7 @@ set ether7 per-queue-scheduling = "strict-priority :0,strict-priority:0,strict-p
 
 ## 基于MAC的流量整形使用内部优先级
 
-基于MAC的流量整形是根据内部优先级来完成的，方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue] -> [Shaper]。 
+基于MAC的流量整形是根据内部优先级来完成的，方案如下。[MAC address] -> [QoS Group] -> [Priority] -> [Queue] -> [Shaper]。
 在这个例子中，不限流量的优先级是0，有限流量的优先级是1，带宽限制是10Mbit。注意，CRS每个端口最多有8个队列。
 
 创建一个用于交换的端口组：
