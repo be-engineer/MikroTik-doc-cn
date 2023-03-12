@@ -82,7 +82,7 @@ silent-boot: no
 
 该功能通过禁用etherboot来保护RouterOS的配置和文件免受物理攻击者的攻击。称为 "受保护的RouterBOOT"。这个功能只能在登录后从RouterOS内部启用和禁用，也就是说，没有RouterBOOT设置来启用/禁用这个功能。这些额外的选项只在特定条件下出现。当这个设置被启用时，复位按钮和复位针孔都被禁用。RouterBOOT菜单也被禁用。改变启动模式或启用RouterBOOT设置菜单的唯一办法是通过RouterOS。如果不知道RouterOS的密码则只有完全格式化才行。
 
-提供了一个特殊的软件包来升级备份的RouterBOOT（**危险**）。较新的设备在出厂时就已经安装了这个新的备份加载器。如果RouterOS是 **v7**， **出厂固件** 版本低于**7.6**，并且设备在启用该功能时显示信息 **"受保护的路由器启动"功能需要升级备份路由器启动器**，请执行以下操作： 
+提供了一个特殊的软件包来升级备份的RouterBOOT（**危险**）。较新的设备在出厂时就已经安装了这个新的备份加载器。如果RouterOS是 **v7**， **出厂固件** 版本低于 **7.6**，并且设备在启用该功能时显示信息 **"受保护的路由器启动"功能需要升级备份路由器启动器**，请执行以下操作： 
 a) 将设备升级或降级到 **7.6** 版本（从我们的 [下载页面](https://mikrotik.com/download) 或 [存档](https://mikrotik.com/download/archive)）。 
 b) 用 `/system routerboard upgrade` 升级当前的RouterBOOT版本，然后重启设备，使RouterBOOT版本（检查 "/system routerboard print " 时的 **当前固件** 版本）与安装的固件版本（"/system resource print"）相同，应该是7.6。 
 c) 将 [适用于所有架构的v7通用包](https://box.mikrotik.com/f/3bd8cc7b2a6545228377/?dl=1) 拖入设备的文件系统，然后再次重启设备。这将使 **出厂固件** 版本为7.6，这里允许启用该功能。之后，可以将设备升级到一个较新的版本。 
