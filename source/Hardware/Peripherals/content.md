@@ -86,6 +86,7 @@ This article describes supported add-on peripherals for RouterBOARD hardware dev
 | ZTE MF827                            | v6.8                     | Some settings are ignored.                                                                                                                                                                                                                                                                                               | USB                          | ?        | LTE          |
 | ZTE MF90                             | v6.44beta32 and higher   | LTE interface                                                                                                                                                                                                                                                                                                            | USB                          | N        | LTE          |
 | Anteniti 3372h-153                   |                          |                                                                                                                                                                                                                                                                                                                          |                              |          |              |
+
 并非所有的调制解调器都被列出。本地化和锁定的设备可能有兼容性问题。**所有使用MBIM驱动的调制解调器都应该在RouterOS v7** 上工作。
 
 对于一些支持USB3.0的调制解调器，在某些情况下需要隔离USB3.0引脚以确保正确的初始化。
