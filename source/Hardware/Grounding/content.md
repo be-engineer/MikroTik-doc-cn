@@ -28,7 +28,9 @@
 
 有两种方法，其中一种更有效。
 
-PoE with shielded connectors:![](https://help.mikrotik.com/docs/download/thumbnails/53444613/image2021-1-26_11-45-18.png?version=1&modificationDate=1611654318712&api=v2)
+有屏蔽的PoE连接器:
+
+![](https://help.mikrotik.com/docs/download/thumbnails/53444613/image2021-1-26_11-45-18.png?version=1&modificationDate=1611654318712&api=v2)
 
 1. **用屏蔽电缆+板子接地**。如果把接地连接到RB711的安装点（或SXT门内的安装环），不一定要在屏蔽电缆的另一端对设备进行接地。只要使用屏蔽电缆就可以了。也不需要特殊的PoE。这是防止所有ESD的最佳选择。
 2. **只用屏蔽电缆**。如果不能把RB711/SXT/本身接地，可以把屏蔽电缆另一端的设备（交换机、路由器等）接地。如果要用PoE，则需要用连接器周围有金属屏蔽的注入器，因为它可以用屏蔽电缆。不建议用这种方法，最好将电路板本身也接地（选项1）。
