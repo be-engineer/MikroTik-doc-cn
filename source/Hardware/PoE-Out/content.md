@@ -16,9 +16,9 @@ MikroTik 设备可以支持以下部分或全部 PoE 标准：
 
 每个 PoE-Out 实施都支持过载和短路检测。
 
-**注意：** 一些 MikroTik 设备支持所有标准（例如 [CRS112-8P-4S-IN](https://mikrotik.com/product/crs112_8p_4s_in)、[CRS328-24P-4S+RM]( https://mikrotik.com/product/crs328_24p_4s_rm), [netPower 16P](https://mikrotik.com/product/netpower_16p), [CRS354-48P-4S+2Q+RM](https://mikrotik.com/product/crs354_48p_4s_2q_rm) 等...)
+**注意：** 一些 MikroTik 设备支持所有标准(例如 [CRS112-8P-4S-IN](https://mikrotik.com/product/crs112_8p_4s_in)、[CRS328-24P-4S+RM]( https://mikrotik.com/product/crs328_24p_4s_rm), [netPower 16P](https://mikrotik.com/product/netpower_16p), [CRS354-48P-4S+2Q+RM](https://mikrotik.com/product/crs354_48p_4s_2q_rm) 等...)
 
-## 如何选择 PoE PSE
+## 如何选择PoE PSE
 
 此表可帮助选择最适合需求的 PSE 设备。
 
