@@ -1,14 +1,15 @@
   
+# The Things Stack
 
-[The Things Stack](https://console.cloud.thethings.network/) is a new version of The Things network.
+[The Things Stack](https://console.cloud.thethings.network/) 是The Things网络的一个新版本。
 
 ![](https://help.mikrotik.com/docs/download/attachments/67633276/image2021-5-20_12-46-48.png?version=1&modificationDate=1621504008056&api=v2)
 
   
 
-Choose your region and login with The Things network account or other credentials
+选择你所在的地区，用The Things网络账户或其他凭证登录
 
-Once logged in, go to Register a gateway
+登录后注册一个网关
 
   
 
@@ -16,7 +17,7 @@ Once logged in, go to Register a gateway
 
   
 
-Fill in the blank spaces and make sure that the Gateway server address matches the one set in the router. Example here: [The Things Network](https://help.mikrotik.com/docs/display/ROS/The+Things+Network)
+填写空白，确保网关服务器地址与路由器中设置的一致。例子： [The Things Network](https://help.mikrotik.com/docs/display/ROS/The+Things+Network)
 
   
 
@@ -24,7 +25,7 @@ Fill in the blank spaces and make sure that the Gateway server address matches t
 
   
 
-If everything is filled in correctly, in a short moment you should see the gateway online and Live data coming in
+如果填写都正确， 那么在很短的时间内就可以看到网关在线，并且有实时数据进入。
 
   
 

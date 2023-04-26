@@ -27,5 +27,6 @@
     "python.analysis.extraPaths": [
         "/home/leon/.vscode-insiders/extensions/rt-thread.rt-thread-micropython-1.0.11/microExamples/code-completion"
     ],
-    "svn.ignoreMissingSvnWarning": true
+    "svn.ignoreMissingSvnWarning": true,
+    "esbonio.sphinx.confDir": ""
 }

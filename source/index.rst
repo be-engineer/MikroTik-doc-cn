@@ -39,4 +39,5 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
    Extended_features/index.rst
    Firewall_and_Quality_of_Service/index.rst
    Hardware/index.rst
-.. High_Availability_Solutions/index.rst
+   High_Availability_Solutions/index.rst
+..   Internet_of_Things/index.rst

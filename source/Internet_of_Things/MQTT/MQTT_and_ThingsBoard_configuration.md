@@ -1,237 +1,244 @@
-## Introduction
+## 简介
 
-One of the many cloud services that you can use to monitor information that is sent by an MQTT publisher is [Thingsboard](https://thingsboard.io/). This article will demonstrate how to configure both Thingsboard and RouterOS to publish the data using the MQTT protocol. RouterOS, in this scenario, is going to act as a gateway and publish the data from the RouterBoard to the Thingsboard's server. Thingsboard, in this scenario, will act as an MQTT broker (server, where data will be posted).
+可以用云服务来监测由MQTT发布者发送的信息，其中之一是 [Thingsboard](https://thingsboard.io/)。本文将演示如何配置 Thingsboard 和 RouterOS，以使用 MQTT 协议发布数据。RouterOS在这个方案中作为一个网关，将数据从RouterBoard发布到Thingsboard的服务器。Thingsboard在这种情况下作为一个MQTT broker （数据发布的服务器）。
 
-Before we proceed with the settings, you need to either:
+在进行设置之前需要做的是:
 
--   a) Create an account in the Thingsboard's system. You can do so by following this [link](https://thingsboard.cloud/signup). This will allow you to use the ThingsBoard cloud solution for free for a limited/test time period.
--   b) Set up your own server by following the [guides](https://thingsboard.io/docs/iot-gateway/installation/). There is a community edition that can be installed and used free of charge.
+- a) 在 Thingsboard 的系统中创建一个账户。可以按照这个 [链接](https://thingsboard.cloud/signup) 来做。允许在有限的测试时间段内免费使用ThingsBoard云解决方案。
+- b) 按照 [指南](https://thingsboard.io/docs/iot-gateway/installation/) 建立自己的服务器。有一个社区版，可以免费安装和使用。
 
-  
+请使用 **SSL MQTT（TCP端口8883和证书）**，而不是非SSL MQTT（TCP端口1883）。如果使用非SSL MQTT，客户端（MQTT publisher）和服务器（MQTT broker）之间的通信很容易被嗅探捕获，获取认证数据（如客户端ID，用户名和密码）。
 
-Please consider using **SSL MQTT (TCP port 8883 and certificates)**, instead of non-SSL MQTT (TCP port 1883). If you use non-SSL MQTT, the communication between the client (MQTT publisher) and the server (MQTT broker) can be easily sniffed/packet captured, and that will compromise authentication data (such as client-ids, usernames and passwords).
+## Thingsboard配置
 
-## Thingsboard configuration
+在本指南中将展示本地实例服务器的安装配置，但同样的原则适用于云选项。
 
-In this guide, we will showcase local instance/server installation configuration, but the same principles apply to the cloud option.
+通过浏览器访问登录页面并登录。转到 **设备** 菜单。
 
-Access the login page via your browser and log in. Go to the "**Devices**" menu.
-
-Create a new device by clicking on the add button "+" and "Add new device":
+通过点击添加按钮 "+" "添加新设备 "来创建一个新设备：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_13-14-8.png?version=1&modificationDate=1674213240062&api=v2)
 
-Enter the name of the device and click on "Add":
+输入设备的名称并点击 "添加"：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_13-15-46.png?version=1&modificationDate=1674213337475&api=v2)
 
-By default, access token authentication is selected for the newly created device.
+默认情况下，新创建的设备会选择访问令牌认证。
 
-### Access token scenario
+### 访问令牌方案
 
-You can change the token by clicking on the created device and entering the "**Manage Credentials**" settings (in the "**Details**" section):
+通过点击创建的设备并进入 **管理凭证** 设置（在 **细节** 部分）改变令牌：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_13-33-11.png?version=1&modificationDate=1674214382971&api=v2)
 
-This token will be used as a "username" for the MQTT publisher (in RouterOS settings).
+这个令牌将被用作MQTT发布者的 "用户名"（在RouterOS设置中）。
 
-You can find more information by following the [link](https://thingsboard.io/docs/reference/mqtt-api/).
+可以按照 [链接](https://thingsboard.io/docs/reference/mqtt-api/) 找到更多信息。
 
-### MQTT Basic scenario
+### MQTT基本方案
 
-You can change the credentials type in the "**Device Credentials**" section for the specific device:
+可以在 **设备凭证** 部分为特定设备改变凭证类型：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_13-38-37.png?version=1&modificationDate=1674214708907&api=v2)
 
-MQTT Basic scenario allows you to specify the Client ID, Username, and Password for the MQTT authentication.
+MQTT基本方案允许为MQTT认证指定客户端ID、用户名和密码。
 
-You can find more information by following the [link](https://thingsboard.io/docs/user-guide/basic-mqtt/).
+你可以通过下面的 [链接](https://thingsboard.io/docs/user-guide/basic-mqtt/) 找到更多信息。
 
-### One-way SSL communication scenario
+### 单向SSL通信方案
 
-Recommended scenario to use!
+推荐使用的场景!
 
-This type of authentication requires you to use a server certificate for SSL communication. A server certificate must be generated and uploaded to the ThingsBoard instance.
+这种类型的认证要求使用服务器证书进行SSL通信。必须生成一个服务器证书并上传到ThingsBoard实例。
 
-To generate a server certificate, use [this guide](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/) as a reference → generate the certificate (for example, using OPENSSL tool), install/upload it into the correct folder, and enable MQTT SSL in the ThingsBoard configuration file.
+要生成服务器证书，请使用 [本指南](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/) 作为参考生成证书（例如，使用OPENSSL工具），将其安装上传至正确的文件夹，并在ThingsBoard配置文件中启用MQTT SSL。
 
-The configuration will be the same as shown in the **Access token** and **MQTT Basic scenarios** shown above. So choose either one.
+配置将与上面显示的 **访问令牌** 和 **MQTT基本方案** 中的配置相同。选择其中之一。
 
-The only difference, in this case, is the communication between the device and the server (you will only have to slightly change MQTT broker configuration in RouterOS settings which will be shown later on).
+在这种情况下，唯一的区别是设备和服务器之间的通信（只需要稍微改变RouterOS设置中的MQTT代理配置，将在后面显示）。
 
-**When using this scenario, the communication is going to be encrypted (using SSL)**.
+**当使用这种方案时，通信将被加密（使用SSL）**。
 
-### X.509 (two-way SSL communication) scenario
+### X.509（双向SSL通信）方案
 
-This type of authentication requires you to use a server certificate and a client certificate for SSL communication. A server certificate must be generated and uploaded to the ThingsBoard instance.
+这种类型的认证要求使用服务器证书和客户端证书进行SSL通信。必须生成一个服务器证书并上传到ThingsBoard实例。
 
-To generate a server certificate, use [this guide](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/) as a reference → generate the certificate (for example, using OPENSSL tool), install/upload it into the correct folder, and enable MQTT SSL in the ThingsBoard configuration file.
+要生成服务器证书，请使用 [本指南](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/) 作为参考生成证书（例如，使用OPENSSL工具），将其安装上传至正确的文件夹，并在ThingsBoard配置文件中启用MQTT SSL。
 
-To generate a client certificate, use [this guide](https://thingsboard.io/docs/user-guide/certificates/) as a reference.
+要生成客户端证书，请使用 [本指南](https://thingsboard.io/docs/user-guide/certificates/) 作为参考。
 
-You can change the credentials type in the "**Device Credentials**" section for the specific device:
+可以在 **设备证书** 部分为特定设备改变证书类型：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_13-39-23.png?version=1&modificationDate=1674214754226&api=v2)
 
-X.509 scenario uses a client certificate for authentication.
+X.509方案使用客户证书进行认证。
 
-Once the certificate is generated (for example, using OPEN SSL), copy the RSA public key into the field and click on the "Save" button.
+一旦证书生成（例如，使用OPEN SSL），将RSA公钥复制到该字段，并点击 "保存 "按钮。
 
-## RouterOS configuration
+## RouterOS配置
 
-_**note**: In order to configure MQTT, make sure that **iot** [package](https://help.mikrotik.com/docs/display/ROS/Packages) is installed beforehand._
+**注**： 为了配置MQTT，请确保事先安装 [iot包](https://help.mikrotik.com/docs/display/ROS/Packages)。
 
 ### MQTT Broker
 
-#### Access token scenario
+#### 访问令牌的情况
 
-Add an MQTT broker as shown below:
+添加一个MQTT Broker，如下图所示：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x port=1883 username=access_token`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=1883</code> <code class="ros value">username</code><code class="ros plain">=access_token</code></div></div></td></tr></tbody></table>
+- 将 "地址 "改为 ThingsBoard 服务器的实际 IP/域名地址；
+- 将 "用户名 "改为在 ThingsBoard 设置中使用的访问令牌。
 
--   Change the "`address`" to the actual IP/domain address of your ThingsBoard server;
--   Change the "`username`" to the access token that you've used in the ThingsBoard settings.
+#### MQTT基本方案
 
-#### MQTT Basic scenario
+添加一个MQTT broker ，如下图所示：
 
-Add an MQTT broker as shown below:
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x client-id=clientid password=password username=username`
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+- 将 "地址 "改为 ThingsBoard 服务器的实际 IP/域名地址；
+- 将 "用户名"、"密码 "和 "客户ID "改为ThingsBoard设置中使用的实际值。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">client-id</code><code class="ros plain">=clientid</code> <code class="ros value">password</code><code class="ros plain">=password</code> <code class="ros value">username</code><code class="ros plain">=username</code></div></div></td></tr></tbody></table>
+#### 单向SSL通信方案
 
--   Change "`address`" to the actual IP/domain address of your ThingsBoard server;
--   Change the "`username`", "`password`" and "`client-id`" to the actual values that you've used in the ThingsBoard settings.
+推荐使用的场景!
 
-#### One-way SSL communication scenario
+在这个场景中，RouterOS需要有一个服务器证书导入系统中。
 
-Recommended scenario to use!
-
-In this scenario, RouterOS needs to have a server certificate imported into its system.
-
-Drag-and-drop server certificate, that was installed into the ThingsBoard, into the router's "File List" menu:
+将安装在ThingsBoard上的服务器证书拖放到路由器的 "文件列表 "菜单中：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-24_14-47-41.png?version=1&modificationDate=1674564461251&api=v2)
 
-Import server certificate:
+导入服务器证书:
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+`/certificate/import file-name=mqttserver.pem passphrase=""`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/certificate/</code><code class="ros functions">import </code><code class="ros value">file-name</code><code class="ros plain">=mqttserver.pem</code> <code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+使用 **SSL单向通信** 和 **访问令牌方案** 时添加一个MQTT broker ，如下所示：
 
-When using **SSL one-way communication** and an **access token scenario**, add an MQTT broker as shown below:
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x port=8883 username=access_token ssl=yes`
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+- 将"address"改为 ThingsBoard 服务器的实际 IP/域名地址；
+- 将"username"改为你在ThingsBoard设置中使用的访问令牌；
+- 确保"port=8883"（服务器正在监听的MQTT SSL端口）；
+- 确保"ssl=yes"。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=8883</code> <code class="ros value">username</code><code class="ros plain">=access_token</code> <code class="ros value">ssl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+使用 **SSL单向通信** 和 **MQTT基本方案** 时添加一个MQTT broker ，如下所示：
 
--   Change the "`address`" to the actual IP/domain address of your ThingsBoard server;
--   Change the "`username`" to the access token that you've used in the ThingsBoard settings;
--   Make sure to use "`port=8883`" (the MQTT SSL port that the server is listening to);
--   Make sure to enable "`ssl=yes`".
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x port=8883 client-id=clientid password=password username=username ssl=yes`
 
-When using **SSL one-way communication** and an **MQTT Basic scenario**, add an MQTT broker as shown below:
+- 将 "address "改为 ThingsBoard 服务器的实际 IP/域名地址；
+- 将 "username"、"password "和 "client-id "改为你在ThingsBoard设置中使用的实际值；
+- 确保 "port=8883"（服务器正在监听的MQTT SSL端口）；
+- 确保 "ssl=yes"。
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+#### X.509（双向SSL通信）方案
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=8883</code> <code class="ros value">client-id</code><code class="ros plain">=clientid</code> <code class="ros value">password</code><code class="ros plain">=password</code> <code class="ros value">username</code><code class="ros plain">=username</code> <code class="ros value">ssl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+将证书拖入路由器的 "文件列表 "菜单,服务器证书、客户端证书及其私钥。
 
--   Change the "`address`" to the actual IP/domain address of your ThingsBoard server;
--   Change the "`username`", "`password`" and "`client-id`" to the actual values that you've used in the ThingsBoard settings;
--   Make sure to use "`port=8883`" (the MQTT SSL port that the server is listening to);
--   Make sure to enable "`ssl=yes`".
+逐一导入证书：
 
-#### X.509 (two-way SSL communication) scenario
+```shell
+/certificate/import file-name=mqttserver.pem passphrase=""
+/certificate/import file-name=cert.pem passphrase=""
+/certificate/import file-name=key.pem passphrase=""
+```
 
-Drag-and-drop the certificates into the router's "Files/File List" menu →  _server certificate, client certificate, and its private key._
+添加一个MQTT broker:
 
-Import certificates one by one:  
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x port=8883 certificate=cert.pem_0 ssl=yes`
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/certificate/</code><code class="ros functions">import </code><code class="ros value">file-name</code><code class="ros plain">=mqttserver.pem</code> <code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/certificate/</code><code class="ros functions">import </code><code class="ros value">file-name</code><code class="ros plain">=cert.pem</code> <code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/certificate/</code><code class="ros functions">import </code><code class="ros value">file-name</code><code class="ros plain">=key.pem</code> <code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
-
-Add an MQTT broker as shown below:
-
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=8883</code> <code class="ros value">certificate</code><code class="ros plain">=cert.pem_0</code> <code class="ros value">ssl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
-
--   Change the "`address`" to the actual IP/domain address of your ThingsBoard server;
--   Change the "`certificate`" selected to the actual client certificate name that you've imported;
--   Make sure to use "`port=8883`" (the MQTT SSL port that the server is listening to);
--   Make sure to enable "`ssl=yes`".
+- 将"address"改为 ThingsBoard 服务器的实际 IP/域名地址；
+- 将选择的"certificate"改为已经导入的实际客户证书名称；
+- 确保"port=8883"（服务器正在监听的MQTT SSL端口）；
+- 确保"ssl=yes"。
 
 ### MQTT Publish
 
-a) A quick MQTT publish test with a static value:
+a) 有一个静态值的快速的MQTT发布测试：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+`/iot/mqtt/publish broker="tb" topic="v1/devices/me/telemetry" message="{"cpu/":\"7\"}"`。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/publish broker="tb" topic="v1/devices/me/telemetry" message="{\"cpu\":\"7\"}"</code></div></div></td></tr></tbody></table>
+b) 为了将相关数据从 RouterOS 发布到 Thingsboard 上，可以使用下面的脚本作为参考。该脚本从RouterOS设备中收集数据（型号名称、序列号、RouterOS版本、当前CPU、已用内存、可用内存和正常运行时间），并将消息（数据）以JSON格式发布给代理：
 
-b) In order to publish relevant data from the RouterOS to the Thingsboard, you can use the script shown below as a reference. The script collects the data from the RouterOS device (model name, serial number, RouterOS version, current CPU, used memory, free memory, and uptime) and publishes the message (the data) to the broker in the JSON format:
+```shell
+# Required packages: iot
 
-> \# Required packages: iot
-> 
-> ################################ Configuration ################################  
-> \# Name of an existing MQTT broker that should be used for publishing  
+################################ Configuration ################################
+# Name of an existing MQTT broker that should be used for publishing
+:local broker "tb"
+
+# MQTT topic where the message should be published
+:local topic "v1/devices/me/telemetry"
+
+#################################### System ###################################
+:put ("ParseError: KaTeX parse error: Undefined control sequence: \* at position 1: \̲*̲ Gathering system info...")
+:local cpuLoad
+/system resource get cpu-load
+/systemresourcegetcpu−load
+
+:local freeMemory
+/system resource get free-memory
+/systemresourcegetfree−memory
+
+:local usedMemory (
+/system resource get total-memory
+/systemresourcegettotal−memory
+- $freeMemory)
+:local rosVersion ParseError: KaTeX parse error: Undefined control sequence: \[ at position 45: …e=version \\ \̲[̲/system package…]
+:local model
+/system routerboard get value-name=model
+/systemrouterboardgetvalue−name=model
+
+:local serialNumber
+/system routerboard get value-name=serial-number
+/systemrouterboardgetvalue−name=serial−number
+
+:local upTime
+/system resource get uptime
+/systemresourcegetuptime
+
+#################################### MQTT #####################################
+:local message \
+"{\"model\":\"model\\",\\ \\"sn\\":\\"model
+",
+"sn
+":
+"serialNumber\",\
+\"ros\":\"rosVersion\\",\\ \\"cpu\\":rosVersion
+",
+"cpu
+":cpuLoad,\
+\"umem\":usedMemory,\\ \\"fmem\\":usedMemory,
+"fmem
+":freeMemory,\
+\"uptime\":\"$upTime\"}"
+
+:log info "ParseError: KaTeX parse error: Undefined control sequence: \[ at position 20: …age"; :put ("\̲[̲\*\] Total mess…ParseError: KaTeX parse error: Can't use function '$' in math mode at position 6: :len $̲message bytes")
+:put ("ParseError: KaTeX parse error: Undefined control sequence: \* at position 1: \̲*̲ Sending message to MQTT broker...")
+/iot mqtt publish broker=broker topic=brokertopic=topic message=$message
+:put ("ParseError: KaTeX parse error: Undefined control sequence: \* at position 1: \̲*̲ Done")
+```
+
+应考虑2个脚本行。
+
 > :local broker "tb"
-> 
-> \# MQTT topic where the message should be published  
-> :local topic "v1/devices/me/telemetry"
-> 
-> #################################### System ###################################  
-> :put ("\[\*\] Gathering system info...")  
-> :local cpuLoad \[/system resource get cpu-load\]  
-> :local freeMemory \[/system resource get free-memory\]  
-> :local usedMemory (\[/system resource get total-memory\] - $freeMemory)  
-> :local rosVersion \[/system package get value-name=version \\  
-> \[/system package find where name ~ "^routeros"\]\]  
-> :local model \[/system routerboard get value-name=model\]  
-> :local serialNumber \[/system routerboard get value-name=serial-number\]  
-> :local upTime \[/system resource get uptime\]
-> 
-> #################################### MQTT #####################################  
-> :local message \\  
-> "{\\"model\\":\\"$model\\",\\  
-> \\"sn\\":\\"$serialNumber\\",\\  
-> \\"ros\\":\\"$rosVersion\\",\\  
-> \\"cpu\\":$cpuLoad,\\  
-> \\"umem\\":$usedMemory,\\  
-> \\"fmem\\":$freeMemory,\\  
-> \\"uptime\\":\\"$upTime\\"}"
-> 
-> :log info "$message";  
-> :put ("\[\*\] Total message size: $\[:len $message\] bytes")  
-> :put ("\[\*\] Sending message to MQTT broker...")  
-> /iot mqtt publish broker=$broker topic=$topic message=$message  
-> :put ("\[\*\] Done")
 
-2 script lines should be taken into account.
-
-> :local broker "tb"
-
-line, where you should specify the broker's name within the quotation marks "".
+行中，应该在引号""内指定broker的名字。
 
 > :local topic "v1/devices/me/telemetry"
 
-line, where you should specify the correct topic within the quotation marks "" (check Thingsboard's [documentation](https://thingsboard.io/docs/reference/mqtt-api/) for the exact topic that needs to be used).
+行中应该在引号""内指定正确的主题（查看 Thingsboard 的 [文档](https://thingsboard.io/docs/reference/mqtt-api/) 了解需要使用的确切主题）。
 
-The rest of the script configuration depends on the overall requirements.
+脚本的其余配置取决于总体要求。
 
-Copy and paste the above script into a notepad, and re-copy it again. Navigate to System>Scripts menu, add a new script there, and paste the script that is shown above. Name it, for example, script1.
+将上述脚本复制并粘贴到记事本中，然后再重新复制。转到系统>脚本菜单，在那里添加一个新的脚本，并粘贴上面显示的脚本。改名，例如，script1。
 
-To run the script, you can use the command line:
+要运行这个脚本，可以使用命令行：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#)
+`/system script run script1`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system script run script1</code></div></div></td></tr></tbody></table>
+## 验证
 
-## Verification
-
-You can check the received/published data for the device under the "Latest telemetry" section:
+可以在"最新遥测"部分检查设备的接收发布数据：
 
 ![](https://help.mikrotik.com/docs/download/attachments/105742352/image-2023-1-20_14-3-41.png?version=1&modificationDate=1674216212931&api=v2)

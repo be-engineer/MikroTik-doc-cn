@@ -1,8 +1,8 @@
-## LoRa card installation
+## LoRa卡的安装
 
-LtAP LTE kit will be used as example in this guide
+本指南将以LtAP LTE套件为例进行说明。
 
-Open your routers case. Once you have removed all the screws carefully move the upper case to the left side, as the LTE antennas are attached to the inner side of it.
+打开路由器外壳，卸下所有的螺丝，小心地将上机箱移到左侧，因为LTE天线是连接在机箱的内侧。
 
   
 
@@ -10,7 +10,7 @@ Open your routers case. Once you have removed all the screws carefully move the 
 
   
 
-Insert R11e-LoRa card into the mini-PCIe slot and apply two screws to the threaded inserts.
+将R11e-LoRa卡插入mini-PCIe插槽，将两颗螺丝钉套在螺纹件上。
 
   
 
@@ -18,9 +18,9 @@ Insert R11e-LoRa card into the mini-PCIe slot and apply two screws to the thread
 
   
 
-Attach antenna to the card (UFL connector) 
+把天线连接到卡上（UFL连接器） 
 
-In this case UFL → SMA cable is also used, as the LtAP's case has a specific slot for it.
+也可以使用UFL → SMA电缆，因为LtAP的外壳有一个专门的插槽。
 
   
 
@@ -28,15 +28,15 @@ In this case UFL → SMA cable is also used, as the LtAP's case has a specific s
 
   
 
-Once the previous steps are done, you can close the routers case and move on to configuration.
+前面的步骤完成后，就可以关闭路由器外壳，继续进行配置。
 
-## Configuration
+## 配置
 
-### GUI setup
+### GUI设置
 
-Connect to your router via Winbox or WebFig.
+通过Winbox或WebFig连接到你的路由器。
 
-Winbox can be downloaded in the link given below:
+Winbox可以在下面的链接中下载：
 
 [https://mikrotik.com/download](https://mikrotik.com/download)
 
@@ -46,7 +46,7 @@ Winbox can be downloaded in the link given below:
 
   
 
-It is Highly recommended to upgrade your RouterOS version to the latest available. Installing the version will perform a reboot.
+强烈建议将RouterOS版本升级到最新的可用版本。安装新版本将执行重启。
 
   
 
@@ -54,7 +54,7 @@ It is Highly recommended to upgrade your RouterOS version to the latest availabl
 
   
 
-Download extra packages specifically for your routers architecture and rOS version. You can see the type of your routers architecture at the top of Winbox window or in System →  Resources → Architecture Name
+为路由器结构和rOS版本下载额外的软件包。可以在Winbox窗口的顶部或系统→资源→架构名称中看到你的路由器架构类型。
 
 [https://mikrotik.com/download](https://mikrotik.com/download)
 
@@ -64,7 +64,7 @@ Download extra packages specifically for your routers architecture and rOS versi
 
   
 
-Once the package is downloaded and extracted, upload the LoRa package to your router. It can be done via drag & drop as well. It should appear in the files folder after the upload is complete, reboot your router (System → Reboot) to install the package.
+一旦下载并解压了软件包，将LoRa软件包上传到你的路由器，可以通过拖放来完成。上传完成后，它应该出现在文件夹中，重新启动你的路由器（系统→重启）安装该软件包。
 
   
 
@@ -72,7 +72,7 @@ Once the package is downloaded and extracted, upload the LoRa package to your ro
 
   
 
-After the reboot, the package should be visible in the Package list
+重启后，软件包应该在软件包列表中可见。
 
   
 
@@ -80,15 +80,15 @@ After the reboot, the package should be visible in the Package list
 
   
 
-Check if the LoRa gateway has initialized, If not, check if the USB Type is set to Mini-PCIe
+检查LoRa网关是否已经初始化，如果没有，检查USB类型是否设置为Mini-PCIe。
 
-  
+
 
 ![](https://help.mikrotik.com/docs/download/attachments/50692141/LoraPackageVisible.png?version=2&modificationDate=1609932721368&api=v2)
 
   
 
-Once the gateway has shown up select it, choose Network Servers from the default ones or add your own and enable it
+网关显示出来后选择它，选择默认网络服务器，或者添加自己的网络服务器并启用它。
 
   
 
@@ -100,7 +100,7 @@ Once the gateway has shown up select it, choose Network Servers from the default
 
   
 
-Navigate to Traffic tab to monitor the surrounding nodes sending requests.
+导航到流量选项卡，监测周围节点发送的请求。
 
   
 
@@ -108,4 +108,5 @@ Navigate to Traffic tab to monitor the surrounding nodes sending requests.
 
   
 
-This concludes basic installation and configuration of LoRa mini-PCIe cards. For additional settings check: [General Properties](https://help.mikrotik.com/docs/display/ROS/General+Properties)
+LoRa mini-PCIe卡的基本安装和配置到此结束。有关其他设置，请查看： [General Properties](https://help.mikrotik.com/docs/display/ROS/General+Properties)
+
