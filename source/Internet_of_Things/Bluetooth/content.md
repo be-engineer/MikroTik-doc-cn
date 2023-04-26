@@ -1,418 +1,251 @@
-# Summary
+# 摘要
 
-Bluetooth is a short-range wireless technology that allows broadcasting the data over specific Bluetooth channels. 
+蓝牙是一种短距离的无线技术，允许在特定的蓝牙频道上广播数据。
 
-There are 40 unique bands (channels) and each band has a 2 MHz separation. 37, 38, and 39 channels are used for primary advertising, and 0-36 are used for data transmission.
+有40个独特的频段（通道），每个频段有2兆赫的间隔。37、38和39通道用于主要广告，0-36通道用于数据传输。
 
-During the advertising process, the BLE advertising packet is broadcasted. This packet contains the Preamble, Access Address, PDU and CRS fields.
+在广告过程中，BLE广告数据包被广播。这个数据包包含序言、访问地址、PDU和CRS字段。
 
-The Preamble and Access Address fields help the receiver detect frames. CRS field is used to check errors. PDU consists of PDU Header and PDU Payload. PDU defines the packet itself.
+序言和访问地址字段帮助接收器检测帧。CRS字段用于检查错误。PDU由PDU头和PDU有效载荷组成。PDU定义了数据包本身。
 
-PDU Header contains information about the PDU type. Based on the type, the payload fields may differ.
+PDU头包含关于PDU类型的信息。基于该类型，有效载荷字段可能不同。
 
-For example, when PDU type is ADV\_NONCONN\_IND → PDU Payload consists of "AdvA" (a field that contains information about the advertiser's address) and "AdvData" (a field that contains data information) fields:
+例如，当PDU类型为ADV\NONCONN\IND时，PDU有效载荷由 "AdvA"（一个包含广告商地址信息的字段）和 "AdvData"（一个包含数据信息的字段）字段组成:
 
 1 octet = 1 byte = 8 bits
 
 <table class="relative-table wrapped confluenceTable" style="width: 41.1958%;"><colgroup><col style="width: 24.2667%;"><col style="width: 75.7333%;"></colgroup><tbody><tr><td class="confluenceTd">Preamble</td><td class="confluenceTd">1 octet</td></tr><tr><td class="confluenceTd">Access-Address</td><td class="confluenceTd">4 octets</td></tr><tr><td class="confluenceTd">PDU</td><td class="confluenceTd"><ul><li>PDU Header = 2 octets</li><li>PDU Payload = AdvA (6 octets)+AdvData (0...31 octets)</li></ul></td></tr><tr><td colspan="1" class="confluenceTd">CRS</td><td colspan="1" class="confluenceTd">3 octets</td></tr></tbody></table>
 
-There are different PDU types:
+有不同的PDU类型。
 
--   ADV\_IND (where payload consists of AdvA \[6octets\] + AdvData \[0-31 octets\] and which is used for connectable, scannable undirected advertising);
--   ADV\_NOCONN\_IND (where payload consists of AdvA \[6octets\] + AdvData \[0-31 octets\] and which is used for non-connectable, non-scannable undirected advertising);
--   ADV\_SCAN\_IND (where payload consists of AdvA \[6octets\] + AdvData \[0-31 octets\] and which is used for scannable, undirected advertising);
--   SCAN\_REQ (where payload consists of ScanA \[6octets\] + AdvA \[6octets\], where ScanA field contains scanner's address and AdvA contains advertiser's address, and which is used for requesting SCAN\_RSP response);
--   SCAN\_RSP (where payload consists of AdvA \[6octets\] + ScanRspData \[0-31 octets\], where ScanRspData can contain any data from the advertiser's host and which is used to respond to a SCAN\_REQ request);
--   ADV\_DIRECT\_IND (where payload consists of AdvA \[6octets\] + TargetA \[6octets\], where TargetA is the device address field to which the PDU is addressed, and which is used for connectable, directed advertising);
--   etc
+- ADV_IND（其中有效载荷由AdvA[6octets]+AdvData[0-31 octets]组成，用于可连接、可扫描的无定向广告）。
+- ADV_NOCONN_IND（有效载荷由AdvA[6octets]+AdvData[0-31 octets]组成，用于不可连接的、不可扫描的不定向广告）。
+- ADV_SCAN_IND（其中有效载荷由AdvA[6octets]+AdvData[0-31 octets]组成，用于可扫描、无定向广告）。
+- SCAN_REQ（其中有效载荷由ScanA[6octets]+AdvA[6octets]组成，ScanA字段包含扫描仪的地址，AdvA包含广告商的地址，用于请求SCAN_RSP响应）。
+- SCAN_RSP（其中有效载荷由AdvA[6octets]+ScanRspData[0-31 octets]组成，其中ScanRspData可以包含来自广告主主机的任何数据，它用于响应SCAN_REQ请求）。
+- ADV_DIRECT_IND（其中有效载荷由AdvA[6octets]+TargetA[6octets]组成，其中TargetA是PDU寻址的设备地址域，用于可连接、定向广告）。
+- 等等
 
-You can find more information about the packet structure over [here](https://www.bluetooth.com/specifications/specs/core-specification/) (Bluetooth specifications).
+你可以在 [这里](https://www.bluetooth.com/specifications/specs/core-specification/) 找到更多关于数据包结构的信息（蓝牙规格）。
 
-The main application for the Bluetooth interface in RouterOS is to monitor Bluetooth advertising packets (scanner feature) that are broadcasted by other devices (like for example, [Bluetooth tags](https://help.mikrotik.com/docs/display/UM/TG-BT5-IN)) or broadcast advertising packets (advertiser feature).
+RouterOS中的蓝牙接口的主要应用是监测由其他设备（例如 [蓝牙标签](https://help.mikrotik.com/docs/display/UM/TG-BT5-IN) 广播的蓝牙广告数据包（扫描器功能）或广播广告数据包（广告商功能）。
 
-# Configuration
+# 配置
 
-**Sub-menu:** `/iot bluetooth`
+**Sub-menu：** `/iot bluetooth`
 
-_**note**:_ **iot** package is required.
+**注**: 要使用 **iot** 包。
 
-_**note**:_ Check your device's specifications page to make sure that the Bluetooth is supported by the unit.
+**注**： 检查你的设备的规格页面，以确保设备支持蓝牙。
 
-IoT package is available with RouterOS version 6.48.3. You can get it from our [download page](https://mikrotik.com/download) - under "Extra packages".
+物联网软件包可与RouterOS 6.48.3版本一起使用。你可以从我们的 [下载页面](https://mikrotik.com/download)  -  "额外包 "下获得。
 
-## Devices
+## 设备
 
-In this menu you can check and set general Bluetooth chip parameters:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
+在这个菜单中，你可以检查和设置一般的蓝牙芯片参数:
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, PUBLIC-ADDRESS, RANDOM-STATIC-ADDRESS, ANTENNA</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros comments">#&nbsp; NAM&nbsp; PUBLIC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp; RANDOM-STATIC-ADD&nbsp; ANTENNA</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">0&nbsp; bt1&nbsp; 00</code><code class="ros constants">:00:00:00:00:00&nbsp; F4:4E:E8:04:77:3A&nbsp; internal</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot bluetooth </code><code class="ros functions">set</code></div></div></td></tr></tbody></table>
 
-_**note**:_ Public address is the IEEE registered, permanent address. This address can not be changed. In the "print" example above, the device does not have a public address assigned (all octets are set to 0).
+_**注**：_ 公共地址是IEEE注册的永久地址。这个地址不能被改变。在上面的 "打印 "例子中，设备没有分配公共地址（所有八位数都设置为0）。
 
-Configurable settings are shown below:
+可配置的设置显示如下:
 
-| 
-Property
+| 属性                                                 | 说明                       |
+| ---------------------------------------------------- | -------------------------- |
+| **antenna** (_string_; Default: internal)            | 选择使用内部或外部蓝牙天线 |
+| **name** (_string_; Default: )                       | 蓝牙芯片/接口的描述名称    |
+| **random-static-address** (_MAC address_; Default: ) | 用户可配置的蓝牙芯片的地址 |
 
- | 
+你可以用以下命令监控芯片的统计信息:
 
-Description
 
- |     |
- | --- |  |
- |     |
+```shell
+[admin@device] /iot bluetooth print stats
+Columns: NAME, RX-BYTES, TX-BYTES, RX-ERRORS, TX-ERRORS, RX-EVT, TX-CMD, RX-ACL, TX-ACL
+  #  NAM  RX-BYTE  TX-  R  T  RX-EV  TX  R  T
+  0  bt1  1857835  235  0  0  46677  45  0  0
+```
 
-Property
+## 广播者
 
- | 
+在这个菜单中，可以设置蓝牙芯片广播广告包。可以用命令检查和设置广播者设置：
 
-Description
 
- |                                           |
- | ----------------------------------------- | ------------------------------------------------------------------ |
- | **antenna** (_string_; Default: internal) | Choose whether to use an internal or an external Bluetooth antenna |
- | **name** (_string_; Default: )            | Descriptive name of Bluetooth chip/interface                       |
- |                                           |
+```shell
+[admin@device] > iot bluetooth advertisers print
+Flags: X - DISABLED
+Columns: DEVICE, MIN-INTERVAL, MAX-INTERVAL, OWN-ADDRESS-TYPE, CHANNEL-MAP, AD-SIZE
+#   DEVICE  MIN-INTERVAL  MAX-INTERVAL  OWN-ADDRESS-TYPE  CHANNEL-MAP  AD-SIZE
+0 X bt1     1280ms        2560ms        random-static              37        0
+                                                                   38        
+                                                                   39        
+[admin@device] /iot bluetooth advertisers set
+```
 
-**random-static-address** (_MAC address_; Default: )
+可配置的设置如下:
 
- | A user-configurable address for the Bluetooth chip |
+| 属性                                                                                                                             | 说明                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **ad-structures** (_string_; Default: )                                                                                          | 为广告数据包选择一个预先配置的结构。更多信息见 "AD结构 "部分。                                                                                                                                                                                                                                                                                                                                               |
+| **channel-map** (_37\|38 \| 39_; Default: 37, 38, 39)                                                                            | 用于广播的通道                                                                                                                                                                                                                                                                                                                                                                                               |
+| **disabled** (_yes \| no_; Default: **yes**)                                                                                     | 禁用或启用蓝牙芯片广播包的选项                                                                                                                                                                                                                                                                                                                                                                               |
+| **max-interval** (_integer:_20..10240;__ Default: **2560** **ms**)                                                               | 广播广告数据包的最大间隔时间。                                                                                                                                                                                                                                                                                                                                                                               |
+| **min-interval** (_integer:_20..10240;__ Default: **1280 ms**)                                                                   | 广播广告数据包的最小间隔。                                                                                                                                                                                                                                                                                                                                                                                   |
+| **own-address-type** (_public \| random-static \| rpa-fallback-to-public \| rpa-fallback-to-random_; Default: **random-static**) | 在广播数据包有效载荷中使用的MAC地址：<br>- public → 使用IEEE注册的永久地址。<br>- random-static → 使用用户可配置的地址（会在下一次上电时改变）。<br>- rpa-fallback-to-public → 使用可解析的随机私人地址（RPA），只有当接收方拥有身份解析密钥（IRK）时才能解析。如果不能生成RPA，将使用公共地址。<br>- rpa-fallback-to-random → 与 "rpa-fallback-to-public "相同，但如果不能生成RPA，将使用随机静态地址代替。 |
 
-You can monitor chip stats with the command:
+**注**： 广告包将在每一个 _min-interval_  <= **X** <=  _max-interval_ 毫秒的时间内广播。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
+## AD结构
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot bluetooth </code><code class="ros functions">print </code><code class="ros plain">stats</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, RX-BYTES, TX-BYTES, RX-ERRORS, TX-ERRORS, RX-EVT, TX-CMD, RX-ACL, TX-ACL</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros comments">#&nbsp; NAM&nbsp; RX-BYTE&nbsp; TX-&nbsp; R&nbsp; T&nbsp; RX-EV&nbsp; TX&nbsp; R&nbsp; T</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">0&nbsp; bt1&nbsp; 1857835&nbsp; 235&nbsp; 0&nbsp; 0&nbsp; 46677&nbsp; 45&nbsp; 0&nbsp; 0</code></div></div></td></tr></tbody></table>
+本节允许定义由蓝牙芯片广播的广告数据包有效载荷。
 
-## Advertisers
+目前只支持3种类型： 0x08 "缩短的本地名称"；0x09 "完整的本地名称"；0xFF "制造商特定数据"。
 
-In this menu, it is possible to set up the Bluetooth chip to broadcast advertising packets. You can check and set advertiser settings with the commands:
+可以用命令检查和设置 "AD结构 "：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth advertisers print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - DISABLED</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DEVICE, MIN-INTERVAL, MAX-INTERVAL, OWN-ADDRESS-TYPE, CHANNEL-MAP, AD-SIZE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp; DEVICE&nbsp; MIN-INTERVAL&nbsp; MAX-INTERVAL&nbsp; OWN-ADDRESS-TYPE&nbsp; CHANNEL-MAP&nbsp; AD-SIZE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 X bt1&nbsp;&nbsp;&nbsp;&nbsp; 1280ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2560ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; random-static&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 37&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">39&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot bluetooth advertisers </code><code class="ros functions">set</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] > iot bluetooth advertisers ad-structures print
+Columns: NAME, TYPE, DATA
+#  NAME  TYPE              DATA
+0  test  short-local-name  TEST
+[admin@device] > iot bluetooth advertisers ad-structures set
+```
 
-Configurable settings are shown below:
+可配置的属性如下所示:
 
-| 
-Property
+| 属性                                                                             | 说明                                                                                                    |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **data** (_string_; Default: )                                                   | 定义广播包的AdvData部分有效载荷                                                                         |
+| **name** (_string_; Default: )                                                   | AD结构的描述名称                                                                                        |
+| **type** (complete-local-name / manufacturer-data / short-local-name; Default: ) | 设置AD结构类型的选项：<br>- 0x08 "缩短的本地名称"<br>- 0x09 "完整的本地名称"<br>- 0xFF "制造商特定数据" |
 
- | 
+例如，如果选择了 "缩短的本地名称 "类型，并且 "数据 "字段被配置为 "TEST"→有效载荷的AdvData部分将看起来像这样：
 
-Description
+05 08 54 45 53 54 (十六进制格式)
 
- |     |
- | --- |  |
- |     |
+其中第一个八位字节（05）显示后面的字节数（5个字节），第二个八位字节（08）显示类型（缩短的本地名称）。第三个、第四个、第五个和第六个（等等）八位字节是 "数据"/[54（十六进制）= **T**（ASCII），45（十六进制）= **E**（ASCII），53（十六进制）= **S**（ASCII），54（十六进制）= **T**（ASCII）] 。
 
-Property
+这同样适用于 "完整本地名称 "类型。只有AdvData有效载荷中的第二个八位数会有所不同，将被设置为09。
 
- | 
+对于 "制造商特定数据 "类型，需要以十六进制格式配置 "数据 "字段。这种类型的第二个八位数将被设置为FF。
 
-Description
+## 扫描者
 
- |                                         |
- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
- | **ad-structures** (_string_; Default: ) | Choose a pre-configured structure for the advertisement packets. For more information see the "AD structures" section. |
- | **channel-map** (_37                    | 38                                                                                                                     | 39_; Default: 37, 38, 39) | Channels used for advertising. |
- |                                         |
+在这个菜单中，你可以设置蓝牙芯片的扫描者设置。如果禁用，设备就不能再接收广播报告。启用后，可以在 "广播报告 "选项卡中监测广播报告（本指南后面会有解释）。可以用命令检查和设置扫描设置：
 
-**disabled** (_yes | no_; Default: **yes**)
 
- | An option to disable or enable the Bluetooth chip to broadcast advertising packets. |
-| 
+```shell
+[admin@device] > iot bluetooth scanners print
+Flags: X - DISABLED
+Columns: DEVICE, TYPE, INTERVAL, WINDOW, OWN-ADDRESS-TYPE, FILTER-POLICY, FILTER-DUPL
+ICATES
+#   DEVICE  TYPE     INTERVAL  WINDOW  OWN-ADDRESS-TYPE  FILTER-POLICY  FIL
+0 X bt1     passive  10ms      10ms    random-static     default        off
+[admin@device] /iot bluetooth scanners set
+```
 
-**max-interval** (_integer:_20..10240;__ Default: **2560** **ms**)
+可配置的属性如下:
 
- | The maximal interval for broadcasting advertising packets. |
-| 
+| 属性                                                                                                                                                                                                                                                                                                                                                                                                                                                               | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **disabled** (_yes\|no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                          | 禁用或启用蓝牙芯片接收广播报告的选项。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **filter-duplicates** (keep-newest \| keep-oldest \| off; Default: **off**)                                                                                                                                                                                                                                                                                                                                                                                        | 丢弃重复广告的选项：<br>- keep-newest → 保留最新的报告（丢弃最旧的）。只有来自单一AdvA的最新PDU会被保留。<br>- keep-oldest → 保留最老的报告（丢弃最新的）。只有来自单个AdvA的最老的PDU将被保留。这种类型的PDU过滤发生在控制器层面，因此它是最有效的（能源/带宽方面）重复过滤方法。<br>-  off → 不丢弃重复的内容。所有相同AdvA的PDU将被保留。<br>重复的广播报告是指从同一设备地址发送的广告报告。实际数据（有效载荷的 "AdvData "部分）可能会改变/不同，在确定重复的广播报告时，它不被视为重要的。意思是说，例如，如果蓝牙接口从同一个标签收到10个有效载荷（有效载荷后，间隔1秒）：<br>- 如果你使用 "keep-oldest "设置→蓝牙接口将只显示从该标签收到的第一个有效载荷（9个后续有效载荷将被过滤掉）。 <br>- 如果你使用 "keep-newest "设置→蓝牙接口将只显示从该标签收到的最后一个有效载荷（每个后续有效载荷将重写前一个）。 |
+| **filter-policy** (default \| whitelist _\| no_; Default: **default**)                                                                                                                                                                                                                                                                                                                                                                                             |
+| 设置过滤策略（控制器级广播过滤）的选项：<br>- 默认→当此策略被启用时，扫描者只接受ADV_IND、ADV_NOCONN_IND、ADV_SCAN_IND、SCAN_RSP和ADV_DIRECT_IND（其中TargetA是扫描仪自己的蓝牙地址）PDU类型。<br>- 白名单→当此策略启用时，扫描者只接受由广播者广播的ADV_IND、ADV_NOCONN_IND、ADV_SCAN_IND、SCAN_RSP PDU类型，其地址配置为 "白名单 "部分，以及ADV_DIRECT_IND类型PDU（其中TargetA是扫描仪自己的蓝牙地址）。                                                         |
+| **interval** (_integer:3..10240_;__ Default: **10 ms**)                                                                                                                                                                                                                                                                                                                                                                                                            | 扫描者开始扫描下一个广播频道的时间。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **own-address-type** (_public \| random-static \| rpa-fallback-to-public                                                                                                                                                                                                                                                                                                                                   \| rpa-fallback-to-random_; Default: **random-static**) | 扫描请求中使用的地址类型（如果使用主动扫描类型）：<br>- public → 使用IEEE注册的永久地址。<br>- random-static → 使用用户可配置的地址（将在下一次上电时改变）。<br>- rpa-fallback-to-public → 使用可解析的随机私人地址（RPA），只能用身份解析密钥（IRK）来解析。如果不能生成RPA，将使用公共地址。<br>- rpa-fallback-to-random → 与 "rpa-fallback-to-public "相同，但如果不能生成RPA，将使用随机静态地址。                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **type** (_active                                                                                                                                                                                                                                                                                                                                                                                          \| passive;_ Default: **passive**)                      | 定义扫描 者类型：<br>- active → 扫描者如果收到一个可扫描的广播就可以发送扫描请求。扫描者可以发送SCAN_REQ，以获得SCAN_RSP的响应。<br>- passive  → 扫描者将只监听广告，不发送数据（例如扫描请求）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **window** (_integer:3..10240;_ Default: **10 ms**)                                                                                                                                                                                                                                                                                                                                                                                                                | 扫描者扫描一个广告通道的时间。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
-**min-interval** (_integer:_20..10240;__ Default: **1280 ms**)
+例如，如果扫描间隔设置为20ms，意味着只有在20ms之后，设备才会开始扫描下一个通道。如果扫描窗口设置为10ms，意味着设备将只在这10ms的窗口内扫描每个通道。意思是，扫描37号通道10ms（窗口时间），再过10ms后开始扫描下一个通道（20ms[interval]-10ms[window]）。用10ms来扫描通道38，再过10ms后，设备将开始扫描通道39。
 
- | The minimal interval for broadcasting advertising packets. |
-| 
+## 广播报告
 
-**own-address-type** (_public | random-static | rpa-fallback-to-public | rpa-fallback-to-random_; Default: **random-static**)
+这部分可以监测蓝牙广播报告（来自附近的广播）。可以用命令监控广播报告：
 
- | 
 
-The MAC address that is going to be used in the advertising packet's payload:
+```shell
 
--   public →  To use the IEEE registered, permanent address.
--   random-static →  To use user-configurable address (will be changed on the next power-cycle).
--   rpa-fallback-to-public → To use Resolvable Random Private Address (RPA) that can only be resolved if the receiver has our Identity Resolving Key (IRK). If RPA can not be generated, the public address will be used instead.
--   rpa-fallback-to-random → Same as "rpa-fallback-to-public" but if RPA can not be generated, the random-static address will be used instead.
+[admin@device] > iot bluetooth scanners advertisements print     
+Columns: DEVICE, PDU-TYPE, TIME, ADDRESS-TYPE, ADDRESS, RSSI
+ #  DEV  PDU-TYPE        TIME                  ADDRES  ADDRESS            RSSI 
+ 0  bt1  adv-noconn-ind  jul/28/2021 09:30:56  public  2C:C8:1B:93:16:49  -24dBm
+ 1  bt1  adv-noconn-ind  jul/28/2021 09:30:56  random  0B:16:17:9E:7B:EF  -60dBm
+```
 
- |
+可以用以下命令为报告设置一个过滤器:
 
-_**note**:_ Advertising packets will be broadcasted each _min-interval_ <= **X** <= _max-interval_ milliseconds.
 
-## AD structures
+`[admin@device] > iot bluetooth scanners advertisements print where`
 
-This section allows you to define the payload for the advertising packets that are going to be broadcasted by the Bluetooth chip.
+例如，要打印由特定蓝牙地址广播的报告，使用命令:
 
-Currently, only 3 types are supported: 0x08 "Shortened Local Name"; 0x09 "Complete Local Name"; 0xFF "Manufacturer Specific Data".
 
-You can check and set "AD structures" settings with the commands:
+```shell
 
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
+[admin@device] > iot bluetooth scanners advertisements print where address=XX:XX:XX:XX:XX:XX
+ # DEVICE    PDU-TYPE       TIME                 ADD... ADDRESS                    RSSI     LENGTH DATA   
+79 bt1       adv-noconn-ind jul/28/2021 09:46:38 public XX:XX:XX:XX:XX:XX        -70dBm         30 02010...
+80 bt1       adv-noconn-ind jul/28/2021 09:46:43 public XX:XX:XX:XX:XX:XX        -67dBm         30 02010...
+81 bt1       adv-noconn-ind jul/28/2021 09:46:44 public XX:XX:XX:XX:XX:XX        -70dBm         28 1bff0...
+82 bt1       adv-noconn-ind jul/28/2021 09:46:48 public XX:XX:XX:XX:XX:XX        -75dBm         30 02010...
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth advertisers ad-structures print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, TYPE, DATA</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp; NAME&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DATA</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0&nbsp; test&nbsp; short-local-name&nbsp; TEST</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth advertisers ad-structures </code><code class="ros functions">set</code></div></div></td></tr></tbody></table>
+只显示RSSI强于-30 dBm的广播报告，使用命令：
 
-Configurable properties are shown below:
 
-| 
-Property
+```shell
 
- | 
+[admin@device] > iot bluetooth scanners advertisements print where rssi > -30
+ # DEVICE         PDU-TYPE       TIME                 ADDRESS-TYPE ADDRESS                    RSSI     LENGTH DATA      
+307 bt1            adv-noconn-ind jul/29/2021 10:11:31 public       2C:C8:1B:93:16:49        -24dBm         22 15ff4f09.>
+308 bt1            adv-noconn-ind jul/29/2021 10:11:31 public       2C:C8:1B:93:16:49        -26dBm         22 15ff4f09.>
+```
 
-Description
+可用的过滤器（可以在以下参数的帮助下过滤广播报告列表）：
 
- |     |
- | --- |  |
- |     |
+| 过滤器             | 说明                                      |
+| ------------------ | ----------------------------------------- |
+| **address**        | 蓝牙广播者地址                            |
+| **address-type**   | 广播者地址类型 (例如，公共或随机)         |
+| **data**           | 十六进制格式的广播数据（AdvData有效载荷） |
+| **device**         | 蓝牙芯片/接口名称                         |
+| **epoch**          | 自Unix Epoch以来的毫秒数                  |
+| **filter-comment** | 匹配的白名单过滤器的注释                  |
+| **length**         | 广播数据长度                              |
+| **pdu-type**       | 广播PDU的类型                             |
+| **rssi**           | 信号强度                                  |
+| **time**           | 广播数据包的接收时间                      |
 
-Property
+## 白名单
 
- | 
+在这个选项卡中，可以配置白名单，在 "扫描者"过滤策略中使用。换句话说，这是一个指定哪些蓝牙地址将被扫描的选项（显示在 "广播报告 "中）。
 
-Description
+可以用命令查看白名单条目：
 
- |                                |
- | ------------------------------ | ------------------------------------------------------- |
- | **data** (_string_; Default: ) | Define advertising packet's AdvData part of the payload |
- | **name** (_string_; Default: ) | Descriptive name of AD structure                        |
- |                                |
 
-**type** (complete-local-name | manufacturer-data | short-local-name; Default: )
+```shell
+[admin@device] > iot bluetooth whitelist print
+Columns: DEVICE, ADDRESS-TYPE, ADDRESS
+# DEVICE  ADDRESS-TYPE  ADDRESS         
+0 bt1     public        08:55:31:CF:F3:9C
+```
 
- | 
+可以用命令添加一个新的白名单条目：
 
-An option to set AD structure's type:
 
--   0x08 "Shortened Local Name"
--   0x09 "Complete Local Name"
--   0xFF "Manufacturer Specific Data"
+`[admin@device] > iot bluetooth whitelist add`
 
- |
+可配置属性:
 
-If, for example, the "Shortened Local Name" type is chosen and the "data" field is configured with "TEST" → AdvData part of the payload is going to look like this:
+| 属性                                             | 说明                                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| **address** (_MAC address_; Default: )           | 广播者地址                                                                                                   |
+| **address-type** (_public \| random_; Default: ) | 广播者地址地址类型                                                                                           |
+| **comment** (_string_; Default: )                | 白名单的简短说明                                                                                             |
+| **copy-from**                                    | 复制条目的选项 - 更多信息请查看 [控制台文档](https://wiki.mikrotik.com/wiki/Manual:Console#General_Commands) |
+| **device** (_bt1_; Default: )                    | 选择蓝牙接口/芯片名称                                                                                        |
+| **disabled** (_yes\|no_; Default: )              | 禁用或启用条目的选项                                                                                         |
 
-05 08 54 45 53 54 (hexadecimal format)
-
-, where the first octet (05) shows the number of bytes to follow (5 bytes) and the second octet (08) shows the type (Shortened Local Name). 3d, 4th, 5th and 6th (and etc) octets are the "data" \[54 (hex)=**T** (ASCII), 45 (hex)=**E** (ASCII), 53 (hex)=**S** (ASCII), 54 (hex)=**T** (ASCII)\].
-
-The same applies to the "Complete Local Name" type. Only the second octet in the AdvData payload is going to differ and will be set to 09.
-
-For the "Manufacturer Specific Data" type, you will need to configure the "data" field in the hexadecimal format. The second octet for this type is going to be set to FF.
-
-## Scanners
-
-In this menu, you can set up the scanner settings for the Bluetooth chip. When disabled, the device is no longer able to receive advertising reports. When enabled, you can monitor advertising reports in the "Advertising reports" tab (which will be explained later in the guide). You can check and set scanner settings with the commands:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth scanners print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - DISABLED</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DEVICE, TYPE, INTERVAL, WINDOW, OWN-ADDRESS-TYPE, FILTER-POLICY, FILTER-DUPL</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">ICATES</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp; DEVICE&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp; INTERVAL&nbsp; WINDOW&nbsp; OWN-ADDRESS-TYPE&nbsp; FILTER-POLICY&nbsp; FIL</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 X bt1&nbsp;&nbsp;&nbsp;&nbsp; passive&nbsp; 10ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10ms&nbsp;&nbsp;&nbsp; random-static&nbsp;&nbsp;&nbsp;&nbsp; default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; off</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot bluetooth scanners </code><code class="ros functions">set</code></div></div></td></tr></tbody></table>
-
-Configurable properties are shown below:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                    |
- | ---------------------------------- | --------------------- |
- | **disabled** (_yes                 | no_; Default: **no**) | An option to disable or enable the Bluetooth chip to receive advertising reports. |
- | **filter-duplicates** (keep-newest | keep-oldest           | off; Default: **off**)                                                            |
-
-An option to discard duplicate advertisements from the same advertiser:
-
--   keep-newest → Keeps the newest report (discards the oldest). Only the newest PDU from a single AdvA will be kept.
--   keep-oldest → Keeps the oldest report (discards the newest). Only the oldest PDU from a single AdvA will be kept. This type of PDU filtering happens at the controller level and as such it's the most efficient (energy/bandwidth-wise) method of duplicate filtering.
--   off → Duplicates are not discarded. All PDUs with the same AdvA will be kept.
-
-A duplicate advertising report is an advertising report sent from the same device address. The actual data ("AdvData" part of the payload) may change/differ and it is not considered significant when determining duplicate advertising reports. Meaning that, for example, if the Bluetooth interface receives 10 payloads (payload after payload with a 1-second interval) from the same tag:
-
--   if you are using the "keep-oldest" setting → Bluetooth interface will only display the first payload received (9 follow-up payloads will be filtered out) from that tag.  
-    
--   if you are using the "keep-newest" setting → Bluetooth interface will only display the last payload received (each follow-up payload will rewrite the previous one) from that tag.
-
-
-
-
-
-
-
- |
-| 
-
-**filter-policy** (default | whitelist _| no_; Default: **default**)
-
- | 
-
-An option to set up a filtering policy (controller-level advertisement filtering):
-
--   default → When this policy is enabled, the scanner will only accept ADV\_IND, ADV\_NOCONN\_IND, ADV\_SCAN\_IND, SCAN\_RSP, and ADV\_DIRECT\_IND (where TargetA is the scanner's own Bluetooth address) PDU types.
--   whitelist → When this policy is enabled, the scanner will only accept ADV\_IND, ADV\_NOCONN\_IND, ADV\_SCAN\_IND, SCAN\_RSP PDU types that are broadcasted by the advertiser, whose address is configured in the "Whitelist" section, and ADV\_DIRECT\_IND type PDU (where TargetA is the scanner's own Bluetooth address).
-
- |
-| 
-
-**interval** (_integer:3..10240_;__ Default: **10 ms**)
-
- | Time after which scanner will start scanning the next advertisement channel. |
-| 
-
-**own-address-type** (_public | random-static | rpa-fallback-to-public | rpa-fallback-to-random_; Default: **random-static**)
-
- | 
-
-Address type used in scan requests (if active scanning type is used):
-
--   public →  To use the IEEE registered, permanent address.
--   random-static →  To use user-configurable address (will be changed on the next power-cycle).
--   rpa-fallback-to-public → To use Resolvable Random Private Address (RPA) that can only be resolved with our Identity Resolving Key (IRK). If RPA can not be generated, the public address will be used instead.
--   rpa-fallback-to-random → Same as "rpa-fallback-to-public" but if RPA can not be generated, the random-static address will be used instead.
-
- |
-| 
-
-**type** (_active | passive;_ Default: **passive**)
-
- | 
-
-Defines the scanner's type:
-
--   active → Scanner can send scan requests if it receives a scannable advertisement. The scanner can send a SCAN\_REQ in order to acquire a SCAN\_RSP response.
--   passive → Scanner will only listen for advertisements, no data (e.g. scan requests) will be sent.
-
- |
-| **window** (_integer:3..10240;_ Default: **10 ms**) | The time that the scanner will spend scanning a single advertisement channel. |
-
-For example, if the scanner interval is set to 20ms, it means that only after 20ms, the device will begin scanning the next channel in line. If the scanner window is set to 10ms, it means that the device will scan each channel only during that 10ms window. Meaning, it will scan channel 37 for 10ms (window time) and begin scanning the next channel after 10 more ms (20ms\[interval\]-10ms\[window\]). It will take 10ms to scan channel 38, and after 10 more ms, the device will begin scanning channel 39.
-
-## Advertising reports
-
-In this section, it is possible to monitor Bluetooth advertising reports (from the nearby broadcasters). You can monitor advertising reports with the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth scanners advertisements </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DEVICE, PDU-TYPE, TIME, ADDRESS-TYPE, ADDRESS, RSSI</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp; DEV&nbsp; PDU-TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRES&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSSI&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; bt1&nbsp; adv-noconn-ind&nbsp; jul</code><code class="ros constants">/28/2021 09:30:56&nbsp; public&nbsp; 2C:C8:1B:93:16:49&nbsp; -24dBm</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp; bt1&nbsp; adv-noconn-ind&nbsp; jul</code><code class="ros constants">/28/2021 09:30:56&nbsp; random&nbsp; 0B:16:17:9E:7B:EF&nbsp; -60dBm</code></div></div></td></tr></tbody></table>
-
-It is possible to set up a filter for the reports with the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth scanners advertisements </code><code class="ros functions">print </code><code class="ros plain">where</code></div></div></td></tr></tbody></table>
-
-For example, to print reports that are broadcasted by a specific Bluetooth address, use the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth scanners advertisements </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">address</code><code class="ros plain">=XX:XX:XX:XX:XX:XX</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># DEVICE&nbsp;&nbsp;&nbsp; PDU-TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADD... ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSSI&nbsp;&nbsp;&nbsp;&nbsp; LENGTH DATA&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">79 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/28/2021 09:46:38 public XX:XX:XX:XX:XX:XX &nbsp; &nbsp; &nbsp; &nbsp;-70dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30 02010...</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">80 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/28/2021 09:46:43 public XX:XX:XX:XX:XX:XX &nbsp; &nbsp; &nbsp; &nbsp;-67dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30 02010...</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">81 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/28/2021 09:46:44 public XX:XX:XX:XX:XX:XX &nbsp; &nbsp; &nbsp; &nbsp;-70dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28 1bff0...</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">82 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/28/2021 09:46:48 public XX:XX:XX:XX:XX:XX &nbsp; &nbsp; &nbsp; &nbsp;-75dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30 02010...</code></div></div></td></tr></tbody></table>
-
-To show only advertising reports that have RSSI stronger than -30 dBm, use the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth scanners advertisements </code><code class="ros functions">print </code><code class="ros plain">where rssi &gt; -30</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># DEVICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PDU-TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESS-TYPE ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSSI&nbsp;&nbsp;&nbsp;&nbsp; LENGTH DATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">307 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/29/2021 10:11:31 public&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2C:C8:1B:93:16:49&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -24dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22 15ff4f09.&gt;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">308 bt1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; adv-noconn-ind jul</code><code class="ros constants">/29/2021 10:11:31 public&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2C:C8:1B:93:16:49&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -26dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22 15ff4f09.&gt;</code></div></div></td></tr></tbody></table>
-
-Possible filters (you can filter the list of advertising reports with the help of the following parameters):
-
-| 
-Filter
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Filter
-
- | 
-
-Description
-
- |                  |
- | ---------------- | -------------------------------------------------------- |
- | **address**      | Bluetooth advertisers address                            |
- | **address-type** | Advertisers address type (for example, public or random) |
- |                  |
-
-**data**
-
- | Advertisement data in hex format (AdvData payload) |
-| **device** | Bluetooth chip/interface name |
-| **epoch** | Milliseconds since Unix Epoch |
-| **filter-comment** | Comment of the matching whitelist filter |
-| **length** | Advertisement data length |
-| **pdu-type** | Advertisement PDU type |
-| **rssi** | Signal strength |
-| **time** | Time of the advertisement packet reception |
-
-## Whitelist
-
-In this tab, it is possible to configure a whitelist that is going to be used in the filter policy in the "Scanners" section. In other words, an option to specify which Bluetooth addresses are going to be scanned (displayed in the "Advertising reports").
-
-You can view the whitelisted entries with the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth whitelist print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DEVICE, ADDRESS-TYPE, ADDRESS</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># DEVICE&nbsp; ADDRESS-TYPE&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 bt1&nbsp;&nbsp;&nbsp;&nbsp; public&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 08</code><code class="ros constants">:55:31:CF:F3:9C</code></div></div></td></tr></tbody></table>
-
-You can add a new whitelist entry with the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Bluetooth#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; iot bluetooth whitelist </code><code class="ros functions">add</code></div></div></td></tr></tbody></table>
-
-Configurable properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                        |
- | -------------------------------------- | -------------------- |
- | **address** (_MAC address_; Default: ) | Advertiser's address |
- | **address-type** (_public              | random_; Default: )  | Advertiser's address type |
- |                                        |
-
-**comment** (_string_; Default: )
-
- | Short description of the whitelisted entry |
-| **copy-from** | An option to copy an entry - for more information check the [console documentation](https://wiki.mikrotik.com/wiki/Manual:Console#General_Commands) |
-| **device** (_bt1_; Default: ) | Select the Bluetooth interface/chip name |
-| **disabled** (_yes | no_; Default: ) | An option to disable or to enable the entry |
-
-Only 8 whitelisted entries can be added.
+只能添加8个白名单条目。

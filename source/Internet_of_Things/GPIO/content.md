@@ -1,178 +1,228 @@
-_**note**: In order to access GPIO settings, make sure that **iot** [package](https://help.mikrotik.com/docs/display/ROS/Packages) is installed beforehand._
+# GPIO
 
-You can find more information about GPIO following the [link](https://en.wikipedia.org/wiki/General-purpose_input/output).
+**注**： 为了访问GPIO设置，确保事先安装了 **iot** [包](https://help.mikrotik.com/docs/display/ROS/Packages)。
 
-GPIO stands for General-Purpose Input/Output. It is a digital signal pin/pins on the routerboard that allows you to send/receive the signal. It can be useful in different scenarios, like:
+可以按照 [链接](https://en.wikipedia.org/wiki/General-purpose_input/output) 找到更多关于GPIO的信息。
 
-1.  Measuring voltage through ADC input
-2.  Reading 0 and 1 signal received from another device - "dry contact"
-3.  Controlling connected relays by sending logical 0 or 1 signal to the pin
+GPIO是通用输入/输出的意思。它是路由器板上的一个数字信号引脚，允许发送/接收信号。可以在不同的情况下发挥作用，比如：
 
-## RouterOS configuration
+1.  通过ADC输入测量电压
+2.  读取从另一个设备收到的0和1信号--"干触点"
+3.  通过向引脚发送逻辑0或1信号来控制连接的继电器
 
-_**note**:_ GPIO settings are available only using CLI.
+## RouterOS配置
+
+**注**:  GPIO设置只能使用CLI。
 
 **Sub-menu:** `/iot gpio`
 
-GPIO settings are divided into:
+GPIO设置分为：
 
--   analog (/iot gpio analog)
--   digital (/iot gpio digital)
+- 模拟 (/iot gpio analog)
+- 数字 (/iot gpio digital)
 
-_**note**:_ in our examples, we are using [KNOT](https://mikrotik.com/product/knot) as a reference device. Other devices may have a different pinout but the same principles apply.
+**注**：在下面的例子中使用 [KNOT](https://mikrotik.com/product/knot) 作为一个参考设备。其他设备可能有不同的引脚布局，但同样的原则适用。
 
-Please note that long-term (6.47.10) and stable (6.48.3) versions, you have to use "/system gpio", command structure remains the same as in "/iot gpio" examples, aside from "analog" and "digital" sub-menus, which were added in later versions. Versions 6.49beta54+ and RouterOS v7, use "/iot gpio" sub-menu.
+请注意长期版（6.47.10）和稳定版（6.48.3），必须使用"/system gpio"命令，与"/iot gpio "例子中的相同，除了 "模拟 "和 "数字"子菜单，这是在后来的版本中添加的。6.49beta54以上版本和RouterOS v7，使用"/iot gpio "子菜单。
 
 ### /iot gpio analog
 
-_**note**:_ please check on a product page whether your hardware supports analog input or not.
+**注**：请在产品页上检查你的硬件是否支持模拟输入。
 
-In the "analog" setting you can measure voltages on the analog input/ADC input pins:
+在 "模拟"设置中，可以测量模拟输入/ADC输入引脚上的电压：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio analog&gt; </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VALUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OFFSET</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 pin2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0mV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0mV</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 pin3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 32mV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0mV</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio analog> print
+ # NAME                                                                                     VALUE       OFFSET
+ 0 pin2                                                                                       0mV          0mV
+ 1 pin3                                                                                      32mV          0mV
+```
 
-"OFFSET" can be used to manually compensate voltage drop on the wires. "VALUE" is measured with:
+"OFFSET "可用于手动补偿导线上的电压降。"VALUE "的测量方法是：
 
-`value = adc_input + offset`
+value=adc_input+offset
 
-, where adc\_input is the voltage on the pin.
+其中adc_input是引脚上的电压。
 
-"OFFSET" configuration example is shown below:
+"OFFSET "配置实例如下：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio analog&gt; </code><code class="ros functions">set </code><code class="ros plain">pin2 offset&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Offset </code><code class="ros constants">::= [-]Num[mV]</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">Num </code><code class="ros constants">::= -2147483648..2147483647&nbsp;&nbsp;&nbsp; (integer number)</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio analog&gt; </code><code class="ros functions">set </code><code class="ros plain">pin2 offset 2&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio analog&gt; </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VALUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OFFSET</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 pin2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2mV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2mV</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 pin3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0mV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0mV</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio analog> set pin2 offset 
+ 
+Offset ::= [-]Num[mV]
+  Num ::= -2147483648..2147483647    (integer number)
+ 
+[admin@device] /iot gpio analog> set pin2 offset 2  
+[admin@device] /iot gpio analog> print           
+ # NAME                                                                                           VALUE       OFFSET
+ 0 pin2                                                                                             2mV          2mV
+ 1 pin3                                                                                             0mV          0mV
+```
 
 ### /iot gpio digital
 
-In the "digital" section you can send/receive a logical 0 or 1 signal using the digital output/input pins (output pins are "open drain"):
+ "数字 "部分可以使用数字输出/输入引脚发送/接收一个逻辑0或1信号（输出引脚是 "漏极开路"）：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DIRECTION OUTPUT INPUT SCRIPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; pin5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; pin4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; pin6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio digital> print            
+Flags: X - disabled
+ #   NAME                                        DIRECTION OUTPUT INPUT SCRIPT                                  
+ 0   pin5                                        input     0      0   
+ 1   pin4                                        output    0    
+ 2   pin6                                        output    0    
+```
 
-"DIRECTION" for the pin can be either "input" (a pin that can receive the signal) or "output" (a pin that can send the signal).
+引脚的 "方向 "可以是 "输入"（接收信号的引脚）或 "输出"（发送信号的引脚）。
 
-When the pin's direction is set to "output", you can configure the "OUTPUT" value. Changing the "OUTPUT" value sends the signal to the pin.
+当引脚的方向被设置为 "输出 "时，可以配置 "OUTPUT "值。改变 "OUTPUT "值可以将信号发送到该引脚。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">set </code><code class="ros plain">pin4 </code><code class="ros value">output</code><code class="ros plain">=</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Output </code><code class="ros constants">::= 0 | 1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">set </code><code class="ros plain">pin4 </code><code class="ros value">output</code><code class="ros plain">=1</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DIRECTION OUTPUT INPUT SCRIPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; pin5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; pin4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; pin6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio digital> set pin4 output=
+ 
+Output ::= 0 | 1
+ 
+ 
+[admin@device] /iot gpio digital> set pin4 output=1       
+[admin@device] /iot gpio digital> print           
+Flags: X - disabled
+ #   NAME                                        DIRECTION OUTPUT INPUT SCRIPT                                     
+ 0   pin5                                        input     0      0   
+ 1   pin4                                        output    1    
+ 2   pin6                                        output    0    
+```
 
-The "SCRIPT" field allows you to configure a script, that will be initiated whenever the "INPUT" or "OUTPUT" value changes (from 0 to 1 or from 1 to 0).
+"SCRIPT "字段允许配置一个脚本，每当 "INPUT "或 "OUTPUT "值发生变化（从0到1或从1到0）时，该脚本就会启动。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">set </code><code class="ros plain">pin4 </code><code class="ros value">script</code><code class="ros plain">=script1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">set </code><code class="ros plain">pin5 </code><code class="ros value">script</code><code class="ros plain">=</code><code class="ros string">"/system .."</code>&nbsp;&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DIRECTION OUTPUT INPUT SCRIPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; pin5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; </code><code class="ros constants">/system ..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; pin4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; script1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; pin6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio digital> set pin4 script=script1
+[admin@device] /iot gpio digital> set pin5 script="/system .."  
+[admin@device] /iot gpio digital> print                      
+Flags: X - disabled
+ #   NAME                                        DIRECTION OUTPUT INPUT SCRIPT                                     
+ 0   pin5                                        input     0      0     /system ..                                 
+ 1   pin4                                        output    1            script1                                    
+ 2   pin6                                        output    0    
+```
+## 不同的场景
 
-## Different scenarios
+### 控制继电器
 
-### Controlling relays
+GPIO实现的场景之一是使用数字输出引脚 "控制其他继电器"。基本上，发送 "0 "或 "1 "信号给连接到该引脚的单元。为了使这个过程自动化，你可以使用一个 [时间表](https://wiki.mikrotik.com/wiki/Manual:System/Scheduler)，它将在特定时间运行脚本。
 
-One of the scenarios for the GPIO implementation is "controlling other relays" using digital output pins. Basically, sending "0" or "1" signal to the unit that is connected to the pin. To automate the process, you can use a [scheduler](https://wiki.mikrotik.com/wiki/Manual:System/Scheduler), which will run the script at specific times.
-
-For example, you can add the first [script](https://help.mikrotik.com/docs/display/ROS/Scripting) (a single line shown below) and name it "output=0":
+例如，可以添加第一个 [脚本](https://help.mikrotik.com/docs/display/ROS/Scripting)（如下图所示的单行）并命名为 "output=0"：
 
 > /iot gpio digital set pin4 output=0
 
-Then add a second script (a single line shown below) and name it "output=1":
+然后添加第二个脚本（如下图所示的单行）并命名为 "output=1"：
 
 > /iot gpio digital set pin4 output=1
 
-Having both scripts, you can configure a schedule:
+有了这两个脚本，你就可以配置一个时间表：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=run-30s</code> <code class="ros value">interval</code><code class="ros plain">=30s</code> <code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"output=0"</code></div></div></td></tr></tbody></table>
+`[admin@device] /system scheduler> add name=run-30s interval=30s on-event="output=0"`
 
-The schedule configuration shown above will run the script with the name "output=0", every 30 seconds.
+上图所示的时间表配置将每隔30秒运行名称为 "output=0 "的脚本。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=run-45s</code> <code class="ros value">interval</code><code class="ros plain">=45s</code> <code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"output=1"</code></div></div></td></tr></tbody></table>
+`[admin@device] /system scheduler> add name=run-45s interval=45s on-event="output=1"`
 
-The schedule configuration shown above will run the script with the name "output=1", every 45 seconds.
+上图所示的时间表配置将每隔45秒运行名称为 "output=1 "的脚本。
 
-As a result, the device will automatically send a signal to the 4th pin (digital output pin) with output value=0 every 30 seconds and a signal with output value=1 every 45 seconds.
+因此，设备将每隔30秒自动向第4针（数字输出针）发送一个输出值为0的信号，每隔45秒发送一个输出值为1的信号。
 
-You can change the scheduled time as you see fit (depending on the requirements).
+可以根据需要改变预定的时间。
 
-### Monitoring input signal
+### 监控输入信号
 
-Another scenario is to "monitor input signal" using the digital input pins. You need a script that will initiate e-mail notification or MQTT/HTTPS (fetch) publish whenever the "INPUT" value changes for the pin with the direction="input" (whenever the RouterOS device receives a signal "0 or 1" from another device connected to the pin).
+另一种情况是使用数字输入引脚来 "监测输入信号"。需要一个脚本，每当direction="input "的引脚的 "INPUT "值发生变化时（RouterOS设备从连接到该引脚的另一个设备接收到 "0或1 "的信号时），就会启动电子邮件通知或MQTT/HTTPS获取发布。
 
-_E-mail notification script:_
+_E-mail提示脚本:_
 
-> /tool e-mail send to=config@[mydomain.com](http://mydomain.com) subject=\[/system identity get name\] body="$\[/iot gpio digital get pin5 input\]"
+> /tool e-mail send to=config@[mydomain.com](http://mydomain.com) subject=[/system identity get name] body="$[/iot gpio digital get pin5 input]"
 
-After creating a script, apply/set it to the "input" pin:
+创建脚本后，将其应用/设置到 "输入 "引脚：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">set </code><code class="ros plain">pin5 </code><code class="ros value">script</code><code class="ros plain">=script1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/iot gpio digital&gt; </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DIRECTION OUTPUT INPUT SCRIPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; pin5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; script1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; pin4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; script1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2&nbsp;&nbsp; pin6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] /iot gpio digital> set pin5 script=script1
+[admin@device] /iot gpio digital> print                 
+Flags: X - disabled
+ #   NAME                     DIRECTION OUTPUT INPUT SCRIPT                   
+ 0   pin5                     input     0      0     script1                  
+ 1   pin4                     output    0            script1                  
+ 2   pin6                     output    0    
+ ```
 
-In the example above, the e-mail notification script is named "script1".
+在上面的例子中，电子邮件通知脚本被命名为 "script1"。
 
-As a result, whenever the input value changes (from 0 to 1 or from 1 to 0), the script automatically initiates an e-mail notification that will display the input value in the e-mail body.
+因此，每当输入值发生变化（从0到1或从1到0），脚本就会自动启动一个电子邮件通知，在电子邮件正文中显示输入值。
 
-Do not forget to change the script line and configure the e-mail settings ([/tool e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)) accordingly:
+不要忘记修改脚本行，并相应地配置电子邮件设置（[/tool e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)）：
 
-> /tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject="\[/system identity get name\]"  body="$\[/iot gpio digital get pin5 input\]"
+> /tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject="[/system identity get name]" body="$[/iot gpio digital get pin5 input] "
 
-Configure the actual e-mail address that you use. You can also change the subject and the body for the mail as you see fit.
+配置使用的电子邮件地址，也可以根据你的需要改变邮件的主题和正文。
 
-  
-
-_MQTT publish script:_
+_MQTT 发布脚本:_
 
 > :local broker "name"
 > 
 > :local topic "topic"
 > 
-> :local message "{\\"inputVALUE\\":$\[/iot gpio digital get pin5 input\]}"  
+> :local message "{\"inputVALUE\":$[/iot gpio digital get pin5 input]}"  
 > /iot mqtt publish broker=$broker topic=$topic message=$message
 
-This script works the same way as the "_e-mail notification_" script, only when the input value changes the script initiates MQTT publish (instead of e-mail notification) and sends the input value received on the pin in the JSON format.
+这个脚本的工作方式与"e-mail notification"脚本相同，只是当输入值发生变化时，脚本会启动MQTT发布（而不是电子邮件通知），并以JSON格式发送针脚上收到的输入值。
 
-Do not forget to set up MQTT broker (_/iot mqtt brokers add .._) and alter a few script lines beforehand:
+不要忘记设置MQTT代理（/iot mqtt brokers add ...），并事先修改几行脚本：
 
 > :local broker "name"
 
-The broker's "name" should be changed accordingly (you can check all created brokers and their names using CLI command /_iot mqtt brokers print_).
+broker 的 "名字 "也要相应地改变（可以用CLI命令/iot mqtt brokers print来检查所有创建的broker 和名字）。
 
 > :local topic "topic"
 
-The topic should be changed as well. The topic itself is configured on the server-side, so make sure that the correct topic is used.
+主题也要改变。主题本身是在服务器端配置的，所以要确保使用正确的主题。
 
-Do not forget to apply/set the script to pin5 (/iot gpio digital set pin5 script=script\_name), as shown in the "email notification" example above.
+不要忘记应用脚本到pin5（/iot gpio digital set pin5 script=script_name），如上面的 "电子邮件通知 "例子所示。
 
-  
-
-If the mechanical switch is used to send the signal to the GPIO pin, it is suggested to use the following script instead (in case the script is initiated more than once when the signal is received on the pin):
+如果使用机械开关来发送信号到GPIO引脚，建议使用下面的脚本来代替（ 防止在引脚上收到信号时，脚本启动不止一次）：
 
 > :global gpioscriptrunning;  
 > if (!$gpioscriptrunning) do={:set $gpioscriptrunning true;  
 > :log info "script started - GPIO changed";  
-> :do {if (\[/iot gpio digital get pin5 input\] = "0") do={/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=\[/system identity get name\] body="pin5 received logical 0"} else {/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=\[/system identity get name\]  body="pin5 received logical 1"};  
+> :do {if ([/iot gpio digital get pin5 input] = "0") do={/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name] body="pin5 received logical 0"} else {/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name]  body="pin5 received logical 1"};  
 > :delay 1s;  
 > :set $gpioscriptrunning false} on-error={:set $gpioscriptrunning false;  
 > :log info "e-mail error, resetting script state..."}}
 
-If the GPIO pin state changes more than once within mili/microseconds - the script above is going to make sure that e-mail notification is not sent more than once.
+如果GPIO引脚的状态在mili/microseconds内变化超过一次 - 上面的脚本将确保电子邮件通知不会被发送超过一次。
 
-### Monitoring voltage
+### 监测电压
 
-Last but not least - is to "monitor voltage" using the analog pins.  You need a script that will read/monitor voltage on schedule and then send the data via e-mail, MQTT or HTTPS (fetch).
+最后但并非不重要的是，使用模拟引脚来 "监测电压"。 需要一个脚本，按计划读取监测电压，然后通过电子邮件、MQTT或HTTPS（获取）发送数据。
 
-Create a script, as shown below. In this example, we will be using MQTT publish (but you can create a similar script with "/tool e-mail .." to use e-mail notifications):
+创建一个脚本，如下图所示。在这个例子中使用MQTT发布（可以用"/tool e-mail ... "创建一个类似的脚本来使用电子邮件通知）：
 
 > :local broker "name"
 > 
 > :local topic "topic"
 > 
-> :local message "{\\"voltage(mV)\\":$\[/iot gpio analog get pin3 value\]}"  
+> :local message "{\"voltage(mV)\":$[/iot gpio analog get pin3 value]}"  
 > /iot mqtt publish broker=$broker topic=$topic message=$message
 
-The script will read/measure the voltage on pin3 and publish the data to the MQTT broker.
+该脚本读取测量引脚3的电压，并将数据发布到MQTT代理。
 
-Do not forget to set up MQTT broker (_/iot mqtt brokers add .._) and alter a few script lines beforehand:
+不要忘记设置MQTT代理（/iot mqtt brokers add ...），并事先改变几行脚本：
 
 > :local broker "name"
 
-The broker's "name" should be changed accordingly (you can check all created brokers and their names using CLI command /_iot mqtt brokers print_).
+ broker的 "名字 "也应该相应地改变（可以用CLI命令/iot mqtt brokers print检查所有创建的broker和名字）。
 
 > :local topic "topic"
 
-The topic should be changed as well. The topic itself is configured on the server-side, so make sure that the correct topic is used.
+主题也要改变。主题本身是在服务器端配置的，所以要确保使用正确的主题。
 
-Save the script and name it, for example, "voltagepublish". To automate the process, you can use the [scheduler](https://wiki.mikrotik.com/wiki/Manual:System/Scheduler).
+保存脚本并命名，例如，"voltagepublish"。为了使这个过程自动化，可以使用 [计划表](https://wiki.mikrotik.com/wiki/Manual:System/Scheduler)。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=run-45s</code> <code class="ros value">interval</code><code class="ros plain">=45s</code> <code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"voltagepublish"</code></div></div></td></tr></tbody></table>
+`[admin@device] /system scheduler> add name=run-45s interval=45s on-event="voltagepublish"`
 
-The schedule configuration shown above will run the script every 45 seconds.
+上面显示的时间表配置将每45秒运行一次脚本。
