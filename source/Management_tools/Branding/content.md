@@ -1,32 +1,32 @@
-# Branding
+# 品牌建设
 
-RouterOS allows slight system customization with the help of a branding package. This is a special system package, which you can generate from within your [mikrotik.com account](https://mikrotik.com/client/), in the account section "Branding maker". The resulting file will have a .dpk extension and can be installed by all the same means as an .npk package. The generated package can be installed in any RouterOS version. To install the package in a device you simply need to upload it and reboot the router, you can also use Netinstall tool for the same effect.
+RouterOS允许在品牌包的帮助下进行轻微的系统定制。这是一个特殊的系统包，可以从你的[mikrotik.com账户](https://mikrotik.com/client/)中的账户部分 "品牌制作者 "中生成。生成的文件将有一个.dpk扩展名，可以通过所有与.npk包相同的方式安装。生成的软件包可以安装在任何RouterOS版本中。要在设备上安装软件包，你只需要上传它并重新启动路由器，也可以使用Netinstall工具达到同样的效果。
 
-## ASCII logo
+## ASCII标志
 
-This is the text logo shown when logging into the command line interface, i.e. Telnet, SSH, Winbox Terminal. The ASCII logo you can create right there in the browser, or copy from any other plaintext editor. Make sure it is not wider than the form in the branding maker page, or your logo will be distorted.
+这是登录到命令行界面时显示的文字标识，即Telnet、SSH、Winbox终端。可以在浏览器中创建ASCII标志，或者从任何其他纯文本编辑器中复制。请确保它不比品牌制作页面中的表格宽，否则你的标志会被扭曲。
 
-## Default webpage
+## 默认网页
 
-You can customize the default RouterOS information page, which shows up when accessing the router IP address, and a password is set on the device. When making the HTML file, you can use these variables:
+可以定制默认的RouterOS信息页面，它在访问路由器IP地址时显示，设备上设置有密码。制作HTML文件时，可以用这些变量：
 
--   %version% will change to the router's current version
--   %host% will change to the router's IP address. Use these variables in the Telnet link, or in the header.
+- %version%将改变为路由器的当前版本
+- %host%将改为路由器的IP地址。在Telnet链接中使用这些变量，或者在文件头中使用这些变量。
 
-The file must be named "index2.html". Make sure you use properly nested HTML to make your page compatible with all browsers. You can also upload images or JavaScript files, they must reference to the same path as the index file, no custom folder names can be used.
+该文件必须命名为 "index2.html"。确保使用正确嵌套的HTML，使页面与所有浏览器兼容。也可以上传图片或JavaScript文件，它们必须引用到与索引文件相同的路径，不能使用自定义的文件夹名称。
 
-If you wish to only change the MikroTik logo, and not upload the whole HTML file, the name of the default image is mikrotik\_logo.png, uploading another file with the same name, will overwrite the original.
+如果只想改变MikroTik的标志，而不上传整个HTML文件，默认的图片名称是mikrotik\_logo.png，上传同名的另一个文件，将覆盖原文件。
 
-## Other values
+## 其他值
 
--   **Router name**: this is the Identity value in RouterOS, it can only be one word, don't use spaces or special characters there.
--   **Company URL**: this is the value that appears in the console when you connect to your MikroTik device.
--   **Manual URL**: documentation link which opens with a button in Webfig in the web interface.
--   **LCD logo**: this will be displayed on devices equipped with LCD screen. Requirements for logo: no more than 160px width and no more than 72px height. CCR series have white (0xffffff) background, 2011 series have black (0x000000) background.
--   **Default configuration**: Note that when using the default configuration file, the configuration is appended when simply installing the package, but after using system reset, only the configuration in your file will be used, all other standard default config will not be used during reset. The file must be a text/rsc file with one RouterOS command per line. You can use an export file from the console as a starting point, but we recommend only leaving the exact commands you want to run. This configuration will be kept even after the RouterOS reset.
--   **Skins**: For skins, a file your\_file\_name.json must be uploaded into the "skins" directory. 
+- **路由器名称**：这是RouterOS的身份，只能是一个词，不要用空格或特殊字符。
+- **公司URL**：这是连接到MikroTik设备时出现在控制台中的值。
+- **手册URL**：文件链接，在网络界面的Webfig中用一个按钮打开。
+- **LCD标识**：这将显示在配备LCD屏幕的设备上。对标志的要求：宽度不超过160px，高度不超过72px。CCR系列有白色（0xffffff）背景，2011系列有黑色（0x000000）背景。
+- **Default configuration**： 请注意，当使用默认配置文件时，在简单安装软件包时，配置会被追加，但在使用系统重置后，只有文件中的配置会被使用，所有其他标准的默认配置在重置时不会被使用。该文件必须是一个文本/rsc文件，每行有一条RouterOS命令。你可以使用从控制台导出的文件作为起点，但我们建议只留下你想运行的确切命令。这个配置即使在RouterOS重置后也会被保留。
+- **Skins**： 必须在 "皮肤 "目录中上传一个文件 your_file/name.json。 
 
-In order to apply particular skin to a specific user group, you don't need to log into the router to do that. You can do it with branding by uploading a Default configuration file.  
-Or set the skin for the user group manually after reboot.
+为了将特定的皮肤应用于特定的用户组，不需要登录路由器来做这件事。可以通过上传 "默认 "配置文件来做品牌建设。 
+或者在重启后为用户组手动设置皮肤。
 
--   **Custom files**: RouterOS 6.48.3 and above also supports uploading of custom files, they will be simply copied into a folder named "branding" and will be accessible from within RouterOS.
+- **自定义文件**： RouterOS 6.48.3及以上版本也支持上传自定义文件，它们将被简单地复制到一个名为 "branding "的文件夹中，并可在RouterOS内部访问。

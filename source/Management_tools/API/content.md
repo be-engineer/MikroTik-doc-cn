@@ -193,83 +193,61 @@ v6.43之后的登录方法：
 - 如果你在命令句子中包含了具有非空值的 'tag' 参数，那么具有完全相同值的 'tag' 参数将被包含在这个命令产生的所有响应中。
 - 如果你不包括'tag'参数或其值为空，那么这个命令的所有响应将没有 'tag' 参数。
 
-## Command description
+## 命令描述
 
--   /cancel
-    -   optional argument: =tag=_tag of command to cancel_, without it, cancels all running commands
-    -   does not cancel itself
-    -   all canceled commands are interrupted and in the usual case generate '!trap' and '!done' responses
-    -   please note that /cancel is separate command and can have it's own unique '.tag' parameter, that is not related to '=tag' argument of this command
+- /cancel
+    - 可选参数：=tag=要取消的命令标签，没有它，会取消所有正在运行的命令。
+    - 不会取消自己
+    - 所有被取消的命令都会被打断，在通常情况下会产生"！陷阱 "和"！完成 "的响应。
+    - 请注意，/cancel是单独的命令，可以有它自己独特的".tag "参数，与本命令的"=tag "参数无关。
 
--   listen
-    -   listen command is available where console print command is available, but it does not have expected effect everywhere (i.e. may not work)
-    -   "!re" sentences are generated as something changes in a particular item list
-    -   when an item is deleted or disappears in any other way, the '!re' sentence includes the value '=.dead=yes'
-    -   This command does not terminate. To terminate it, use /cancel command.
+- 听
+    - 在有控制台打印命令的地方可以使用listen命令，但它并不是在所有地方都有预期的效果（也就是说，可能无法工作）。
+    - 当某一项目列表中的某些内容发生变化时，会产生"！re "句子
+    - 当一个项目被删除或以任何其他方式消失时，'！re'句子包括'=.dead=yes'的值。
+    - 这个命令不会终止。要终止它，请使用/cancel命令。
 
--   getall
-    -   getall command is available where console print command is available (getall is an alias for print).
-    -   replies contain =.id=_Item internal number_ property.
+- getall
+    - getall命令在有控制台打印命令的地方可用（getall是print的一个别名）。
+    - 回复包含=.id=_Item internal number_属性。
 
--   print
-    -   API print command differs from the console counterpart in the following ways:
-        -   where an argument is not supported. Items can be filtered using query words (see below).
-        -   .proplist argument is a comma-separated list of property names that should be included for the returned items.
-            -   returned items may have additional properties.
-            -   order of returned properties is not defined.
-            -   if a list contains duplicate entries, handling of such entries is not defined.
-            -   if a property is present in ".proplist", but absent from the item, then that item does not have this property value (?name will evaluate to false for that item).
-            -   if ".proplist" is absent, all properties are included as requested by print command, even those that have slow access time (such as file contents and performance counters). Thus the use of .proplist is encouraged. The omission of .proplist may have a high-performance penalty if the "=detail=" argument is set.
+- 打印
+    - API打印命令在以下方面与控制台的对应命令不同：
+        - 在一个参数不被支持的地方。项目可以使用查询词进行过滤（见下文）。
+        - .proplist参数是一个逗号分隔的属性名称列表，应该包括返回的项目。
+            - 返回的项目可能有额外的属性。
+            - 没有定义返回属性的顺序。
+            - 如果一个列表中包含重复的条目，对这些条目的处理没有被定义。
+            - 如果一个属性出现在".proplist "中，但没有出现在项目中，那么该项目就没有这个属性值（?name对该项目来说将评估为false）。
+            - 如果".proplist "不存在，那么所有的属性都会按照打印命令的要求包括在内，即使是那些访问时间较慢的属性（如文件内容和性能计数器）。因此，我们鼓励使用.proplist。如果设置了"=detail="参数，省略.proplist可能会产生高性能的惩罚。
 
-### Queries
+### 查询
 
-The print command accepts query words that limit the set of returned sentences. 
+print命令接受限制返回句子集的查询词。 
 
--   Query words begin with '?'.
--   The order of query words is significant. A query is evaluated starting from the first word.
--   A query is evaluated for each item in the list. If the query succeeds, the item is processed, if a query fails, the item is ignored.
--   A query is evaluated using a stack of boolean values. Initially, the stack contains an infinite amount of 'true' values. At the end of the evaluation, if the stack contains at least one 'false' value, the query fails.
--   Query words operate according to the following rules:
+- 查询词以"？"开头。
+- 查询词的顺序很重要。一个查询从第一个词开始评估。
+- 对列表中的每个项目都要进行查询。如果查询成功，该项目被处理，如果查询失败，该项目被忽略。
+- 一个查询是用一个布尔值的堆栈来评估的。最初，堆栈包含无限量的 "真 "值。在评估结束时，如果堆栈中至少有一个 "假 "值，则查询失败。
+- 查询词按照以下规则操作：
 
-|
-
-Query
-
- | 
-
-Description
-
- |                    |
- | ------------------ | ------------------------------------------------------------------------------------- |
- | **?name**          | pushes 'true' if an item has a value of property _name_, 'false' if it does not.      |
- | **?-name**         | pushes 'true' if an item does not have a value of property _name_, 'false' otherwise. |
- | **?_name_=_x_**    |
- | **?=_name_=_x_**   | pushes 'true' if the property _name_ has a value equal to _x_, 'false' otherwise.     |
- | **?<name=_x_**     | pushes 'true' if the property _name_ has a value less than _x_, 'false' otherwise.    |
- | **?>name=_x_**     | pushes 'true' if the property _name_ has a value greater than _x_, 'false' otherwise. |
- | **?#_operations_** | applies operations to the values in the stack.                                        |
-
--   operation string is evaluated left to right.
--   the sequence of decimal digits followed by any other character or end of the word is interpreted as a stack index. top value has index 0.
--   an index that is followed by a character pushes a copy of the value at that index.
--   an index that is followed by the end of the word replaces all values with the value at that index.
--   **!** character replaces the top value with the opposite.
--   **&** pops two values and pushes the result of logical 'and' operation.
--   **|** pops two values and pushes the result of logical 'or' operation.
--   **.** after an index does nothing.
--   **.** after another character pushes a copy of the top value.
-
- |
+| 查询               | 说明                                                                                                                                                                                                                                                                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **?name**          | 如果一个项目有属性 _name_ 值，则推送'true'，如果没有则推送'false'。                                                                                                                                                                                                                                                                          |
+| **?-name**         | 如果一个项目没有属性 _name_ 值，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                              |
+| **?_name_=_x_**    | **?                                                                                                                                                                                                                                                                                                                                          |
+| **?=_name_=_x_**   | 如果属性 _name_ 的值等于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
+| **?<name=_x_**     | 如果属性 _name_ 的值小于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
+| **?>name=_x_**     | 如果属性 _name_ 的值大于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
+| **?#_operations_** | 将操作用于堆栈中的值。<br>- 操作字符串从左到右进行评估。<br>- 小数点后的任何其他字符或字尾的序列被解释为堆栈索引。 最上面的值有索引0。<br>- 后面是一个字符的索引，推送该索引的值的副本。<br>- 后面是字尾的索引，用该索引的值替换所有的值。<br>- **!** 字符用相反的值替换顶部的值。<br>- **&** 弹出两个值并推送逻辑 "和 "操作的结果。<br>- ** | ** 弹出两个值，并推送逻辑 "或 "操作的结果。<br>- **.** 在一个索引之后不做任何事情。<br>- **.** 在另一个字符后推送一个顶层值的副本。 |
 
   
 
-Regular expressions are not supported in API, so do not try to send a query with the **~** symbol
+API中不支持正则表达式，所以不要用 **~** 符号来查询。
+ 
+例子：
 
-  
-
-Examples:
-
--   Get all ethernet and VLAN interfaces:
+- 获取所有以太网和VLAN接口：
 
 ```
 /interface/print
@@ -279,7 +257,7 @@ Examples:
 
 ```
 
--   Get all routes that have a non-empty comment:
+- 获取所有非空注释的路由：
 
 ```
 /ip/route/print
@@ -291,56 +269,220 @@ Examples:
 
 ### OID
 
-The print command can return OID values for properties that are available in SNMP. 
+打印命令可以返回SNMP中可用的属性的OID值。 
 
-In console, OID values can be seen by running 'print oid' command. In API, these properties have name that ends with ".oid", and can be retrieved by adding their name to the value of '.proplist'. An example:
+在控制台中，OID值可以通过运行'print oid'命令看到。在API中，这些属性的名称以".oid "结尾，可以把名称添加到'.proplist'的值中来检索。例子如下：
 
-<table class="relative-table wrapped confluenceTable" style="width: 91.2207%;"><colgroup><col style="width: 99.9925%;"></colgroup><tbody><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/system/resource/print</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=.proplist=uptime,cpu-load,uptime.oid,cpu-load.oid</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=uptime=01:22:53</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=cpu-load=0</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=uptime.oid=.1.3.6.1.2.1.1.3.0</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=cpu-load.oid=.1.3.6.1.2.1.25.3.3.1.2.1</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr></tbody></table>
+```shell
+/system/resource/print
+=.proplist=uptime,cpu-load,uptime.oid,cpu-load.oid
+ !re
+=uptime=01:22:53
+=cpu-load=0
+=uptime.oid=.1.3.6.1.2.1.1.3.0
+=cpu-load.oid=.1.3.6.1.2.1.25.3.3.1.2.1
+
+ !done
+!trap
+```
 
 ### !trap
 
-When for some reason API sentence fails trap is sent in return accompanied with **message** attribute and on some occasions **category** argument.
+当某些原因导致API句子失败时，陷阱就会被送回，并伴随着 **消息** 属性，在某些情况下还会有 **类别** 参数。
 
-#### message
+#### 消息
 
-When an API sentence fails, some generic message or message from the used internal process is returned to give more details about the failure
+当一个API句子失败时，会返回一些通用信息或来自所使用的内部程序的信息以提供关于失败的更多细节。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">&lt;&lt;&lt; /ip/address/add</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">&lt;&lt;&lt; =address=192.168.88.1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">&lt;&lt;&lt; =interface=asdf &lt;&lt;&lt;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">&gt;&gt;&gt;&nbsp;!trap</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">&gt;&gt;&gt; =category=1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">&gt;&gt;&gt; =message=input does not match any value of interface</code></div></div></td></tr></tbody></table>
+```shell
+<<< /ip/address/add
+<<< =address=192.168.88.1
+<<< =interface=asdf <<<
+ 
+>>> !trap
+>>> =category=1
+>>> =message=input does not match any value of interface
+```
 
-  
+#### 类别
 
-#### category
+如果是一般的错误，就会被分类，并返回错误类别。这个属性的值有
 
-if it is a general error, it is categorized and the error category is returned. possible values for this attribute are
+- 0 - 缺少项目或命令
+- 1 - 参数值失败
+- 2 - 命令的执行被打断
+- 3 - 与脚本有关的失败
+- 4 - 一般性故障
+- 5--与API相关的故障
+- 6-与TTY相关的故障
+- 7 - 用:return命令生成的值
 
--   0 - missing item or command
--   1 - argument value failure
--   2 - execution of command interrupted
--   3 - scripting related failure
--   4 - a general failure
--   5 - API related failure
--   6 - TTY related failure
--   7 - value generated with :return command
-
-## Command examples
+## 命令实例
 
 ### /system/package/getall
 
-<table class="relative-table wrapped confluenceTable" style="text-decoration: none;width: 91.6416%;"><colgroup><col style="width: 99.9831%;"></colgroup><tbody><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/system/package/getall</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*5802</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=routeros-x86</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=version=3.0beta2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=build-time=oct/18/2006 16:24:41</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=scheduled=</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*5805</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=system</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=version=3.0beta2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=build-time=oct/18/2006 17:20:46</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=scheduled=</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">... more&nbsp;!re sentences ...</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*5902</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=advanced-tools</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=version=3.0beta2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=build-time=oct/18/2006 17:20:49</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=scheduled=</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="confluenceTd"><br></td></tr></tbody></table>
+```shell
+/system/package/getall
+
+ !re
+=.id=*5802
+=disabled=no
+=name=routeros-x86
+=version=3.0beta2
+=build-time=oct/18/2006 16:24:41
+=scheduled=
+
+ !re
+=.id=*5805
+=disabled=no
+=name=system
+=version=3.0beta2
+=build-time=oct/18/2006 17:20:46
+=scheduled=
+
+... more !re sentences ...
+ !re
+=.id=*5902
+=disabled=no
+=name=advanced-tools
+=version=3.0beta2
+=build-time=oct/18/2006 17:20:49
+=scheduled=
+
+ !done
+
+```
 
 ### /user/active/listen
 
-<table class="relative-table wrapped confluenceTable" style="text-decoration: none;width: 91.6416%;"><colgroup><col style="width: 99.9831%;"></colgroup><tbody><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/user/active/listen</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*68</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=radius=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=when=oct/24/2006 08:40:42</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=admin</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=address=0.0.0.0</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=via=console</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*68</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.dead=yes</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">... more&nbsp;!re sentences ...</td></tr></tbody></table>
+```shell
+/user/active/listen
+
+ !re
+=.id=*68
+=radius=no
+=when=oct/24/2006 08:40:42
+=name=admin
+=address=0.0.0.0
+=via=console
+
+ !re
+=.id=*68
+=.dead=yes
+
+... more !re sentences ...
+```
 
 ### /cancel, simultaneous commands
 
-<table class="relative-table wrapped confluenceTable" style="text-decoration: none;width: 91.5815%;"><colgroup><col style="width: 99.9887%;"></colgroup><tbody><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/login</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=ret=856780b7411eefd3abadee2058c149a3</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">/login</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=admin</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=response=005062f7a5ef124d34675bf3e81f56c556</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">first start listening for interface changes (tag is 2)</em></td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/interface/listen</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">.tag=2</td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">disable interface (tag is 3)</em></td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/interface/set</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=disabled=yes</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=.id=ether1</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">.tag=3</td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">this is done for disable command (tag 3)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=3</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">enable interface (tag is 4)</em></td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/interface/set</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=disabled=no</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=.id=ether1</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">.tag=4</td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">this update is generated by change made by first set command (tag 3)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=yes</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=dynamic=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=running=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=ether1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=mtu=1500</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=type=ether</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=2</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">this is done for enable command (tag 4)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=4</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">get interface list (tag is 5)</em></td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/interface/getall</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">.tag=5</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">this update is generated by change made by second set command (tag 4)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=dynamic=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=running=yes</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=ether1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=mtu=1500</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=type=ether</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=2</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">these are replies to getall command (tag 5)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=dynamic=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=running=yes</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=ether1</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=mtu=1500</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=type=ether</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=5</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!re</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=.id=*2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=disabled=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=dynamic=no</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=running=yes</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=name=ether2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=mtu=1500</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=type=ether</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=5</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">here interface getall ends (tag 5)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=5</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">stop listening - request to cancel command with tag 2, cancel itself uses tag 7</em></td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">/cancel</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">=tag=2</td></tr><tr><td class="highlight-#eae6ff confluenceTd" data-highlight-colour="#eae6ff" title="Background colour : Light purple 35%">.tag=7</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">listen command is interrupted (tag 2)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!trap</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=category=2</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">=message=interrupted</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=2</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">cancel command is finished (tag 7)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=7</td></tr><tr><td class="confluenceTd"><br></td></tr><tr><td class="highlight-#c1c7d0 confluenceTd" data-highlight-colour="#c1c7d0" title="Background colour : Medium grey 45%">-- <em title="">listen command is finished (tag 2)</em></td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">&nbsp;!done</td></tr><tr><td class="highlight-#e3fcef confluenceTd" data-highlight-colour="#e3fcef" title="Background colour : Light green 35%">.tag=2</td></tr></tbody></table>
+```shell
+/login
 
-## Example client
+ !done
+=ret=856780b7411eefd3abadee2058c149a3
 
-A simple [API client in Python3](https://help.mikrotik.com/docs/display/ROS/Python3+Example)
+/login
+=name=admin
+=response=005062f7a5ef124d34675bf3e81f56c556
 
-Example output:
+ !done
+-- first start listening for interface changes (tag is 2)
+/interface/listen
+.tag=2
+-- disable interface (tag is 3)
+/interface/set
+=disabled=yes
+=.id=ether1
+.tag=3
+-- this is done for disable command (tag 3)
+ !done
+.tag=3
+
+-- enable interface (tag is 4)
+/interface/set
+=disabled=no
+=.id=ether1
+.tag=4
+-- this update is generated by change made by first set command (tag 3)
+ !re
+=.id=*1
+=disabled=yes
+=dynamic=no
+=running=no
+=name=ether1
+=mtu=1500
+=type=ether
+.tag=2
+
+-- this is done for enable command (tag 4)
+ !done
+.tag=4
+
+-- get interface list (tag is 5)
+/interface/getall
+.tag=5
+
+-- this update is generated by change made by second set command (tag 4)
+ !re
+=.id=*1
+=disabled=no
+=dynamic=no
+=running=yes
+=name=ether1
+=mtu=1500
+=type=ether
+.tag=2
+
+-- these are replies to getall command (tag 5)
+ !re
+=.id=*1
+=disabled=no
+=dynamic=no
+=running=yes
+=name=ether1
+=mtu=1500
+=type=ether
+.tag=5
+
+ !re
+=.id=*2
+=disabled=no
+=dynamic=no
+=running=yes
+=name=ether2
+=mtu=1500
+=type=ether
+.tag=5
+
+-- here interface getall ends (tag 5)
+ !done
+.tag=5
+
+-- stop listening - request to cancel command with tag 2, cancel itself uses tag 7
+/cancel
+=tag=2
+.tag=7
+
+-- listen command is interrupted (tag 2)
+ !trap
+=category=2
+=message=interrupted
+.tag=2
+
+-- cancel command is finished (tag 7)
+ !done
+.tag=7
+
+-- listen command is finished (tag 2)
+ !done
+.tag=2
+```
+
+## 客户端实例
+
+一个简单的 [Python3中的API客户端](https://help.mikrotik.com/docs/display/ROS/Python3+Example)
+
+输出示例：
 
 ```shell
 debian@localhost:~/api-test$ ./api.py 10.0.0.1 admin ''
@@ -375,11 +517,11 @@ debian@localhost:~/api-test$ ./api.py 10.0.0.1 admin ''
 
 ```
 
-## See also
+## 参见
 
 ### API examples
 
-API implementations in different languages, provided by different sources. They are not ordered in any particular order.
+不同语言的API实现，由不同来源提供。它们不以任何特定的顺序排列。
 
 -   [in Python3](https://help.mikrotik.com/docs/display/ROS/Python3+Example) by MikroTik
 -   [in .NET (C#) high-level API solution](https://github.com/danikf/tik4net) [forum thread](http://forum.mikrotik.com/viewtopic.php?f=9&t=99954) [additional info](https://github.com/danikf/tik4net/wiki) by danikf

@@ -1,182 +1,122 @@
-# SSH Server
+# SSH服务器
 
-RouterOS has built in SSH server that is enabled by default and is listening for incoming connections on port TCP/22. It is possible to change the port and disable the server under [Services](https://help.mikrotik.com/docs/display/ROS/Services) menu.
+RouterOS内置的SSH服务器默认是启用的，并且在TCP/22端口监听传入的连接。可以在 [服务](https://help.mikrotik.com/docs/display/ROS/Services) 菜单下改变端口并禁用该服务器。
 
-## Properties
+## 属性
 
 **Sub-menu:** `/ip ssh   `
 
-| 
-Property
+| Property                                                                      | Description                                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **allow-none-crypto** (_yes\| no_; Default: **no**)                           | 如果加密被设置为无，是否允许连接。                                                                                                                                                                                                                 |
+| **always-allow-password-login** (_yes \| no_; Default: **no**)                | 配置公钥授权时，是否同时允许密码登录。                                                                                                                                                                                                             |
+| **forwarding-enabled** (_both\| local\| no\| remote_; Default: **no**)        | 允许哪种SSH转发方式： <br>- no - 禁用SSH转发；<br>- local - 允许SSH客户端从服务器（路由器）发起连接，这个设置也控制动态转发；<br>- remote - 允许SSH客户端在服务器（路由器）上监听并转发进入的连接；<br>- both - 允许本地和远程的转发方式。         |
+| **host-key-size** (_1024 \| 1536 \| 2048 \| 4096 \| 8192_; Default: **2048**) | 当主机钥匙被重新生成时，要使用的RSA钥匙的大小。                                                                                                                                                                                                    |
+| **strong-crypto** (_yes \| no_; Default: **no**)                              | 使用更强的加密、HMAC算法，使用更大的DH素数，不允许使用更弱的算法：<br>- 倾向于使用256和192位加密，而不是128位；<br>- 禁用空加密；<br>- 倾向于使用sha256而不是sha1进行散列；<br>- 禁用md5；<br>- 在Diffie Hellman交换中使用2048位素数而不是1024位。 |
 
- | 
+**命令**
 
-Description
+| Property                                 | Description                                                                                                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **export-host-key** (_key-file-prefix_)  | 将公共和私人RSA/DSA密钥导出到文件。命令需要一个参数： <br>- **key-file-prefix** - 用于生成文件的前缀，例如，前缀'my'将生成文件'my_rsa'，'my_rsa.pub'等。 |
+| **import-host-key** (_private-key-file_) | 从指定文件中导入和替换私人DSA/RSA密钥。命令需要一个参数：<br>- **private-key-file** - 私人RSA/DSA密钥文件的名称                                          |
+| **regenerate-host-key** ()               | 在路由器上生成新的替换当前的一套私钥（DSA，RSA）。请注意，以前导入的密钥可能会停止工作。                                                                 |
 
- |     |
- | --- |  |
- |     |
+## 启用PKI认证
 
-Property
+为用户 _admin_ 导入公钥的例子
 
- | 
+[在客户端设备上生成SSH密钥](https://help.mikrotik.com/docs/display/ROS/SSH#SSH-Log-inusingRSApublic/privatekey)，将SSH公钥上传到路由器并导入。
 
-Description
+`/user ssh-keys import public-key-file=id_rsa.pub user=admin`
 
- |                                       |
- | ------------------------------------- | --------------------- |
- | **allow-none-crypto** (_yes           | no_; Default: **no**) | Whether to allow connection if cryptographic algorithms are set to none.                      |
- | **always-allow-password-login** (_yes | no_; Default: **no**) | Whether to allow password login at the same time when public key authorization is configured. |
- | **forwarding-enabled** (_both         | local                 | no                                                                                            | remote_; Default: **no**) | Allows to control which SSH forwarding method to allow: |
-
--   no - SSH forwarding is disabled;
--   local - Allow SSH clients to originate connections from the server(router), this setting controls also dynamic forwarding;
--   remote - Allow SSH clients to listen on the server(router) and forward incoming connections;
--   both - Allow both local and remote forwarding methods.
-
- |
-| **host-key-size** (_1024 | 1536 | 2048 | 4096 | 8192_; Default: **2048**) | What RSA key size to use when host key is being regenerated. |
-| **strong-crypto** (_yes | no_; Default: **no**) | Use stronger encryption, HMAC algorithms, use bigger DH primes and disallow weaker ones:
-
--   prefer 256 and 192 bit encryption instead of 128 bits;
--   disable null encryption;
--   prefer sha256 for hashing instead of sha1;
--   disable md5;
--   use 2048bit prime for Diffie Hellman exchange instead of 1024bit.
-
- |
-
-**Commands**
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                         |
- | --------------------------------------- | ----------------------------------------------------------------------------- |
- | **export-host-key** (_key-file-prefix_) | Export public and private RSA/DSA keys to files. Command takes one parameter: |
-
--   **key-file-prefix** - used prefix for generated files, for example, prefix 'my' will generate files 'my\_rsa', 'my\_rsa.pub' etc.
-
- |
-| **import-host-key** (_private-key-file_) | Import and replace private DSA/RSA key from specified file. Command takes one parameter:
-
--   **private-key-file** - name of the private RSA/DSA key file
-
- |
-| **regenerate-host-key** () | Generated new and replace current set of private keys (DSA, RSA) on the router. Be aware that previously imported keys might stop working. |
-
-## Enabling PKI authentication
-
-Example of importing public key for user _admin_
-
-[Generate SSH keys on the client device](https://help.mikrotik.com/docs/display/ROS/SSH#SSH-Log-inusingRSApublic/privatekey) (the device you will connect from). Upload the public SSH key to the router and import it.
-
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user ssh-keys </code><code class="ros functions">import </code><code class="ros value">public-key-file</code><code class="ros plain">=id_rsa.pub</code> <code class="ros value">user</code><code class="ros plain">=admin</code></div></div></td></tr></tbody></table>
-
-# SSH Client
+# SSH客户
 
 **Sub-menu:** `/system ssh`
 
-## **Simple log-in to remote host**
+## 简单登录到远程主机
 
-It is able to connect to remote host and initiate ssh session. IP address supports both IPv4 and IPv6.
+它能连接到远程主机并启动ssh会话。IP地址支持IPv4和IPv6。
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
+```shell
+/system ssh 192.168.88.1
+/system ssh 2001:db8:add:1337::beef
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.88.1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/system ssh 2001:db8:add:1337::beef</code></div></div></td></tr></tbody></table>
+在这种情况下，提供给远程主机的用户名是已经登录到路由器的用户名。如果需要其他值，则必须使用 _user=\<username\>_。
 
-In this case user name provided to remote host is one that has logged into the router. If other value is required, then _user=<username>_ has to be used.
+```shell
+/system ssh 192.168.88.1 user=lala
+/system ssh 2001:db8:add:1337::beef user=lala
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
+## 从路由器的特定IP地址登录
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.88.1 user=lala</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/system ssh 2001:db8:add:1337::beef user=lala</code></div></div></td></tr></tbody></table>
+出于测试或安全原因，可能需要使用某些连接的源地址登录到其他主机。在这种情况下，要使用 _src-address=\<ip address\>_ 参数。请注意，这种情况下的IP地址同时支持IPv4和IPv6。
 
-## **Log-in from certain IP address of the router**
-
-For testing or security reasons it may be required to log-in to other host using certain source address of the connection. In this case _src-address=<ip address>_ argument has to be used. Note that IP address in this case supports both, IPv4 and IPv6.
-
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.88.1 src-address=192.168.89.2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/system ssh 2001:db8:add:1337::beef src-address=2001:db8:bad:1000::2</code></div></div></td></tr></tbody></table>
+```shell
+/system ssh 192.168.88.1 src-address=192.168.89.2
+/system ssh 2001:db8:add:1337::beef src-address=2001:db8:bad:1000::2
+```
 
 in this case, ssh client will try to bind to address specified and then initiate ssh connection to remote host.
 
-## **Log-in using RSA public/private key**
+## 使用RSA公钥/私钥登录
 
-Example of importing private key for user _admin_
+为用户 _admin_ 导入私钥的例子
 
-First of all, export currently generated SSH keys to a file:
+首先，将当前生成的SSH密钥导出到一个文件：
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
+`/ip ssh export-host-key key-file-prefix=admin`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip ssh export-host-key key-file-prefix=admin</code></div></div></td></tr></tbody></table>
+生成两个文件 _admin_rsa_ 和 _admin_rsa.pub_ 。pub文件需要在SSH服务器端被信任（[如何在RouterOS上启用SSH PKI](https://help.mikrotik.com/docs/display/ROS/SSH#SSH-EnablingPKIauthentication)） 私钥必须为特定用户添加。
 
-Two files _admin\_rsa_ and _admin\_rsa.pub_ will be generated. The pub file needs to be trusted on the SSH server side ([how to enable SSH PKI on RouterOS](https://help.mikrotik.com/docs/display/ROS/SSH#SSH-EnablingPKIauthentication)) The private key has to be added for the particular user.
+`/user ssh-keys private import user=admin private-key-file=admin_rsa`
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
+只有在路由器上有完全权限的用户才能在 _/user ssh-keys private_ 下改变 "user "属性值。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user ssh-keys private </code><code class="ros functions">import </code><code class="ros value">user</code><code class="ros plain">=admin</code> <code class="ros value">private-key-file</code><code class="ros plain">=admin_rsa</code></div></div></td></tr></tbody></table>
+在SSH服务器上安装了公钥并被信任后，可以创建一个PKI SSH会话。
 
-Only user with full rights on the router can change 'user' attribute value under _/user ssh-keys private_
+`/system ssh 192.168.1.1`
 
-After the public key is installed and trusted on the SSH server, a PKI SSH session can be created.
+## 执行远程命令
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
+要执行远程命令，必须在登录行的最后提供。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.1.1</code></div></div></td></tr></tbody></table>
+```shell
+/system ssh 192.168.88.1 "/ip address print"
+/system ssh 192.168.88.1 command="/ip address print"
+/system ssh 2001:db8:add:1337::beef "/ip address print"
+/system ssh 2001:db8:add:1337::beef command="/ip address print"
+```
 
-## **Executing remote commands**
+如果服务器不支持pseudo-tty（ssh -T或ssh host命令），如mikrotik ssh服务器，那么就不能通过SSH发送多行命令。
 
-To execute remote command it has to be supplied at the end of log-in line
+例如，向MikroTik路由器发送命令 `/ip address\n add address=1.1.1.1/24` 将会失败。
 
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.88.1 "/ip address print"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/system ssh 192.168.88.1 command="/ip address print"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system ssh 2001:db8:add:1337::beef "/ip address print"</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/system ssh 2001:db8:add:1337::beef command="/ip address print"</code></div></div></td></tr></tbody></table>
-
-_If the server does not support pseudo-tty (ssh -T or ssh host command), like mikrotik ssh server, then it is not possible to send multiline commands via SSH_
-
-For example, sending command `"/ip address \n add address=1.1.1.1/24"` to MikroTik router will fail.
-
-If you wish to execute remote commands via **scripts** or **scheduler**, use command **ssh-exec**.
+如果你想通过 **脚本** 或 **调度器** 执行远程命令，请使用 **ssh-exec** 命令。
 
 # SSH exec
 
 **Sub-menu:** `/system ssh-exec`
 
-Command _ssh-exec_ is a non-interactive ssh command, thus allowing to execute commands remotely on a device via scripts and scheduler.
+_ssh-exec_ 是一个非交互式的ssh命令，因此可以通过脚本和调度器在设备上远程执行命令。
 
-## **Retrieve information**
+## 检索信息
 
-The command will return two values:
+该命令将返回两个值：
 
--   **exit-code**: returns 0 if the command execution succeeded
--   **output**: returns the output of remotely executed command
-
-  
-**Example:** Code below will retrieve interface status of ether1 from device 10.10.10.1 and output the result to "Log"
-
-[?](https://help.mikrotik.com/docs/display/ROS/SSH#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">Status ([</code><code class="ros constants">/system ssh-exec address=10.10.10.1 user=remote command=":</code><code class="ros functions">put </code><code class="ros plain">([</code><code class="ros constants">/interface ethernet </code><code class="ros functions">monitor </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">name</code><code class="ros plain">=ether1]</code> <code class="ros plain">once as-value]-&gt;\"status\")" as-value]-&gt;</code><code class="ros string">"output"</code><code class="ros plain">)</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">log </code><code class="ros functions">info </code><code class="ros keyword">$Status</code></div></div></td></tr></tbody></table>
-
-For security reasons, plain text password input is not allowed. To ensure safe execution of the command remotely, use SSH PKI authentication for users on both sides.
+- **exit-code**：如果命令执行成功则返回0。
+- **output**：返回远程执行命令的输出。
 
   
+**例子：** 下面的代码从设备10.10.10.1检索ether1的接口状态，并将结果输出到"日志"中。
 
-the user group and script policy executing the command requires **test** permission
+```shell
+:local Status ([/system ssh-exec address=10.10.10.1 user=remote command=":put ([/interface ethernet monitor [find where name=ether1] once as-value]->\"status\")" as-value]->"output")
+:log info $Status
+```
+
+出于安全考虑，不允许输入纯文本密码。为了确保安全地远程执行命令，对双方的用户使用SSH PKI认证。
+ 
+执行该命令的用户组和脚本策略需要 **测试** 权限

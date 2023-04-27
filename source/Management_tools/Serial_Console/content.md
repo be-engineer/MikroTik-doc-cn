@@ -1,538 +1,241 @@
-# Overview
+# 概述
 
-The Serial Console and Terminal are tools, used to communicate with devices and other systems that are interconnected via the serial port. The serial terminal may be used to monitor and configure many devices - including modems, network devices (including MikroTik routers), and any device that can be connected to a serial (asynchronous) port.
+串行控制台和终端是一种工具，用于和串口相互连接的设备和其他系统进行通信。串行终端可用于监控和配置许多设备-包括调制解调器、网络设备（包括MikroTik路由器），以及任何可以连接到串行（异步）端口的设备。
 
-The Serial Console feature is for configuring direct-access configuration facilities (monitor/keyboard and serial port) that are mostly used for initial or recovery configuration. A special null-modem cable is needed to connect two hosts (like two PCs, or two routers; not modems). Note that a terminal emulation program (e.g., HyperTerminal on Windows or minicom on Linux) is required to access the serial console from another computer. Default settings of the router's serial port are 115200 bits/s (for x86 default is 9600 bits/s), 8 data bits, 1 stop bit, no parity, hardware (RTS/CTS) flow control. 
+串行控制台功能用于配置直接访问的配置设施（监视器/键盘和串行端口），这些设施大多用于初始或恢复配置。需要一根特殊的空调制解调器电缆来连接两台主机（如两台PC，或两台路由器；不是调制解调器）。注意，需要一个终端仿真程序（如Windows的HyperTerminal或Linux的minicom）来从另一台计算机访问串行控制台。路由器串口的默认设置为115200比特/秒（x86系统默认为9600比特/秒），8个数据位，1个停止位，无奇偶校验，硬件（RTS/CTS）流量控制。 
 
-Several customers have described situations where the Serial Terminal (managing side) feature would be useful:
+一些客户说明了串行终端（管理端）功能的有用情况：
 
--   on a mountaintop, where a MikroTik wireless installation sits next to equipment (including switches and Cisco routers) that can not be managed in-band (by telnet through an IP network)
--   monitoring weather-reporting equipment through a serial port
--   connection to a high-speed microwave modem that needed to be monitored and managed by a serial connection
+- 在山顶上，MikroTik无线设备与无法进行带内管理（通过IP网络的telnet）的设备（包括交换机和Cisco路由器）相邻。
+- 通过串口监控天气报告设备
+- 连接到一个高速微波调制解调器，需要通过串口连接进行监控和管理。
 
-With the serial-terminal feature of the MikroTik, up to 132 (and, maybe, even more) devices can be monitored and controlled.
+利用MikroTik的串行终端，可以监测和控制多达132个（甚至可能更多）设备。
 
-# Serial Console Connections
+# 串行控制台的连接
 
-Serial communications between devices are done with RS232, it is one of the oldest and most widely spread communication methods in the computer world. It was used for communication with the modems or other peripheral devices DTE/DCE. In the modern world, the main use of serial communication is DTE/DTE communication (Data Terminal Equipment) e.g. using a null-modem cable. There are several types of null modem cables and some of them may not work with RouterBoards at all.
+设备之间的串行通信是通过RS232完成的，它是计算机世界中最古老和最广泛传播的通信方法之一。用于与调制解调器或其他外围设备DTE/DCE的通信。在现代社会，串行通信的主要用途是DTE/DTE通信（数据终端设备），例如，使用空调制解调器电缆。有几种类型的空调制解调器电缆，其中一些可能不能和RouterBoards一起使用。
 
-## Null Modem Without Handshake
+## 无握手的空调制解调器
 
-This cable does not utilize handshake pins at all:
+这种电缆完全不使用握手引脚：
 
-| 
-Side1 (DB9f)
+| Side1 (DB9f) | Side2 (DB9f) | Function |
+| ------------ | ------------ | -------- |
+| 2            | 3            | Rx ← Tx  |
+| 3            | 2            | Tx → Rx  |
+| 5            | 5            | GND      |
 
- | 
+允许交叉连接的Rx/Tx线路上只有数据流量。这种类型的电缆不进行硬件流量控制。执行流量控制的唯一方法是使用XOFF和XON字符的软件流量控制。
 
-Side2 (DB9f)
+## 带有回环握手的空调制解调器
 
- | 
+第一条电缆的问题是，当连接到一个启用了硬件流量控制的设备上时，软件在检查调制解调器信号线时可能会挂起。 
 
-Function
+带有回环握手的空调制解调器电缆可以解决这个问题，它的目的是欺骗定义良好的软件，使其认为有握手功能：
 
- |     |
- | --- |  |  |
- |     |
+| Side1 (DB9f) | Side2 (DB9f) | Function       |
+| ------------ | ------------ | -------------- |
+| 2            | 3            | Rx ← Tx        |
+| 3            | 2            | Tx → Rx        |
+| 5            | 5            | GND            |
+| 1+4+6        | -            | DTR → CD + DSR |
+| -            | 1+4+6        | DTR → CD + DSR |
+| 7+8          | -            | RTS → CTS      |
+| -            | 7+8          | RTS → CTS      |
 
-Side1 (DB9f)
+用这种电缆不能实现硬件流控制。此外，如果远程软件不发送自己的准备信号到DTR输出，通信就会中断。
 
- | 
+## 带部分握手的空调制解调器
 
-Side2 (DB9f)
+这种电缆可以在启用流量控制时使用，而不会与DTE/DCE通信中使用流量控制的原始方式不兼容。
 
- | 
+不建议在RouterOS中使用这种类型的电缆。
 
-Function
+| Side1 (DB9f) | Side2 (DB9f) | Function          |
+| ------------ | ------------ | ----------------- |
+| 1            | 7+8          | RTS2 → CTS2 + CD1 |
+| 2            | 3            | Rx ← Tx           |
+| 3            | 2            | Tx → Rx           |
+| 4            | 6            | DTR → DSR         |
+| 5            | 5            | GND               |
+| 6            | 4            | DSR ← DTR         |
+| 7+8          | 1            | RTS1 → CTS1 + CD2 |
 
- |     |
- | --- | --- |  |
- | 2   | 3   |
+具有完全握手功能的空调制解调器
 
-Rx ← Tx
+与特殊软件一起使用，不要与RouterOS一起使用。
 
- |
-| 3 | 2 | Tx → Rx |
-| 5 | 5 | GND |
+| Side1 (DB9f) | Side2 (DB9f) | Function  |
+| ------------ | ------------ | --------- |
+| 2            | 3            | Rx ← Tx   |
+| 3            | 2            | Tx → Rx   |
+| 4            | 6            | DTR → DSR |
+| 5            | 5            | GND       |
+| 6            | 4            | DSR ← DTR |
+| 7            | 8            | RTS → CTS |
+| 8            | 7            | CTS ← RTS |
 
-It allows data-only traffic on the cross-connected Rx/Tx lines. Hardware flow control is not possible with this type of cable. The only way to perform flow control is with software flow control using the XOFF and XON characters.
+## 空调制解调器兼容性
 
-## Null Modem With LoopBack Handshake
+下面的汇总表将使你能够为你的应用选择合适的电缆。
 
-The problem with the first cable is when connected to a device on which hardware flow control is enabled software may hang when checking modem signal lines. 
+| No handshake                                 | Loopback handshake | Partial  handshake | Full  handshake |
+| -------------------------------------------- | ------------------ | ------------------ | --------------- | --- |
+| RouterBoards with limited port functionality | Y                  | Y                  | N*              | N   |
+| RouterBoards   with full functionality       | Y                  | Y                  | Y               | N   |
 
-Null modem cable with loop back handshake fixes the problem, its main purpose is to fool well-defined software into thinking there is handshaking available:
-
-| 
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- |  |  |
- |     |
-
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- | --- |  |
- | 2   | 3   |
-
-Rx ← Tx
-
- |
-| 3 | 2 | Tx → Rx |
-| 5 | 5 | 
-
-GND
-
- |
-| 1+4+6 | \- | DTR → CD + DSR |
-| \- | 1+4+6 | DTR → CD + DSR |
-| 7+8 | \- | RTS → CTS |
-| \- | 7+8 | RTS → CTS |
-
-Hardware flow control is not possible with this cable. Also if remote software does not send its own ready signal to DTR output communication will hang.
-
-## Null Modem With Partial Handshake
-
-This cable can be used when flow control enabled without being incompatible with the original way flow control was used with DTE/DCE communication.
-
-This type of cable is not recommended for use with RouterOS.
-
-| 
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- |  |  |
- |     |
-
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- | --- |  |
- | 1   | 7+8 |
-
-RTS2 → CTS2 + CD1
-
- |
-| 2 | 3 | Rx ← Tx |
-| 3 | 2 | 
-
-Tx → Rx
-
- |
-| 4 | 6 | DTR → DSR |
-| 5 | 5 | GND |
-| 6 | 4 | DSR ← DTR |
-| 7+8 | 1 | RTS1 → CTS1 + CD2 |
-
-## Null Modem With Full Handshake
-
-Used with special software and should not be used with RouterOS.
-
-| 
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- |  |  |
- |     |
-
-Side1 (DB9f)
-
- | 
-
-Side2 (DB9f)
-
- | 
-
-Function
-
- |     |
- | --- | --- | ------- |
- | 2   | 3   | Rx ← Tx |
- | 3   | 2   |
-
-Tx → Rx
-
- |
-| 4 | 6 | DTR → DSR |
-| 5 | 5 | GND |
-| 6 | 4 | DSR ← DTR |
-| 7 | 8 | RTS → CTS |
-| 8 | 7 | CTS ← RTS |
-
-## Null Modem Compatibility
-
-Summary tables below will allow you to choose the proper cable for your application.
-
-| 
-  
-
-
- | 
-
-No handshake
-
- | 
-
-Loopback  
-handshake
-
-
-
- | 
-
-Partial  
-handshake
-
-
-
- | 
-
-Full  
-handshake
-
- |     |
- | --- |  |  |  |  |
- |     |
+\* 只有硬件流量控制被禁用时才可能工作
 
   
+| No handshake                                        | Loopback  handshake | Partial handshake | Full  handshake |
+| --------------------------------------------------- | ------------------- | ----------------- | --------------- | --- |
+| Software flow control only                          | Y                   | Y*                | Y**             | Y** |
+| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y*              | N   |
+| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y**             | N   |
+| High speed communication using special software     | N                   | N                 | Y*              | Y   |
+\* 可以作为替代方案使用
+** 可以使用，但不建议使用
 
+## RJ45串口
 
- | 
+这种类型的端口用于RouterBOARD 2011、3011、4011、CCR1072、CCR1036 r2、CCR2xxx和CRS系列设备，有时被称为 "思科式"串行端口。
 
-No handshake
-
- | 
-
-Loopback  
-handshake
-
-
-
- | 
-
-Partial  
-handshake
-
-
-
- | 
-
-Full  
-handshake
-
- |                                 |
- | ------------------------------- | --- | --- | --- | --- |
- | RouterBoards                    |
- | with limited port functionality | Y   | Y   | N\* | N   |
- | RouterBoards                    |
- | with full functionality         | Y   | Y   | Y   | N   |
-
-\* - may work only when hardware flow control is disabled
-
-  
-
-| 
-  
-
-
- | 
-
-No handshake
-
- | 
-
-Loopback  
-handshake
-
-
-
- | 
-
-Partial  
-handshake
-
-
-
- | 
-
-Full  
-handshake
-
- |     |
- | --- |  |  |  |  |
- |     |
-
-  
-
-
- | 
-
-No handshake
-
- | 
-
-Loopback  
-handshake
-
-
-
- | 
-
-Partial  
-handshake
-
-
-
- | 
-
-Full  
-handshake
-
- |                               |
- | ----------------------------- | --- | --- | ----- | ----- |
- | Software flow                 |
- | control only                  | Y   | Y\* | Y\*\* | Y\*\* |
- | Low-speed DTE/DCE compatible  |
- | hardware flow control         | N   | Y   | Y\*   | N     |
- | High-speed DTE/DCE compatible |
- | hardware flow control         | N   | Y   | Y\*\* | N     |
- | High speed                    |
-communication  
-using special software | N | N | Y\* | Y |
-
-\* - will work as an alternative
-
-\*\* - will work but not recommended
-
-## RJ45 Type Serial Port
-
-This type of port is used on RouterBOARD 2011, 3011, 4011, CCR1072, CCR1036 r2, CCR2xxx and CRS series devices, sometimes called "Cisco style" serial port.
-
-RJ45 to DB9 Cable Pinout:
+RJ45到DB9电缆引脚：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328139/Rj45-pinout.gif.png?version=1&modificationDate=1570702738344&api=v2)  
   
 
-| 
-Signal
+| Signal | Console Port (DTE)  RJ-45 | RJ-45 Rolled Cable  RJ-45 Pin | Adapter DB-9 Pin | Adapter DB-25 Pin | Signal |
+| ------ | ------------------------- | ----------------------------- | ---------------- | ----------------- | ------ |
+| RTS    | 1                         | 8                             | 8                | 5                 | CTS    |
+| DTR    | 2                         | 7                             | 6                | 6                 | DSR    |
+| TxD    | 3                         | 6                             | 2                | 3                 | RxD    |
+| Ground | 4                         | 5                             | 5                | 7                 | Ground |
+| Ground | 5                         | 4                             | 5                | 7                 | Ground |
+| RxD    | 6                         | 3                             | 3                | 2                 | TxD    |
+| DSR    | 7                         | 2                             | 4                | 20                | DTR    |
+| CTS    | 8                         | 1                             | 7                | 4                 | RTS    |
 
- | 
+## RB M33G 额外的串口接头
 
-Console Port (DTE)  
-RJ-45
+对于RBM33G，额外的串口接头可以连接到GPIO引脚U3_RXD, GND, U3_TXD, 和3V3上。
 
- | 
+需要RouterOS 6.45.1+和固件!
 
-RJ-45 Rolled Cable  
-RJ-45 Pin
+## CCR 串口接头
 
- | 
+云核心路由器系列设备在PCB板上有一个串口接头，称为J402或100
 
-Adapter DB-9 Pin
-
- | 
-
-Adapter DB-25 Pin
-
- | 
-
-Signal
-
- |     |
- | --- |  |  |  |  |  |
- |     |
-
-Signal
-
- | 
-
-Console Port (DTE)  
-RJ-45
-
- | 
-
-RJ-45 Rolled Cable  
-RJ-45 Pin
-
- | 
-
-Adapter DB-9 Pin
-
- | 
-
-Adapter DB-25 Pin
-
- | 
-
-Signal
-
- |        |
- | ------ | --- | --- | --- | --- | ------ |
- | RTS    | 1   | 8   | 8   | 5   | CTS    |
- | DTR    | 2   | 7   | 6   | 6   | DSR    |
- | TxD    | 3   | 6   | 2   | 3   | RxD    |
- | Ground | 4   | 5   | 5   | 7   | Ground |
- | Ground | 5   | 4   | 5   | 7   | Ground |
- | RxD    | 6   | 3   | 3   | 2   | TxD    |
- | DSR    | 7   | 2   | 4   | 20  | DTR    |
- | CTS    | 8   | 1   | 7   | 4   | RTS    |
-
-## RB M33G Additional Serial Header
-
-For RBM33G additional serial header can be attached on GPIO pins U3\_RXD, GND, U3\_TXD, and 3V3
-
-RouterOS 6.45.1+ and firmware are required!
-
-  
-
-## CCR Serial Header
-
-The Cloud Core Router series devices have a serial header on the PCB board, called J402 or 100
-
-Here is the pin-out of that connector:
+以下是该连接器的引脚分布：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328139/J402.png?version=1&modificationDate=1570702787676&api=v2)
 
-# Serial Terminal Usage
+# 串行终端的使用
 
-RouterOS allows to communicate with devices and other systems that are connected to the router via the serial port using a `/system serial-terminal`  command. All keyboard input will be forwarded to the serial port and all data from the port is output to the connected device.
+RouterOS允许使用 `/system serial-terminal` 命令与通过串口连接到路由器的设备和其他系统进行通信。所有的键盘输入将被转发到串口，所有来自串口的数据将被输出到连接的设备。
 
-First, you have to have a free serial port, if the device has only one serial port (like all RouterBoards, WRAP/ALIX boards, etc.) you will have to disable the system console on this serial port to be able to use it as **Serial Terminal** for connection to other equipment (switches, modems, etc):
+首先必须有一个空闲的串口，如果设备只有一个串口（像所有的RouterBoards、WRAP/ALIX板等），必须禁用这个串口上的系统控制台，以便能够把它作为 **串口终端** 与其他设备（交换机、调制解调器等）连接：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
+`/system console disable 0`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system console </code><code class="ros functions">disable </code><code class="ros plain">0</code></div></div></td></tr></tbody></table>
+请确保只是禁用控制台，而不是删除，当真正删除它时，RouterOS会在下次重启后重新创建控制台。
 
-Be sure to just disable the console rather than removing it, as RouterOS will recreate the console after the next reboot when you really remove it.
+**注意，有一些注意事项是你应该注意的! 花点时间了解这些限制，以避免在将设备连接到RouterBoard的串行端口时发生奇怪的事情：**。
 
-**Note that there are some caveats you should be aware of! Take your time understanding those limits to avoid strange things to happen when connecting a device to a serial port on a RouterBoard:**
-
--   By re-configuring port Serial0 on a RouterBoard as seen above, you will lose your serial console access to RouterOS. This means, that if you cannot access your RouterBoard over the network anymore, you might even have to reset the whole configuration of it to gain access again.
--   When rebooting a RouterBoard the boot loader (RouterBOOT) will always use the serial console (Serial0 on RouterBoards) to send out some startup messages and offer access to the RouterBOOT menu.
+- 通过重新配置RouterBoard上的Serial0端口，如上图所示，你会失去对RouterOS的串行控制台访问。这意味着如果不能再通过网络访问你的RouterBoard，甚至可能不得不重新设置它的整个配置以再次获得访问权。
+- 当重启RouterBoard时，启动加载器（RouterBOOT）将始终使用串行控制台（RouterBoards上的Serial0）来发送一些启动信息并提供对RouterBOOT菜单的访问。
     
-    Having text coming out of the serial port to the connected device might confuse your attached device. Furthermore, in the standard config, you can enter the RouterBOOT menu by pressing **ANY** key. So if your serial device sends any character to the serial port of your RouterBoard during boot time, the RouterBoard will enter the RouterBOOT menu and will **NOT** boot RouterOS unless you manually intervene!
+    让文本从串行端口出来到所连接的设备上，可能会使你所连接的设备感到困惑。此外，在标准配置中，你可以通过按 **任意** 键进入RouterBOOT菜单。因此，如果你的串行设备在启动时向RouterBoard的串行端口发送任何字符，RouterBoard将进入RouterBOOT菜单，除非你手动干预，否则将 **不** 启动RouterOS!
     
-    You can reconfigure RouterBOOT to enter the RouterBOOT menu only when a **DEL** character is received - use this to reduce the chance to get a router that's stuck when rebooting!
+    可以重新配置RouterBOOT，使其只在收到 **DEL** 字符时才进入RouterBOOT菜单-用这个方法来减少重启时路由器卡住的机会!
     
-    Or if newer versions are used ["Silent boot"](https://wiki.mikrotik.com/wiki/Silent_boot "Silent boot") feature can be used to suppress any output on the serial interface, including removal of booting sounds.
+    或者如果使用较新的版本 [Silent boot](https://wiki.mikrotik.com/wiki/Silent_boot "Silent boot") 功能，可以用来抑制串行接口上的任何输出，包括去除启动的声音。
     
 
-  
+接下来根据所连接设备的串口设置来配置串口。使用以下命令，把串口设置为19200 Baud 8N1。需要使用什么设置取决于所连接的设备：
 
-  
+`/port set serial0 baud-rate=19200 data-bits=8 parity=none stop-bits=1`
 
-Next, you will have to configure your serial port according to the serial port settings of the connected device. Using the following command you will set your serial port to 19200 Baud 8N1. What settings you need to use depends on the device you connect:
+也可以通过设置让RouterOS猜测需要的波特率
 
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
+`/port set serial0 baud-rate=auto`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/port </code><code class="ros functions">set </code><code class="ros plain">serial0 </code><code class="ros value">baud-rate</code><code class="ros plain">=19200</code> <code class="ros value">data-bits</code><code class="ros plain">=8</code> <code class="ros value">parity</code><code class="ros plain">=none</code> <code class="ros value">stop-bits</code><code class="ros plain">=1</code></div></div></td></tr></tbody></table>
+现在是连接设备的时候了，如果尚未完成的话。通常必须使用 [空调制解调器电缆](https://help.mikrotik.com/docs/display/ROS/Serial+Console#SerialConsole-NullModemWithoutHandshake)（与以太网的交叉电缆相同）。现在可以开始了：
 
-You can also try to let RouterOS guess the needed baud rate by setting
+`/system serial-terminal serial0`
 
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
+这将使你能够访问你连接到Serial0端口的设备。**_Ctrl-A_** 是前缀键，这意味着你将进入一个小 "菜单"。如果你需要发送 **_Ctrl-A_** 字符到远程设备，请按 **_Ctrl-A_** 两次。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/port </code><code class="ros functions">set </code><code class="ros plain">serial0 </code><code class="ros value">baud-rate</code><code class="ros plain">=auto</code></div></div></td></tr></tbody></table>
+如果你想退出与串行设备的连接，输入 **_Ctrl-A_**，然后按 **_Q_**。这将使你回到RouterOS的控制台。
 
-Now's the time to connect your device if not already done. Usually, you will have to use a [null modem cable](https://help.mikrotik.com/docs/display/ROS/Serial+Console#SerialConsole-NullModemWithoutHandshake) (the same thing as a cross-over-cable for Ethernet). Now we're ready to go:
+不要以不正确的速度连接设备，避免转储二进制数据。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
+# 特殊登录
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system serial-terminal serial0</code></div></div></td></tr></tbody></table>
+特殊登录用来访问另一个通过串行电缆连接的设备（例如交换机），打开一个telnet/ssh会话，可以直接进入这个设备（无需先登录RouterOS）。 
 
-This will give you access to the device you connected to port Serial0. **_Ctrl-A_** is the prefix key, which means that you will enter a small "menu". If you need to send the **_Ctrl-A_** character to a remote device, press **_Ctrl-A_** twice.
-
-If you want to exit the connection to the serial device type **_Ctrl-A_**, then **_Q_**. This will return you to your RouterOS console.
-
-Do not connect to devices at an incorrect speed and avoid dumping binary data.
-
-# Special Login
-
-Special login can be used to access another device (like a switch, for example) that is connected through a serial cable by opening a telnet/ssh session that will get you directly on this device (without having to login to RouterOS first). 
-
-For demonstration we will use two RouterBoards and one PC. 
+为了演示，使用两个RouterBoards和一台PC。 
 
 ![](https://help.mikrotik.com/docs/download/attachments/328139/Special-login-setup.jpg?version=2&modificationDate=1657265964296&api=v2)
 
-Routers R1 and R2 are connected with serial cable and PC is connected to R1 via ethernet. Lets say we want to access router R2 via serial cable from our PC. To do this you have to set up serial interface proxy on R1. It can be done by feature called **special-login**.
+路由器R1和R2用串行电缆连接，PC通过以太网与R1连接。假设想通过串行电缆从PC访问路由器R2。要做到这一点，必须在R1上设置串行接口代理。可以通过名为 **特殊登录** 功能来完成。
 
-By default console is bound to serial port. 
+默认情况下，控制台绑定到串行端口。 
 
-First task is to unbind console from serial simply by disabling entry in /system console menu:
+第一项任务是取消控制台与串口的绑定，只需禁用/系统控制台菜单中的条目：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/system console&gt; </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, U - used, F - free</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; PORT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TERM</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 X serial0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vt102</code></div></div></td></tr></tbody></table>
-
-Next step is to add new user, in this case _serial_, and bind it to the serial port
-
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/user </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=serial</code> <code class="ros value">group</code><code class="ros plain">=full</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/special-login </code><code class="ros functions">add </code><code class="ros value">user</code><code class="ros plain">=serial</code> <code class="ros value">port</code><code class="ros plain">=serial0</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/special-login </code><code class="ros plain">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments">#&nbsp;&nbsp; USER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PORT</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; serial&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; serial0</code></div></div></td></tr></tbody></table>
-
-Now we are ready to access R2 from our PC.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">maris@bumba</code><code class="ros constants">:/$ ssh serial@10.1.101.146</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[Ctrl-A is the prefix key]</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">R2 4.0beta4</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">R2 Login</code><code class="ros constants">:</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R2] &gt;</code></div></div></td></tr></tbody></table>
-
-To exit special login mode press Ctrl+A and Q
-
-[?](https://help.mikrotik.com/docs/display/ROS/Serial+Console#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[Q - </code><code class="ros functions">quit </code><code class="ros plain">connection]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [B - </code><code class="ros functions">send </code><code class="ros plain">break]</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[A - </code><code class="ros functions">send </code><code class="ros plain">Ctrl-A prefix]&nbsp;&nbsp; [R - autoconfigure rate]</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">Connection to 10.1.101.146 closed.</code></div></div></td></tr></tbody></table>
-
-  
-
-After router reboot and serial cable attached router may stuck at Bootloader main menu
-
-To fix this problem you need to allow access bootloader main menu from <any> key to <delete>:
-
--   enter bootloader menu
--   press 'k' for boot key options
--   press '2' to change key to <delete>
-
+```shell
+[admin@MikroTik] /system console> print
+Flags: X - disabled, U - used, F - free
+ #   PORT                                                                    TERM
+ 0 X serial0                                                                 vt102
 ```
+
+下一步是添加新用户，在这里是 _serial_，并将它和串口绑定。
+
+```shell
+[admin@MikroTik] > /user add name=serial group=full
+[admin@MikroTik] > /special-login add user=serial port=serial0 disabled=no
+[admin@MikroTik] > /special-login print
+Flags: X - disabled
+ #   USER                                                                    PORT
+ 0   serial                                                                  serial0
+```
+
+现在已经准备好从PC上访问R2。
+
+```shell
+maris@bumba:/$ ssh serial@10.1.101.146
+ 
+[Ctrl-A is the prefix key]
+R2 4.0beta4
+R2 Login:
+ 
+[admin@R2] >
+```
+
+要退出特殊登录模式，请按Ctrl+A和Q
+
+```shell
+[admin@MikroTik] >
+[Q - quit connection]      [B - send break]
+[A - send Ctrl-A prefix]   [R - autoconfigure rate]
+ 
+ 
+Connection to 10.1.101.146 closed.
+```
+
+
+路由器重启，连接串行电缆后，路由器可能会卡在启动器主菜单上。
+
+要解决这个问题，需要允许<any>键到<delete>键访问bootloader主菜单：
+
+- 进入bootloader菜单
+- 按'k'键查看启动键选项
+- 按'2'将键改为<删除>。
+
+```shell
 What do you want to configure?                                                   
 d - boot delay                                                                
 k - boot key                                                                  

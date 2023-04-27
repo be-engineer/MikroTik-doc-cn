@@ -1,80 +1,84 @@
-## Summary
+# 概述
 
-**Quickset** is a simple configuration wizard page that prepares your router in a few clicks. It is the first screen a user sees, when opening the default IP address 192.168.88.1 in a web browser.
+**Quickset** 是一个简单的配置向导页面，只需点击几下就能准备好路由器。它是用户在网络浏览器中打开默认IP地址192.168.88.1时看到的第一个屏幕。
 
-Quickset is available for all devices that have some sort of default configuration from factory. Devices that do not have configuration must be configured by hand. The most popular and recommended mode is the HomeAP (or HomeAP dual, depending on the device). This Quickset mode provides the simplest of terminology and the most common options for the home user.
+Quickset适用于所有有某种出厂默认配置的设备。没有配置的设备必须通过手工配置。最受欢迎和推荐的模式是HomeAP（或HomeAP dual，取决于设备）。这种Quickset模式为家庭用户提供了最简单的术语和最常见的选项。
 
-## Modes
+## 模式
 
-Depending on the router model, different Quickset modes might be available from the Quickset dropdown menu:
+根据路由器的型号，不同的Quickset模式在Quickset下拉菜单中可用：
 
--   **CAP**: Controlled Access Point, an AP device, that will be managed by a centralised CAPsMAN server. Only use if you have already set up a CAPsMAN server.
--   **CPE**: Client device, which will connect to an Access Point (AP) device. Provides option to scan for AP devices in your area.
--   **HomeAP**: The default Access Point config page for most home users. Provides less options and simplified terminology.
--   **HomeAP dual**: Dual band devices (2GHz/5GHz). The default Access Point config page for most home users. Provides less options and simplified terminology.
--   **Home Mesh**: Made for making bigger WiFi networks. Enables the CAPsMAN server in the router, and places the local WiFi interfaces under CAPsMAN control. Just boot other MikroTik WiFi APs with the reset button pressed, and they will join this HomeMesh network (see their Quick guide for details)
--   **PTP Bridge AP**: When you need to transparently interconnect two remote locations together in the same network, set one device to this mode, and the other device to the next (PTP Bridge CPE) mode.
--   **PTP Bridge CPE**: When you need to transparently interconnect two remote locations together in the same network, set one device to this mode, and the other device to the previous (PTP Bridge AP) mode.
--   **WISP AP**: Similar to the HomeAP mode, but provides more advanced options and uses industry standard terminology, like SSID and WPA.
+- **CAP*： 受控接入点，一个AP设备，将由一个集中的CAPsMAN服务器管理。只有在设置了CAPsMAN服务器时才使用。
+- **CPE**： 客户端设备，连接到一个接入点（AP）设备。提供扫描所在地区的AP设备的选项。
+- **HomeAP**： 大多数家庭用户的默认接入点配置页面。提供较少的选项和简化的术语。
+- **HomeAP dual**： 双频设备（2GHz/5GHz）。大多数家庭用户的默认接入点配置页面。提供较少的选项和简化的术语。
+- **Home Mesh**： 为建立更大的WiFi网络而设。启用路由器中的CAPsMAN服务器，并将本地WiFi接口置于CAPsMAN控制之下。只需按下复位按钮启动其他MikroTik WiFi AP，它们就会加入这个HomeMesh网络（详情请见其快速指南）。
+- **PTP Bridge AP**： 当需要在同一网络中透明地将两个远程地点互连在一起时，将一个设备设置为这种模式，而另一个设备设置为下一个（PTP桥接CPE）模式。
+- **PTP Bridge CPE**： 当你需要在同一网络中透明地将两个远程地点互连在一起时，将一个设备设置为该模式，另一个设备设置为前一个（PTP桥接AP）模式。
+- **WISP AP**： 与HomeAP模式类似，但提供更多高级选项，并使用行业标准术语，如SSID和WPA。
 
 ## HomeAP
 
-This is the mode you should use if you would like to quickly configure a home access point.
+如果想快速配置一个家庭接入点，应该使用该模式。
 
-### Wireless
+### 无线
 
-Set up your wireless network in this section:
+在本节中设置无线网络：
 
--   **Network Name**: How will your smartphone see your network? Set any name you like here. In HomeAP dual, you can set the 2GHz (legacy) and 5GHz (modern) networks to the same, or different names (see FAQ). Use any name you like, in any format.
--   **Frequency**: Normally you can leave "Auto", in this way, the router will scan the environment, and select the least occupied frequency channel (it will do this once). Use a custom selection if you need to experiment.
--   **Band**: Normally leave this to defaults (2GHz b/g/n and 5GHz A/N/AC).
--   **Use Access List (ACL)**: Enable this if you would like to restrict who can connect to your AP, based on the users MAC (hardware) address. To use this option, first you need to allow these clients to connect, and then use the below button "Copy to ACL". This will copy the selected client to the access list. After you have build an Access list (ACL), you can enable this option to forbid anyone else to attempt connections to your device. Normally you can leave this alone, as the Wireless password already provides the needed restrictions.
--   **WiFi Password**: The most important option here. Sets a secure password that also encrypts your wireless communications.
--   **WPS accept**: Use this button to grant access to a specific device that supports the WPS connection mode. Useful for printers and other peripherals where typing a password is difficult. First start WPS mode in your client device, then once click the WPS button here to allow said device. Button works for a few seconds and operates on a per-client basis.
--   **Guest network**: Useful for house guests who don't need to know your main WiFi password. Set a separate password for them in this option. Important! Guest users will not be able to access other devices in your LAN and other guest devices. This mode enabled Bridge filters to prevent this.
--   **Wireless clients**: This table shows the currently connected client devices (their MAC address, if they are in your Access List, their last used IP address, how long are they connected, their signal level in dBm and in a bar graph).
+- **网络名称**： 智能手机如何使用网络？在这里设置任何喜欢的名称。在HomeAP dual中，可以将2GHz（传统）和5GHz（现代）网络设置为相同或不同的名称（见FAQ）。可以用喜欢的任何名称，任何格式。
+- **频率**： 通常可以选择 "自动"，这样的话，路由器会扫描环境，并选择占用最少的频率通道（做一次）。如果需要做实验，可以使用自定义选择。
+- **波段**： 通常情况下，将此设为默认值（2GHz b/g/n和5GHz A/N/AC）。
+- **使用访问列表（ACL）**： 如果想根据用户的MAC（硬件）地址来限制谁可以连接到你的AP，请启用这个选项。要使用这个选项，首先需要允许这些客户端连接，然后使用下面的按钮 "复制到ACL"。把选定的客户复制到访问列表中。在建立了一个访问列表（ACL）之后，启用这个选项，禁止其他任何人尝试连接到设备。通常情况下可以不管，因为无线密码已经提供了必要的限制。
+- **WiFi密码**： 这是最重要的选项。设置一个安全的密码，对无线通信进行加密。
+- **WPS接受**： 使用这个按钮可以授予支持WPS连接模式的特定设备的访问权。对打印机和其他难以输入密码的外围设备很有用。首先在你的客户设备中启动WPS模式，然后一旦点击这里的WPS按钮就可以允许上述设备。按钮的工作时间为几秒钟，并在每个客户的基础上操作。
+- **客人网络**： 对那些不需要知道你的主要WiFi密码的住家客人很有用。在这个选项中为他们设置一个单独的密码。重要的是! 访客用户将不能访问你局域网中的其他设备和其他访客设备。这种模式启用了网桥过滤器来防止这种情况。
+- **无线客户端**： 这个表格显示了当前连接的客户设备（他们的MAC地址，如果他们在你的访问列表中，他们最后使用的IP地址，他们连接了多长时间，他们的信号水平（dBm）和柱状图）。
 
-### Internet
+### 互联网
 
--   **Port**: Select which port is connected to the ISP (internet) modem. Usually Eth1.
--   **Address Acquisition**: Select how the ISP is giving you the IP address. Ask your service provider about this and the other options (IP address, Netmask, Gateway).
--   **MAC address**: Normally should not be changed, unless your ISP has locked you to a specific MAC address and you have changed the router to a new one.
--   **Firewall router**: This enables secure firewall for your router and your network. Always make sure this box is selected, so that no access is possible to your devices from the internet port.
--   **MAC server / MAC Winbox**: Allows connection with the \[Winbox utility [https://mt.lv/winbox](https://mt.lv/winbox)\] from the LAN port side in MAC address mode. Useful for debugging and recovery, when IP mode is not available. Advanced use only.
--   **Discovery**: Allows the device to be identified by model name from other RouterOS devices.
+- **端口**： 选择哪个端口与ISP（互联网）调制解调器相连。通常是Eth1。
+- **地址获取**： 选择ISP是如何给你提供IP地址的。请向服务提供商询问这个问题和其他选项（IP地址、网络掩码、网关）。
+- **MAC地址**： 通常不改，除非ISP把你锁定在一个特定的MAC地址上，而你又把路由器换成了一个新的地址。
+- **防火墙路由器**： 为路由器和网络启用安全防火墙。一定要确保选择这个框，这样就不可能从互联网端口访问该设备。
+- **MAC服务器/MAC Winbox**： 允许在MAC地址模式下从LAN端口与Winbox utility [https://mt.lv/winbox](https://mt.lv/winbox) 连接。在IP模式不可用时，对调试和恢复很有用。仅限高级使用。
+- **发现**： 允许设备通过型号名称从其他RouterOS设备上识别。
 
-### Local Network
+### 本地网络
 
--   **IP address**: Mostly can stay at the default 192.168.88.1 unless your router is behind another router. To avoid IP conflict, change to 192.168.89.1 or similar
--   **Netmask**: In most situations can leave 255.255.255.0
--   **Bridge all LAN ports**: Allows your devices to communicate to each other, even if, say, your TV is connected via ethernet LAN cable, but your PC is connected via WiFi.
--   **DHCP server**: Normally, you would want automatic IP address configuration in your home network, so leave the DHCP settings ON and on their defaults.
--   **NAT**: Turn this off ONLY if your ISP has provided a public IP address for both the router and also the local network. If not, leave NAT on.
--   **UPnP**: This option enables automatic port forwarding ("opening ports to the local network" as some call it) for supported programs and devices, like your NAS disks and peer-to-peer utilities. Use with care, as this option can sometimes expose internal devices to the internet without your knowledge. Enable only if specifically needed.
+- ** IP地址**： 大多可以用默认的192.168.88.1，除非路由器在另一个路由器后面。为避免IP冲突，可改为192.168.89.1或类似的地址。
+- **网络掩码**： 在大多数情况下可以用255.255.255.0。
+- **桥接所有LAN端口**： 允许设备相互通信，即使电视是通过以太网电缆连接的，但电脑是通过WiFi连接的。
+- **DHCP服务器**： 通常情况下，希望在家庭网络中自动配置IP地址，所以将DHCP设置打开并保持在默认状态。
+- **NAT**： 只有当ISP为路由器和本地网络提供了一个公共IP地址时，才把它关掉。如果没有，请将NAT打开。
+- **UPnP**： 这个选项为支持的程序和设备（如NAS磁盘和点对点工具）启用自动端口转发（有些人称之为 "向本地网络开放端口"）。小心使用，因为这个选项有时会在不知情的情况下将内部设备暴露在互联网上。只有在特别需要时才启用。
 
 ### VPN
 
-If you want to access your local network (and your router) from the internet, use a secure VPN tunnel. This option gives you a domain name where to connect to, and enables PPTP and L2TP/IPsec (the second one is recommended). The username is 'vpn' and you can specify your own password. All you need to do is enable it here, and then provide the address, username and password in your laptop or phone, and when connected to the VPN, you will have a securely encrypted connection to your home network. Also useful when travelling - you will be able to browse the internet through a secure line, as if connecting from your home. This also helps to avoid geographical restrictions that are set up in some countries.
+如果想从互联网访问本地网络和路由器，使用安全的VPN隧道。这个选项给你一个连接的域名，并启用PPTP和L2TP/IPsec（推荐第二种）。用户名是 "vpn"，可以指定自己的密码。需要做的就是启用它，然后在笔记本电脑或手机中提供地址、用户名和密码，当连接到VPN时，将有一个安全的加密连接到家庭网络。旅行时也很有用-你能够通过安全线路浏览互联网，就像从家里连接一样。这也有助于避免一些国家设置的地理限制。
 
-### System
+### 系统
 
--   **Check for updates**: Always make sure your device is up to date with this button. Checks if an updated RouterOS release is available, and installs it.
--   **Password**: Sets the password for the device config page itself. Make sure nobody can access your router config page and change the settings.
+- **检查更新**： 始终确保设备是最新的。检查是否有更新的RouterOS版本并安装。
+- **密码**： 设置设备配置页面本身的密码。确保没有人可以访问路由器配置页面并改变设置。
 
 ## FAQ
 
-**Q: How is Quickset different from the Webfig tab, where a whole bunch of new menus appear?**
+问：Quickset与Webfig标签有什么不同，那里会出现一大堆新菜单？
 
-A: QuickSet is for new users who only need their device up and running in no time. It provides the most commonly used options in one place. If you need more options, do not use any Quickset settings at all, click on "Webfig" to open the advanced configuration interface. The full functionality is unlocked.
+答："Quickset"是为那些只需要在短时间内启动和运行他们的设备的新用户准备的。它在一个地方提供最常用的选项。如果需要更多的选项，根本不要使用任何Quickset设置，点击 "Webfig "打开高级配置界面。全部功能都被解锁了。
 
-**Q: Can I use Quickset and Webfig together? While settings that are not conflicting can be configured this way, it is not recommended to mix up these menus.**
+问：我可以同时使用Quickset和Webfig吗？虽然不冲突的设置可以这样配置，但不建议把这些菜单混在一起。
 
-A: If you are going to use Quickset, use only Quickset and vice versa. What's is difference between Router and Bridge mode? Bridge mode adds all interfaces to the bridge allowing to forward Layer2 packets (acts as a hub/switch). In Router mode packets are forwarded in Layer3 by using IP addresses and IP routes (acts as a router).
+答：如果你要使用Quickset，请只使用Quickset，反之亦然。
 
-**Q: In HomeAP mode, should the 2GHz and 5GHz network names be the same, or different?**
+问：路由器和网桥模式的区别是什么？
 
-A: If you prefer that all your client devices, like TV, phones, game consoles, would automatically select the best preferred network, set the names identically. If you would like to force a client device to use the faster 5GHz 802.11ac connection, set the names unique.
+答：网桥模式将所有的接口加入到网桥中，允许转发第二层的数据包（就像一个集线器/交换机）。在路由器模式下，数据包是通过使用IP地址和IP路由在第三层转发的（作为一个路由器）。
 
-**Q: Can I create an AP without security settings - no password or connect to such AP while using QuickSet?**
+问：在HomeAP模式下，2GHz和5GHz的网络名称应该相同，还是不同？
 
-A: QuickSet uses WPA2 pre-shared key by default. It means that the minimal password length is 8 symbols and the device can only connect to WPA2 secured AP or serve as AP itself. For configurations with no security settings, you need to configure them manually using WinBox, Webfig, or console.
+答：如果你希望你的所有客户设备，如电视、电话、游戏机，都能自动选择最佳的首选网络，请将名称设置为相同。如果你想让客户端设备使用更快的5GHz 802.11ac连接，请将名称设置为唯一。
+
+问：我可以创建一个没有安全设置的AP--没有密码，或者在使用QuickSet时连接到这样的AP吗？
+
+答：QuickSet默认使用WPA2预共享密钥。这意味着最小密码长度为8个符号，设备只能连接到WPA2安全的AP或作为AP本身。对于没有安全设置的配置，你需要使用WinBox、Webfig或控制台进行手动配置。

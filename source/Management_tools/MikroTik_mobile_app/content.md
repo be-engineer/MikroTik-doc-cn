@@ -1,21 +1,21 @@
-## Summary
+# 概述
 
-The application is available for both Android and iOS operating systems. It is good way to configure a new device, as it provides a simple and user-friendly setup screen for the most basic settings of your new router. It also features an advanced menu, for the more experienced user.
+该应用可用于Android和iOS操作系统，是配置新设备的好方法，它为新路由器的最基本设置提供了一个简单和用户友好的设置界面。它还有一个高级菜单，供更有经验的用户使用。
 
-## Downloading app
+## 下载应用程序
 
-MikroTik application is available to download on App Store and Google Play, please see our web [page Software section](https://mikrotik.com/mobile_app) for direct download links or scan the QR code.
+MikroTik应用程序可在App Store和Google Play上下载，请参见我们的网页 [页面软件部分](https://mikrotik.com/mobile_app) 以获取直接下载链接或扫描QR码。
 
-Use the MikroTik smartphone app to configure your router in the field, or to apply the most basic initial settings for your MikroTik home access point.
+使用MikroTik智能手机应用程序在现场配置路由器，或者为MikroTik家庭接入点应用最基本的初始设置。
 
-## Quickstart with the application
+## 应用程序快速入门
 
--   Scan QR code and choose your preferred OS;
+- 扫描二维码，选择喜欢的操作系统；
     
--   Install and connect to your wireless network;
+- 安装并连接到您的无线网络；
     
--   Open application, by default, the IP address and user name will be already entered;
+- 打开应用程序，默认情况下，IP地址和用户名已经输入；
     
--   Click Connect to establish a connection to;
+- 点击 "连接 "建立连接；
     
--   Choose Quick setup and application will guide you through all basic configuration settings in a couple of easy steps.
+- 选择快速设置，应用程序将引导你在几个简单的步骤中完成所有的基本配置设置。

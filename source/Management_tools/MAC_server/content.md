@@ -1,95 +1,138 @@
-MAC server section allows you to configure MAC Telnet Server, MAC WinBox Server and MAC Ping Server on RouterOS device.
+MAC服务器部分允许在RouterOS设备上配置MAC Telnet服务器、MAC WinBox服务器和MAC Ping服务器。
 
-MAC Telnet is used to provide access to a router that has no IP address set. It works just like IP telnet. MAC telnet is possible between two MikroTik RouterOS routers only.
+MAC Telnet是用来提供对没有设置IP地址的路由器的访问。它的工作方式与IP telnet一样。MAC telnet只可以在两个MikroTik RouterOS路由器之间使用。
 
-MAC Winbox is used to provide Winbox access to the router via MAC address.
+MAC Winbox用于通过MAC地址提供Winbox对路由器的访问。
 
-MAC Ping is used to allow MAC pings to the router's MAC address.
+MAC Ping用于允许MAC ping到路由器的MAC地址。
 
-**MAC-server** settings are included in the "system" package.
+**MAC-服务器** 设置包含在 "系统 "包中。
 
-## MAC Telnet Server
+## MAC Telnet 服务器
 
-It is possible to set MAC Telnet access to specific interfaces that are a part of the [interface list](https://help.mikrotik.com/docs/display/ROS/List):
+可以对作为 [接口列表](https://help.mikrotik.com/docs/display/ROS/List) 一部分的特定接口设置MAC Telnet访问：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+```shell
+[admin@device] /tool mac-server set allowed-interface-list=listBridge
+[admin@device] /tool mac-server print
+  allowed-interface-list: listBridge
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/tool mac-server </code><code class="ros functions">set </code><code class="ros value">allowed-interface-list</code><code class="ros plain">=listBridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/tool mac-server </code><code class="ros plain">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">allowed-interface-list</code><code class="ros constants">: listBridge</code></div></div></td></tr></tbody></table>
+在上面的例子中，MAC Telnet是为接口列表 "listBridge "配置的，因此，MAC Telnet只能通过列表中的接口工作（可以在列表中添加多个接口）。
 
-In the example above, MAC Telnet is configured for the interface list "listBridge" and, as a result, MAC Telnet will only work via the interfaces that are members of the list (you can add multiple interfaces to the list).
+要禁止MAC Telnet访问，用命令（设置 "allowed-interface-list "为 "none"）：
 
-To disable MAC Telnet access, issue the command (set "allowed-interface-list" to "none"):
+```shell
+[admin@device] /tool mac-server set allowed-interface-list=none
+[admin@device] /tool mac-server print
+  allowed-interface-list: none
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+可以用命令检查活动的MAC Telnet会话：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/tool mac-server </code><code class="ros functions">set </code><code class="ros value">allowed-interface-list</code><code class="ros plain">=none</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] </code><code class="ros constants">/tool mac-server </code><code class="ros plain">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">allowed-interface-list</code><code class="ros constants">: none</code></div></div></td></tr></tbody></table>
-
-You can check active MAC Telnet sessions (that the device accepted) with the command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server sessions print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: INTERFACE, SRC-ADDRESS, UPTIME</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp; INTERFACE&nbsp; SRC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UPTIME</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0&nbsp; ether5&nbsp;&nbsp;&nbsp;&nbsp; 64</code><code class="ros constants">:D1:54:FB:E3:E6&nbsp; 17s</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] > tool mac-server sessions print
+列： 接口、src-address、uptime
+# interface src-address uptime
+0 ether5 64:D1:54:FB:E3:E6 17s
+```
 
 ### MAC Telnet Client
 
-When MAC Telnet Server is enabled, you can use another RouterOS device to connect to the server using the mac-telnet client:
+当MAC Telnet服务器启用时，可以用另一台RouterOS设备，用mac-telnet客户端连接到服务器：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+```shell
+[admin@device2] > tool mac-telnet B8:69:F4:7F:F2:E7   
+Login: admin
+Password:
+Trying B8:69:F4:7F:F2:E7...
+Connected to B8:69:F4:7F:F2:E7
+ 
+ 
+ 
+ 
+  MMM      MMM       KKK                          TTTTTTTTTTT      KKK
+  MMMM    MMMM       KKK                          TTTTTTTTTTT      KKK
+  MMM MMMM MMM  III  KKK  KKK  RRRRRR     OOOOOO      TTT     III  KKK  KKK
+  MMM  MM  MMM  III  KKKKK     RRR  RRR  OOO  OOO     TTT     III  KKKKK
+  MMM      MMM  III  KKK KKK   RRRRRR    OOO  OOO     TTT     III  KKK KKK
+  MMM      MMM  III  KKK  KKK  RRR  RRR   OOOOOO      TTT     III  KKK  KKK
+ 
+  MikroTik RouterOS 7.1rc3 (c) 1999-2021       https://www.mikrotik.com/
+ 
+Press F1 for help
+   
+[admin@device] >
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device2] &gt; tool mac-telnet B8</code><code class="ros constants">:69:F4:7F:F2:E7&nbsp;&nbsp;&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Login</code><code class="ros constants">: admin</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Password</code><code class="ros constants">:</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Trying B8</code><code class="ros constants">:69:F4:7F:F2:E7...</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">Connected to B8</code><code class="ros constants">:69:F4:7F:F2:E7</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; KKK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TTTTTTTTTTT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; KKK</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMMM&nbsp;&nbsp;&nbsp; MMMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; KKK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TTTTTTTTTTT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; KKK</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMM MMMM MMM&nbsp; III&nbsp; KKK&nbsp; KKK&nbsp; RRRRRR&nbsp;&nbsp;&nbsp;&nbsp; OOOOOO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TTT&nbsp;&nbsp;&nbsp;&nbsp; III&nbsp; KKK&nbsp; KKK</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMM&nbsp; MM&nbsp; MMM&nbsp; III&nbsp; KKKKK&nbsp;&nbsp;&nbsp;&nbsp; RRR&nbsp; RRR&nbsp; OOO&nbsp; OOO&nbsp;&nbsp;&nbsp;&nbsp; TTT&nbsp;&nbsp;&nbsp;&nbsp; III&nbsp; KKKKK</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MMM&nbsp; III&nbsp; KKK KKK&nbsp;&nbsp; RRRRRR&nbsp;&nbsp;&nbsp; OOO&nbsp; OOO&nbsp;&nbsp;&nbsp;&nbsp; TTT&nbsp;&nbsp;&nbsp;&nbsp; III&nbsp; KKK KKK</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MMM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MMM&nbsp; III&nbsp; KKK&nbsp; KKK&nbsp; RRR&nbsp; RRR&nbsp;&nbsp; OOOOOO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TTT&nbsp;&nbsp;&nbsp;&nbsp; III&nbsp; KKK&nbsp; KKK</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">MikroTik RouterOS 7.1rc3 (c) 1999-2021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https</code><code class="ros constants">://www.mikrotik.com/</code></div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">Press F1 </code><code class="ros functions">for </code><code class="ros plain">help</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code>&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt;</code></div></div></td></tr></tbody></table>
+进入服务器的CLI相应地改变MAC地址（根据设置），如上面的例子所示。 
 
-Change the MAC address accordingly (to your setup) and you should get into the server's CLI (as shown in the example above).  
+### MAC扫描
 
-### MAC Scan
+MAC扫描功能可以发现所有的设备，这些设备支持给定网络上的MAC telnet协议。该命令要求选择一个被扫描的接口：
 
-Mac scan feature discovers all devices, which support MAC telnet protocol on the given network. The command requires you to select an interface that should be scanned:
+```shell
+[admin@Sw_Denissm] > tool mac-scan interface=all          
+MAC-ADDRESS       ADDRESS                AGE
+B8:69:F4:7F:F2:E7 192.168.69.1            26
+2C:C8:1B:FD:F2:C3 192.168.69.3            56
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+在上面的例子中，所有的接口都被选中，除非停止（按 "q "键），否则扫描将无限期进行。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Sw_Denissm] &gt; tool mac-</code><code class="ros functions">scan </code><code class="ros value">interface</code><code class="ros plain">=all</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">MAC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AGE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">B8</code><code class="ros constants">:69:F4:7F:F2:E7 192.168.69.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 26</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">2C</code><code class="ros constants">:C8:1B:FD:F2:C3 192.168.69.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56</code></div></div></td></tr></tbody></table>
+还可以添加一个 "持续时间 "参数，规定扫描持续多长时间：
 
-In the example, above, all interfaces are chosen and the scan will run infinitely unless stopped (by pressing "q").
+```shell
+[admin@Sw_Denissm] > tool mac-scan interface=all duration=1
+MAC-ADDRESS       ADDRESS                AGE
+B8:69:F4:7F:F2:E7 192.168.69.1            48
+2C:C8:1B:FD:F2:C3 192.168.69.3            17
+```
 
-You can also add a "duration" parameter that will dictate for how long the scan should go on:
+在上面的例子中， "持续时间 "参数设置为1秒。
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+## MAC Winbox服务器
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Sw_Denissm] &gt; tool mac-</code><code class="ros functions">scan </code><code class="ros value">interface</code><code class="ros plain">=all</code> <code class="ros value">duration</code><code class="ros plain">=1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">MAC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AGE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">B8</code><code class="ros constants">:69:F4:7F:F2:E7 192.168.69.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 48</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">2C</code><code class="ros constants">:C8:1B:FD:F2:C3 192.168.69.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17</code></div></div></td></tr></tbody></table>
+与MAC Telnet一样，可以将MAC Winbox设置为访问 [接口列表](https://help.mikrotik.com/docs/display/ROS/List) 中的特定接口：
 
-In the example above, we set the "duration" parameter to 1 second.
+```shell
+[admin@device] > tool mac-server mac-winbox set allowed-interface-list=listBridge
+[admin@device] > tool mac-server mac-winbox print                  
+  allowed-interface-list: listBridge
+```
 
-## MAC Winbox Server
+在上面的例子中，MAC Winbox的访问是为接口列表 "listBridge "配置的，因此，MAC Winbox只能通过属于该列表的接口工作。
 
-Same as with MAC Telnet, it is possible to set MAC Winbox access to specific interfaces that are a part of the [interface list](https://help.mikrotik.com/docs/display/ROS/List):
+要禁止MAC Winbox访问，用命令（设置 "allowed-interface-list "为 "none"）：
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+```shell
+[admin@device] > tool mac-server mac-winbox set allowed-interface-list=none
+[admin@device] > tool mac-server mac-winbox print                  
+  allowed-interface-list: none
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server mac-winbox </code><code class="ros functions">set </code><code class="ros value">allowed-interface-list</code><code class="ros plain">=listBridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server mac-winbox </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">allowed-interface-list</code><code class="ros constants">: listBridge</code></div></div></td></tr></tbody></table>
+## MAC Ping服务器
 
-In the example above, MAC Winbox access is configured for the interface list "listBridge" and, as a result, MAC Winbox will only work via the interfaces that are members of the list.
+MAC Ping服务器可以设置为 "禁用 "或 "启用"：
 
-To disable MAC Winbox access, issue the command (set "allowed-interface-list" to "none"):
+```shell
+[admin@device] > tool mac-server ping print
+  enabled: yes
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
+可以在命令的帮助下启用或禁用MAC ping（**enable=yes**→启用该功能；**enable=no**→禁用该功能）：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server mac-winbox </code><code class="ros functions">set </code><code class="ros value">allowed-interface-list</code><code class="ros plain">=none</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server mac-winbox </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">allowed-interface-list</code><code class="ros constants">: none</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] > tool mac-server ping set enabled=yes
+[admin@device] > tool mac-server ping set enabled=no
+```
 
-## MAC Ping Server
+当MAC Ping启用时，同一广播域的其他主机可以使用ping工具来ping mac地址。例如，可以用以下命令来检查MAC ping的结果：
 
-MAC Ping Server can be either set to be "disabled" or "enabled":
-
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server </code><code class="ros functions">ping </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div></div></td></tr></tbody></table>
-
-You can enable or disable MAC ping with the help of the commands (**enable=yes** → to enable the feature; **enable=no** → to disable the feature):
-
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server </code><code class="ros functions">ping </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; tool mac-server </code><code class="ros functions">ping </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
-
-When MAC Ping is enabled, other hosts on the same broadcast domain can use ping tool to ping the mac address. For example, you can issue the following command to check MAC ping results:
-
-[?](https://help.mikrotik.com/docs/display/ROS/MAC+server#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@device] &gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">00</code><code class="ros constants">:0C:42:72:A1:B0</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">HOST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SIZE&nbsp; TTL TIME&nbsp; STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">00</code><code class="ros constants">:0C:42:72:A1:B0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0ms&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">00</code><code class="ros constants">:0C:42:72:A1:B0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0ms&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">sent</code><code class="ros plain">=2</code> <code class="ros value">received</code><code class="ros plain">=2</code> <code class="ros value">packet-loss</code><code class="ros plain">=0%</code> <code class="ros value">min-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">avg-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">max-rtt</code><code class="ros plain">=0ms</code></div></div></td></tr></tbody></table>
+```shell
+[admin@device] > /ping 00:0C:42:72:A1:B0
+HOST                                    SIZE  TTL TIME  STATUS                                        
+00:0C:42:72:A1:B0                       56        0ms 
+00:0C:42:72:A1:B0                       56        0ms 
+    sent=2 received=2 packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms
+```

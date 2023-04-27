@@ -1,72 +1,88 @@
-# Summary
+# 概述
 
-RoMON stands for "Router Management Overlay Network". RoMON works by establishing an independent MAC layer peer discovery and data forwarding network. RoMON packets are encapsulated with EtherType 0x88bf and DST-MAC 01:80:c2:00:88:bf and its network operate independently from L2 or L3 forwarding configuration. When RoMON is enabled, any received RoMON packets will not be displayed by sniffer or torch tools.
+RoMON是 "路由器管理叠加网络 "的缩写。RoMON通过建立一个独立的MAC层对等体发现和数据转发网络来工作。RoMON数据包以EtherType 0x88bf和DST-MAC 01:80:c2:00:88:bf进行封装，其网络独立于L2或L3转发配置运行。当RoMON启用时，任何收到的RoMON数据包都不会被嗅探器或torch工具显示。
 
-Each router on the RoMON network is assigned its RoMON ID. RoMON ID can be selected from the port MAC address or specified by the user.
+RoMON网络上的每个路由器都被分配了其RoMON ID。RoMON ID可以从端口MAC地址中选择或由用户指定。
 
-RoMON protocol does not provide encryption services. Encryption is provided at the "application" level, by e.g. using ssh or by using a secure Winbox.
+RoMON协议不提供加密服务。加密是在 "应用 "层面提供的，例如通过使用ssh或使用安全的Winbox。
 
-# Secrets
+# 秘密
 
-RoMON protocol secrets are used for message authentication, integrity check and replay prevention by means of hashing message contents with MD5.
+RoMON协议的秘密用于消息认证、完整性检查和防止重放，方法是用MD5对消息内容进行散列。
 
-For each interface, if the interface-specific secret list is empty, a global secret list is used. When sending out, messages are hashed with the first secret in list if list is not empty and first is not "empty secret" (empty string = ""), otherwise, messages are sent unhashed. When received, unhashed messages are only accepted if a secret list is empty or contains "empty secret", hashed messages are accepted if they are hashed with any of the secrets in list.
+对于每个接口，如果特定接口的秘密列表为空，则使用一个全局秘密列表。当发送时，如果列表不是空的，并且第一个不是 "空秘密"（空字符串=""），则用列表中的第一个秘密对报文进行散列，否则，报文将被发送为未散列。当收到时，只有当秘密列表为空或包含 "空秘密 "时，才会接受未加密的信息，如果与列表中的任何秘密进行了哈希处理，则接受哈希处理的信息。
 
-This design allows for the incremental introduction and/or change of secrets in-network without RoMON service interruption and can happen over RoMON itself, e.g.:
+这种设计允许在不中断RoMON服务的情况下逐步引入和/或改变网络中的秘密，并且可以通过RoMON本身发生，例如：
 
--    initially, all routers are without secrets;
--    configure each router one by one with secrets="","mysecret" - this will make all routers still send unprotected frames, but they all will be ready to accept frames protected with secret "mysecret";
--    configure each router one by one with secrets="mysecret","" - this will make all routers use secret "mysecret", but also still accept unprotected frames (from routers that have not yet been changed);
--    configure each router with secrets="mysecret" - this will make all routers use secret "mysecret" and also only accept frames protected with "mysecret";
+- 最初，所有的路由器都没有秘密；
+- 将每个路由器逐一配置为secrets="", "mysecret"--这将使所有路由器仍然发送未受保护的帧，但它们都将准备接受受秘密 "mysecret "保护的帧；
+- 用secrets="mysecret",""逐一配置每个路由器 - 这将使所有路由器使用秘密 "mysecret"，但也仍然接受未受保护的帧（来自尚未被改变的路由器）；
+- 在每个路由器上配置secrets="mysecret" - 这将使所有路由器使用secrets "mysecret"，并且只接受用 "mysecret "保护的帧；
 
-Changing of secret in a network should be performed in a similar fashion where for some time both secrets are in use in network.
+网络中秘密的改变应该以类似的方式进行，在一段时间内，两个秘密都在网络中使用。
 
-# Peer discovery
+# 对等发现
 
-In order to discover all routers on RoMON network RoMON discover command must be used:
+为了发现RoMON网络上的所有路由器，必须使用RoMON discover命令：
 
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
+```shell
+[admin@MikroTik] > /tool/romon/discover
+Flags: A - active
+Columns: ADDRESS, COSt, Hops, PATH, L2MTu, IDENTITY, VERSION, BOARD
+   ADDRESS            COS  H  PATH               L2MT  IDENTITY   VERSION    BOARD             
+A  6C:3B:6B:48:0E:8B  200  1  6C:3B:6B:48:0E:8B  1500  hEX        6.47beta7  RB750Gr3          
+A  6C:3B:6B:ED:83:69  200  1  6C:3B:6B:ED:83:69  1500  CCR1009    6.47beta7  CCR1009-7G-1C-1S+ 
+A  B8:69:F4:B3:1B:D2  200  1  B8:69:F4:B3:1B:D2  1500  4K11       6.47beta7  RB4011iGS+5HacQ2HnD
+A  CC:2D:E0:26:22:4D  200  1  CC:2D:E0:26:22:4D  1500  CCR1036    6.47beta7  CCR1036-8G-2S+    
+A  CC:2D:E0:8D:01:88  200  1  CC:2D:E0:8D:01:88  1500  CRS328     6.47beta7  CRS328-24P-4S+    
+A  E4:8D:8C:1C:D3:0E  200  1  E4:8D:8C:1C:D3:0E  1500  MikroTik   6.47beta7  RB2011iLS         
+A  E4:8D:8C:49:49:DB  200  1  E4:8D:8C:49:49:DB  1500  hAP        6.47beta7  RB962UiGS-5HacT2HnT
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/tool/romon/discover</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: A - active</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: ADDRESS, COSt, Hops, PATH, L2MTu, IDENTITY, VERSION, BOARD</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COS&nbsp; H&nbsp; PATH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2MT&nbsp; IDENTITY&nbsp;&nbsp; VERSION&nbsp;&nbsp;&nbsp; BOARD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">A&nbsp; 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp; 200&nbsp; 1&nbsp; 6C:3B:6B:48:0E:8B&nbsp; 1500&nbsp; hEX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; RB750Gr3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">A&nbsp; 6C</code><code class="ros constants">:3B:6B:ED:83:69&nbsp; 200&nbsp; 1&nbsp; 6C:3B:6B:ED:83:69&nbsp; 1500&nbsp; CCR1009&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; CCR1009-7G-1C-1S+&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">A&nbsp; B8</code><code class="ros constants">:69:F4:B3:1B:D2&nbsp; 200&nbsp; 1&nbsp; B8:69:F4:B3:1B:D2&nbsp; 1500&nbsp; 4K11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; RB4011iGS+5HacQ2HnD</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">A&nbsp; CC</code><code class="ros constants">:2D:E0:26:22:4D&nbsp; 200&nbsp; 1&nbsp; CC:2D:E0:26:22:4D&nbsp; 1500&nbsp; CCR1036&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; CCR1036-8G-2S+&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">A&nbsp; CC</code><code class="ros constants">:2D:E0:8D:01:88&nbsp; 200&nbsp; 1&nbsp; CC:2D:E0:8D:01:88&nbsp; 1500&nbsp; CRS328&nbsp;&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; CRS328-24P-4S+&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">A&nbsp; E4</code><code class="ros constants">:8D:8C:1C:D3:0E&nbsp; 200&nbsp; 1&nbsp; E4:8D:8C:1C:D3:0E&nbsp; 1500&nbsp; MikroTik&nbsp;&nbsp; 6.47beta7&nbsp; RB2011iLS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">A&nbsp; E4</code><code class="ros constants">:8D:8C:49:49:DB&nbsp; 200&nbsp; 1&nbsp; E4:8D:8C:49:49:DB&nbsp; 1500&nbsp; hAP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.47beta7&nbsp; RB962UiGS-5HacT2HnT</code></div></div></td></tr></tbody></table>
+# 配置示例
 
-# Configuration Examples
+为了让设备参与到RoMON网络中，必须启用RoMON功能，并指定参与RoMON网络的端口。
 
-In order for a device to participate in the RoMON network, the RoMON feature must be enabled and ports that participate in the RoMON network must be specified.
+`/tool romon set enabled=yes secrets=testing`.
 
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
+参与RoMON网络的端口是在 **RoMON** 菜单中配置的。端口列表是一个列表，匹配特定端口或所有端口，并指定匹配的端口是否被禁止参与RoMON网络，如果端口允许参与RoMON网络条目还指定端口开销。请注意，所有特定的端口条目比带有 **interface=all** 的通配符条目具有更高的优先级。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool romon </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">secrets</code><code class="ros plain">=testing</code></div></div></td></tr></tbody></table>
+例如，下面的列表指定所有端口以100的成本参与RoMON网络，以200的开销参与 ether7接口：
 
-Ports that participate in the RoMON network are configured in **the RoMON port** menu. Port list is a list of entries that match either specific port or all ports and specifies if matching port(s) is forbidden to participate in the RoMON network and in case port is allowed to participate in RoMON network entry also specifies the port cost. Note that all specific port entries have higher priority than the wildcard entry with **interface=all**.
+```shell
+[admin@MikroTik] > /tool/romon/port/print
+Flags: * - default
+Columns: INTERFace, FOrbid, COSt
+#     INTERF  FO  COS
+0  *  all     no  100
+1     ether7  no  200
+```
 
-For example, the following list specifies that all ports participate in RoMON network with cost 100 and ether7 interface with cost 200:
+默认情况下创建一个带有 **forbid=no** 和 **cost=100** 的通配符条目。
 
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
+## 应用程序
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/tool/romon/port/</code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: * - default</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: INTERFace, FOrbid, COSt</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp;&nbsp; INTERF&nbsp; FO&nbsp; COS</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0&nbsp; *&nbsp; </code><code class="ros variable">all</code>&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">no&nbsp; 100</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">1&nbsp;&nbsp;&nbsp;&nbsp; ether7&nbsp; no&nbsp; 200</code></div></div></td></tr></tbody></table>
+多个应用程序可以在RoMON网络上运行。
 
-By default one wildcard entry with **forbid=no** and **cost=100** is created.
+为了测试RoMON网络上特定路由器的可达性，可以使用RoMON ping命令：
 
-## Applications
+```shell
+[admin@MikroTik] > /tool/romon/ping id=6C:3B:6B:48:0E:8B count=5
+  SEQ HOST                                    TIME  STATUS                                                   
+    0 6C:3B:6B:48:0E:8B                       1ms                                                            
+    1 6C:3B:6B:48:0E:8B                       0ms                                                            
+    2 6C:3B:6B:48:0E:8B                       1ms                                                            
+    3 6C:3B:6B:48:0E:8B                       0ms                                                            
+    4 6C:3B:6B:48:0E:8B                       1ms                                                            
+    sent=5 received=5 packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=1ms
+```
 
-Multiple applications can be run over the RoMON network.
+为了建立一个安全的终端连接到RoMON网络上的路由器，可以使用RoMON SSH命令：
 
-In order to test the reachability of specific router on RoMON network RoMON ping command can be used:
+`[admin@MikroTik] > /tool/romon/ssh 6C:3B:6B:48:0E:8B`
 
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
+## 通过CLI在Winbox中运行RoMON
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/tool/romon/</code><code class="ros functions">ping </code><code class="ros value">id</code><code class="ros plain">=6C:3B:6B:48:0E:8B</code> <code class="ros value">count</code><code class="ros plain">=5</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">SEQ HOST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIME&nbsp; STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">0 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">1 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">2 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">3 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">4 6C</code><code class="ros constants">:3B:6B:48:0E:8B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1ms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">sent</code><code class="ros plain">=5</code> <code class="ros value">received</code><code class="ros plain">=5</code> <code class="ros value">packet-loss</code><code class="ros plain">=0%</code> <code class="ros value">min-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">avg-rtt</code><code class="ros plain">=0ms</code> <code class="ros value">max-rtt</code><code class="ros plain">=1ms</code></div></div></td></tr></tbody></table>
+为了在计算机上直接使用命令行建立RoMON会话，必须指定RoMON代理和所需的路由器地址。RoMON代理必须保存在Winbox的管理路由器列表中，以便成功连接：
 
-In order to establish a secure terminal connection to router on RoMON network RoMON SSH command can be used:
-
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/tool/romon/ssh 6C:3B:6B:48:0E:8B</code></div></div></td></tr></tbody></table>
-
-## Run RoMON in Winbox by using CLI
-
-In order to establish the RoMON session directly by using the command line on a computer, you must specify RoMON agents and desired routers addresses. RoMON agent must be saved on Managed routers list in Winbox in order to make a successful connection:
-
-[?](https://help.mikrotik.com/docs/display/ROS/RoMON#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">winbox.exe --romon 192.168.88.1 6C</code><code class="ros constants">:3B:6B:48:0E:8B admin ""</code></div></div></td></tr></tbody></table>
+`winbox.exe --romon 192.168.88.1 6C:3B:6B:48:0E:8B admin ""`
