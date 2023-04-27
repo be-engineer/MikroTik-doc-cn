@@ -95,65 +95,65 @@ RouterOS有很多配置属性，不是所有的东西都可以移植到CWMP参�
 - 用户的隐藏密码；
 - 证书。
 
-### RouterOS default configuration change (X MIKROTIK Factory Configuration File)
+### RouterOS默认配置更改 (X MIKROTIK出厂配置文件)
 
-This vendor specific FileType allows the change of the RouterOS default configuration script that is executed when **/system reset-configuration** command is executed (or the other means when router configuration is beeing reset).
+这个供应商特定的文件类型允许改变RouterOS默认配置脚本，该脚本在 **/system reset-configuration** 命令被执行时（或路由器配置被重置时的其他方式）被执行。
 
-Note
+注意
 
-If the default configuration script is changed it will not be displayed by **/system default-configuration print** as it is the case if that script is altered via Netinstall tool. That command will always show the default script set up by MikroTik
+如果默认配置脚本被改变，它将不会被 **/system default-configuration print** 显示出来，因为如果该脚本被Netinstall工具改变，就会出现这种情况。该命令将始终显示MikroTik设置的默认脚本。
 
-**Warning:** Use this with caution as the failure of uploaded script may render device inoperable and/or inaccessible by the ACS
+**警告：** 谨慎使用，因为上传脚本的失败可能会导致设备无法操作或无法被ACS访问。
 
 ## FactoryReset RPC
 
-This is CWMP standard RPC, which performs RouterOS configuration factory-reset. The reset process is performed in the same way as executing the command:
+这是CWMP标准RPC，执行RouterOS配置的工厂复位。重置过程的执行方式与执行命令的方式相同：
 
 ```
 /system reset-configuration skip-backup=yes
 
 ```
 
-Note that the default factory configuration can be different for each device (see [[1]](https://wiki.mikrotik.com/wiki/Manual:Default_Configurations)) and execution of this command removes all configurations and executes internally stored default-configuration script.
+请注意，每个设备的默认出厂配置可能不同（见[[1]](https://wiki.mikrotik.com/wiki/Manual:Default_Configurations)），执行此命令会删除所有配置并执行内部存储的默认配置脚本。
 
-[Best Practices Guide for preparing CPE with custom factory settings for TR069 [https://wiki.mikrotik.com/wiki/Tr069-best-practices](https://wiki.mikrotik.com/wiki/Tr069-best-practices)]
+[为TR069准备具有自定义出厂设置的CPE的最佳实践指南 [https://wiki.mikrotik.com/wiki/Tr069-best-practices](https://wiki.mikrotik.com/wiki/Tr069-best-practices)]
 
-## Upload RPC
+##上传RPC
 
-### Upload current configuration (1 Vendor Configuration File)
+### 上传当前配置(1个供应商配置文件)
 
-The result of this is file uploaded to the ACS same as the output of **/export** command in the RouterOS
+其结果是上传到ACS的文件与RouterOS中 **/export** 命令的输出相同。
 
-### Upload log file (2 Vendor Log File)
+### 上传日志文件 (2 Vendor Log File)
 
-The result of this is file uploaded to the ACS is similar to the output of **/log print** command in the RouterOS
+这是上传到ACS的文件，其结果与RouterOS中 **/log print** 命令的输出相似。
 
-### Upload default configuration (X MIKROTIK Factory Configuration File)
+### 上传默认配置 (X MIKROTIK Factory Configuration File)
 
-The result of this is file uploaded to the ACS that has contents of the current set default configuration script that will be executed if **/system reset-configuration** command is executed. It may differ from one returned using **/system default-configuration print**.
+这个结果是上传到ACS的文件，其中有当前设置的默认配置脚本的内容，如果 **/system reset-configuration** 命令被执行，将被执行。它可能与使用 **/system default-configuration print** 返回的文件不同。
 
-## Security
+## 安全
 
--   HTTP should only be used when testing initial setup in the secured/private network because Man-in-the-middle attacker could read/change configuration parameters. **In the production environment, HTTPS is a MUST**.
--   CWMP's incoming connection validation by design is safe because CPE will not communicate with any other device except previously configured ACS. Connection Request only signals CPE to start a new connection + new session with previously configured ACS.
+- HTTP只能在安全/私人网络中测试初始设置时使用，因为中间人攻击者可以读取/改变配置参数。**在生产环境中，HTTPS是必须的**。
+- CWMP的传入连接验证在设计上是安全的，因为除了先前配置的ACS，CPE不会与任何其他设备通信。连接请求只提示CPE与先前配置的ACS开始一个新的连接+新的会话。
 
-## Tested ACSs
+## 经测试的ACS
 
-Ordering is alphabetical. MikroTik does not imply any one vendor superiority of another. If some ACS is missing you can notify us of the existence of it and it might be added to the list.
+顺序是按字母顺序排列的。MikroTik并不意味着任何一个供应商比另一个供应商优越。如果缺少某些ACS，可以通知我们它的存在，可能会被添加到列表中。
 
-### Commercial
+### 商业
 
-We have tested and verified to be working the following commercial ACS solutions:
+我们已经测试并验证了以下商业ACS解决方案的有效性：
 
 -   [AVSystem](https://www.avsystem.com)
 -   [Axiros](https://axiros.com)
 -   [Friendly Tech](https://friendly-tech.com)
 
-### Open Source
+### 开放源代码
 
--   [GenieACS](https://github.com/zaidka/genieacs)
+- [GenieACS](https://github.com/zaidka/genieacs)
 
-Note: these ACS systems below seem to be not maintained and thus is not suggested as useful options
+注意：下面这些ACS系统没有得到维护，因此不建议作为有用的选择。
 
 -   [FreeACS](https://www.freeacs.com)
 -   [LibreACS](https://github.com/navisidhu/libreacs)

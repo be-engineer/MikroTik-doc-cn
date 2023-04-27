@@ -12,7 +12,7 @@
 | 8.   | High Availability Solutions                 | be-engineer | 100% | 2023/02/20~2023/03/06 |
 | 9.   | Internet of Things                          | be-engineer | 90%  | 2023/03/10~2023/04/26 |
 | 10.  | IPv4 and IPv6 Fundamentals                  | be-engineer | 90%  | 2023/04/26~2023/04/26 |
-| 11.  | Management tools                            | be-engineer | 0%   | 2023/04/26~2023/05/?  |
+| 11.  | Management tools                            | be-engineer | 90%  | 2023/04/26~2023/04/28 |
 | 12.  | Mobile Networking                           | be-engineer | 0%   | ?                     |
 | 13.  | Network Management                          | be-engineer | 0%   | ?                     |
 | 14.  | Routing                                     | be-engineer | 0%   | ?                     |
