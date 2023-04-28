@@ -33,7 +33,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 - 2 + [KNOT](https://mikrotik.com/product/knot)，通过以太网、Wi-Fi或手机连接进入服务器的网络（所需的单元数量取决于需要覆盖的区域大小）；
 - 1+ 蓝牙  [TG-BT5-IN](https://mikrotik.com/product/tg_bt5_in) 和 [TG-BT5-OUT](https://mikrotik.com/product/tg_bt5_out) 标签（取决于你需要追踪的资产数量--每个资产一个标签）。
 
-# 场景说明
+## 场景说明
 
 先看一个基本的例子。有两个KNOTs（KNOT-A和KNOT-B）。已经在环境中测试了蓝牙范围，可以验证这两个KNOT能够在70米的距离内捕获标签。如果将KNOT-A和KNOT-B安装在相距140米的地方，它们的蓝牙范围将不会重叠或只是轻微重叠。当标签移动到KNOT-A范围内时→被监测的标签的有效载荷将出现在蓝牙扫描器列表下→脚本将按设定的时间表启动→带有报告的MQTT消息将被发送到服务器→最后，服务器将显示标签在KNOT-A区域内。当标签进入KNOT-B区域时，同样的情况发生，服务器将显示标签在KNOT-B区域内。
 

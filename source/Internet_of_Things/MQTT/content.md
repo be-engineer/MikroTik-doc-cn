@@ -14,7 +14,7 @@ MQTT是一个开放的OASIS和ISO标准的轻量级、发布-订阅网络协议�
 
 **注**：iot包是必需的。
 
-IoT软件包在RouterOS 6.48.3版本中可用。可以从的 [下载页面](https://mikrotik.com/download) 在 "额外包 "下获得。
+IoT软件包在RouterOS 6.48.3版本中可用。可以从 [下载页面](https://mikrotik.com/download) 的"额外包"下获得。
 
 可以在下面找到更多关于MQTT发布场景的应用实例：
 
@@ -55,7 +55,7 @@ c) [MQTT and ThingsBoard configuration](https://help.mikrotik.com/docs/display/R
 | **retain** (_yes\| no_; Default: **no**)            | 如果没有人订阅该主题，是保留该消息还是将其丢弃。这个参数由broker定义。 |
 | **topic** (_string_; Default: )                     | 主题，由broker定义。                                                   |
 
-An example of MQTT publish would look like this:
+一个MQTT发布的例子：
 
 `[admin@device] /iot mqtt> publish broker=AWS topic=my/test/topic message="{\"temperature\":15}"`
 

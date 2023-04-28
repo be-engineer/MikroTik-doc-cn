@@ -1,4 +1,4 @@
-# General Properties
+# 通用属性
 
 每个带有支持LTE调制解调器的miniPCI-e插槽的RouterBOARD可以通过安装 **R11e-LoRa8** 或 **R11e-LoRa9** 卡作为LoRaWAN网关使用。为了与Lora一起工作，需要安装Lora软件包。你可以在 [下载](https://mikrotik.com/download) 页面的额外软件包档案中找到适合你设备架构的软件包。
 
@@ -29,13 +29,13 @@
 
 **Sub-menu:** `/lora channels`
 
-| 属性                                                                                                                         | 说明                                                                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **bandwidth** (_7.8_kHz \| 15.6_kHz \| 31.2_kHz\| 62.5_kHz \| 125_kHz \| 250_kHz          \| 500_kHz_; Default: **125_kHz**) | Bandwidth of specific channel, predefined when any of channel-plan preset is used, but could be manually changed when channel-plan is set to custom. |
-| **disabled** (_yes\| no_; Default: **no**)                                                                                   | 特定通道是否被禁用。                                                                                                                                 |
-| **freq-off** (_integer_ [-400000...400000]; Default: )                                                                       | 通道频率与无线电中心频率的偏移，它可以调整通道频率，使通道不会重叠。                                                                                 |
-| **radio** (_radio0 \| radio1_; Default: )                                                                                    | 定义哪个电台使用所选频道。                                                                                                                           |
-| **spread-factor** (_SF7 \| SF8 \| SF9 \| SF10 \| SF11 \| SF12_; Default: )                                                   | type=LoRa的频道的传播因子。较低的扩展因子意味着较高的数据速率。                                                                                      |
+| 属性                                                                                                                         | 说明                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **bandwidth** (_7.8_kHz \| 15.6_kHz \| 31.2_kHz\| 62.5_kHz \| 125_kHz \| 250_kHz          \| 500_kHz_; Default: **125_kHz**) | 特定通道的带宽，在使用任何通道计划预设时预定义，但在通道计划设置为自定义时可以手动改变。 |
+| **disabled** (_yes\| no_; Default: **no**)                                                                                   | 特定通道是否被禁用。                                                                     |
+| **freq-off** (_integer_ [-400000...400000]; Default: )                                                                       | 通道频率与无线电中心频率的偏移，它可以调整通道频率，使通道不会重叠。                     |
+| **radio** (_radio0 \| radio1_; Default: )                                                                                    | 定义哪个电台使用所选频道。                                                               |
+| **spread-factor** (_SF7 \| SF8 \| SF9 \| SF10 \| SF11 \| SF12_; Default: )                                                   | type=LoRa的频道的传播因子。较低的扩展因子意味着较高的数据速率。                          |
   
 
 # 服务器
@@ -51,7 +51,7 @@
  1 TTN-US              1700      1700 us.mikrotik.thethings.industries
 ```
 
-`Custom servers can be added as well. Data forwarding to multiple servers can work simultaneously if the first server does not change "DevAdress" part of the packet and under the condition that all servers are able to decode the packet.   `
+也可以添加自定义服务器。如果第一个服务器不改变数据包的 "DevAdress "部分，并且在所有服务器都能解码数据包的条件下，数据转发到多个服务器可以同时工作。
 
 | 属性                                                 | 说明                                                                                                                                                                  |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
