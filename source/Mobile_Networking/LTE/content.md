@@ -1,211 +1,135 @@
-## Summary
+## 概述
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`Package: system`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">Package</code><code class="ros constants">: system</code></div></div></td></tr></tbody></table>
+只支持Direct-IP模式类型的卡。MBIM支持在RouterOS v7版本中可用，MBIM驱动会自动加载。如果调制解调器在RouterOS v6中没有被识别 - 请在RouterOS v6中要求支持之前在v7版本中进行测试。
 
-Support for Direct-IP mode type cards only. MBIM support is available in RouterOS v7 releases and MBIM driver is loaded automatically. If modem is not recognized in RouterOS v6 - Please test it in v7 releases before asking for support in RouterOS v6.
+要启用通过PPP接口而不是LTE接口的访问，请用 `/port firmware set ignore-directip-modem=yes` 命令改变Direct-IP模式，并重新启动。请注意，使用PPP模拟模式可能无法获得与使用LTE接口模拟类型相同的吞吐速度。 
 
-To enable access via a PPP interface instead of a LTE Interface, change direct IP mode with `/port firmware set ignore-directip-modem=yes` command and a reboot. Note that using PPP emulation mode you may not get the same throughput speeds as using the LTE interface emulation type. 
+对于RouterOS v7 ignore-direct-modem参数更名为 "模式"，并移至 `/interface lte settings` 菜单。
 
-For RouterOS v7 ignore-direct-modem parameter renamed to "mode" and moved to `/interface lte settings` menu.
+## LTE客户端
 
-## LTE Client
+`Sub-menu: /interface lte`
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 属性
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">Sub-menu</code><code class="ros constants">: /interface lte</code></div></div></td></tr></tbody></table>
+| 属性                                              | 说明                                                                                                                                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **allow-roaming** (_yes\| no_; Default: **no**)   | 启用数据漫游功能，以便连接到其他国家的数据供应商。并非所有LTE调制解调器都支持这一功能。一些不完全支持该功能的调制解调器将连接到网络，但在允许漫游设置为 "否 "时，不会建立IP数据连接。 |
+| **apn-profiles** (_string_; Default: **default**) | 这个接口要使用哪个APN配置文件。                                                                                                                                                       |
+| **band** (_integer list_; Default: **""**)        | 通讯中使用的LTE频段 [LTE频段和带宽](https://en.wikipedia.org/wiki/LTE_frequency_bands#Frequency_bands_and_channel_bandwidths)。                                                       |
+| **nr-band** (_integer list_; Default: "")         | 5G NR 用于通信的频段 [5G NR频段和带宽](https://en.wikipedia.org/wiki/5G_NR_frequency_bands)。                                                                                         |
+| **comment** (_string_; Default: **""**)           | 项目的描述名称                                                                                                                                                                        |
+| **disabled** (_yes \| no_; Default: **yes**)      | 接口是否被禁用。默认是禁用的。                                                                                                                                                        |
+| **modem-init** (_string_; Default: **""**)        | 调制解调器初始字符串（调制解调器启动时将执行的AT命令）。                                                                                                                              |
+| **mtu** (_integer_; Default: **1500**)            | 最大传输单元。LTE接口在没有数据包碎片的情况下能够发送的最大数据包大小。                                                                                                               |
+| **name** (_string_; Default: **""**)              | 接口的描述名称。                                                                                                                                                                      |
+| **network-mode** (_3g \| gsm \| lte\| 5g_)        | 选择或增强LTE接口的工作模式。                                                                                                                                                         |
+| **operator** (_integer_; Default: **""**)         | 用于锁定设备到特定的运营商，完整的PLMN号码用于锁定，由MCC+MNC组成。[PLMN代码](https://en.wikipedia.org/wiki/Public_land_mobile_network)                                               |
+| **pin** (_integer_; Default: **""**)              | SIM卡的PIN码。                                                                                                                                                                        |
 
-### Properties
+### APN配置文件
 
-| 
-Property
+从RouterOS 6.41开始，所有与网络有关的设置都被移到配置文件下。
 
- | 
+`Sub-menu: /interface lte apn`
 
-Description
+| 属性                                                                | 说明                                                                                                                                         |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **add-default-route** (_yes \| no_)                                 | 是否添加默认路由转发所有通过LTE接口的流量                                                                                                    |
+| **apn** (_string_)                                                  | 服务提供商的接入点名称                                                                                                                       |
+| **authentication** (_pap\| chap\| none_; Default: **none**)         | 允许使用的认证协议                                                                                                                           |
+| **default-route-distance** (_integer_; Default: **2**)              | 设置应用于自动创建的默认路由的距离值，如果也选择了add-default-route。默认情况下，LTE路由的距离为2，以使有线路由优先于LTE                     |
+| **ip-type** (_ipv4 \| ipv4-ipv6\| ipv6_; Default: )                 | 要求的PDN类型                                                                                                                                |
+| **ipv6-interface** (; Default: )                                    | 在其上发布IPv6前缀广告的接口                                                                                                                 |
+| **name** (_string_; Default: )                                      | APN配置文件名称                                                                                                                              |
+| **number** (_integer_; Default: )                                   | APN配置文件名称                                                                                                                              |
+| **passthrough-interface** (; Default: )                             | 直通IP配置的接口（激活直通）                                                                                                                 |
+| **passthrough-mac** (_MAC_; Default: **auto*)                       | 如果设置为自动，那么将从第一个数据包中学习MAC                                                                                                |
+| **passthrough-subnet-selection** (_auto \| p2p_; Default: **auto**) | "auto "选择最小的子网，用于直通接口。"p2p "将直通接口的子网设置为/32，并从10.177.0.0/16范围内选择网关地址。网关地址保持不变，直到改变apn配置 |
+| **password** (_string_; Default: )                                  | 如果任何认证协议处于活动状态，则使用密码                                                                                                     |
+| **use-network-apn** (_yes\| no_; Default: **yes**)                  | 参数从RouterOS v7开始可用，仅用于MBIM调制解调器。如果设置为是，则使用网络提供的APN                                                           |
+| **use-peer-dns** (_yes\| no_; Default: **yes**)                     | 如果设置为 "是"，则使用从LTE接口接收的DNS                                                                                                    |
+| **user** (_integer_)                                                | 如果任何认证协议处于活动状态，则使用用户名                                                                                                   |
 
- |     |
- | --- |  |
- |     |
+### 扫描器
 
-Property
+可以用 `/interface lte scan` 命令扫描LTE接口。
 
- | 
+可用的只读属性：
 
-Description
+| 属性                                  | 说明                       |
+| ------------------------------------- | -------------------------- |
+| **duration** (_integer_)              | 扫描的持续时间，以秒为单位 |
+| **freeze-frame-interval** (_integer_) | 数据打印间隔时间           |
+| **number** (_integer_)                | 接口号码或名称             |
 
- |                                                   |
- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **allow-roaming** (_yes                           | no_; Default: **no**)                                                                                                                                                      | Enable data roaming for connecting to other countries data-providers. Not all LTE modems support this feature. Some modems, that do not fully support this feature, will connect to the network but will not establish an IP data connection with allow-roaming set to no. |
- | **apn-profiles** (_string_; Default: **default**) | Which APN profile to use for this interface                                                                                                                                |
- | **band** (_integer list_; Default: **""**)        | LTE Frequency band used in communication `[LTE Bands and bandwidths](https://en.wikipedia.org/wiki/LTE_frequency_bands#Frequency_bands_and_channel_bandwidths)`            |
- | **nr-band** (_integer list_; Default: "")         | 5G NR Frequency band used in communication `[5G NR Bands and bandwidths](https://en.wikipedia.org/wiki/5G_NR_frequency_bands)`                                             |
- | **comment** (_string_; Default: **""**)           | Descriptive name of an item                                                                                                                                                |
- | **disabled** (_yes                                | no_; Default: **yes**)                                                                                                                                                     | Whether interface is disabled or not. By default it is disabled.                                                                                                                                                                                                           |
- | **modem-init** (_string_; Default: **""**)        | Modem init string (AT command that will be executed at modem startup)                                                                                                      |
- | **mtu** (_integer_; Default: **1500**)            | Maximum Transmission Unit. Max packet size that LTE interface will be able to send without packet fragmentation.                                                           |
- | **name** (_string_; Default: **""**)              | Descriptive name of the interface.                                                                                                                                         |
- | **network-mode** (_3g                             | gsm                                                                                                                                                                        | lte                                                                                                                                                                                                                                                                        | 5g_) | Select/force mode for LTE interface to operate with |
- | **operator** (_integer_; Default: **""**)         | used to lock device to specific operator full PLMN number is used for lock consisting from MCC+MNC. [PLMN codes](https://en.wikipedia.org/wiki/Public_land_mobile_network) |
- | **pin** (_integer_; Default: **""**)              | SIM Card's PIN code.                                                                                                                                                       |
+### 用户信息命令
 
-### APN profiles
+可以用 `/interface lte info` 命令向LTE接口发送特殊的 "info "命令。在RouterOS v7中，命令被移到 `/interface lte monitor` 菜单。
 
-All network related settings are moved under profiles, starting from RouterOS 6.41
+#### 属性 (至6.40)
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+| 属性                                           | 说明                                              |
+| ---------------------------------------------- | ------------------------------------------------- |
+| **user-command** (_string_; Default: **""**)   | 向LTE卡发送命令以提取有用的信息，例如使用AT命令。 |
+| **user-command-only** (_yes \| no_; Default: ) |                                                   |
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">Sub-menu</code><code class="ros constants">: /interface lte apn</code></div></div></td></tr></tbody></table>
+### 用户at-chat命令
 
-  
+可以通过 `/interface lte at-chat` 命令向LTE接口发送用户定义的 "at-chat "命令。
 
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                    |
- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **add-default-route** (_yes                                        | no_)                                                                                                                                                                                                                                                                    | Whether to add default route to forward all traffic over the LTE interface.                                               |
- | **apn** (_string_)                                                 | Service Provider's Access Point Name                                                                                                                                                                                                                                    |
- | **authentication** (_pap                                           | chap                                                                                                                                                                                                                                                                    | none_; Default: **none**)                                                                                                 | Allowed protocol to use for authentication |
- | **default-route-distance** (_integer_; Default: **2**)             | Sets distance value applied to auto created default route, if add-default-route is also selected. LTE route by default is with distance 2 to prefer wired routes over LTE                                                                                               |
- | **ip-type** (_ipv4                                                 | ipv4-ipv6                                                                                                                                                                                                                                                               | ipv6_; Default: )                                                                                                         | Requested PDN type                         |
- | **ipv6-interface** (; Default: )                                   | Interface on which to advertise IPv6 prefix                                                                                                                                                                                                                             |
- | **name** (_string_; Default: )                                     | APN profile name                                                                                                                                                                                                                                                        |
- | **number** (_integer_; Default: )                                  | APN profile number                                                                                                                                                                                                                                                      |
- | **passthrough-interface** (; Default: )                            | Interface to passthrough IP configuration (activates passthrough)                                                                                                                                                                                                       |
- | **passthrough-mac** (_MAC_; Default: **auto**)                     | If set to auto, then will learn MAC from first packet                                                                                                                                                                                                                   |
- | **passthrough-subnet-selection** (_auto / p2p_; Default: **auto**) | "auto" selects the smallest possible subnet to be used for the passthrough interface. "p2p" sets the passthrough interface subnet as /32 and picks gateway address from 10.177.0.0/16 range. The gateway address stays the same until the apn configuration is changed. |
- | **password** (_string_; Default: )                                 | Password used if any of the authentication protocols are active                                                                                                                                                                                                         |
- | **use-network-apn** (_yes                                          | no_; Default: **yes**)                                                                                                                                                                                                                                                  | Parameter is available starting from RouterOS v7 and used only for MBIM modems. If set to yes, uses network provided APN. |
- | **use-peer-dns** (_yes                                             | no_; Default: **yes**)                                                                                                                                                                                                                                                  | If set to yes, uses DNS recieved from LTE interface                                                                       |
- | **user** (_integer_)                                               | Username used if any of the authentication protocols are active                                                                                                                                                                                                         |
-
-### Scanner
-
-It is possible to scan LTE interfaces with `/interface lte scan` command
-
-Available read only properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                       |
- | ------------------------------------- | --------------------------- |
- | **duration** (_integer_)              | Duration of scan in seconds |
- | **freeze-frame-interval** (_integer_) | time between data printout  |
- | **number** (_integer_)                | Interface number or name    |
-
-### User Info command
-
-It is possible to send special "info" command to LTE interface with `/interface lte info` command. In RouterOS v7 this command is moved to `/interface lte monitor` menu.
-
-#### Properties (Up to 6.40)
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                              |
- | -------------------------------------------- | ------------------------------------------------------------------------------- |
- | **user-command** (_string_; Default: **""**) | send a command to LTE card to extract useful information, e.g. with AT commands |
- | **user-command-only** (_yes                  | no_; Default: )                                                                 |
- |                                              |
-
-### User at-chat command
-
-It is possible to send user defined "at-chat" command to LTE interface with `/interface lte at-chat` command.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte at-chat lte1 input="AT*mrd_imei\?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">output</code><code class="ros constants">: *MRD_IMEI:356159060388208</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">OK</code></div></div></td></tr></tbody></table>
-
-You can also use "at-chat" function in scripts and assign command output to variable.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros string">"lte_command"</code> <code class="ros plain">[</code><code class="ros constants">/interface lte at-chat lte1 input="AT*mrd_imei\?" as-value ]</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">$</code><code class="ros string">"lte_command"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">output</code><code class="ros plain">=*MRD_IMEI:356159060388208</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">OK</code></div></div></td></tr></tbody></table>
-
-## Quick setup example
-
-Start with network settings -
-
-This guide is for RouterOS versions starting from 6.41
-
-Start with network settings - Add new connection parameters under LTE apn profile (provided by network provider):
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=profile1</code> <code class="ros value">apn</code><code class="ros plain">=phoneprovider.net</code> <code class="ros value">authentication</code><code class="ros plain">=chap</code> <code class="ros value">password</code><code class="ros plain">=web</code> <code class="ros value">user</code><code class="ros plain">=web</code></div></div></td></tr></tbody></table>
-
-Select newly created profile for LTE connection:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">apn-profiles</code><code class="ros plain">=profile1</code></div></div></td></tr></tbody></table>
-
-LTE interface should appear with running (R) flag:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">0 R </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"lte1"</code> <code class="ros value">mtu</code><code class="ros plain">=1500</code> <code class="ros value">mac-address</code><code class="ros plain">=AA:AA:AA:AA:AA:AA</code></div></div></td></tr></tbody></table>
-
-From RouterOS=>6.41 DHCP client is added automatically. If it's not added - add a DHCP Client to LTE Interface manually:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip dhcp-client </code><code class="ros functions">add </code><code class="ros value">default-route-distance</code><code class="ros plain">=1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">interface</code><code class="ros plain">=lte1</code></div></div></td></tr></tbody></table>
-
-If required, add NAT Masquerade for LTE Interface to get internet to the local network:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall nat </code><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">out-interface</code><code class="ros plain">=lte1</code></div></div></td></tr></tbody></table>
-
-After interface is added, you can use "info" command to see what parameters client acquired (parameters returned depends on LTE hardware device):
-
+```shell
+[admin@MikroTik] > /interface lte at-chat lte1 input="AT*mrd_imei\?"                        
+  output: *MRD_IMEI:356159060388208
+ 
+OK
 ```
+
+可以在脚本中使用 "at-chat "函数，将命令输出分配给变量。
+
+```shell
+[admin@MikroTik] > :global "lte_command" [/interface lte at-chat lte1 input="AT*mrd_imei\?" as-value ]
+[admin@MikroTik] > :put $"lte_command"
+output=*MRD_IMEI:356159060388208
+ 
+OK
+```
+
+## 快速设置示例
+
+从网络设置开始 -
+
+本指南适用于从6.41开始的RouterOS版本
+
+从网络设置开始 - 在LTE apn配置文件下添加新的连接参数（由网络供应商提供）：
+
+`/interface lte apn add name=profile1 apn=phoneprovider.net authentication=chap password=web user=web`
+
+选择为LTE连接新创建的配置文件：
+
+`/interface lte set [find] apn-profiles=profile1`
+
+LTE接口应出现运行（R）标志：
+
+```shell
+[admin@MikroTik] > /interface lte print
+Flags: X - disabled, R - running
+0 R name="lte1" mtu=1500 mac-address=AA:AA:AA:AA:AA:AA
+```
+
+从RouterOS=>6.41开始，DHCP客户端会自动添加。如果没有添加-请手动添加一个DHCP客户端到LTE接口：
+
+`/ip dhcp-client add default-route-distance=1 disabled=no interface=lte1`
+
+如果需要，为LTE接口添加NAT Masquerade获得互联网到本地网络：
+
+`/ip firewall nat add action=masquerade chain=srcnat out-interface=lte1`
+
+接口添加完毕后，可以用 "info "命令查看客户端获取了哪些参数（返回的参数取决于LTE硬件设备）：
+
+```shell
 [admin@MikroTik] > /interface lte info lte1 once 
 status: call in progress
 pin-status: no password required
@@ -228,95 +152,89 @@ rsrq: -13dB
 sinr: -1dB
 ```
 
-## Passthrough Example
+## Passthrough 示例
 
-Starting from RouterOS v6.41 some LTE interfaces support LTE Passthrough feature where the IP configuration is applied directly to the client device. In this case modem firmware is responsible for the IP configuration and router is used only to configure modem settings - APN, Network Technologies and IP-Type. In this configuration the router will not get IP configuration from the modem. The LTE Passthrough modem can pass both IPv4 and IPv6 addresses if that is supported by modem. Some modems support multiple APN where you can pass the traffic from each APN to a specific router interface.
+从RouterOS v6.41开始，一些LTE接口支持LTE Passthrough功能，IP配置直接应用于客户端设备。这样调制解调器固件负责IP配置，路由器只用来配置调制解调器的设置--APN、网络技术和IP类型。在这种配置下，路由器将不会从调制解调器获得IP配置。如果调制解调器支持IPv4和IPv6地址，LTE Passthrough调制解调器可以同时传递这两个地址。有些调制解调器支持多个APN，可以将每个APN的流量传递到一个特定的路由器接口。
 
-Passthrough will only work for one host. Router will automatically detect MAC address of the first received packet and use it for the Passthrough. If there are multiple hosts on the network it is possible to lock the Passthrough to a specific MAC. On the host on the network where the Passthrough is providing the IP a DHCP-Client should be enabled on that interface to. Note, that it will not be possible to connect to the LTE router via public lte ip address or from the host which is used by the passthrough. It is suggested to create additional connection from the LTE router to the host for configuration purposes. For example vlan interface between the LTE router and host.
+穿透只对一个主机有效。路由器将自动检测第一个收到的数据包的MAC地址，并将其用于Passthrough。如果网络上有多个主机，可以将直通车锁定在一个特定的MAC上。在Passthrough提供IP的网络上的主机上，应该在该接口上启用DHCP-客户端。请注意，不可能通过公共lte IP地址或从被Passthrough使用的主机连接到LTE路由器。建议从LTE路由器到主机建立额外的连接，以达到配置目的。例如，在LTE路由器和主机之间建立vlan接口。
 
-To enable the Passthrough a new entry is required or the default entry should be changed in the '/interface lte apn' menu
+要启用Passthrough，需要在"/interface lte apn "菜单中输入一个新条目或改变默认条目。
 
+并非所有芯片组都支持Passthrough。
   
+举例说明。
 
-Passthrough is not supported by all chipsets.
+要在ether1上配置Passthrough：
 
-  
-Examples.
+```shell
+[admin@MikroTik] > /interface lte apn add apn=apn1 passthrough-interface=ether1
+[admin@MikroTik] > /interface lte set lte1 apn-profiles=apn1
+```
 
-To configure the Passthrough on ether1:
+要在ether1主机00:0C:42:03:06:AB上配置直通车：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+```shell
+[admin@MikroTik] > /interface lte apn add apn=apn1 passthrough-interface=ether1 passthrough-mac=00:0C:42:03:06: AB
+[admin@MikroTik] > /interface lte set lte1 apn-profiles=apn1
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">apn</code><code class="ros plain">=apn1</code> <code class="ros value">passthrough-interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">apn-profiles</code><code class="ros plain">=apn1</code></div></div></td></tr></tbody></table>
+要在ether1和ether2上配置多个APN：
 
-To configure the Passthrough on ether1 host 00:0C:42:03:06:AB:
+```shell
+[admin@MikroTik] > /interface lte apn add apn=apn1 passthrough-interface=ether1
+[admin@MikroTik] > /interface lte apn add apn=apn2 passthrough-interface=ether2
+[admin@MikroTik] > /interface lte set lte1 apn-profiles=apn1,apn2
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+要为不同的接口配置相同的多个APN：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">apn</code><code class="ros plain">=apn1</code> <code class="ros value">passthrough-interface</code><code class="ros plain">=ether1</code> <code class="ros value">passthrough-mac</code><code class="ros plain">=00:0C:42:03:06:AB</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">apn-profiles</code><code class="ros plain">=apn1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface lte apn add name=interface1 apn=apn1
+[admin@MikroTik] > /interface lte apn add name=interface2 apn=apn1 passthrough-interface=ether1
+[admin@MikroTik] > /interface lte set lte1 apn-profiles=interface1
+[admin@MikroTik] > /interface lte set lte2 apn-profiles=interface2
+```
 
-To configure multiple APNs on ether1 and ether2:
+## 双SIM  
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 带有可切换SIM卡插槽的板子
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">apn</code><code class="ros plain">=apn1</code> <code class="ros value">passthrough-interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">apn</code><code class="ros plain">=apn2</code> <code class="ros value">passthrough-interface</code><code class="ros plain">=ether2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">apn-profiles</code><code class="ros plain">=apn1,apn2</code></div></div></td></tr></tbody></table>
+| RouterBoard | Modem slot | SIM slots  | Switchable |
+| ----------- | ---------- | ---------- | ---------- |
+| RouterBoard | Modem slot | SIM slots  | Switchable |
+| ---         | ---        | ---        | ---        |
+| LtAP        | lower      | 2          | 3          | Y |
+| LtAP        | upper      | 1          | N          |
+| LtAP mini   |            | up \| down | Y          |
+| SXT R       |            | a \|  b    | Y          |
 
-To configure multiple APNs with the same APN for different interfaces:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=interface1</code> <code class="ros value">apn</code><code class="ros plain">=apn1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte apn </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=interface2</code> <code class="ros value">apn</code><code class="ros plain">=apn1</code> <code class="ros value">passthrough-interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">apn-profiles</code><code class="ros plain">=interface1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte2 </code><code class="ros value">apn-profiles</code><code class="ros plain">=interface2</code></div></div></td></tr></tbody></table>
-
-## Dual SIM  
-
-### Boards with switchable SIM slots
-
-| RouterBoard | Modem slot | SIM slots | Switchable |
-| ----------- | ---------- | --------- | ---------- |
-| RouterBoard | Modem slot | SIM slots | Switchable |
-| ---         | ---        | ---       | ---        |
-| LtAP        |
-  
- | lower | 2 | 3 | Y |
-| upper | 1 | N |
-| LtAP mini |   
- | up | down | Y |
-| SXT R |   
- | a |  b | Y |
-
-SIM slots switching commands
+SIM卡插槽切换命令
 
 -   RouterOS v7
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte settings </code><code class="ros functions">set </code><code class="ros value">sim-slot</code><code class="ros plain">=down</code></div></div></td></tr></tbody></table>
+`/interface lte settings set sim-slot=down`
 
 -   RouterOS v6 after 6.45.1
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system routerboard modem </code><code class="ros functions">set </code><code class="ros value">sim-slot</code><code class="ros plain">=down</code></div></div></td></tr></tbody></table>
+`/system routerboard modem set sim-slot=down`
 
 -   RouterOS v6 pre 6.45.1:
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/system routerboard sim set sim-slot=down`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system routerboard sim </code><code class="ros functions">set </code><code class="ros value">sim-slot</code><code class="ros plain">=down</code></div></div></td></tr></tbody></table>
+更多参考资料请见板块图、快速指南和用户手册。
 
-For more reference please see board block diagram,  Quick Guide and User manual.
+### 使用实例
 
-### Usage Example
+按照这个链接 [双卡应用](https://wiki.mikrotik.com/wiki/Dual_SIM_Application "Dual SIM Application") 可以看到如何在RouterOS脚本和调度程序的帮助下，根据漫游状态和接口状态的变化来改变SIM卡插槽。
 
-Follow this link - [Dual SIM Application](https://wiki.mikrotik.com/wiki/Dual_SIM_Application "Dual SIM Application"), to see examples of how to change SIM slot based on roaming status and in case the interface status is down with help of RouterOS scripts and scheduler.
+## 技巧和窍门
 
-## Tips and Tricks
+本段包含其他功能和使用情况的信息。
 
-This paragraph contains information for additional features and usage cases.
+### 使用小区信息查找设备位置
 
-### Find device location using Cell information
-
-On devices using R11e-LTE International version card (wAP LTE kit) some extra information is provided under info command (from 6.41rc61)
+在使用R11e-LTE国际版卡（wAP LTE套件）的设备上，info命令下提供了一些额外的信息（从6.41rc61开始）。
 
 ```
    current-operator: 24701
@@ -324,71 +242,35 @@ On devices using R11e-LTE International version card (wAP LTE kit) some extra in
      current-cellid: 2514442
 ```
 
-| 
-Property
+| 属性                                        | 说明                                                             |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| **current-operator** (_integer_; Default: ) | 包含MCC和MNC。例如：current-operator: 24701拆成： MCC=247 MNC=01 |
+| **lac** (_integer_; Default: )              | 位置区域代码（LAC）                                              |
+| **current-cellid** (_integer_; Default: )   | 站点识别码                                                       |
 
- | 
+数值可用于在数据库中查找位置： [Cell Id Finder](https://cellidfinder.com/cells/findcell)
 
-Description
+### 使用小区锁定
 
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                             |
- | ------------------------------------------- | ------------------------------------------------------------------------------------ |
- | **current-operator** (_integer_; Default: ) | Contains MCC and MNC. For example: current-operator: 24701 breaks to: MCC=247 MNC=01 |
- | **lac** (_integer_; Default: )              | location area code (LAC)                                                             |
- | **current-cellid** (_integer_; Default: )   | Station identification number                                                        |
-
-Values can be used to find location in databases: [Cell Id Finder](https://cellidfinder.com/cells/findcell)
-
-### Using Cell lock
-
-It is possible to lock R11e-LTE, R11e-LTE6 and R11e-4G modems and equipped devices to exact LTE tower. LTE info command provides currently used cellular tower information:
+可以将R11e-LTE、R11e-LTE6和R11e-4G调制解调器和配备的设备锁定在准确的LTE塔上。LTE信息命令提供了当前使用的蜂窝电话塔信息：
 
 ```
          phy-cellid: 384
              earfcn: 1300 (band 3, bandwidth 20Mhz)
 ```
 
-| 
-Property
+| 属性                                  | 说明                                |
+| ------------------------------------- | ----------------------------------- |
+| **phy-cellid** (_integer_; Default: ) | 当前使用的基站的物理小区标识（PCI） |
+| **earfcn** (_integer_; Default: )     | 绝对无线电频率频道号                |
 
- | 
+准确的信号塔位置以及可用的频段和其他信息可以从移动运营商或通过使用在线服务获得：[CellMapper](https://www.cellmapper.net/map)
 
-Description
+通过使用这些获得的变量，可以向调制解调器发送AT命令，以便以当前格式锁定塔台：
 
- |     |
- | --- |  |
- |     |
+**用于R11e-LTE和R11e-LTE6**。
 
-Property
-
- | 
-
-Description
-
- |                                       |
- | ------------------------------------- | ---------------------------------------------------------------- |
- | **phy-cellid** (_integer_; Default: ) | Physical Cell Identification (PCI) of currently used cell tower. |
- | **earfcn** (_integer_; Default: )     | Absolute Radio Frequency Channel Number                          |
-
-Exact tower location as well as available bands and other information can be acquired from mobile carrier or by using online services:
-
-[CellMapper](https://www.cellmapper.net/map)
-
-By using those acquired variables it's possible to send AT command to modem for locking to tower in current format:
-
-**for R11e-LTE and R11e-LTE6**
-
-```
+```shell
 AT*Cell=<mode>,<NetworkMode>,<band>,<EARFCN>,<PCI>
 
 where
@@ -414,51 +296,43 @@ earfcn from lte info
 phy-cellid from lte info
 ```
 
-To lock modem at previously used tower at-chat can be used:
+可以在以前使用的塔台上锁定调制解调器：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte at-chat lte1 input="AT*Cell=2,3,,1300,384"`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT*Cell=2,3,,1300,384"</code></div></div></td></tr></tbody></table>
+对于R11e-LTE来说，所有设置的锁在重启或调制解调器复位后都会丢失。手机数据也可以从 "cell-monitor "收集。
 
-For R11e-LTE all set on locks are lost after reboot or modem reset. Cell data can be also gathered from "cell-monitor".
+对于 R11e-LTE6，小区锁定只适用于主频段，如果在同一频段上有多个频道，想把它锁定在一个特定的EARFCN上可能很有用。请注意，小区锁定不是针对特定频段的，对于ca频段，它也可以使用其他频段，除非使用频段锁定。
 
-For R11e-LTE6 cell lock works only for the primary band, this can be useful if you have multiple channels on the same band and you want to lock it to a specific earfcn. Note, that cell lock is not band-specific and for ca-band it can also use other frequency bands, unless you use band lock.
+使用小区锁定，将主频段设置为1300 earfcn，并将第二个频道用于ca-band：
 
-Use cell lock to set the primary band to the 1300 earfcn and use the second channel for the ca-band:
+`/interface lte at-chat lte1 input="AT*Cell=2,3,,1300,138"`
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT*Cell=2,3,,1300,138"</code></div></div></td></tr></tbody></table>
-
-Now it uses the earfcn: 1300 for the primary channel:
+现在它使用earfcn： 1300作为主通道：
 
 ```
          primary-band: B3@20Mhz earfcn: 1300 phy-cellid: 138
               ca-band: B3@5Mhz earfcn: 1417 phy-cellid: 138
 ```
 
-You can also set it the other way around:
+你也可以反过来设置：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte at-chat lte1 input="AT*Cell=2,3,,1417,138"`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT*Cell=2,3,,1417,138"</code></div></div></td></tr></tbody></table>
-
-Now it uses the earfcn: 1417 for the primary channel:
+现在用earfcn： 1417作为主通道：
 
 ```
          primary-band: B3@5Mhz earfcn: 1417 phy-cellid: 138
               ca-band: B3@20Mhz earfcn: 1300 phy-cellid: 138
 ```
 
-For R11e-LTE6 modem cell lock information will not be lost after reboot or modem reset. To remove cell lock use at-chat command:
+对于 R11e-LTE6 调制解调器，在重新启动或调制解调器复位后，小区锁定信息不会丢失。要删除手机锁，请使用at-chat命令：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte at-chat lte1 input="AT*Cell=0"`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT*Cell=0"</code></div></div></td></tr></tbody></table>
+**对R11e-4G**
 
-**for R11e-4G**
-
-```
+```shell
 AT%CLCMD=<mode>,<mode2>,<EARFCN>,<PCI>,<PLMN>
 AT%CLCMD=1,1,3250,244,\"24705\"
 
@@ -483,28 +357,23 @@ phy-cellid from lte info
 Mobile operator code
 ```
 
-All PLMN codes available [here](https://en.wikipedia.org/wiki/Mobile_country_code) this variable can be also left blank
+所有的PLMN代码都在 [这里](https://en.wikipedia.org/wiki/Mobile_country_code) ，变量也可以留空。
 
-To lock modem to the cell - modem needs to be in non operating state, easiest way for **R11e-4G** modem is to add CellLock line to "modem-init" string:
+要将调制解调器锁定在小区--调制解调器需要处于非工作状态，对于 **R11e-4G** 调制解调器最简单的方法是在 "modem-init "字符串中添加CellLock行：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte set lte1 modem-init="AT%CLCMD=1,1,3250,244,\"24705\""`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">modem-init</code><code class="ros plain">=</code><code class="ros string">"AT%CLCMD=1,1,3250,244,\"24705\""</code></div></div></td></tr></tbody></table>
-
-Multiple cells can also be added by providing list instead of one tower information in following format:
+也可以通过列表而不是以下格式的塔信息来添加多个单元：
 
 ```
 AT%CLCMD=<mode>,<mode2>,<EARFCN_1>,<PCI_1>,<PLMN_1>,<EARFCN_2>,<PCI_2>,<PLMN_2>
 ```
 
-For example to lock to two different PCIs within same band and operator:
+例如，在同一频段和运营商内锁定到两个不同的PCI：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte set lte1 modem-init="AT%CLCMD=1,1,6300,384,\"24701\",6300,385,\"24701\""`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">modem-init</code><code class="ros plain">=</code><code class="ros string">"AT%CLCMD=1,1,6300,384,\"24701\",6300,385,\"24701\""</code></div></div></td></tr></tbody></table>
-
-**for Chateau LTE12, Chateau 5G and LHG LTE18  
-**
+**用于Chateau LTE12、Chateau 5G和LHG LTE18**
 
 ```
 AT+QNWLOCK="common/4g",<num of cells>,[[<freq>,<pci>],...]
@@ -523,81 +392,86 @@ phy-cellid from lte info
 
 ```
 
-Single cell lock example:
+单个单元格锁的例子：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface/lte/at-chat lte1 input="AT+QNWLOCK=\"common/4g\",1,3050,448"`
+ 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/lte/at-chat lte1 input="AT+QNWLOCK=\"common/4g\",1,3050,448"</code></div></div></td></tr></tbody></table>
+多个单元格也可以添加到单元格锁定中。例如，锁定到两个不同的单元格：
 
+`/interface/lte/at-chat lte1 input="AT+QNWLOCK=\"common/4g\",2,3050,448,1574,474"`
   
 
-Multiple cells can also be added to cell lock. For example to lock to two different cells:
+要删除单元格锁，请使用这个at-chat命令：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/lte/at-chat lte1 input="AT+QNWLOCK=\"common/4g\",2,3050,448,1574,474"</code></div></div></td></tr></tbody></table>
+`/interface/lte/at-chat lte1 input="at+qnwlock=\"common/4g\",0"`
 
   
+1. 重启或重设调制解调器后，单元锁定信息不会被保存。
 
-To remove the cell lock use this at-chat command:
+2.  AT+QNWLOCK命令可以锁定单元和频率。因此，模块可以优先注册到锁定的单元，但是，根据3gpp协议，即使不在命令的锁定范围内，模块也会被重定向或交接到信号更好的单元指示。这种现象是正常的。
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 单元监控
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/lte/at-chat lte1 input="at+qnwlock=\"common/4g\",0"</code></div></div></td></tr></tbody></table>
+单元监控器允许扫描附近可用的移动网络单元：
 
-  
+```shell
+[admin@MikroTik] > /interface lte cell-monitor lte1
+PHY-CELLID BAND         PSC EARFCN                 RSRP          RSRQ          RSSI         SINR
+        49 B20              6300                -110dBm       -19.5dB
+       272 B20              6300                -116dBm       -19.5dB
+       374 B20              6300                -108dBm         -16dB
+       384 B1               150                 -105dBm       -13.5dB
+       384 B3               1300                -106dBm         -12dB
+       384 B7               2850                -107dBm       -11.5dB
+       432 B7               2850                -119dBm       -19.5dB
+```
 
-1\. Cell lock information will not be saved after a reboot or modem reset. 2. AT+QNWLOCK command can lock the cell and frequency. Therefore, the module can be given priority to register to the locked cell, however, according to the 3gpp protocol, the module will be redirected or handover to a cell with better signal instructions, even if it is not within the lock of the command. This phenomenon is normal.
+收集的数据可用于更精确的位置检测或用于小区锁定。
 
-### Cell Monitor
+不是所有的调制解调器都支持这个功能
 
-Cell monitor allows to scan available nearby mobile network cells:
+## 故障排除
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+启用LTE日志：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte cell-</code><code class="ros functions">monitor </code><code class="ros plain">lte1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">PHY-CELLID BAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PSC EARFCN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSRP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSRQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RSSI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SINR</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">49 B20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -110dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -19.5dB</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">272 B20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -116dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -19.5dB</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">374 B20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -108dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -16dB</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">384 B1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -105dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -13.5dB</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">384 B3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -106dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -12dB</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">384 B7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2850&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -107dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -11.5dB</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">432 B7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2850&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -119dBm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -19.5dB</code></div></div></td></tr></tbody></table>
+`[admin@MikroTik] > /system logging add topics=lte`
 
-Gathered data can be used for more precise location detection or for Cell lock.
+检查日志中是否有错误：
 
-Not all modems support this feature
+```shell
+[admin@MikroTik] > /log print
+ 
+11:08:59 lte,async lte1: sent AT+CPIN?
+11:08:59 lte,async lte1: rcvd +CME ERROR: 10
+```
 
-## Troubleshooting
+在网上搜索CME错误描述、
 
-Enable LTE logging:
+在这种情况下： CME错误10 - 未插入SIM卡
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 锁定华为和其他调制解调器的频段
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/system logging </code><code class="ros functions">add </code><code class="ros value">topics</code><code class="ros plain">=lte</code></div></div></td></tr></tbody></table>
+要锁定华为调制解调器的频段，不能使用 `/interface lte set lte1 band=""` 选项。
 
-Check for errors in log:
+可以使用AT命令手动锁定到所需的频段。
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+要检查所有支持的频段，请运行at-chat命令：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">11</code><code class="ros constants">:08:59 lte,async lte1: sent AT+CPIN?</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">11</code><code class="ros constants">:08:59 lte,async lte1: rcvd +CME ERROR: 10</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /interface lte at-chat lte1 input="AT^SYSCFGEX=\?"
+ 
+output: ^SYSCFGEX: ("00","03","02","01","99"),((2000004e80380,"GSM850/GSM900/GSM1800/GSM1900/WCDMA BCI/WCDMA BCII/WCDMA BCV/WCDMA BCVIII"),
+(3fffffff,"All Bands")),(0-2),(0-4),((800d7,"LTE BC1/LTE BC2/LTE
+BC3/LTE BC5/LTE BC7/LTE BC8/LTE BC20"),(7fffffffffffffff,"All Bands"))
+OK
+```
 
-search for CME error description online,
+例如，锁定到LTE频段7：
 
-in this case: CME error 10 - SIM not inserted
+`[admin@MikroTik] /interface lte set lte1 modem-init="AT^SYSCFGEX=\"03\",3FFFFFFF,2,4,40,,"`
 
-### Locking band on Huawei and other modems
-
-To lock band for Huawei modems `/interface lte set lte1 band=""` option can't be used.
-
-It is possible to use AT commands to lock to desired band manually.
-
-To check all supported bands run at-chat command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface lte at-chat lte1 input="AT^SYSCFGEX=\?"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">output</code><code class="ros constants">: ^SYSCFGEX: ("00","03","02","01","99"),((2000004e80380,"GSM850/GSM900/GSM1800/GSM1900/WCDMA BCI/WCDMA BCII/WCDMA BCV/WCDMA BCVIII"),</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">(3fffffff,</code><code class="ros string">"All Bands"</code><code class="ros plain">)),(0-2),(0-4),((800d7,"LTE BC1</code><code class="ros constants">/LTE BC2/LTE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">BC3</code><code class="ros constants">/LTE BC5/LTE BC7/LTE BC8/LTE BC20"),(7fffffffffffffff,"All Bands"))</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">OK</code></div></div></td></tr></tbody></table>
-
-Example to lock to LTE band 7:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface lte </code><code class="ros functions">set </code><code class="ros plain">lte1 </code><code class="ros value">modem-init</code><code class="ros plain">=</code><code class="ros string">"AT^SYSCFGEX=\"03\",3FFFFFFF,2,4,40,,"</code></div></div></td></tr></tbody></table>
-
-Change last part **40** to desired band specified hexadecimal value where:
+将最后一部分 **40** 改为所需波段指定十六进制值，其中：
 
 ```
 4 LTE BC3
@@ -607,115 +481,115 @@ Change last part **40** to desired band specified hexadecimal value where:
 etc
 ```
 
-All band HEX values and AT commands can be found in [Huawei AT Command Interface Specification guide](https://download-c.huawei.com/download/downloadCenter?downloadId=29741&version=72288&siteCode=)
+所有频段的HEX值和AT命令可以在 [华为AT命令接口规范指南](https://download-c.huawei.com/download/downloadCenter?downloadId=29741&version=72288&siteCode=) 中找到
 
-Check if band is locked:
+检查频段是否被锁定：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+```shell
+[admin@MikroTik] /interface lte at-chat lte1 input="AT^SYSCFGEX\?"
+ 
+output: ^SYSCFGEX: "03",3FFFFFFF,0,2,40
+OK
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/interface lte at-chat lte1 input="AT^SYSCFGEX\?"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">output</code><code class="ros constants">: ^SYSCFGEX: "03",3FFFFFFF,0,2,40</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">OK</code></div></div></td></tr></tbody></table>
+更多信息请查看调制解调器制造商的AT命令参考手册。
 
-For more information check modem manufacturers AT command reference manuals.
+### 带有RB9xx系列设备的mPCIe调制解调器
 
-### mPCIe modems with RB9xx series devices
+如果调制解调器在软重启后没有识别，那可能要在USB端口被初始化前增加一个延迟。可以用下面的命令来完成：
 
-In case your modem is not being recognized after a soft reboot, then you might need to add a delay before the USB port is being initialized. This can be done using the following command:
+`/system routerboard settings set init-delay=5s`
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 带有USB-A端口和mPCIe的板子  
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system routerboard settings </code><code class="ros functions">set </code><code class="ros value">init-delay</code><code class="ros plain">=5s</code></div></div></td></tr></tbody></table>
+一些设备，如特定的RB9xx和RBLtAP-2HnD在一个mPCIe插槽和一个USB-A端口之间共享相同的USB线路。如果没有自动切换，调制解调器没有被检测到，可能要手动切换到使用USB-A或mini-PCIe：
 
-### Boards with USB-A port and mPCIe  
+`/system routerboard usb set type=mini-PCIe`
 
-Some devices such as specific RB9xx's and the RBLtAP-2HnD share the same USB lines between a single mPCIe slot and a USB-A port. If auto switch is not taking place and a modem is not getting detected, you might need to switch manually to either use the USB-A or mini-PCIe:
+### 调制解调器固件升级
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system routerboard usb </code><code class="ros functions">set </code><code class="ros value">type</code><code class="ros plain">=mini-PCIe</code></div></div></td></tr></tbody></table>
-
-### Modem firmware upgrade
-
-Before attempting LTE modem firmware upgrade - upgrade RouterOS version to latest releases [How To Upgrade RouterOS](https://wiki.mikrotik.com/wiki/Manual:Upgrading_RouterOS)
-
+在尝试LTE调制解调器固件升级之前--将RouterOS版本升级到最新版本 [如何升级RouterOS](https://wiki.mikrotik.com/wiki/Manual:Upgrading_RouterOS)
   
-Starting from RouterOS version 6.44beta20 it is possible to upgrade modems firmware. The firmware upgrade is also possible for the Chateau series products starting from 7.1beta1 version.
+从RouterOS 6.44beta20版本开始，可以升级调制解调器固件。从7.1beta1版本开始，Chateau系列的产品也可以进行固件升级。
 
-Firmware update is available only as FOTA Firmware Over The Air - firmware upgrade can only be done through working mobile connection for:
+固件升级只适用于FOTA空中固件 - 固件升级只能通过工作的移动连接来完成：
 
--   )R11e-LTE
--   )R11e-LTE-US
+- )R11e-LTE
+- )R11e-LTE-US
 
-Firmware update available as FOTA and as well as upgrade from file for:
+固件更新可用于FOTA，也可从文件中升级，适用于：
 
--   )R11e-4G
--   )R11e-LTE6
+- )R11e-4G
+- )R11e-LTE-6
 
-Firmware update available as FOTA with access to the internet over any interface:
+固件更新可用于FOTA，通过任何接口接入互联网：
 
--   )EG12-EA (Chateau LTE12)
--   )RG502Q-EA (Chateau 5G)
--   )EG18-EA (LHG LTE18)
+- )EG12-EA (Chateau LTE12)
+- )RG502Q-EA (Chateau 5G)
+- )EG18-EA (LHG LTE18)
 
-Firmware updates usually includes small improvements in stability or small bug fixes that can't be included into RouterOS.
+固件更新通常包括在稳定性方面的小改进或小的错误修复，不能包含在RouterOS中。
 
-Check currently used firmware version by running:
+通过运行检查当前使用的固件版本：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+```shell
+[admin@MikroTik] > /interface lte info lte1 once
+ 
+-----
+revision: "MikroTik_CP_2.160.000_v008"
+-----
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte </code><code class="ros functions">info </code><code class="ros plain">lte1 once</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">-----</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">revision</code><code class="ros constants">: "MikroTik_CP_2.160.000_v008"</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">-----</code></div></div></td></tr></tbody></table>
+检查是否有新固件：
 
-Check if new firmware is available:
+```shell
+[admin@MikroTik] > /interface lte firmware-upgrade lte1
+  installed: MikroTik_CP_2.160.000_v008
+     latest: MikroTik_CP_2.160.000_v010
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+更新固件:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte firmware-</code><code class="ros functions">upgrade </code><code class="ros plain">lte1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">installed</code><code class="ros constants">: MikroTik_CP_2.160.000_v008</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">latest</code><code class="ros constants">: MikroTik_CP_2.160.000_v010</code></div></div></td></tr></tbody></table>
+`[admin@MikroTik] > interface lte firmware-upgrade lte1 upgrade=yes
+  status: downloading via LTE connection (>2min)`
 
-Upgrade firmware:
+整个升级过程可能需要10分钟，取决于连接速度。
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+升级成功后，发出USB电源复位，重新启动设备或运行AT+reset命令，用更新信息命令下的调制解调器版本读出：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; interface lte firmware-</code><code class="ros functions">upgrade </code><code class="ros plain">lte1 </code><code class="ros value">upgrade</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: downloading via LTE connection (&gt;2min)</code></div></div></td></tr></tbody></table>
+`[admin@MikroTik] > /interface lte at-chat lte1 input="AT+reset"`
 
-Whole upgrade process may take up to 10 minutes, depending on mobile connection speed.
+如果调制解调器在更新后有连接到电池的问题，或有任何其他不相关的问题-请清除旧配置：
 
-After successful upgrade issue USB power-reset, reboot device or run AT+reset command, to update modem version readout under info command:
+`/interface lte at-chat lte1 input="AT+RSTSET"`
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+### 避免连接速度节流
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface lte at-chat lte1 input="AT+reset"</code></div></div></td></tr></tbody></table>
+一些运营商（TMobile，YOTA等）只允许在SIM卡上使用无限的数据，所有其他来自移动热点的数据都受到数量或吞吐速度的高度限制。[一些消息来源](https://www.reddit.com/r/hacking/comments/54a7dd/bypassing_tmobiles_tethering_data_capthrottling/) 发现，这种限制是通过监测数据包的TTL(Time To Live)值来确定是否需要应用限制(TTL每 "跳 "一次，就减少1)。RouterOS允许改变来自路由器的数据包的TTL参数允许隐藏子网络。记住，这可能与公平使用政策相冲突。
 
-if modem has issues connecting to cells after update, or there are any other unrelated issues - wipe old configuration with:
+```shell
+IPv4 mangle rule:
+/ip firewall mangle
+add action=change-ttl chain=postrouting new-ttl=set:65 out-interface=lte1 passthrough=yes
+IPv6 mangle rule:
+/ipv6 firewall mangle
+add action=change-hop-limit chain=postrouting new-hop-limit=set:65 passthrough=yes
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+更多信息： [YOTA](https://m.habr.com/en/post/238351/), [TMobile](https://www.reddit.com/r/mikrotik/comments/acq4kz/anyone_familiar_with_configuring_the_ltap_us_with/)
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT+RSTSET"</code></div></div></td></tr></tbody></table>
+### 在多次尝试错误的PIN码后解锁SIM卡
 
-### Avoiding tethering speed throttling
+锁定SIM卡后，可以通过 "at-chat "解锁。
 
-Some operators (TMobile, YOTA etc.) allows unlimited data only for device SIM card is used on, all other data coming from mobile hotspots or tethering is highly limited by volume or by throughput speed. [Some sources](https://www.reddit.com/r/hacking/comments/54a7dd/bypassing_tmobiles_tethering_data_capthrottling/) have found out that this limitation is done by monitoring TTL (Time To Live) values from packets to determinate if limitations need to be applied (TTL is decreased by 1 for each "hop" made). RouterOS allows changing the TTL parameter for packets going from the router to allow hiding sub networks. Keep in mind that this may conflict with fair use policy.
+检查当前的PIN码状态：
 
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
+`/interface lte at-chat lte1 input="at+cpin\?"`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">IPv4 mangle rule</code><code class="ros constants">:</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=change-ttl</code> <code class="ros value">chain</code><code class="ros plain">=postrouting</code> <code class="ros value">new-ttl</code><code class="ros plain">=set:65</code> <code class="ros value">out-interface</code><code class="ros plain">=lte1</code> <code class="ros value">passthrough</code><code class="ros plain">=yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">IPv6 mangle rule</code><code class="ros constants">:</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ipv6 firewall mangle</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=change-hop-limit</code> <code class="ros value">chain</code><code class="ros plain">=postrouting</code> <code class="ros value">new-hop-limit</code><code class="ros plain">=set:65</code> <code class="ros value">passthrough</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+如果卡被锁定 - 通过命令解锁：
 
-More information: [YOTA](https://m.habr.com/en/post/238351/), [TMobile](https://www.reddit.com/r/mikrotik/comments/acq4kz/anyone_familiar_with_configuring_the_ltap_us_with/)
+`/interface lte at-chat lte1 input="AT+CPIN="PUK_code\",\"NEW_PIN\""`。
 
-### Unlocking SIM card after multiple wrong PIN code attempts
+用匹配的值替换PUK_code和NEW_PIN。
 
-After locking SIM card, unlock can be done through "at-chat"
-
-Check current PIN code status:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="at+cpin\?"</code></div></div></td></tr></tbody></table>
-
-If card is locked - unlock it by providing:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LTE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface lte at-chat lte1 input="AT+CPIN=\"PUK_code\",\"NEW_PIN\""</code></div></div></td></tr></tbody></table>
-
-Replace PUK\_code and NEW\_PIN with matching values.
-
-The command for sim slot selection changes in v6.45.1 and again in v7. Some device models like SXT, have SIM slots named "a" and "b" instead of "up" and down"
+在v6.45.1版本中，选择SIM卡槽的命令有所改变，在v7版本中又有所改变。 一些设备型号，如SXT，其SIM卡槽被命名为 "a "和 "b"，而不是 "up "和 "down"。

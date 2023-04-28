@@ -1,122 +1,169 @@
-# Introduction
+# 简介
 
-Many RouterOS devices have [GPS](https://help.mikrotik.com/docs/display/ROS/GPS) support. It allows RouterOS to determine the precise location of its GPS receiver. GPS coordinates will indicate the latitude and the longitude values (among other parameters) of the current position.
+许多RouterOS设备有 [GPS](https://help.mikrotik.com/docs/display/ROS/GPS) 支持。允许RouterOS确定其GPS接收器的精确位置。GPS坐标将显示当前位置的纬度和经度值（以及其他参数）。
 
-Let's say, you have [LTAP](https://mikrotik.com/product/ltap) (or any other RouterOS device with GPS support) and you wish to track its location. You want the router to send this data to a server, where the data will be stored and integrated into a map, as it is more convenient to monitor. In this guide, we will showcase how you can do that. This scenario will utilize MQTT protocol communication with a platform called [ThingsBoard](https://thingsboard.io/).
+比如有 [LTAP](https://mikrotik.com/product/ltap)（或任何其他支持GPS的RouterOS设备），希望跟踪它的位置。想让路由器把这些数据发送到服务器上，这些数据将被储存并整合到地图上，因为这样监控起来更方便。在本指南中将展示如何做到这一点。这个方案利用MQTT协议与一个叫做 [ThingsBoard](https://thingsboard.io/) 的平台进行通信。
 
-ThingsBoard has a cloud solution and different local installation options (on different OS).
+ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的操作系统上）。
 
-Since we've added a [container](https://help.mikrotik.com/docs/display/ROS/Container) feature, it became possible to also run the platform within the RouterOS. Meaning, you can build this scenario, solely on RouterOS units → devices with GPS support that you wish to track (for example, cars equipped with [LTAP](https://mikrotik.com/product/ltap)s → RouterOS devices that act as **MQTT publishers**), and a ThingsBoard server run within a more powerful RouterOS device (like a [CHR](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=18350234) machine → RouterOS device that acts as an **MQTT broker**).
+因为已经添加了 [容器](https://help.mikrotik.com/docs/display/ROS/Container) 
+ 功能，因此也可以在RouterOS中运行该平台。这意味着可以建立该方案，仅在RouterOS设备上→希望跟踪的支持GPS的设备（例如，配备 [LTAP](https://mikrotik.com/product/ltap) 的汽车→作为 **MQTT publishers** 的RouterOS设备），以及在更强大的RouterOS设备内运行的ThingsBoard服务器（如 [CHR](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=18350234) 机器→作为**MQTT broker** 的RouterOS设备）。
 
-If you want to choose this route (container route), make sure to pick the devices that you plan on using as a "server" carefully, because this implementation can be heavy on RAM usage (it is suggested to have a device that has at least **2 GB** **RAM** or **1 GB RAM** **with minimal load** and is either **ARM64** or **AMD64** architecture).
+如果想选择这个办法（容器），一定要仔细挑选打算用作 "服务器 "的设备，因为这种实现方式内存占用很大（建议设备至少有 **2 GB RAM** 或 **1 GB RAM** ，并且是 **ARM64** 或 **AMD64** 架构）。
 
-# Configuration
+# 配置
 
-In this guide, we will demonstrate how to configure a GPS receiver (MQTT publisher) and how to set up ThingsBoard.
+在本指南中，我们将演示如何配置一个GPS接收器（MQTT发布器）以及如何设置ThingsBoard。
 
-In case you want to use the container feature to run the ThingsBoard instance (MQTT broker), check the guide [over here](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=166920348). General guidelines on ThingsBoard and MQTT configuration can be found in the guide [over here](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration). Make sure to explore both guides as they will have additional useful information.
+如果想使用容器功能来运行ThingsBoard实例（MQTT代理），请查看 [指南]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=166920348）。关于ThingsBoard和MQTT配置的一般准则可以在指南中找到 [over here](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration) 。阅读这两个指南，会有额外的有用信息。
 
-Before proceeding, make sure that the ThingsBoard is up and running and that you are able to access its WEB management portal. Confirm that the MQTT port is open or/and port-forwarded properly.
+在继续进行之前，确保ThingsBoard已经启动并运行，并且能够访问管理WEB。确认MQTT端口已打开，端口转发正确。
 
 **Package requirement:** `gps, iot`
 
-## ThingsBoard preparation
+## ThingsBoard准备
 
-This example will showcase [access-token](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#MQTTandThingsBoardconfiguration-Accesstokenscenario.1) and [one-way SSL communication via access-token](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#MQTTandThingsBoardconfiguration-One-waySSLcommunicationscenario.1) scenarios for simplicity reasons, but you can use other available options as well.
+本例将展示 [access-token](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#MQTTandThingsBoardconfiguration-Accesstokenscenario.1) 和 [通过access-token进行单向SSL通信](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration#MQTTandThingsBoardconfiguration-One-waySSLcommunicationscenario.1) 场景，也可以使用其他可用选项。
 
-Navigate to the "**Devices**" menu and add a new device via the "**Add new device**" button → name it and create it (for example, LTAP):
+导航到 **设备** 菜单，通过 **添加新设备** 按钮添加一个新设备→命名并创建它（例如，LTAP）：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_12-51-0.png?version=1&modificationDate=1675248641759&api=v2)
 
-Click on the device you've just added, go to the "**Details**" section, and generate an access token under the "**Manage credentials/Device Credentials**" setting:
+点击刚刚添加的设备，进入 **细节** 部分，在 **管理凭证/设备凭证** 设置下生成一个访问令牌：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-5-15.png?version=1&modificationDate=1675249496173&api=v2)
 
-## MQTT broker configuration
+## MQTT broker配置
 
-In case it is a local test or the broker is available through the VPN, you can use non-SSL MQTT:
+如果是本地测试，或者broker可以通过VPN使用，也可以使用非SSL的MQTT：
 
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
+`/iot/mqtt/brokers/add name=tb address=x.x.x.x port=1883 username=access_token`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=1883</code> <code class="ros value">username</code><code class="ros plain">=access_token</code></div></div></td></tr></tbody></table>
+其中：
 
-Where:
+- `name` 是希望的broker的名字，这个名字将在以后的脚本中使用；
+- `address` 是broker 的IP地址；
+- `port` 是broker 监听的TCP端口，对于非SSL，通常是TCP 1883；
+- `username` 是由MQTT broker决定的，在这个例子中是ThingsBoard管理门户中生成的 "访问令牌"。
 
--   `name` is the name that you wish to give to the broker and this name will be used later in the script;
--   `address` is the IP address of the broker;
--   `port` is the TCP port that the broker is listening for → for non-SSL it is typically TCP 1883;
--   `username` is dictated by the MQTT broker and, in our case, it is an "access token" that was generated in the ThingsBoard management portal.
+如果是公共访问（想通过其公共IP地址访问broker 时），**建议使用SSL MQTT**：
 
-In case it is public access (when you want to access the broker via its public IP address), **we advise you to use SSL MQTT**:
+```shell
+/iot/mqtt/brokers/add name=tb address=x.x.x.x port=8883 username=access_token ssl=yes
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
+其中：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/brokers/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=tb</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">port</code><code class="ros plain">=8883</code> <code class="ros value">username</code><code class="ros plain">=access_token</code> <code class="ros value">ssl</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+- `name` 是给broker 的名字，这个名字将在以后的脚本中使用；
+- `address` 是broker 的IP地址；
+- `port` 是broker 监听的TCP端口，对于SSL来说，通常是TCP 8883；
+- `username` 是由MQTT broker 决定的，在例子中是一个在ThingsBoard管理门户中生成的 "访问令牌"；
+- `ssl` 启用SSL MQTT通信。
 
-Where:
+## MQTT发布
 
--   `name` is the name that you wish to give to the broker and this name will be used later in the script;
--   `address` is the IP address of the broker;
--   `port` is the TCP port that the broker is listening for → for SSL it is typically TCP 8883;
--   `username` is dictated by the MQTT broker, and, in our case, it is an "access token" that was generated in the ThingsBoard management portal;
--   `ssl` enables SSL MQTT communication.
+可以通过使用命令来测试MQTT发布的静态消息：
 
-## MQTT publish
+`/iot/mqtt/publish broker="tb" topic="v1/devices/me/telemetry" message="{\"test\":\"123\"}"`
 
-You can test MQTT publish with a static message by using the command:
+要发布GPS坐标，请导入如下所示的脚本：
 
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
+```shell
+/system/script/add dont-require-permissions=no name=mqttgps owner=admin policy="ftp,re\
+    boot,read,write,policy,test,password,sniff,sensitive,romon" \
+    source="    ###Configuration###\r\
+    \n    #Enter pre-configured broker's name within \"\":\r\
+    \n    :local broker \"tb\"\r\
+    \n    #Enter the topic name within \"\", per the broker's config\
+    uration:\r\
+    \n    :local topic \"v1/devices/me/telemetry\"\r\
+    \n\r\
+    \n    ###Variables####\r\
+    \n    :global lat\r\
+    \n    :global lon\r\
+    \n    :global alt1\r\
+    \n    :global alt2\r\
+    \n\r\
+    \n    ###GPS####\r\
+    \n    :put (\"[*] Capturing GPS coordinates...\")\r\
+    \n    /system gps monitor once do={\r\
+    \n    :set \$lat \$(\"latitude\");\r\
+    \n    :set \$lon \$(\"longitude\");\r\
+    \n    :set \$alt1 \$(\"altitude\")}\r\
+    \n    ###remove \"meters\" from the value because JSON format wi\
+    ll not understand it###\r\
+    \n    :set \$alt2 [:pick \$alt1 0 [find \$alt1 \" m\"]]\r\
+    \n\r\
+    \n    :local message \\\r\
+    \n    \"{\\\"latitude\\\":\$lat,\\\r\
+    \n    \\\"longitude\\\":\$lon,\\\r\
+    \n    \\\"altitude\\\":\$alt2}\"\r\
+    \n\r\
+    \n    ###MQTT###\r\
+    \n    :if (\$lat != \"none\") do={\\\r\
+    \n    :put (\"[*] Sending message to MQTT broker...\");\r\
+    \n    /iot mqtt publish broker=\$broker topic=\$topic message=\$\
+    message} else={:put (\"[*] Lattitude=none, not posting anything!\
+    \");:log info \"Latitude=none, not posting anything!\"}"
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/iot/mqtt/publish broker="tb" topic="v1/devices/me/telemetry" message="{\"test\":\"123\"}"</code></div></div></td></tr></tbody></table>
+简而言之，该脚本捕捉GPS信息，特别是纬度、经度和海拔值。然后从这些信息中构造出一个JSON信息。如果在脚本启动的时候，纬度值不等于 "无"（等于任何实际的数值），那就会通过MQTT将JSON消息发送到名为 **tb** 的broker 那里。如果GPS数据不能被捕获→"纬度 "被识别为 "无"→脚本只记录没有任何东西被捕获，而不做其他事情。
 
-To post GPS coordinates, import the script shown below:
+这只是一个非常基本的例子。可以根据自己的需要修改脚本并添加自己的 "if"（也许是在没有GPS信号的情况下发送电子邮件通知）和额外的参数（任何其他的RouterOS捕获值，如固件版本）。
 
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
+用命令运行脚本：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system/script/</code><code class="ros functions">add </code><code class="ros value">dont-require-permissions</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=mqttgps</code> <code class="ros value">owner</code><code class="ros plain">=admin</code> <code class="ros value">policy</code><code class="ros plain">=</code><code class="ros plain">"ftp,re\</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">boot,read,write,policy,test,password,sniff,sensitive,romon" \</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">"&nbsp;&nbsp;&nbsp; </code><code class="ros comments">###Configuration###\r\</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">#Enter pre-configured broker's name within \"\":\r\</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">broker \"tb\"\r\</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">#Enter the topic name within \"\", per the broker's config\</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">uration</code><code class="ros constants">:\r\</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">topic \"v1</code><code class="ros constants">/devices/me/telemetry\"\r\</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n\r\</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">###Variables####\r\</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">lat\r\</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">lon\r\</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">alt1\r\</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">alt2\r\</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n\r\</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">###GPS####\r\</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(\"[*] Capturing GPS coordinates...\")\r\</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">/system gps </code><code class="ros functions">monitor </code><code class="ros plain">once </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{\r\</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">\</code><code class="ros keyword">$lat</code> <code class="ros plain">\$(\"latitude\");\r\</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">\</code><code class="ros keyword">$lon</code> <code class="ros plain">\$(\"longitude\");\r\</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">\</code><code class="ros keyword">$alt1</code> <code class="ros plain">\$(\"altitude\")}\r\</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">###remove \"meters\" from the value because JSON format wi\</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">ll not understand it</code><code class="ros comments">###\r\</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">\</code><code class="ros keyword">$alt2</code> <code class="ros plain">[</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros plain">\</code><code class="ros keyword">$alt1</code> <code class="ros plain">0 [</code><code class="ros functions">find </code><code class="ros plain">\</code><code class="ros keyword">$alt1</code> <code class="ros plain">\" m\"]]\r\</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n\r\</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">message \\\r\</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; \"{\\\"latitude\\\"</code><code class="ros constants">:\$lat,\\\r\</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; \\\"longitude\\\"</code><code class="ros constants">:\$lon,\\\r\</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; \\\"altitude\\\"</code><code class="ros constants">:\$alt2}\"\r\</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n\r\</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros comments">###MQTT###\r\</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(\</code><code class="ros keyword">$lat</code> <code class="ros plain">!</code><code class="ros plain">=</code> <code class="ros plain">\"none\") </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{\\\r\</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(\"[*] Sending message to MQTT broker...\");\r\</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\n&nbsp;&nbsp;&nbsp; </code><code class="ros constants">/iot mqtt publish broker=\$broker topic=\$topic message=\$\</code></div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">message} </code><code class="ros value">else</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(\"[*] </code><code class="ros value">Lattitude</code><code class="ros plain">=none,</code> <code class="ros plain">not posting anything!\</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">\</code><code class="ros string">");:log info \"Latitude=none, not posting anything!\"}"</code></div></div></td></tr></tbody></table>
+```shell
+/system/script/run mqttgps
+[*] Capturing GPS coordinates...
+        date-and-time: feb/01/2023 10:39:37
+             latitude: 56.969862
+            longitude: 24.162425
+             altitude: 31.799999 m
+                speed: 1.000080 km/h
+  destination-bearing: none
+         true-bearing: 153.089996 deg. True
+     magnetic-bearing: 0.000000 deg. Mag
+                valid: yes
+           satellites: 6
+          fix-quality: 1
+  horizontal-dilution: 1.42
+             data-age: 0s
+[*] Sending message to MQTT broker...
+```
 
-In short, the script captures GPS information, specifically the latitude, longitude, and altitude values. Then it structures a JSON message out of them. In case, at the moment when the script is initiated, the latitude value equals anything other than "none" (equals any actual value-number) → it sends the JSON message via MQTT to the broker named "**tb**". In case, the GPS data can not be captured →  "latitude" is recognized as "none" →  the script just logs that nothing could be captured and does nothing else.
+要使这个过程自动化，可以添加一个 [时间表](https://help.mikrotik.com/docs/display/ROS/Scheduler) 来运行脚本，如每30秒一次：
 
-This is a very basic example. Feel free to alter the script and add your own "if" (maybe an email notification if there is no GPS signal) and additional parameters (any other RouterOS captured value, like, maybe, its firmware version) per your requirements.
+```shell
+/system/scheduler/add name=mqttgpsscheduler interval=30s on-event="/system/script/run mqttgps"
+```
 
-Run the script with the command:
+# 结果验证
 
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system/script/run mqttgps</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[*] Capturing GPS coordinates...</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">date-</code><code class="ros variable">and</code><code class="ros plain">-time</code><code class="ros constants">: feb/01/2023 10:39:37</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">latitude</code><code class="ros constants">: 56.969862</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">longitude</code><code class="ros constants">: 24.162425</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">altitude</code><code class="ros constants">: 31.799999 m</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">speed</code><code class="ros constants">: 1.000080 km/h</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">destination-bearing</code><code class="ros constants">: none</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">true-bearing</code><code class="ros constants">: 153.089996 deg. True</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">magnetic-bearing</code><code class="ros constants">: 0.000000 deg. Mag</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">valid</code><code class="ros constants">: yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">satellites</code><code class="ros constants">: 6</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">fix-quality</code><code class="ros constants">: 1</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">horizontal-dilution</code><code class="ros constants">: 1.42</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">data-age</code><code class="ros constants">: 0s</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">[*] Sending message to MQTT broker...</code></div></div></td></tr></tbody></table>
-
-To automate the process, add a [scheduler](https://help.mikrotik.com/docs/display/ROS/Scheduler) (to run the script, for example, every 30 seconds):
-
-[?](https://help.mikrotik.com/docs/display/ROS/GPS-tracking+using+MQTT+and+ThingsBoard#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system/scheduler/</code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=mqttgpsscheduler</code> <code class="ros value">interval</code><code class="ros plain">=30s</code> <code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"/system/script/run mqttgps"</code></div></div></td></tr></tbody></table>
-
-# Result verification
-
-Go the the "Latest telemetry" section under your created device and confirm that the data was posted:
+进入创建的设备下的 "最新遥测 "部分，确认数据已经发布：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-15-24.png?version=1&modificationDate=1675250105501&api=v2)
 
-# Data visualization using maps
+# 使用地图进行数据可视化
 
-ThingsBoard allows you to use [Widgets](https://thingsboard.io/docs/user-guide/ui/widget-library/) to create visually appealing dashboards. In our case, we want to track our LTAP GPS coordinates, so we will need a map widget.
+ThingsBoard允许使用 [Widgets](https://thingsboard.io/docs/user-guide/ui/widget-library/) 来创建具有视觉吸引力的仪表盘。在案例中想跟踪LTAP GPS坐标，所以要添加一个地图部件。
 
-Select the latitude and longitude values and click on the "**Show on widget**" button:
+选择纬度和经度值并点击 **显示在部件上** 按钮：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-20-36.png?version=1&modificationDate=1675250417648&api=v2)
 
-Find the "**Maps**" bundle and click on the "**Add to dashboard**":
+找到 **地图** 包，点击 **添加到仪表板**：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-21-49.png?version=1&modificationDate=1675250490676&api=v2)
 
-Select an existing dashboard or create a new one and name it however you like:
+选择一个现有的仪表板或创建一个新的仪表板，并命名：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-23-9.png?version=1&modificationDate=1675250570740&api=v2)
 
-Run the script via the scheduler or manually and check the result:
+通过调度程序或手动运行脚本并检查结果：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-1_13-27-0.png?version=1&modificationDate=1675250801888&api=v2)
 
-Now, we can install it on a moving target and track its location:
+现在可以把它安装在一个移动的目标上并跟踪它的位置：
 
 ![](https://help.mikrotik.com/docs/download/attachments/166920428/image-2023-2-2_15-12-5.png?version=1&modificationDate=1675343523993&api=v2)
