@@ -1,107 +1,115 @@
-# Introduction
+# 介绍
 
-WebFig is a web-based RouterOS utility that allows you to monitor, configure and troubleshoot the router. It is designed as an alternative of WinBox, both have similar layouts and both have access to almost any feature of RouterOS.
+WebFig是一个基于网络的RouterOS工具，允许监控、配置和排除路由器的故障。它设计成WinBox的替代品，两者都有类似的布局，都可以访问RouterOS的几乎所有功能。
 
-As Webfig is platform-independent, it can be used to configure a router directly from various devices without the need for software developed for specific platforms. In other words, there is no need to install additional software.
+由于Webfig是独立于平台的，可以直接从各种设备上配置路由器，而不需要为特定平台开发软件。换句话说，不需要安装额外的软件。
 
-WebFig allows performing three basic actions:
+WebFig允许执行三个基本动作：
 
--   Configuration - view and edit current configuration;
--   Monitoring - display the current status of the router, routing information, interface stats, logs, etc;
--   Troubleshooting - RouterOS has built-in many troubleshooting tools (like ping, traceroute, packet sniffers, traffic generators, etc) and all of them can be used with WebFig
+- 配置 - 查看和编辑当前配置；
+- 监控 - 显示路由器的当前状态、路由信息、接口统计、日志等；
+- 故障排除 - RouterOS内置了许多故障排除工具（如ping、traceroute、数据包嗅探器、流量生成器等），它们都可以与WebFig一起使用。
 
-# Connecting to a Router
+# 连接到路由器
 
-As we already know from the [First Time Configuration](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration) section, the device by default has username **admin** and **no password** configured. Simply open a Web browser and in the search bar type device IP address which by default is **192.168.88.1.** Be sure your device has IP address from the same network, for example, 192.168.88.2 otherwise Layer3 communication will not work.
+正如在 [首次配置](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration)部分已经知道的，设备默认配置了用户名 **admin** 和 **无密码**。只要打开一个Web浏览器，在搜索栏中输入设备的IP地址，默认为 **192.168.88.1.**，确保设备有同一网络的IP地址，例如192.168.88.2，否则第三层通信将无法工作。
 
-![](https://help.mikrotik.com/docs/download/attachments/328131/webfig.png?version=3&modificationDate=1571210992820&api=v2)In our example, we will use IP address 10.155.126.250 to connect to the device via WebFig.
+![](https://help.mikrotik.com/docs/download/attachments/328131/webfig.png?version=3&modificationDate=1571210992820&api=v2)
 
-# Enable HTTPS
+在下面的例子中，使用IP地址10.155.126.250来通过WebFig.Level3连接到设备。
 
-For HTTPS to work properly, you need to specify a valid certificate that Webfig can use. You can use a certificate that is issued by a trusted Certificate Authority (CA) or you can create your own root CA and generate self-signed certificates. 
+# 启用HTTPS
 
-Webfig supports wildcard certificates. You can generate such a certificate by specifying a wildcard in the common-name property, for example, _common-name=\*.[mikrotik.com](https://mikrotik.com)._
+为了使HTTPS正常工作，要指定一个Webfig可以使用的有效证书。可以用由受信任的证书颁发机构（CA）颁发的证书，或者创建自己的根CA并生成自签名证书。 
 
-To generate your own certificates and enable HTTPS access, you must configure the following:
+Webfig 支持通配符证书。可以通过在通用名称属性中指定通配符来生成这样的证书，例如，_通用名称=*. [mikrotik.com](https://mikrotik.com)._
 
-Create your own root CA on your router and sign it
+要生成自己的证书并启用HTTPS访问，必须配置以下内容：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Webfig#)
+在路由器上创建自己的根CA，并签署它
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; certificate </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=local-cert</code> <code class="ros value">common-name</code><code class="ros plain">=local-cert</code> <code class="ros value">key-usage</code><code class="ros plain">=key-cert-sign,crl-sign</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; certificate sign local-cert</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">progress</code><code class="ros constants">: done</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > certificate add name=local-cert common-name=local-cert key-usage=key-cert-sign,crl-sign
+[admin@MikroTik] > certificate sign local-cert
+  progress: done
+```
 
-In case you already have set up your own CA or you are using a service that signs certificates for you, then you create and sign the certificate remotely and import the certificate on the router later. In case you are importing a certificate, then make sure you mark the certificate as trusted.
+如果已经建立了自己的 CA，或者用的是为你签署证书的服务，那么就在远程创建并签署证书，然后再把证书导入路由器上。如果正在导入证书，请确保把证书标记为受信任。
 
-Create a new certificate for Webfig (non-root certificate)
+为Webfig创建一个新证书（非root证书）
 
-[?](https://help.mikrotik.com/docs/display/ROS/Webfig#)
+```shell
+[admin@MikroTik] > certificate add name=webfig common-name=192.168.88.1
+[admin@MikroTik] > certificate sign webfig
+  progress: done
+[admin@MikroTik] > certificate print
+Flags: K - private-key; A - authority; T - trusted
+Columns:NAME        COMMON-NAME     FINGERPRINT                                                    
+0  KAT  local-cert  local-cert      9b6363d033c4b2e6893c340675cfb8d1e330977526dba347a440fabffd983c5d
+1  KAT  webfig      192.168.88.1    9f84ac2979bea65dccd02652056e5559bcdf866f8da5f924139d99453402bd02
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; certificate </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=webfig</code> <code class="ros value">common-name</code><code class="ros plain">=192.168.88.1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; certificate sign webfig</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">progress</code><code class="ros constants">: done</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; certificate print</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: K - private-key; A - authority; T - trusted</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">:NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COMMON-NAME&nbsp;&nbsp;&nbsp;&nbsp; FINGERPRINT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">0&nbsp; KAT&nbsp; local-cert&nbsp; local-cert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9b6363d033c4b2e6893c340675cfb8d1e330977526dba347a440fabffd983c5d</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">1&nbsp; KAT&nbsp; webfig&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 192.168.88.1&nbsp;&nbsp;&nbsp; 9f84ac2979bea65dccd02652056e5559bcdf866f8da5f924139d99453402bd02</code></div></div></td></tr></tbody></table>
+启用 **www-ssl**，并指定为Webfig使用新创建的证书。
 
-Enable **www-ssl** and specify to use the newly created certificate for Webfig
+```shell
+[admin@MikroTik] > ip service
+set www-ssl certificate=webfig disabled=no
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Webfig#)
+现在可以访问 [https://192.168.88.1](https://192.168.88.1)并安全地配置路由器了。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip service</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">www-ssl </code><code class="ros value">certificate</code><code class="ros plain">=webfig</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+默认情况下，浏览器不信任自签证书，需要在第一次访问浏览器的页面时，将证书添加为受信任的。另一种方法是导出根CA证书，将其作为受信任的根证书导入电脑，这样一来，由该路由器签署的所有证书都会被认为是有效的，也会使网络中的证书管理变得更加容易。
 
-You can now visit [https://192.168.88.1](https://192.168.88.1) and securely configure your router.
+大多数互联网浏览器都有自己的证书信任链，并独立于操作系统的证书信任链工作，这意味着可能要在浏览器设置中添加自己的根CA的证书作为信任证书，因为在操作系统的设置中信任证书在使用互联网浏览器时可能没有任何效果。
 
-By default browsers will not trust self-signed certificates, you will need to add the certificate as trusted on the first time you visit the page in your browser. Another approach is to export the root CA certificate and import it as a trusted root certificate on your computer, this way all certificates signed by this router will be considered as valid and will make it easier to manage certificates in your network.
+# 皮肤
 
-Most Internet browsers have their own certificate trust chain and work independently from the operating system's certificate trust chain, this means that you may have to add your own root CA's certificate as a trusted certificate in your browser settings since trusting the certificate in your operating system's settings might not have any effect when using your Internet browser.
+WebFig设计皮肤是一个方便的工具，使界面更加友好。它不是一个安全工具。如果用户有足够的权限，就有可能通过其他方式访问隐藏的功能。
 
-# Skins
+## 设计皮肤
 
-WebFig Design Skin is a handy tool to make the interface more user friendly. It is not a security tool. If the user has sufficient rights it is possible to access hidden features by other means.
+如果用户有足够的权限（该组有编辑权限的策略），**设计皮肤** 按钮就可以使用。按下该切换按钮将打开界面编辑选项。 可能的操作有：
 
-#### Designing skins
-
-If the user has sufficient permissions (the group has the policy to edit permissions) **Design Skin** button becomes available. Pressing that toggle button will open interface editing options. Possible operations are:
-
--   Hide menu - this will hide all items from the menu and its submenus;
--   Hide submenu - only certain submenu will be hidden;
--   Hide tabs - if submenu details have several tabs, it is possible to hide them this way;
--   Rename menus and items - make certain features more obvious or translate them into your language;
--   Add a note to the item (in detail view) - to add comments on the field;
--   Make item read-only (in detail view) - for user safety very sensitive fields can be made read only;
--   Hide flags (in detail view) - while it is only possible to hide a flag in detail view, this flag will not be visible in list view and in detailed view;
--   Add limits for the field - (in detail view) where it is the list of times that are comma or newline separated list of allowed values:
-    -   number interval '..' example: 1..10 will allow values from 1 to 10 for fields with numbers, for example, MTU size.
-    -   field prefix (Text fields, MAC address, set fields, combo-boxes). If it is required to limit prefix length _$_ should be added to the end. For example, limiting the wireless interface to "station" only, "Add limit" will contain "station$"
+- 隐藏菜单 - 这将隐藏菜单和其子菜单中的所有项目；
+- 隐藏子菜单 - 只有某些子菜单会被隐藏；
+- 隐藏标签 - 如果子菜单的细节有几个标签，可以用这种方式隐藏它们；
+- 重命名菜单和项目--使某些功能更明显，或将它们翻译成你的语言；
+- 为项目添加注释（在详细视图中）--在字段上添加注释；
+- 使项目成为只读（在详细视图中）--为了用户安全，非常敏感的字段可以成为只读；
+- 隐藏标志（在详细视图中）--虽然只能在详细视图中隐藏一个标志，但这个标志在列表视图和详细视图中是不可见的；
+- 为字段添加限制--（在详细视图中），其中是以逗号或换行分隔的允许值的时间列表：
+    - 数字间隔'...'例如：1...10将允许带数字的字段的值从1到10，例如，MTU大小。
+    - 字段前缀（文本字段、MAC地址、设置字段、组合框）。如果需要限制前缀长度，_\$_ 应该加在最后。例如，将无线接口只限制为 "站"，"添加限制 "将包含 "station$"
 
 ![](https://help.mikrotik.com/docs/download/attachments/328131/image-2022-11-8_15-57-32.png?version=1&modificationDate=1667915851247&api=v2)
 
--   Add _Tab_ \- will add a grey ribbon with an editable label that will separate the fields. Ribbon will be added before the field it is added to;
--   Add _Separator_ \- will add a low height horizontal separator before the field it is added to.
+- 添加 _标签_ - 将添加一个带有可编辑标签的灰色丝带，将字段分开。色带将被添加到它所添加的字段之前；
+- Add _Separator_ - 在被添加到的字段之前添加一个低高度的水平分隔符。
 
-  
+**注意：** 数字间隔不能被设置为扩展RouterOS为该字段设置的限制。
 
-**Note:** Number interval cannot be set to extend limitations set by RouterOS for that field
+**注意:** 设置字段是由一组复选框组成的参数，例如，为用户组、RADIUS "服务 "设置策略
 
-**Note:** Set fields are arguments that consist of a set of check-boxes, for example, setting up policies for user groups, RADIUS "Service"
+**注意：** 为组合框设置的限制将从下拉菜单中选择值。
 
-**Note:** Limitations set for combo-boxes will values selectable from the dropdown
+## 皮肤设计实例
 
-#### Skin design examples
-
-If you need to limit the user for some services 
+如果需要为某些服务限制用户 
 
 ![](https://help.mikrotik.com/docs/download/attachments/328131/image-2022-11-8_16-47-4.png?version=1&modificationDate=1667918823526&api=v2)
 
-Add a limit to the RADIUS Service.
+为RADIUS服务添加一个限制。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328131/image-2022-11-8_17-6-52.png?version=1&modificationDate=1667920010786&api=v2)
 
-The result will be only those services, that are pointed in the "Limit" field.
+结果将是只有那些服务在"限制"字段中被指出。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328131/image-2022-11-8_17-7-15.png?version=1&modificationDate=1667920033833&api=v2)
 
-#### Using skins
+## 使用皮肤
 
-To use skins you have to assign skin to the group. When that is done users of that group will automatically use the selected skin as their default when logging into WebFig or Winbox.
+要使用皮肤，必须将皮肤分配给组。完成后，该组的用户在登录WebFig或Winbox时将自动使用选定的皮肤作为默认皮肤。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Webfig#)
+`/user/group/set your_group_name skin=your_skin`。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/user/group/</code><code class="ros functions">set </code><code class="ros plain">your_group_name </code><code class="ros value">skin</code><code class="ros plain">=your_skin</code></div></div></td></tr></tbody></table>
-
-If it is required to use created skin on another router you can copy files to the skins folder on the other router. On the new router, it is required to add copied skin to the user group to use it.
+如果需要在另一个路由器上使用创建的皮肤，可以把文件复制到另一个路由器的皮肤文件夹中。在新路由器上把复制的皮肤添加到用户组才能使用。

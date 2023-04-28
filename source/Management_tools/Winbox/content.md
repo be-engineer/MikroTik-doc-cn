@@ -1,330 +1,322 @@
-# Summary
+# 摘要
 
-Winbox is a small utility that allows the administration of MikroTik RouterOS using a fast and simple GUI. It is a native Win32 binary but can be run on **Linux** and **macOS (OSX)** using Wine. All Winbox interface functions are as close as possible mirroring the console functions, that is why there are no Winbox sections in the manual. Some advanced and system critical configurations are not possible from the Winbox, like MAC address change on an interface [Winbox changelog](https://wiki.mikrotik.com/wiki/Winbox_changelog)
+Winbox是一个小工具，允许使用快速和简单的GUI来管理MikroTik RouterOS。它是一个原生的Win32二进制文件，但可以使用Wine在 **Linux和macOS（OSX）** 上运行。所有的Winbox界面功能都尽可能地反映了控制台的功能，这就是为什么手册中没有Winbox部分。一些高级和关键的系统配置不可能从Winbox中实现，比如在接口上改变MAC地址 [Winbox changelog](https://wiki.mikrotik.com/wiki/Winbox_changelog)
 
-From Winbox v3.14, the following security features are used:
+从Winbox v3.14开始，使用了以下安全特性：
 
--   Winbox.exe is signed with an Extended Validation certificate, issued by SIA Mikrotīkls (MikroTik).
--   WinBox uses ECSRP for key exchange and authentication (requires a new Winbox version).
--   Both sides verify that the other side knows the password (no man in the middle attack is possible).
--   Winbox in RoMON mode requires that the agent is the latest version to be able to connect to the latest version routers.
--   Winbox uses AES128-CBC-SHA as an encryption algorithm (requires Winbox version 3.14 or above).
+- Winbox.exe由SIA Mikrotīkls（MikroTik）颁发的扩展验证证书签署。
+- WinBox使用ECSRP进行密钥交换和认证（需要一个新的Winbox版本）。
+- 双方都验证对方是否知道密码（不可能出现中间人攻击）。
+- RoMON模式下的Winbox要求代理是最新版本的，以便能够连接到最新版本的路由器。
+- Winbox使用AES128-CBC-SHA作为加密算法（需要Winbox 3.14版或以上）。
 
-# Starting Winbox
+# 启动Winbox
 
-Winbox loader can be downloaded from the [MikroTik download page](https://www.mikrotik.com/download). When winbox.exe is downloaded, double click on it, and the Winbox loader window will pop up. There are two Winbox loader modes: simple which is enabled by default and advanced.
+Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/download）下载。当winbox.exe被下载后，双击它，Winbox加载器窗口将弹出。有两种Winbox加载器模式：默认启用的简单模式和高级模式。
 
-## Simple mode
+## 简单模式
 
-When you open Winbox loader for the first time simple mode layout will be used:
+当你第一次打开Winbox加载器时，将使用简单模式布局：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox_loader_simple_.png?version=1&modificationDate=1570715133744&api=v2)
 
-To connect to the router enter the IP or MAC address of the router, specify username and password (if any) and click on the **Connect** button. You can also enter the port number after the IP address, separating them with a colon, like this 192.168.88.1:9999. The port can be changed in the RouterOS **services** menu.
+要连接到路由器，请输入路由器的IP或MAC地址，指定用户名和密码（如果有），然后点击 **连接** 按钮。你也可以在IP地址后面输入端口号，用冒号隔开，像这样192.168.88.1:9999。端口可以在RouterOS的**services** 菜单中改变。
 
- It is recommended to use an IP address whenever possible. MAC session uses network broadcasts and is not 100% reliable.
+ 建议尽可能使用一个IP地址。MAC会话使用网络广播，并非100%可靠。
 
-You can also use neighbor discovery, to list available routers use the **Neighbors** tab:
+你也可以使用邻居发现，使用 **邻居** 标签来列出可用的路由器：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox3_loader_neighbours.png?version=1&modificationDate=1570715282332&api=v2)
 
-From the list of discovered routers, you can click on the IP or MAC address column to connect to that router. If you click on IP address then IP will be used to connect, but if you click on MAC Address then the MAC address will be used to connect to the router.
+在已发现的路由器列表中，点击IP或MAC地址栏来连接到该路由器。如果点击IP地址，那么IP将被用来连接，但如果点击MAC地址，那么MAC地址将被用来连接到路由器。
 
-Neighbor discovery will show also devices that are not compatible with Winbox, like Cisco routers or any other device that uses CDP (Cisco Discovery Protocol). If you will try to connect to a SwOS device, then the connection will be established through a web browser
+邻居发现还会显示与Winbox不兼容的设备，如思科路由器或任何其他使用CDP（思科发现协议）的设备。如果试图连接到一个SwOS设备，那么连接将通过网络浏览器建立。
 
-  
+### 按钮/复选框和其他字段
 
-### Buttons/check-boxes and Other Fields
+- **连接** - 连接到路由器
+- **连接到RoMON** - 连接到 [RoMON](https://wiki.mikrotik.com/wiki/Manual:RoMON "Manual:RoMON")  代理
+- **添加/设置** - 保存/编辑 **管理的** 标签中的任何一个已保存的路由器条目。
+- **在新窗口打开** - 让加载器在后台打开，并为每个连接的设备打开新窗口。
+- **连接到：** - 路由器的目标 IP 或 MAC 地址
+- **登录** - 用于验证的用户名
+- **密码** - 用于验证的密码
+- **保留密码** - 如果不勾选，密码不会被保存到列表中。
 
--   **Connect** - Connect to the router
--   **Connect To RoMON** - Connect to [RoMON](https://wiki.mikrotik.com/wiki/Manual:RoMON "Manual:RoMON") Agent
--   **Add/set** - Save/Edit any of the saved router entries in the **Managed** tab.
--   **Open In New Window** - Leaves loader open in the background and opens new windows for each device to which connection is made.
--   **Connect To:** - destination IP or MAC address of the router
--   **Login** - username used for authentication
--   **Password** - password used for authentication
--   **Keep Password** - if unchecked, the password is not saved to the list
+###菜单项目
 
-### Menu Items
+- **文件**
+    - **新建** - 在指定的位置创建一个新的管理路由器列表
+    - **打开** - 打开管理的路由器列表文件
+    - **另存为** - 将当前管理的路由器列表保存到文件中
+    - **退出** - 退出 Winbox 载入器
 
--   **File**
-    -   **New** - Create a new managed router list in a specified location
-    -   **Open** - Open managed router list file
-    -   **Save As** - Save current managed router list to file
-    -   **Exit** - Exit Winbox loader
+- **工具**
+    - **高级模式** - 启用/禁用高级模式视图
+    - **导入** - 导入保存的会话文件
+    - **导出** -导出保存的会话文件
+    - **移动会话文件夹** - 改变会话文件的存储路径
+    - **清除缓存** - 清除Winbox缓存
+    - **检查更新** - 检查Winbox加载器的更新。
 
--   **Tools**
-    -   **Advanced Mode** - Enables/Disables advanced mode view
-    -   **Import** - Imports saved session file
-    -   **Export** - Exports saved session file
-    -   **Move Session Folder** - Change path where session files are stored
-    -   **Clear cache** - Clear Winbox cache
-    -   **Check For Updates** - Check for updates for Winbox loader
+## 高级模式
 
-## Advanced mode
-
-Additional Winbox loader parameters are revealed when an **advanced mode** is enabled with _Tools → Advanced Mode:_
+当用工具→高级模式启用时，会显示额外的Winbox加载器参数：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox_loader_advanced.png?version=1&modificationDate=1570715647131&api=v2)
 
-### Buttons/check-boxes and Other Fields
+### 按钮/复选框和其他字段
 
-Buttons/check-boxes
+按钮/复选框
 
--   **Browse** - Browse file directory for some specific session
--   **Keep Password** - if unchecked, the password is not saved to the list
--   **Secure mode** - if checked, Winbox will use DH-1984 for key exchange and modified and hardened RC4-drop3072 encryption to secure the session.
--   **Autosave session** - Saves sessions automatically for devices to which connections are made.
+- **浏览** - 浏览某些特定会话的文件目录
+- **保留密码** - 如果不勾选，密码不会被保存到列表中
+- **安全模式** - 如果选中，Winbox将使用DH-1984进行密钥交换，并使用经过修改和加固的RC4-drop3072加密来保证会话的安全。
+- **自动保存会话** - 对连接的设备自动保存会话。
 
-Fields:
+字段：
 
--   **Session** - Saved router session.
--   **Note** - Note that is assigned to save router entry.
--   **Group** - Group to which saved router entry is assigned.
--   **RoMON Agent** - Select RoMON Agent from the available device list
+- **Session** - 保存的路由器会话。
+- **Note** - 分配给保存路由器条目的注释。
+- **组** - 分配给保存的路由器条目的组。
+- **RoMON代理** - 从可用设备列表中选择RoMON代理。
 
-  
+被管理的路由器列表是加密的，但如果没有为其设置主密码，仍然可以在其他Winbox中顺利加载
 
-Managed routers list is encrypted, but it can still be loaded in other Winbox without problems IF the master password is not set for it!
+## 命令行
 
-## Command Line
-
-It is possible to use the command line to pass connect to, user and password parameters automatically:
+可以使用命令行来自动传递连接到、用户和密码参数：
 
 ```
 winbox.exe [<connect-to> [<login> [<password>]]]
 
 ```
 
-For example (with no password):
+例子 (无密码):
 
 ```
 winbox.exe 10.5.101.1 admin ""
 
 ```
 
-Will connect to router 10.5.101.1 with user "admin" without a password.
+用户 "admin "连接到路由器10.5.101.1，无需密码。
 
-It is possible to use the command line to pass connect to, user, and password parameters automatically to connect to the router through RoMON. In this case, RoMON Agent must be saved on the Managed routers list so Winbox would know the user and password for this device:
+可以用命令行自动传递连接到、用户和密码参数，通过RoMON连接到路由器。在这种情况下，RoMON代理必须保存在被管理的路由器列表中，这样Winbox就会知道这个设备的用户和密码：
 
 ```
 winbox.exe --romon [<romon-agent> [<connect-to> [<login> [<password>]]]]
 
 ```
 
-For example (with no password):
+例子 (无密码):
 
 ```
 winbox.exe --romon 10.5.101.1 D4:CA:6D:E1:B5:7D admin ""
 
 ```
 
-Will connect to router D4:CA:6D:E1:B5:7D through 10.5.101.1 RoMON Agent with user "admin" without a password.
+将通过10.5.101.1 RoMON代理连接到路由器D4:CA:6D:E1:B5:7D，用户为 "admin"，没有密码。
 
-## IPv6 connectivity
+## IPv6连接
 
-Winbox supports IPv6 connectivity. To connect to the router's IPv6 address, it must be placed in square braces the same as in web browsers when connecting to the IPv6 server. Example: 
+Winbox支持IPv6连接。要连接到路由器的IPv6地址，必须把它放在方括号里，就像在网络浏览器中连接IPv6服务器时一样。例子： 
 
   
 
-\[2001:db8::1\]
+[2001:db8::1] 。
 
-when connecting to the link-local address interface index must be entered after the %:
+连接到链路本地地址时，接口索引必须在%之后输入：
 
-\[fe80::a00:27ff:fe70:e88c\\%2\]
+[fe80::a00:27ff:fe70:e88c\\%2]
 
-Port number is set after the square brace when it is necessary to connect Winbox to other port than the default:
+要把Winbox连接到默认之外的其他端口时，端口号设置在方括号之后：
 
-\[fe80::a00:27ff:fe70:e88c\\%2\]:8299
+[fe80::a00:27ff:fe70:e88c\\%2]:8299
 
-Winbox neighbor discovery is capable of discovering IPv6 enabled routers. There are two entries for each IPv6 enabled router, one entry is with IPv4 address and another one with IPv6 link-local address. You can easily choose which one you want to connect to.
+Winbox邻居发现能够发现支持IPv6的路由器。每个启用IPv6的路由器都有两个条目，一个条目是IPv4地址，另一个是IPv6链路本地地址。你可以很容易地选择你想连接的那一个。
 
-## Run Winbox on macOS  
+## 在macOS上运行Winbox  
 
-Starting with macOS 10.15 Catalina, Apple has removed support for 32bit applications, meaning it is no longer possible to use regular Wine and regular Winbox in this OS. Wine has made available a 64bit version for macOS, and MikroTik has released a special [Winbox64.exe](https://mt.lv/winbox64) version as well.
+从macOS 10.15 Catalina开始，苹果已经取消了对32位应用程序的支持，这意味着在这个操作系统中不再可能使用普通的Wine和普通的Winbox。Wine已经为macOS提供了一个64位版本，MikroTik也发布了一个特殊的 [Winbox64.exe](https://mt.lv/winbox64)版本。
 
-To run Winbox64 the following steps are required.
+要运行Winbox64，需要以下步骤。
 
-1.  Install latest Wine from the [Wine macOS builds page](https://github.com/Gcenx/macOS_Wine_builds/releases) ( wine-devel-7.X-osx64.tar.xz) and make sure you have downloaded the [winbox64.exe executable](https://mt.lv/winbox64) from the MikroTik download page.
-2.  Launch Winbox64.exe with "open file with" > Wine64.app
+1.  从 [Wine macOS builds页面](https://github.com/Gcenx/macOS_Wine_builds/releases) 安装最新的Wine ( win-devel-7.X-osx64.tar.xz)，并确保从MikroTik的下载页面下载了 [winbox64.exe](https://mt.lv/winbox64)。
+2.  用 "打开文件">Wine64.app启动Winbox64.exe。
 
-## Run Winbox on Linux
+## 在Linux上运行Winbox
 
-It is possible to run Winbox on Linux by using Wine emulation software. Make sure that the Microsoft font pack is installed, otherwise, you may see distortions.
+通过使用Wine仿真软件，可以在Linux上运行Winbox。请确保安装了微软的字体包，否则，你可能会看到失真。
 
-# Interface Overview
+# 界面概述
 
-Winbox interface has been designed to be intuitive for most of the users. The interface consists of:
+Winbox的界面设计得很直观，适合大多数用户。该界面由以下部分组成：
 
--   The main toolbar at the top where users can add various info fields, like CPU and memory usage.
--   The menu bar on the left - list of all available menus and sub-menus. This list changes depending on what packages are installed. For example, if the IPv6 package is disabled, then the **IPv6** menu and all its sub-menus will not be displayed.
--   Work area - an area where all menu windows are opened.
+- 顶部的主工具栏，用户可以添加各种信息字段，如CPU和内存使用情况。
+- 左边的菜单栏 - 所有可用菜单和子菜单的列表。这个列表根据所安装的软件包而变化。例如，如果IPv6软件包被禁用，那么 **IPv6** 菜单和它的所有子菜单将不被显示。
+- 工作区 - 所有菜单窗口被打开的一个区域。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox3.png?version=1&modificationDate=1570716987658&api=v2)
 
-The title bar shows information to identify with which router Winbox session is opened. Information is displayed in the following format:
+标题栏显示信息确定用哪个路由器打开Winbox会话。信息以下列格式显示：
 
 ```
 [username]@[Router's IP or MAC] ( [RouterID] ) - Winbox [ROS version] on [RB model] ([platform])
 
 ```
 
-From screenshot above we can see that user **krisjanis** is logged into router with IPv4/IPv6 address **\[fe80::4e5e:cff:fef6:c0ab%3\]**. Router's ID is **3C18-Krisjanis\_GW**, currently installed RouterOS version is **v6.36rc6**, RouterBoard is **CCR1036-12G-4S** and platform is **tile**.
+从上面的截图可以看到，用户 **krisjanis** 以IPv4/IPv6地址 **[fe80::4e5e:cff:fef6:c0ab%3]** 登录了路由器。路由器的ID是 **3C18-Krisjanis_GW**，当前安装的RouterOS版本是 **v6.36rc6**，RouterBoard是 **CCR1036-12G-4S**，平台是 **tile*。
 
-On the Main toolbar's left side is located:
+在主工具条的左边有一个位置：
 
--   **undo**
--   **redo**
--   **Safe Mode** 
--    Currently loaded session
+- **undo**
+- **重做**
+- **安全模式** 
+- 当前加载的会话
 
-More about Safe mode and undoing performed actions read [in this article](https://help.mikrotik.com/docs/display/ROS/Configuration+Management).
+更多关于安全模式和撤销已执行的操作，请阅读 [本文]（https://help.mikrotik.com/docs/display/ROS/Configuration+Management）。
 
-On the right side is located:
+右边的位置：
 
--   an indicator that shows whether the Winbox session uses encryption
--   Winbox traffic indicator displayed as a green bar,
--   Custom info fields that can be added by the user by right-clicking on the toolbar and picking available info fields from the list
+- 显示Winbox会话是否使用加密的指示灯
+- Winbox流量指标，显示为绿色条、
+- 自定义信息字段，用户可以通过在工具栏上点击右键并从列表中选择可用的信息字段来添加。
 
-  
+# 工作区和子窗口
 
-# Work Area and Child Windows
-
-Winbox has an MDI interface meaning that all menu configuration (child) widows are attached to the main (parent) Winbox window and is showed in the work area.
+Winbox有一个MDI界面，所有的菜单配置（子窗口）都附属于主Winbox窗口并显示在工作区。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox3_work_area.png?version=1&modificationDate=1570717132536&api=v2)
 
-Child windows can not be dragged out of the working area. Notice in the screenshot above that the **Interface** window is dragged out of the visible working area and a horizontal scroll bar appeared at the bottom. If any window is outside visible work area boundaries the vertical or/and horizontal scrollbars will appear.
+子窗口不能被拖出工作区。注意上面的截图，**界面** 窗口被拖出了可见的工作区，底部出现了一个水平滚动条。如果任何窗口超出了可见工作区的边界，就会出现垂直和水平滚动条。
 
-## Child window menu bar
+## 子窗口的菜单栏
 
-Each child window has its own toolbar. Most of the windows have the same set of toolbar buttons:
+每个子窗口都有自己的工具条。大多数窗口都有相同的一组工具条按钮：
 
--   ![](https://help.mikrotik.com/docs/download/attachments/328129/win_add.png?version=1&modificationDate=1570717170050&api=v2) **Add** - add a new item to the list
--   ![](https://help.mikrotik.com/docs/download/attachments/328129/win_remove.png?version=1&modificationDate=1570717216908&api=v2) **Remove** - remove the selected item from the list
--   ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_enable.png?version=1&modificationDate=1570717241877&api=v2) **Enable** - enable selected item (the same as **enable** command from console)
--   ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_disable.png?version=1&modificationDate=1570717256553&api=v2) **Disable** - disable selected item (the same as **disable** command from console)
--   ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_comment.png?version=1&modificationDate=1570717270705&api=v2) **Comment** - add or edit a comment
--   ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_sort.png?version=1&modificationDate=1570717284913&api=v2) **Sort** - allows to sort out items depending on various parameters. [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:Winbox#Sorting_out_displayed_items)
+- ![](https://help.mikrotik.com/docs/download/attachments/328129/win_add.png?version=1&modificationDate=1570717170050&api=v2) **Add** - 向列表中添加新项目
+- ![](https://help.mikrotik.com/docs/download/attachments/328129/win_remove.png?version=1&modificationDate=1570717216908&api=v2) **Remove** - 从列表中删除所选项目
+- ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_enable.png?version=1&modificationDate=1570717241877&api=v2) **Enable** - 启用所选项目（与控制台的 **enable** 命令相同）。
+- ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_disable.png?version=1&modificationDate=1570717256553&api=v2) **Disable** - 禁用所选项目（与控制台的 **disable** 命令相同）。
+- ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_comment.png?version=1&modificationDate=1570717270705&api=v2) **Comment** - 添加或编辑一个注释
+- ![](https://help.mikrotik.com/docs/download/thumbnails/328129/win_sort.png?version=1&modificationDate=1570717284913&api=v2) **排序** - 允许根据各种参数对项目进行排序。[阅读全文](https://wiki.mikrotik.com/wiki/Manual:Winbox#Sorting_out_displayed_items)
 
-Almost all windows have a quick search input field on the right side of the toolbar. Any text entered in this field is searched through all the items and highlighted as illustrated in the screenshot below
+几乎所有的窗口在工具栏的右侧都有一个快速搜索输入栏。在这个字段中输入的任何文本都会在所有的项目中进行搜索，并突出显示，如下图所示
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-search.png?version=1&modificationDate=1570717394117&api=v2)
 
-Notice that on the right side next to the quick find input filed there is a drop-down box. For the currently opened (IP Route) window, this drop-down box allows to quickly sort out items by routing tables. For example, if the **main** is selected, then only routes from the main routing table will be listed.  
-A similar drop-down box is also in all firewall windows to quickly sort out rules by chains.
+注意，在快速查找输入栏旁边的右侧有一个下拉框。对于当前打开的（IP路由）窗口，这个下拉框允许按路由表快速排序。例如，如果选择了 **main**，那么只有主路由表的路由列出。 
+在所有的防火墙窗口中也有一个类似的下拉框，可以按链路快速整理出规则。
 
-## Sorting out displayed items
+## 对显示的项目进行排序
 
-Almost every window has a **Sort** button. When clicking on this button several options appear as illustrated in the screenshot below
+几乎每个窗口都有一个 **排序** 按钮。当点击这个按钮时，会出现几个选项，如截图所示
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-sort.png?version=1&modificationDate=1570717448154&api=v2)
 
-The example shows how to quickly filter out routes that are in the 10.0.0.0/8 range
+这个例子显示了如何快速过滤掉10.0.0.0/8范围内的路由
 
-1.  Press **Sort** button
-2.  Chose **Dst.Address** from the first drop-down box.
-3.  Chose **in** form the second drop-down box. "in" means that filter will check if DST address value is in range of the specified network.
-4.  Enter the network against which values will be compared (in our example enter "10.0.0.0/8")
-5.  These buttons are to add or remove another filter to the stack.
-6.  Press the **Filter** button to apply our filter.
+1.  按 **排序** 按钮
+2.  从第一个下拉框中选择 **Dst.Address**。
+3.  在第二个下拉框中选择 **in**。"in "表示过滤器将检查DST地址值是否在指定网络的范围内。
+4.  输入将被比较的网络（在我们的例子中输入 "10.0.0.0/8"）。
+5.  这些按钮是为了在堆栈中添加或删除另一个过滤器。
+6.  按 **过滤器** 按钮来应用我们的过滤器。
 
-As you can see from the screenshot Winbox sorted out only routes that are within the 10.0.0.0/8 range.
+正如你从截图中看到的，Winbox只对10.0.0.0/8范围内的路由进行排序。
 
-Comparison operators (Number **3** in the screenshot) may be different for each window. For example "Ip Route" window has only two **is** and **in**. Other windows may have operators such as "is not", "contains", "contains not".
+比较运算符（截图中的数字 **3**）可能对每个窗口都不同。例如，"Ip Route "窗口只有两个 **is** 和 **in**。其他窗口可能有诸如 "不是"、"包含"、"不包含 "等运算符。
 
-Winbox allows building a stack of filters. For example, if there is a need to filter by destination address and gateway, then
+Winbox允许建立一个过滤器的堆栈。例如，如果需要按目标地址和网关过滤，那么
 
--   set the first filter as described in the example above,
--   press **\[+\]** button to add another filter bar in the stack.
--   set up a second filter to filter by the gateway
--   press the **Filter** button to apply filters.
+- 设置第一个过滤器，如上面的例子所述、
+- 按 **[+]** 按钮，在堆栈中添加另一个过滤器栏。
+- 设置第二个过滤器，按网关进行过滤
+- 按**过滤器**按钮来应用过滤器。
 
-You can also remove unnecessary filters from the stack by pressing the **\[-\]** button.
+也可以通过按 **[-]** 按钮从堆栈中删除不必要的过滤器。
 
-## Customizing list of displayed columns
+## 自定义显示的栏目列表
 
-By default, Winbox shows the most commonly used parameters. However sometimes it is needed to see other parameters, for example, "BGP AS Path" or other BGP attributes to monitor if routes are selected properly.
+默认情况下，Winbox显示的是最常用的参数。但有时需要查看其他参数，例如，"BGP AS Path "或其他BGP属性，以监测路由是否被正确选择。
 
-Winbox allows to customize displayed columns for each individual window. For example to add BGP AS path column:
+Winbox允许为每个单独的窗口定制显示列。例如，要添加BGP AS路径栏：
 
--   Click on the little arrow button (**1**) on the right side of the column titles or right mouse click on the route list.
--   From popped up menu move to **Show Columns** (**2**) and from the sub-menu pick the desired column, in our case click on **BGP AS Path** (**3**)
+- 点击列标题右侧的小箭头按钮（**1**）或在路由列表上点击鼠标右键。
+- 从弹出的菜单中移到 **显示列**（**2**），从子菜单中选择所需的列，在我们的例子中点击 **BGP AS路径**（**3**）。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-field.png?version=1&modificationDate=1570717546327&api=v2)
 
-Changes made to window layout are saved and next time when Winbox is opened the same column order and size are applied.
+对窗口布局所做的改变将被保存，下次打开Winbox时，会应用相同的列序和尺寸。
 
-### Detail mode
+### 详细模式
 
-It is also possible to enable **Detail mode**. In this mode all parameters are displayed in columns, the first column is the parameter name, the second column is the parameter's value.
+也可以启用 **细节模式**。在这种模式下，所有的参数都以列的形式显示，第一列是参数名称，第二列是参数值。
 
-To enable detail mode right mouse click on the item list and from the popup menu pick **Detail mode**
+要启用详细模式，请在项目列表上点击鼠标右键，从弹出的菜单中选择 **详细模式**。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-detail.png?version=1&modificationDate=1570717649886&api=v2)
 
-### Category view
+### 类别视图
 
-It is possible to list items by categories. In this mode, all items will be grouped alphabetically or by another category. For example, items may be categorized alphabetically if sorted by name, items can also be categorized by type like in the screenshot below.
+可以按类别列出项目。在这种模式下，所有项目将按字母顺序或按其他类别分组。例如，如果按名称排序，项目可以按字母顺序分类，项目也可以按类型分类，如下面的截图。
 
-To enable Category view, right mouse click on the item list and from the popup menu pick **Show Categories**
+要启用类别视图，在项目列表上点击鼠标右键，从弹出的菜单中选择 **显示类别**。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-category.png?version=1&modificationDate=1570717682995&api=v2)
 
-## Drag & Drop
+## 拖放
 
-It is possible to upload and download files to/from the router using Winbox drag & drop functionality. You can also download the file by pressing the right mouse button on it and selecting "Download".
-
+可以使用Winbox的拖放功能向路由器上传和下载文件。也可以通过在文件上按下鼠标右键并选择 "下载 "来下载文件。
   
+如果Winbox在Linux上使用wine4运行，拖放功能就能发挥作用。在两个Winbox窗口之间拖放可能会失败。
 
-Drag & Drop works if Winbox is running on Linux using wine4. Drag and drop between two Winbox windows may fail.
+## 流量监控
 
-## Traffic monitoring
-
-Winbox can be used as a tool to monitor the traffic of every interface, queue, or firewall rule in real-time. The screenshot below shows Ethernet traffic monitoring graphs.
+Winbox可以作为一个工具，实时监控每个接口、队列或防火墙规则的流量。下面的截图显示了以太网流量监控图。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-trafmon.png?version=1&modificationDate=1570717937143&api=v2)
 
-## Item copy
+## 项目复制
 
-This shows how easy it is to copy an item in Winbox. In this example, we will use the COPY button to make a Dynamic PPPoE server interface into a Static interface.
+这表明在Winbox中复制一个项目是多么容易。在这个例子中，用复制按钮把一个动态PPPoE服务器接口变成一个静态接口。
 
-This image shows us the initial state, as you see DR indicates "D" which means Dynamic:
+这张图片展示了初始状态，正如所看到的，DR表示 "D"，即动态：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-copy-1.PNG?version=1&modificationDate=1570718173146&api=v2)
 
-Double-Click on the interface and click on COPY:
+双击该接口并点击复制：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox-copy-2.PNG?version=1&modificationDate=1570718191830&api=v2)
 
-A new interface window will appear, a new name will be created automatically (in this case pppoe-in1)
+出现一个新的接口窗口，会自动创建一个新的名字（在这个例子中是ppo-in1）。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox-copy-3.PNG?version=1&modificationDate=1570718209792&api=v2)
 
-After this Down/Up event this interface will be Static:
+在Down/Up之后，这个接口变成静态的：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox-copy-4.PNG?version=1&modificationDate=1570718230700&api=v2)
 
-# Transferring Settings
+# 转移设置
 
--   Managed router transfer - In the File menu, use Save As and Open functions to save the managed router list to file and open it up again on a new workstation.
+- 管理的路由器转移 - 在 "文件 "菜单中，使用 "另存为 "和 "打开 "功能，将管理的路由器列表保存到文件中，并在新的工作站上再次打开它。
 
--   Router sessions transfer - In the Tools menu, use Export and Import functions to save existing sessions to file and import them again on a new workstation.
+- 路由器会话转移 - 在 "工具 "菜单中，使用 "导出 "和 "导入 "功能，将现有会话保存到文件中，并在新工作站上再次导入。
 
-# Troubleshooting
+# 故障排除
 
-#### Winbox cannot connect to the router's IP address
+## Winbox无法连接到路由器的IP地址
 
-Make sure that the Windows firewall is set to allow Winbox connections or disable the windows firewall.
+确保Windows防火墙被设置为允许Winbox连接，或者禁用Windows防火墙。
 
-#### I get an error '(port 20561) timed out' when connecting to routers mac address
+## 当连接到路由器的MAC地址时，得到一个错误'20561端口超时'。
 
-Windows (7/8) does not allow mac connection if file and print sharing is disabled.
+如果文件和打印共享被禁用，Windows（7/8）不允许Mac连接。
 
-#### I can't find my device in WinBox IPv4 Neighbors list or MAC connection fails with "ERROR could not connect to XX-XX-XX-XX-XX-XX"
+## 在WinBox IPv4邻居列表中找不到设备，或者MAC连接失败，"ERROR无法连接到XX-XX-XX-XX-XX"
 
-Most of the network drivers will not enable IP stack unless your host device has an IP configuration. Set IPv4 configuration on your host device.
+除非主机设备有一个IP配置，否则大多数网络驱动不会启用IP堆栈。需要在主机设备上设置IPv4。
 
-_Sometimes the device will be discovered due to caching, but MAC connection will still fail with "ERROR: could not connect to XX:XX:XX:XX:XX:XX_
+_有时设备会因为缓存而被发现，但MAC连接仍然会失败，"ERROR: could not connect to XX:XX:XX:XX:XX"_。
 
-Winbox MAC-ADDRESS connection requires MTU value set to 1500, unfragmented. Other values can perform poorly - loss of connectivity can occur.
+Winbox的MAC-ADDRESS连接要求MTU值设置为1500，不分片。其他值可能表现不佳，会出现连接丢失。
