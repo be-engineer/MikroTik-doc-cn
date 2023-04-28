@@ -2,9 +2,9 @@
 
 蓝牙是一种短距离的无线技术，允许在特定的蓝牙频道上广播数据。
 
-有40个独特的频段（通道），每个频段有2兆赫的间隔。37、38和39通道用于主要广告，0-36通道用于数据传输。
+有40个独特的频段（通道），每个频段有2兆赫的间隔。37、38和39通道用于主要广播，0-36通道用于数据传输。
 
-在广告过程中，BLE广告数据包被广播。这个数据包包含序言、访问地址、PDU和CRS字段。
+在广播过程中，BLE数据包被广播。这个数据包包含序言、访问地址、PDU和CRS字段。
 
 序言和访问地址字段帮助接收器检测帧。CRS字段用于检查错误。PDU由PDU头和PDU有效载荷组成。PDU定义了数据包本身。
 
@@ -14,7 +14,7 @@ PDU头包含关于PDU类型的信息。基于该类型，有效载荷字段可�
 
 1 octet = 1 byte = 8 bits
 
-<table class="relative-table wrapped confluenceTable" style="width: 41.1958%;"><colgroup><col style="width: 24.2667%;"><col style="width: 75.7333%;"></colgroup><tbody><tr><td class="confluenceTd">Preamble</td><td class="confluenceTd">1 octet</td></tr><tr><td class="confluenceTd">Access-Address</td><td class="confluenceTd">4 octets</td></tr><tr><td class="confluenceTd">PDU</td><td class="confluenceTd"><ul><li>PDU Header = 2 octets</li><li>PDU Payload = AdvA (6 octets)+AdvData (0...31 octets)</li></ul></td></tr><tr><td colspan="1" class="confluenceTd">CRS</td><td colspan="1" class="confluenceTd">3 octets</td></tr></tbody></table>
+<table class="relative-table wrapped confluenceTable" style="border: 1px solid #000000 width: 41.1958%;"><colgroup><col style="border: 1px solid #000000 width: 24.2667%;"><col style="border: 1px solid #000000 width: 75.7333%;"></colgroup><tbody><tr><td class="confluenceTd">Preamble</td><td class="confluenceTd">1 octet</td></tr><tr><td class="confluenceTd">Access-Address</td><td class="confluenceTd">4 octets</td></tr><tr><td class="confluenceTd">PDU</td><td class="confluenceTd"><ul><li>PDU Header = 2 octets</li><li>PDU Payload = AdvA (6 octets)+AdvData (0...31 octets)</li></ul></td></tr><tr><td colspan="1" class="confluenceTd">CRS</td><td colspan="1" class="confluenceTd">3 octets</td></tr></tbody></table>
 
 有不同的PDU类型。
 
