@@ -1,4 +1,4 @@
-# 介绍
+# 使用 MQTT 和 ThingsBoard 进行蓝牙标签跟踪
 
 RouterOS中的蓝牙接口实现允许设备捕获通过37、38和39个广播通道广播的蓝牙广播数据包。更多信息可以在 [指南](https://help.mikrotik.com/docs/display/ROS/Bluetooth) 中找到。
 
@@ -19,7 +19,7 @@ Columns: DEVICE, PDU-TYPE, TIME, ADDRESS-TYPE, ADDRESS, RSSI, LENGTH, DATA
 
 在本地测试KNOT可以处理多少有效载荷时，取得了如下结果：300个标签（出厂设置），分散在KNOT周围，使用蓝牙过滤器 "keep-newest"（用最新的MAC地址覆盖以前收到的有效载荷，这样蓝牙列表在任何时候都会显示每个标签MAC地址的1个有效载荷），所有300个MAC地址在30-40秒后出现在KNOT的范围。这时需要记住，所有300个标签同时在同一频道上广播会造成干扰（接收延迟）。当我们 "清除 "蓝牙有效载荷列表时，每一秒列表都有20个新条目，大约15秒后，列表中有250-290个有效载荷。然后又过了大约15秒，列表中显示了所有300个独特的标签有效载荷。**KNOT能够处理的标签的实际数量在很大程度上取决于环境，所以最好在现场进行测试**。
 
-在RouterOS [scripting](https://help.mikrotik.com/docs/display/ROS/Scripting)和[scheduling](https://help.mikrotik.com/docs/display/ROS/Scheduler) 的帮助下，可以使KNOT自动定期扫描有效载荷列表，如果在列表中发现特定的有效载荷或特定标签的MAC地址，我们可以使KNOT结构一个MQTT消息（从上面的例子中显示的打印信息）并通过 [MQTT](https://help.mikrotik.com/docs/display/ROS/MQTT)、[e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)  或[HTTP](https://help.mikrotik.com/docs/display/ROS/Fetch) 邮寄给配置的服务器。脚本例子在本指南的后面显示。
+在RouterOS [scripting](https://help.mikrotik.com/docs/display/ROS/Scripting) 和 [scheduling](https://help.mikrotik.com/docs/display/ROS/Scheduler) 的帮助下，可以使KNOT自动定期扫描有效载荷列表，如果在列表中发现特定的有效载荷或特定标签的MAC地址，我们可以使KNOT结构一个MQTT消息（从上面的例子中显示的打印信息）并通过 [MQTT](https://help.mikrotik.com/docs/display/ROS/MQTT) 、 [e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)  或 [HTTP](https://help.mikrotik.com/docs/display/ROS/Fetch) 邮寄给配置的服务器。脚本例子在本指南的后面显示。
 
 如标题所示，目标是实现一个 **蓝牙标签跟踪解决方案**，想法很简单。**当你有两个KNOT** （KNOT-A和KNOT-B），在调度器上运行同一个脚本时， **标签在它们的蓝牙操作范围之间移动** ，**服务器上的数据将表明** 是KNOT-A还是KNOT-B **发送了** 标签的载荷。这将帮助弄清该标签的近况。标签是在KNOT-A区，还是在KNOT-B区广播有效载荷。
 
@@ -33,7 +33,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 - 2 + [KNOT](https://mikrotik.com/product/knot)，通过以太网、Wi-Fi或手机连接进入服务器的网络（所需的单元数量取决于需要覆盖的区域大小）；
 - 1+ 蓝牙  [TG-BT5-IN](https://mikrotik.com/product/tg_bt5_in) 和 [TG-BT5-OUT](https://mikrotik.com/product/tg_bt5_out) 标签（取决于你需要追踪的资产数量--每个资产一个标签）。
 
-# 情景解释
+# 场景说明
 
 先看一个基本的例子。有两个KNOTs（KNOT-A和KNOT-B）。已经在环境中测试了蓝牙范围，可以验证这两个KNOT能够在70米的距离内捕获标签。如果将KNOT-A和KNOT-B安装在相距140米的地方，它们的蓝牙范围将不会重叠或只是轻微重叠。当标签移动到KNOT-A范围内时→被监测的标签的有效载荷将出现在蓝牙扫描器列表下→脚本将按设定的时间表启动→带有报告的MQTT消息将被发送到服务器→最后，服务器将显示标签在KNOT-A区域内。当标签进入KNOT-B区域时，同样的情况发生，服务器将显示标签在KNOT-B区域内。
 
@@ -43,11 +43,11 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 
 **可能会有两个或多个KNOT的蓝牙范围重叠的区域，可以利用它的优点**。 你可以获得处于蓝牙范围的边缘，在特定的KNOT区域之间 的标签信息。换句话说，当资产移动到重叠区域时，将在服务器上得到资产处于两个KNOT操作范围之间的信息，这是很有用的，**因为它能提供更精确的信息**。
 
-此外，**标签的输出功率可以通过 [Tx power](https://help.mikrotik.com/docs/display/UM/MikroTik+Beacon+Manager+for+Android+devices#heading-TxPower) 参数来降低**。这意味着，即使标签的有效载荷广播得太远，它们被其他不应该看到这些有效载荷的KNOT捕获（距离较远）→可以降低标签的输出功率，减少KNOT能够捕获它的距离。这样可以 "调整 "接收 "范围"，也可以避免 "干扰 "其他区域的信号。
+此外，标签的输出功率可以通过 [Tx power](https://help.mikrotik.com/docs/display/UM/MikroTik+Beacon+Manager+for+Android+devices#heading-TxPower) 参数来降低。这意味着，即使标签的有效载荷广播得太远，它们被其他不应该看到这些有效载荷的KNOT捕获（距离较远）→可以降低标签的输出功率，减少KNOT能够捕获它的距离。这样可以 "调整 "接收 "范围"，也可以避免 "干扰 "其他区域的信号。
 
 我们准备的脚本允许设置一个过滤器（以后会显示），使KNOT忽略扫描者捕获的有效载荷，除非信号强度（RSSI）高于指定值。在上面的 [简介](https://help.mikrotik.com/docs/display/ROS/Bluetooth+tag-tracking+using+MQTT+and+ThingsBoard#BluetoothtagtrackingusingMQTTandThingsBoard-Introduction) 部分可以看到KNOT看到其中一个标签的 **RSSI** 信号强度为 **-51 dBm** （标签的MAC地址为 **DC： 2C:6E:0F:C0:3D**），另一个的 **RSSI** 信号强度为 **-49 dBm** （标签的MAC地址为 **2C:C8:1B:4B:BB:0A**）。因此，如果 **在脚本中应用一个过滤器来** 忽略 **所有收到的信号强度（RSSI）** 弱于-50 dBm的有效载荷，我们的 **KNOT将报告只有标签 "2C:C8:1B:4B:BB:0A "在蓝牙范围内，因为其RSSI为-49 dBm，而第二个标签（RSSI为-51 dBm）将被忽略。这意味着，它是 "调整 "接收 "范围 "的第二种方式。不同地点的实际信号强度会有所不同（如前所述，因为有干扰和周围的材料），所以需要现场测试。
 
-## 实例#1
+## 实例1
 
 其中一个用例显示在下面的拓扑结构中：
 
@@ -55,7 +55,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 
 对象的规模和蓝牙工作范围只作为一个例子显示，帮助直观地理解和想象拓扑结构
 
-有一个仓库区，**有3个资产** （托盘）有兴趣追踪。有3个区域：**A** 区新到的托盘存放在这里；**B** 区的资产被转移到这里接受检查；**C** 区资产在检查后被移动。为了实现蓝牙资产追踪，只需在每个区域安装1个KNOT，每个资产安装1个标签。
+有一个仓库区，**有3个资产** （托盘）要追踪。有3个区域：**A** 区新到的托盘存放在这里；**B** 区的资产被转移到这里接受检查；**C** 区资产在检查后被移动。为了实现蓝牙资产追踪，只需在每个区域安装1个KNOT，每个资产安装1个标签。
 
 如果TAG 1和TAG 2（托盘）到达区域A，KNOT A将向服务器报告这两个资产都在其蓝牙范围内。如果TAG 3被移到C区，服务器将报告它在KNOT C的范围内。如果TAG 1和TAG 2向B区移动，并停留在A区和B区之间的边缘，服务器将显示它处于重叠区域（同时在KNOT-A和KNOT-B范围内）。如果标签向仓库中间移动，服务器将显示它们同时在3个区，在重叠区。
 
@@ -351,7 +351,7 @@ KNOT标识符行。需要为每个独特的KNOT改变它。例如，将第一个
 
 ![](https://help.mikrotik.com/docs/download/attachments/176914435/image-2023-3-16_15-20-49.png?version=1&modificationDate=1678972824047&api=v2)
 
-## Example #2
+## 实例2
 
 In the second example, we will showcase another topology:
 

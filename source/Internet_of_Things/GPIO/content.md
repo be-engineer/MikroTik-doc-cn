@@ -109,7 +109,7 @@ Flags: X - disabled
 
 GPIO实现的场景之一是使用数字输出引脚 "控制其他继电器"。基本上，发送 "0 "或 "1 "信号给连接到该引脚的单元。为了使这个过程自动化，你可以使用一个 [时间表](https://wiki.mikrotik.com/wiki/Manual:System/Scheduler)，它将在特定时间运行脚本。
 
-例如，可以添加第一个 [脚本](https://help.mikrotik.com/docs/display/ROS/Scripting)（如下图所示的单行）并命名为 "output=0"：
+例如，可以添加第一个 [脚本](https://help.mikrotik.com/docs/display/ROS/Scripting) （如下图所示的单行）并命名为 "output=0"：
 
 > /iot gpio digital set pin4 output=0
 
@@ -137,7 +137,7 @@ GPIO实现的场景之一是使用数字输出引脚 "控制其他继电器"。�
 
 _E-mail提示脚本:_
 
-> /tool e-mail send to=config@[mydomain.com](http://mydomain.com) subject=[/system identity get name] body="$[/iot gpio digital get pin5 input]"
+`/tool e-mail send to=config@[mydomain.com](http://mydomain.com) subject=[/system identity get name] body="$[/iot gpio digital get pin5 input]"`
 
 创建脚本后，将其应用/设置到 "输入 "引脚：
 
@@ -186,13 +186,15 @@ broker 的 "名字 "也要相应地改变（可以用CLI命令/iot mqtt brokers 
 
 如果使用机械开关来发送信号到GPIO引脚，建议使用下面的脚本来代替（ 防止在引脚上收到信号时，脚本启动不止一次）：
 
-> :global gpioscriptrunning;  
-> if (!$gpioscriptrunning) do={:set $gpioscriptrunning true;  
-> :log info "script started - GPIO changed";  
-> :do {if ([/iot gpio digital get pin5 input] = "0") do={/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name] body="pin5 received logical 0"} else {/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name]  body="pin5 received logical 1"};  
-> :delay 1s;  
-> :set $gpioscriptrunning false} on-error={:set $gpioscriptrunning false;  
-> :log info "e-mail error, resetting script state..."}}
+```shell
+ :global gpioscriptrunning;  
+ if (!$gpioscriptrunning) do={:set $gpioscriptrunning true;  
+ :log info "script started - GPIO changed";  
+ :do {if ([/iot gpio digital get pin5 input] = "0") do={/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name] body="pin5 received logical 0"} else {/tool e-mail send to="config@[mydomain.com](http://mydomain.com)" subject=[/system identity get name]  body="pin5 received logical 1"};  
+ :delay 1s;  
+ :set $gpioscriptrunning false} on-error={:set $gpioscriptrunning false;  
+ :log info "e-mail error, resetting script state..."}}
+```
 
 如果GPIO引脚的状态在mili/microseconds内变化超过一次 - 上面的脚本将确保电子邮件通知不会被发送超过一次。
 
@@ -207,6 +209,7 @@ broker 的 "名字 "也要相应地改变（可以用CLI命令/iot mqtt brokers 
 > :local topic "topic"
 > 
 > :local message "{\"voltage(mV)\":$[/iot gpio analog get pin3 value]}"  
+
 > /iot mqtt publish broker=$broker topic=$topic message=$message
 
 该脚本读取测量引脚3的电压，并将数据发布到MQTT代理。

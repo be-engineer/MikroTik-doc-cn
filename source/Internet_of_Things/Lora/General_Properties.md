@@ -2,7 +2,7 @@
 
 每个带有支持LTE调制解调器的miniPCI-e插槽的RouterBOARD可以通过安装 **R11e-LoRa8** 或 **R11e-LoRa9** 卡作为LoRaWAN网关使用。为了与Lora一起工作，需要安装Lora软件包。你可以在 [下载](https://mikrotik.com/download) 页面的额外软件包档案中找到适合你设备架构的软件包。
 
-_**注**：_ RouterOS不支持第三方LoRaWAN网关卡。
+**注**： RouterOS不支持第三方LoRaWAN网关卡。
 
 # 属性
 
@@ -25,7 +25,7 @@ _**注**：_ RouterOS不支持第三方LoRaWAN网关卡。
 
   
 
-# Channels
+# 频道
 
 **Sub-menu:** `/lora channels`
 

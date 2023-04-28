@@ -4,7 +4,7 @@
 
 - 登录你的账户，进入控制台并选择网关
 
-！[](https://help.mikrotik.com/docs/download/attachments/16351627/L1.png?version=1&modificationDate=1582031630567&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/16351627/L1.png?version=1&modificationDate=1582031630567&api=v2)
 
   
 

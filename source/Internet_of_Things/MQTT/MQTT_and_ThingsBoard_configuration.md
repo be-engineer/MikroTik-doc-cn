@@ -1,4 +1,4 @@
-## 简介
+## MQTT和ThingsBoard配置
 
 可以用云服务来监测由MQTT发布者发送的信息，其中之一是 [Thingsboard](https://thingsboard.io/)。本文将演示如何配置 Thingsboard 和 RouterOS，以使用 MQTT 协议发布数据。RouterOS在这个方案中作为一个网关，将数据从RouterBoard发布到Thingsboard的服务器。Thingsboard在这种情况下作为一个MQTT broker （数据发布的服务器）。
 

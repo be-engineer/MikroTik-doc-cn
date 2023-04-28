@@ -33,4 +33,4 @@
 
   
 
-For additional information check their [](https://www.thethingsindustries.com/docs/getting-started/)[documentation](https://www.thethingsindustries.com/docs/getting-started/) [page](https://www.thethingsindustries.com/docs/getting-started/)
+有关其他信息，请查看 [](https://www.thethingsindustries.com/docs/getting-started/) [文件](https://www.thethingsindustries.com/docs/getting-started/)  [页面](https://www.thethingsindustries.com/docs/getting-started/)
