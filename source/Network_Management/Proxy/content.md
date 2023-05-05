@@ -1,610 +1,451 @@
-# Summary
+# 概述
 
-MikroTik RouterOS performs proxying of HTTP and HTTP-proxy (for FTP and HTTP protocols) requests. The proxy server performs the Internet object cache function by storing requested Internet objects, i.e., data available via HTTP and FTP protocols on a system positioned closer to the recipient in the form of speeding up customer browsing by delivering them requested file copies from the proxy cache at local network speed. MikroTik RouterOS implements the following proxy server features:
+MikroTik RouterOS对HTTP和HTTP-proxy（用于FTP和HTTP协议）请求进行代理。代理服务器执行互联网对象缓存功能，将请求的互联网对象，即通过HTTP和FTP协议提供的数据存储在定位更接近接收者的系统上，通过以本地网络速度从代理缓存中交付客户请求的文件副本，从而加快客户的浏览速度。MikroTik RouterOS实现了以下代理服务器功能：
 
--   Regular HTTP proxy – customer (itself) specifies what is a proxy server for him;
--   Transparent proxy – the customer does not know about the proxy being enabled and there isn’t a necessity for any additional configuration for the web browser of the client;
--   Access list by source, destination, URL, and requested method (HTTP firewall);
--   Cache access list to specify which objects to cache, and which not;
--   Direct Access List – to specify which resources should be accessed directly, and which - through another proxy server;
--   Logging facility – allows to get and store information about the proxy operation;
--   Parent proxy support – allows to specify another proxy server, _(if they don’t have the requested object ask their parents, or to the original server);_
+- 常规HTTP代理--客户（本身）指定什么是代理服务器；
+- 透明代理--客户不知道代理的启用，也没有必要对客户端的网络浏览器进行任何额外的配置；
+- 按来源、目的地、URL和请求方法（HTTP防火墙）的访问列表；
+- 缓存访问列表，指定哪些对象需要缓存，哪些不需要；
+- 直接访问列表-指定哪些资源应该直接访问，哪些--通过另一个代理服务器；
+- 日志设施-允许获取和存储有关代理操作的信息；
+- 父代理-允许指定另一个代理服务器，（如果他们没有要求的对象，就问他们的父代理，或者问原始服务器）；
 
   
-A proxy server usually is placed at various points between users and the destination server (_also known as the origin server_) on the Internet.
+代理服务器通常放置在用户和互联网上的目标服务器（也称为原点服务器）之间的不同位置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/132350000/Image10002.jpg?version=1&modificationDate=1658409074627&api=v2)
 
-A _Web proxy (cache)_ watches requests coming from clients, saving copies of the responses for itself. Then, if there is another request for the same URL, it can use the response that it has, instead of asking the origin server for it again. If the proxy has not requested a file, it downloads that from the original server.
+网络代理（缓存）观察来自客户端的请求，为自己保存响应的副本。然后，如果有另一个对同一URL的请求，它可以使用它所拥有的响应，而不是再次向原服务器请求。如果代理没有请求文件，它就从原服务器下载。
 
-There can be many potential purposes of proxy servers:
+代理服务器可能有许多潜在的目的：
 
--   To increase access speed to resources (it takes less time for the client to get the object);
--   Works as HTTP firewall (deny access to undesirable web pages);
+- 提高资源的访问速度（客户端获得对象所需的时间更短）；
+- 作为HTTP防火墙工作（拒绝访问不希望看到的网页）；
 
-Allows filtering web content (by specific parameters, like source address, a destination address, port, URL, HTTP request method) scan outbound content, e.g., for data leak protection.
+允许过滤网页内容（通过特定的参数，如源地址、目标地址、端口、URL、HTTP请求方法）扫描出站内容，例如，用于数据泄漏保护。
 
-It may be useful to have a Web proxy running even with no cache when you want to use it only as something like an HTTP and FTP firewall (for example, denying access to undesired web pages or denying a specific type of files e.g. .mp3 files) or to redirect requests to external proxy (possibly, to a proxy with caching functions) transparently.
+当你想用它作为HTTP和FTP防火墙（例如，拒绝访问不需要的网页或拒绝特定类型的文件，如.mp3文件）或透明地将请求重定向到外部代理（可能是具有缓存功能的代理）时，即使没有缓存，它也可能是有用的。
 
-# Configuration examples
+# 配置示例
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+`/ip/proxy`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy</code></div></div></td></tr></tbody></table>
+在MikroTik RouterOS中，代理配置是在/ip/proxy菜单中进行的。请看下面如何在8080端口启用代理，并将192.168.88.254设置为代理源地址：
 
-In MikroTik RouterOS, a proxy configuration is performed in the _/ip/proxy_ menu. See below how to enable the proxy on port 8080 and set up 192.168.88.254 as the proxy source address:
+```shell
+[admin@MikroTik] > ip/proxy/set enabled=yes port=8080 src-address=192.168.88.254
+[admin@MikroTik] > ip/proxy/print
+                 enabled: yes
+             src-address: 192.168.88.254
+                    port: 8080
+               anonymous: no
+            parent-proxy: ::
+       parent-proxy-port: 0
+     cache-administrator: webmaster
+          max-cache-size: unlimited
+   max-cache-object-size: 2048KiB
+           cache-on-disk: no
+  max-client-connections: 600
+  max-server-connections: 600
+          max-fresh-time: 3d
+   serialize-connections: no
+       always-from-cache: no
+          cache-hit-dscp: 4
+              cache-path: web-proxy
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+在设置常规代理服务时，要确保它只为客户提供服务，并通过建立防火墙，只允许客户使用代理，防止未经授权的访问，否则，它可能被当作一个开放的代理。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip</code><code class="ros constants">/proxy/</code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">port</code><code class="ros plain">=8080</code> <code class="ros value">src-address</code><code class="ros plain">=192.168.88.254</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip</code><code class="ros constants">/proxy/</code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">src-address</code><code class="ros constants">: 192.168.88.254</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: 8080</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">anonymous</code><code class="ros constants">: no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy</code><code class="ros constants">: ::</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy-port</code><code class="ros constants">: 0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-administrator</code><code class="ros constants">: webmaster</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-size</code><code class="ros constants">: unlimited</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-object-size</code><code class="ros constants">: 2048KiB</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-on-disk</code><code class="ros constants">: no</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-client-connections</code><code class="ros constants">: 600</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-server-connections</code><code class="ros constants">: 600</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-fresh-time</code><code class="ros constants">: 3d</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">serialize-connections</code><code class="ros constants">: no</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">always-from-cache</code><code class="ros constants">: no</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-hit-dscp</code><code class="ros constants">: 4</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-path</code><code class="ros constants">: web-proxy</code></div></div></td></tr></tbody></table>
+## 透明的代理配置实例
 
-When setting up a regular proxy service, make sure it serves only your clients and prevents unauthorized access to it by creating a firewall that allows only your clients to use a proxy, otherwise, it may be used as an open proxy.
+RouterOS也可以作为一个透明的缓存服务器，在客户的网络浏览器中不需要配置。一个透明的代理不会修改请求的URL或响应。RouterOS将接收所有的HTTP请求并将其重定向到本地代理服务。这个过程对用户来说将是完全透明的（用户可能对位于他们和原始服务器之间的代理服务器一无所知），对他们来说唯一的区别是浏览速度的提高。
 
-## Transparent proxy configuration example
-
-RouterOS can also act as a Transparent Caching server, with no configuration required in the customer’s web browser. A transparent proxy does not modify the requested URL or response. RouterOS will take all HTTP requests and redirect them to the local proxy service. This process will be entirely transparent to the user (users may not know anything about a proxy server that is located between them and the original server), and the only difference to them will be the increased browsing speed.
-
-To enable the transparent mode, the firewall rule in destination NAT has to be added, specifying which connections (to which ports) should be transparently redirected to the proxy. Check proxy settings above and redirect us users (192.168.1.0/24) to a proxy server:
-
-  
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip firewall nat&gt; </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=dstnat</code> <code class="ros value">protocol</code><code class="ros plain">=tcp</code> <code class="ros value">src-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">dst-port</code><code class="ros plain">=80</code> <code class="ros value">action</code><code class="ros plain">=redirect</code> <code class="ros value">to-ports</code><code class="ros plain">=8080</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] ip firewall nat&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid, D - dynamic</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">chain</code><code class="ros plain">=dstnat</code> <code class="ros value">protocol</code><code class="ros plain">=tcp</code> <code class="ros value">dst-port</code><code class="ros plain">=80</code> <code class="ros value">action</code><code class="ros plain">=redirect</code> <code class="ros value">to-ports</code><code class="ros plain">=8080</code></div></div></td></tr></tbody></table>
-
- The web proxy can be used as a transparent and normal web proxy at the same time. In transparent mode, it is possible to use it as a standard web proxy, too. However, in this case, proxy users may have trouble reaching web pages that are accessed transparently.
-
-## Proxy-based firewall – Access List
-
-An access list is implemented in the same way as MikroTik firewall rules processed from the top to the bottom. The first matching rule specifies the decision of what to do with this connection. Connections can be matched by their source address, destination address, destination port, sub-string of the requested URL (Uniform Resource Locator), or request method. If none of these parameters is specified, every connection will match this rule.
-
-If a connection is matched by a rule, the action property of this rule specifies whether a connection will be allowed or not (deny). If a connection does not match any rule, it will be allowed.
-
-In this example assume that we have configured a transparent proxy server, it will block the website [http://www.facebook.com](http://www.facebook.com/), we can always block the same for different networks by giving src-address:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip proxy access </code><code class="ros functions">add </code><code class="ros value">src-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">dst-host</code><code class="ros plain">=www.facebook.com</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div></div></td></tr></tbody></table>
-
-Users from network 192.168.1.0/24 will not be able to access the website [www.facebook.com](http://www.facebook.com/).
-
-You can block also websites that contain specific words in the URL:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip proxy access </code><code class="ros functions">add </code><code class="ros value">dst-host</code><code class="ros plain">=:mail</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div></div></td></tr></tbody></table>
-
-This statement will block all websites which contain the word “mail” in the URL. Like [www.mail.com](http://www.mail.com/), [www.hotmail.com](http://www.hotmail.com/), [mail.yahoo.com](http://mail.yahoo.com), etc.
-
-_**We can also stop downloading specific types of files like .flv, .avi, .mp4, .mp3, .exe, .dat, …etc.**_
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip proxy access</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.flv</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.avi</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.mp4</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.mp3</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.zip</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">path</code><code class="ros plain">=*.rar</code> <code class="ros value">action</code><code class="ros plain">=deny</code></div></div></td></tr></tbody></table>
+为了启用透明模式，必须在目标NAT中添加防火墙规则，指定哪些连接（到哪些端口）应该透明地重定向到代理。检查上面的代理设置，将用户（192.168.1.0/24）重定向到代理服务器：
 
   
 
-Here are available also different wildcard characters, to create specific conditions and to match them by proxy access list. Wildcard properties (dst-host and dst-path) match a complete string (i.e., they will not match "[example.com](http://example.com)" if they are set to "example"). Available wildcards are '\*' (match any number of any characters) and '?' (match any one character).
+```shell
+[admin@MikroTik] ip firewall nat> add chain=dstnat protocol=tcp src-address=192.168.1.0/24 dst-port=80 action=redirect to-ports=8080
+[admin@MikroTik] ip firewall nat> print
+Flags: X - disabled, I - invalid, D - dynamic
+ 0   chain=dstnat protocol=tcp dst-port=80 action=redirect to-ports=8080
+```
 
-Regular expressions are also accepted here, but if the property should be treated as a regular expression, it should start with a colon (':').
+ 网络代理可以同时作为透明和普通网络代理使用。在透明模式下，它也可以作为一个标准的网络代理使用。然而，在这种情况下，代理用户可能难以到达透明访问的网页。
 
-To show that no symbols are allowed before the given pattern, we use the ^ symbol at the beginning of the pattern.
+## 基于代理的防火墙 - 访问列表
 
-To specify that no symbols are allowed after the given pattern, we use the $ symbol at the end of the pattern.
+访问列表的实现方式与MikroTik防火墙规则从上到下的处理方式相同。第一条匹配规则规定了对该连接的处理决定。连接可以通过其源地址、目标地址、目标端口、请求的URL（统一资源定位器）的子字符串或请求方法进行匹配。如果没有指定这些参数，每一个连接都将匹配这个规则。
 
-# Enabling RAM or Store-based caching.
+如果一个连接被一个规则匹配，这个规则的动作属性指定是否允许连接（拒绝）。如果一个连接不匹配任何规则，则会被允许。
 
-In this example, it will presume that you already have the proxy configured and working and you just want to enable caching. If a command/parameter detailed description is required check the reference section which is located right below the example section.
+在这个例子中，假设配置了一个透明的代理服务器，它将阻止网站 [http://www.facebook.com](http://www.facebook.com/)，可以通过给出src-address对不同的网络进行阻止：
 
--   RAM-based caching:
-    -   Good if you have a device with a considerable amount of RAM for caching. Enabling this on a device with RAM 256MB or less will not give your network any benefit.
-    -   Way faster cache writes/read than one that is stored on USB or SATA connected mediums.
+`/ip proxy access add src-address=192.168.1.0/24 dst-host=www.facebook.com action=deny`
 
--   Store-based caching:
-    -   Larger proxy caches are available simply due to medium capacity differences.
+来自网络192.168.1.0/24的用户将不能访问网站 [www.facebook.com](http://www.facebook.com/)。
 
-## **RAM proxy cache:**
+也可以阻止URL中包含特定单词的网站：
 
-Important commands:
+`/ip proxy access add dst-host=:mail action=deny`
+
+该声明将阻止所有URL中包含 "邮件 "一词的网站。如 [www.mail.com](http://www.mail.com/), [www.hotmail.com](http://www.hotmail.com/), [mail.yahoo.com](http://mail.yahoo.com), 等等。
+
+还可以阻止下载特定类型的文件，如.flv, .avi, .mp4, .mp3, .exe, .dat, ...等等。
+
+```shell
+/ip proxy access
+add path=*.flv action=deny
+add path=*.avi action=deny
+add path=*.mp4 action=deny
+add path=*.mp3 action=deny
+add path=*.zip action=deny
+add path=*.rar action=deny
+```
+
+这里也有不同的通配符创建特定的条件，并通过代理访问列表来匹配它们。通配符属性（dst-host和dst-path）匹配一个完整的字符串（例如，如果它们被设置为 "example"，它们将不会匹配 [example.com](http://example.com)）。可用的通配符是'*'（匹配任意数量的任意字符）和'?'（匹配任意一个字符）。
+
+也接受正则表达式，但如果该属性应被视为正则表达式，它应该以冒号（':'）开始。
+
+为了表明在给定的模式之前不允许有任何符号，在模式的开头使用^符号。
+
+为了说明在给定模式之后不允许有任何符号，在模式的末尾使用$符号。
+
+# 启用RAM或基于存储的缓存
+
+在这个例子中，假定已经配置了代理，并且正在工作，想启用缓存。如果需要命令参数的详细说明，请查看位于例子下面的参考。
+
+- 基于RAM的缓存：
+    - 如果设备有很多RAM用于缓存，则很好。在内存为256MB或更少的设备上启用这个功能，不会给网络带来任何好处。
+    - 缓存的写入/读取速度比存储在USB或SATA连接介质上的快。
+
+- 基于存储的高速缓存：
+    - 仅仅由于介质容量的不同，可以使用更大的代理缓存。
+
+## RAM代理缓存
+
+重要命令：
 
 -   max-cache-size=
 -   max-cache-object-size=
 -   cache-on-disk=
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+```shell
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/ip proxy&gt; </code><code class="ros functions">set </code><code class="ros value">max-cache-size</code><code class="ros plain">=unlimited</code> <code class="ros value">max-cache-object-size</code><code class="ros plain">=50000KiB</code> <code class="ros value">cache-on-disk</code><code class="ros plain">=no</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">...</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/ip proxy&gt; </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">src-address</code><code class="ros constants">:&nbsp;::</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: 8080</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">anonymous</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy-port</code><code class="ros constants">: 0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-administrator</code><code class="ros constants">: webmaster</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-size</code><code class="ros constants">: unlimited&nbsp; &lt;-------</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-object-size</code><code class="ros constants">: 500000KiB&nbsp; &lt;-------</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-on-disk</code><code class="ros constants">: no&nbsp; &lt;-------</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-client-connections</code><code class="ros constants">: 600</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-server-connections</code><code class="ros constants">: 600</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-fresh-time</code><code class="ros constants">: 3d</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">serialize-connections</code><code class="ros constants">: no</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">always-from-cache</code><code class="ros constants">: no</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-hit-dscp</code><code class="ros constants">: 4</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-path</code><code class="ros constants">: proxy-cache</code></div></div></td></tr></tbody></table>
+[admin@MikroTik] /ip proxy> set max-cache-size=unlimited max-cache-object-size=50000KiB cache-on-disk=no
+...
+[admin@MikroTik] /ip proxy> print
+                 enabled: yes
+             src-address: ::
+                    port: 8080
+               anonymous: no
+            parent-proxy: 0.0.0.0
+       parent-proxy-port: 0
+     cache-administrator: webmaster
+          max-cache-size: unlimited  <-------
+   max-cache-object-size: 500000KiB  <-------
+           cache-on-disk: no  <-------
+  max-client-connections: 600
+  max-server-connections: 600
+          max-fresh-time: 3d
+   serialize-connections: no
+       always-from-cache: no
+          cache-hit-dscp: 4
+              cache-path: proxy-cache
+```
 
-## **Store proxy cache:**
+## 存储代理缓存
 
-Important commands:
+重要命令：
 
 -   max-cache-size=
 -   max-cache-object-size=
 -   cache-on-disk=
 -   cache-path=
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+```shell
+[admin@MikroTik] > ip proxy set cache-on-disk=yes cache-path=/usb1/proxy/cache
+ 
+[admin@MikroTik] > ip proxy print                                               
+                 enabled: yes
+             src-address: ::
+                    port: 8080
+               anonymous: no
+            parent-proxy: 0.0.0.0
+       parent-proxy-port: 0
+     cache-administrator: webmaster
+          max-cache-size: unlimited  <-------
+   max-cache-object-size: 50000KiB  <-------
+           cache-on-disk: yes  <-------
+  max-client-connections: 600
+  max-server-connections: 600
+          max-fresh-time: 3d
+   serialize-connections: no
+       always-from-cache: no
+          cache-hit-dscp: 4
+              cache-path: usb1/proxy/cache  <-------
+ 
+[admin@MikroTik] > file print                                                   
+ # NAME                                                           TYPE             
+ 0 skins                                                          directory       
+ 5 usb1/proxy                                                     directory          
+ 6 usb1/proxy/cache                                               web-proxy store   <-------     
+ 7 usb1/lost+found                                                directory
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip proxy </code><code class="ros functions">set </code><code class="ros value">cache-on-disk</code><code class="ros plain">=yes</code> <code class="ros value">cache-path</code><code class="ros plain">=/usb1/proxy/cache</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip proxy </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">src-address</code><code class="ros constants">:&nbsp;::</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">port</code><code class="ros constants">: 8080</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">anonymous</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">parent-proxy-port</code><code class="ros constants">: 0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-administrator</code><code class="ros constants">: webmaster</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-size</code><code class="ros constants">: unlimited&nbsp; &lt;-------</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-cache-object-size</code><code class="ros constants">: 50000KiB&nbsp; &lt;-------</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-on-disk</code><code class="ros constants">: yes&nbsp; &lt;-------</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-client-connections</code><code class="ros constants">: 600</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">max-server-connections</code><code class="ros constants">: 600</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">max-fresh-time</code><code class="ros constants">: 3d</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">serialize-connections</code><code class="ros constants">: no</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">always-from-cache</code><code class="ros constants">: no</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-hit-dscp</code><code class="ros constants">: 4</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-path</code><code class="ros constants">: usb1/proxy/cache&nbsp; &lt;-------</code></div><div class="line number21 index20 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros functions">file </code><code class="ros functions">print </code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 skins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; directory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 usb1</code><code class="ros constants">/proxy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; directory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">6 usb1</code><code class="ros constants">/proxy/cache&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; web-proxy store&nbsp;&nbsp; &lt;-------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">7 usb1</code><code class="ros constants">/lost+found&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; directory</code></div></div></td></tr></tbody></table>
+**检查缓存是否在工作：**
 
-**Check if a cache is working:**
+```shell
+[admin@MikroTik] > ip proxy monitor
+                 status: running
+                 uptime: 2w20h28m25s
+     client-connections: 15
+     server-connections: 7
+               requests: 79772
+                   hits: 30513
+             cache-used: 481KiB
+         total-ram-used: 1207KiB
+  received-from-servers: 4042536KiB
+        sent-to-clients: 4399757KiB
+   hits-sent-to-clients: 176934KiB
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+# 参考资料
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; ip proxy </code><code class="ros functions">monitor</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">status</code><code class="ros constants">: running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">uptime</code><code class="ros constants">: 2w20h28m25s</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">client-connections</code><code class="ros constants">: 15</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">server-connections</code><code class="ros constants">: 7</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">requests</code><code class="ros constants">: 79772</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">hits</code><code class="ros constants">: 30513</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cache-used</code><code class="ros constants">: 481KiB</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">total-ram-used</code><code class="ros constants">: 1207KiB</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">received-from-servers</code><code class="ros constants">: 4042536KiB</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">sent-to-clients</code><code class="ros constants">: 4399757KiB</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">hits-sent-to-clients</code><code class="ros constants">: 176934KiB</code></div></div></td></tr></tbody></table>
+每个菜单的所有可用参数和命令的列表。
 
-# Reference
+### 常规命令
 
-List of all available parameters and commands per menu.
-
-### General
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy</code></div></div></td></tr></tbody></table>
-
-  
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                                   |
- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **always-from-cache** (_yes                                                       | no_; Default: **no**)                                                                                                                                                                                                                                                                                                 | ignore client refresh requests if the content is considered fresh                                                                                                                                                                                                                                                                                                                                                      |
- | **anonymous** (_yes                                                               | no_; Default: **no**)                                                                                                                                                                                                                                                                                                 | If not set, the IP address of the client would be passed X-Forwarded-For header (could be accessed using HTTP\_X\_FORWARDED\_FOR environment variable in remote servers)                                                                                                                                                                                                                                               |
- | **cache-administrator** (_string_; Default: **webmaster**)                        | Administrator's e-mail displayed on proxy error page                                                                                                                                                                                                                                                                  |
- | **cache-hit-dscp** (_integer: 0..63_; Default: **4**)                             | Automatically mark cache hit with the provided DSCP value                                                                                                                                                                                                                                                             |
- | **cache-on-disk** (_yes                                                           | no_; Default: **no**)                                                                                                                                                                                                                                                                                                 | Whether to store cache on disk                                                                                                                                                                                                                                                                                                                                                                                         |
- | **cache-path** (_string_; Default: **web-proxy**)                                 | A path where the cache will be stored, when cache-on-disk is enabled.                                                                                                                                                                                                                                                 |
- | **max-cache-object-size** (_integer: 0..4294967295\[KiB\]_; Default: **2048KiB**) | Specifies the maximal cache object size, measured in kilobytes                                                                                                                                                                                                                                                        |
- | **max-cache-size** (_none                                                         | unlimited                                                                                                                                                                                                                                                                                                             | integer: 0..4294967295\[KiB\]_; Default: **unlimited**)                                                                                                                                                                                                                                                                                                                                                                | Specifies the maximal cache size, measured in kilobytes |
- | **max-client-connections** (_integer: Dynamic_ ; Default: **600**)                | Maximal number of connections accepted from clients (any further connections will be rejected)                                                                                                                                                                                                                        |
- | **max-fresh-time** (_time_; Default: **3d**)                                      | Maximal time to store a cached object. The validity period of an object is usually defined by the object itself, but in case it is set too high, you can override the maximal value                                                                                                                                   |
- | **max-server-connections** (_integer: Dynamic_ ; Default: **600**)                | Maximal number of connections made to servers (any further connections from clients will be put on hold until some server connections will terminate)                                                                                                                                                                 |
- | **parent-proxy** (_Ip4                                                            | ip6_; Default: **0.0.0.0**)                                                                                                                                                                                                                                                                                           | IP address and port of another HTTP proxy to redirect all requests to. If set to **0.0.0.0** parent proxy is not used.                                                                                                                                                                                                                                                                                                 |
- | **parent-proxy-port** (_integer: 0..65535_; Default: **0**)                       | Port that parent proxy is listening on.                                                                                                                                                                                                                                                                               |
- | **port** (_integer: 0..65535_; Default: **8080**)                                 | TCP port the proxy server will be listening on. This port has to be specified on all clients that want to use the server as an HTTP proxy. A transparent (with zero configuration for clients) proxy setup can be made by redirecting HTTP requests to this port in the IP firewall using the destination NAT feature |
- | **serialize-connections** (_yes                                                   | no_; Default: **no**)                                                                                                                                                                                                                                                                                                 | Do not make multiple connections to the server for multiple client connections, if possible (i.e. server supports persistent HTTP connections). Clients will be served on the FIFO principle; the next client is processed when the response transfer to the previous one is completed. If a client is idle for too long (max 5 seconds by default), it will give up waiting and open another connection to the server |
- | **src-address** (_Ip4                                                             | Ip6_; Default: **0.0.0.0**)                                                                                                                                                                                                                                                                                           | A proxy will use a specified address when connecting to the parent proxy or website. If set to **0.0.0.0** then the appropriate IP address will be taken from the routing table.                                                                                                                                                                                                                                       |
-
-### Access List
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/access</code></div></div></td></tr></tbody></table>
-
-An access list is configured like regular firewall rules. Rules are processed from the top to the bottom. The first matching rule specifies the decision of what to do with this connection. There is a total of 6 classifiers that specify matching constraints. If none of these classifiers is specified, the particular rule will match every connection.
-
-If a connection is matched by a rule, the action property of this rule specifies whether a connection will be allowed or not. If the particular connection does not match any rule, it will be allowed.
+`/ip/proxy`
 
   
 
-| 
-Property
+| 属性                                                                                             | 说明                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **always-from-cache** (_yes\| no_; Default: **no**)                                              | 如果内容被认为是新鲜的，则忽略客户端的刷新请求。                                                                                                                                                                                                              |
+| **anonymous** (_yes \| no_; Default: **no**)                                                     | 如果不设置，客户端的IP地址将通过X-Forwarded-For头（可以在远程服务器中使用HTTP_X_FORWARDED_FOR环境变量访问）。                                                                                                                                                 |
+| **cache-administrator** (_string_; Default: **webmaster**)                                       | 管理员的电子邮件显示在代理错误页面                                                                                                                                                                                                                            |
+| **cache-hit-dscp** (_integer: 0..63_; Default: **4**)                                            | 自动用提供的DSCP值来标记缓存的命中率                                                                                                                                                                                                                          |
+| **cache-on-disk** (_yes \| no_; Default: **no**)                                                 | 是否将缓存存储在磁盘上。                                                                                                                                                                                                                                      |
+| **cache-path** (_string_; Default: **web-proxy**)                                                | 启用磁盘上缓存时，缓存存储的路径。                                                                                                                                                                                                                            |
+| **max-cache-object-size** (_integer: 0..4294967295[KiB]_; Default: **2048KiB**)                  | 指定最大的缓存对象大小，以千字节为单位。                                                                                                                                                                                                                      |
+| **max-cache-size** (_none \| unlimited \| integer: 0...4294967295[KiB]_; Default: **unlimited**) | 指定最大的缓存大小，以千字节为单位。                                                                                                                                                                                                                          |
+| **max-client-connections** (_integer: Dynamic_ ; Default: **600**)                               | 接受来自客户端的最大连接数（任何进一步的连接将被拒绝）。                                                                                                                                                                                                      |
+| **max-fresh-time** (_time_; Default: **3d**)                                                     | 存储一个缓存对象的最大时间。对象的有效期通常由对象本身定义，但如果它设置得太高，会覆盖最大的值。                                                                                                                                                              |
+| **max-server-connections** (_integer: Dynamic_ ; Default: **600**)                               | 与服务器的最大连接数（任何来自客户端的进一步连接将被搁置，直到服务器连接终止）。                                                                                                                                                                              |
+| **parent-proxy** (_Ip4 \| ip6_; 默认: **0.0.0.0**)                                               | 另一个HTTP代理的IP地址和端口，将所有请求重定向到该代理。如果设置为0.0.0.0，则不使用父代理。                                                                                                                                                                   |
+| **parent-proxy-port** (_integer: 0..65535_; Default: **0**)                                      | 父代理监听的端口。                                                                                                                                                                                                                                            |
+| **port** (_integer: 0...65535_; Default: **8080**)                                               | 代理服务器将监听的TCP端口。这个端口必须在所有想使用服务器作为HTTP代理的客户上指定。通过使用目标NAT功能将HTTP请求重定向到IP防火墙的这个端口，可以实现透明的（对客户的零配置）代理设置。                                                                        |
+| **serialize-connections** (_yes\| no_; Default: **no**)                                          | 如果可能的话，不要为多个客户的连接与服务器建立多个连接（即服务器支持持久的HTTP连接）。按照先进先出的原则为客户提供服务；当对前客户的响应传输完成后，再处理下一个客户。如果客户闲置时间过长（默认情况下最长为5秒），它将放弃等待，并打开另一个与服务器的连接。 |
+| **src-address** (_Ip4 \| Ip6_; Default: **0.0.0.0**)                                             | 代理在连接上级代理或网站时将使用指定地址。如果设置为0.0.0.0，那么适当的IP地址将从路由表中获取。                                                                                                                                                               |
 
- | 
+### 访问列表
 
-Description
+`/ip/proxy/access`
 
- |     |
- | --- |  |
- |     |
+访问列表的配置与普通防火墙规则一样。规则从上到下进行处理。第一个匹配规则指定决定如何处理这个连接。总共有6个分类器，指定匹配的约束条件。如果没有指定这些分类器，特定的规则将匹配每个连接。
 
-Property
-
- | 
-
-Description
-
- |                                                                               |
- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
- | **action** (_allow                                                            | deny_; Default: **allow**)                                                                                                                                                     | Specifies whether to pass or deny matched packets |
- | **dst-address** (_Ip4\[-Ip4                                                   | /0..32\]                                                                                                                                                                       | Ip6/0..128_; Default: )                           | The destination address of the target server.    |
- | **dst-host** (_string_; Default: )                                            | IP address or DNS name used to make a connection to the target server (this is the string user wrote in a browser before specifying the port and path to a particular web page |
- | **dst-port** (_integer\[-integer\[,integer\[,...\]\]\]: 0..65535_; Default: ) | List or range of ports the packet is destined to                                                                                                                               |
- | **local-port** (_integer: 0..65535_; Default: )                               | Specifies the port of the web proxy via which the packet was received. This value should match one of the ports the web proxy is listening on.                                 |
- | **method** (_any                                                              | connect                                                                                                                                                                        | delete                                            | get                                              | head | options | post | put | trace_; Default: ) | The HTTP method used in the request (see HTTP Methods section at the end of this document) |
- | **path** (_string_; Default: )                                                | Name of the requested page within the target server (i.e. the name of a particular web page or document without the name of the server it resides on)                          |
- | **redirect-to** (_string_; Default: )                                         | In case of access is denied by this rule, the user shall be redirected to the URL specified here                                                                               |
- | **src-address** (_Ip4\[-Ip4                                                   | /0..32\]                                                                                                                                                                       | Ip6/0..128_; Default: )                           | The source address of the connection originator. |
+如果一个连接被一个规则匹配，这个规则的动作属性就指定是否允许连接。如果特定的连接不匹配任何规则，它将被允许。
 
   
-Read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                      |
- | -------------------- | ------------------------------------------------ |
- | **hits** (_integer_) | Count of requests that were matched by this rule |
+| Property                                                                                                    | Description                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **action** (_allow                                                            \| deny_; Default: **allow**) | 指定是通过还是拒绝匹配的数据包                                                                              |
+| **dst-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                            | 目标服务器的目标地址。                                                                                      |
+| **dst-host** (_string_; Default: )                                                                          | 用于与目标服务器建立连接的IP地址或DNS名称（这是用户在指定特定网页的端口和路径之前在浏览器中写入的字符串）。 |
+| **dst-port** (_integer[-integer[,integer[,...]]]: 0...65535_; Default: )                                    | 数据包去往的端口列表或范围                                                                                  |
+| **local-port** (_integer: 0...65535_; Default: )                                                            | 指定接收数据包的网络代理的端口。这个值应该与网络代理正在监听的端口之一相匹配。                              |
+| **method** (_any \|\| delete\| get\| head \| options \| post \| put \| trace_; Default: )                   | 请求中使用的HTTP方法（见本文末尾的HTTP方法部分）                                                            |
+| **path** (_string_; Default: )                                                                              | 目标服务器中被请求的页面的名称（即某一网页或文件的名称，但不包括其所在的服务器的名称）。                    |
+| **redirect-to** (_string_; Default: )                                                                       | 如果此规则拒绝访问，用户将被重定向到这里指定的URL。                                                         |
+| **src-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                            | 连接发起者的源地址。                                                                                        |
 
   
-Wildcard properties (dst-host and dst-path) match a complete string (i.e., they will not match "[example.com](http://example.com)" if they are set to "example"). Available wildcards are '\*' (match any number of any characters) and '?' (match any one character). Regular expressions are also accepted here, but if the property should be treated as a regular expression, it should start with a colon (':').
+只读属性：
 
-Small hints in using regular expressions:
+| 属性                 | 说明                 |
+| -------------------- | -------------------- |
+| **hits** (_integer_) | 此规则匹配的请求数量 |
 
--   \\\\ symbol sequence is used to enter \\ character in the console;
--   \\. pattern means. only (in regular expressions single dot in a pattern means any symbol);
--   to show that no symbols are allowed before the given pattern, we use the ^ symbol at the beginning of the pattern;
--   to specify that no symbols are allowed after the given pattern, we use the $ symbol at the end of the pattern;
--   to enter \[ or \] symbols, you should escape them with backslash "\\.";
+  
+通配符属性（dst-host和dst-path）匹配一个完整的字符串（即，如果设置为 "example"，将不会匹配 [example.com](http://example.com)）。可用的通配符是'*'（匹配任意数量的任意字符）和'?'（匹配任意一个字符）。这里也接受正则表达式，但如果该属性应被视为正则表达式，它应该以冒号（':'）开始。
 
-It is strongly recommended to deny all IP addresses except those behind the router as the proxy still may be used to access your internal-use-only (intranet) web servers. Also, consult examples in Firewall Manual on how to protect your router.
+使用正则表达式的小提示：
 
-### Direct Access
+- \\\符号序列是用来在控制台中输入字符\\的；
+- \\.pattern means. only （在正则表达式中，模式中的单点意味着任何符号）；
+- 为了表明在给定的模式之前不允许有任何符号，我们在模式的开头使用^符号；
+- 为了说明在给定的模式之后不允许有任何符号，我们在模式的结尾处使用$符号；
+- 要输入 [or] 符号，应该用反斜杠"\\"转义；
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+强烈建议拒绝所有的IP地址，除了路由器后面的那些，因为代理仍然可能被用来访问只在内部使用的（intranet）Web服务器。另外，请参考《防火墙手册》中关于如何保护路由器的例子。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/direct</code></div></div></td></tr></tbody></table>
+### 直接访问
 
-If a **parent-proxy** property is specified, it is possible to tell the proxy server whether to try to pass the request to the parent proxy or to resolve it by connecting to the requested server directly. The direct Access List is managed just like the Proxy Access List described in the previous chapter except for the action argument. Unlike the access list, the direct proxy access list has a default action equal to deny. It takes place when no rules are specified or a particular request did not match any rule.
+`/ip/proxy/direct`
+
+如果指定了parent-proxy属性，就可能告诉代理服务器是尝试将请求传递给父代理，还是通过直接连接到被请求的服务器来解决。直接访问列表的管理与前一章描述的代理访问列表一样，除了动作参数与访问列表不同，直接代理访问列表有一个默认的动作等于拒绝。当没有指定规则或某一请求不符合任何规则时，它就会起作用。
 
   
 
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                    |
- | ------------------ | -------------------------- |
- | **action** (_allow | deny_; Default: **allow**) | Specifies the action to perform on matched packets: |
-
--   allow \- always resolve matched requests directly bypassing the parent router
--   deny \- resolve matched requests through the parent proxy. If no one is specified this has the same effect as **allow**.
-
- |
-| **dst-address** (_Ip4\[-Ip4 | /0..32\] | Ip6/0..128_; Default: ) | The destination address of the target server. |
-| **dst-host** (_string_; Default: ) | IP address or DNS name used to make a connection to the target server (this is the string user wrote in a browser before specifying port and path to a particular web page |
-| **dst-port** (_integer\[-integer\[,integer\[,...\]\]\]: 0..65535_; Default: ) | List or range of ports used by connection to the target server. |
-| **local-port** (_integer: 0..65535_; Default: ) | Specifies the port of the web proxy via which the packet was received. This value should match one of the ports the web proxy is listening on. |
-| **method** (_any | connect | delete | get | head | options | post | put | trace_; Default: ) | The HTTP method used in the request (see [HTTP Methods](https://wiki.mikrotik.com/wiki/Manual:IP/Proxy#HTTP_Methods) section at the end of this document) |
-| **path** (_string_; Default: ) | Name of the requested page within the target server (i.e. the name of a particular web page or document without the name of the server it resides on) |
-| **src-address** (_Ip4\[-Ip4 | /0..32\] | Ip6/0..128_; Default: ) | The source address of the connection originator. |
+| 属性                                                                                                  | 说明                                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **action** (_allow \| deny_; Default: **allow**)                                                      | 指定对匹配的数据包进行的操作：<br>- 允许 - 始终绕过父级路由器直接解决匹配的请求<br>- deny - 通过父代理解决匹配的请求。如果没有指定，则与allow具有相同的效果。 |
+| **dst-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                      | 目标服务器的目标地址。                                                                                                                                        |
+| **dst-host** (_string_; Default: )                                                                    | 用于与目标服务器连接的IP地址或DNS名称（这是用户在指定端口和特定网页路径之前在浏览器中写的字符串）。                                                           |
+| **dst-port** (_integer[-integer[,integer[,...]]]: 0..65535_; Default: )                               | List or range of ports used by connection to the target server.                                                                                               |
+| **local-port** (_integer: 0..65535_; Default: )                                                       | 指定接收数据包的网络代理的端口。该值应与网络代理正在监听的端口之一相匹配。                                                                                    |
+| **method** (_any \| connect \| delete \| get \| head \| options \| post \| put \| trace_; Default： ) | 请求中使用的HTTP方法(见本文末尾的 [HTTP方法](https://wiki.mikrotik.com/wiki/Manual:IP/Proxy#HTTP_Methods)部分)                                                |
+| **path** (_string_; Default: )                                                                        | 目标服务器中被请求的页面名称（即某一网页或文档的名称，但不包括其所在的服务器名称）                                                                            | **src-address** (_string_; Default: ) |
+| **src-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                      | 连接发起者的源地址。                                                                                                                                          |
 
   
-Read-only properties:
+只读属性：
 
-| 
-Property
+| 属性                 | 说明               |
+| -------------------- | ------------------ |
+| **hits** (_integer_) | 规则匹配的请求数量 |
 
- | 
+### 缓存管理
 
-Description
+`/ip/proxy/cache`
 
- |     |
- | --- |  |
- |     |
+缓存访问列表指定哪些请求（域、服务器、页面）必须由Web代理本地缓存，哪些不需要。这个列表的实现方式与网络代理访问列表完全相同。默认动作是缓存一个对象（如果没有找到匹配的规则）。
 
-Property
-
- | 
-
-Description
-
- |                      |
- | -------------------- | ------------------------------------------------ |
- | **hits** (_integer_) | Count of requests that were matched by this rule |
-
-### Cache Management
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/cache</code></div></div></td></tr></tbody></table>
-
-The cache access list specifies, which requests (domains, servers, pages) have to be cached locally by web proxy, and which do not. This list is implemented exactly the same way as the web proxy access list. The default action is to cache an object (if no matching rule is found).
+  
+| 属性                                                                                                 | 说明                                                                                                   |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **action** (_allow \| deny_; Default: **allow**)                                                     | 指定要对匹配的数据包执行的操作： <br>- allow - 缓存匹配请求中的对象<br>- deny - 不缓存匹配请求中的对象 |
+| **dst-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                     | 目标服务器的目标地址                                                                                   |
+| **dst-host** (_string_; Default: )                                                                   | 用于与目标服务器建立连接的IP地址或DNS名称（这是用户在指定端口和特定网页路径之前在浏览器中写的字符串）  |
+| **dst-port** (_integer[-integer[,integer[,...]]]: 0...65535_; Default: )                             | 数据包所指向的端口列表或范围。                                                                         |
+| **local-port** (_integer: 0...65535_; Default: )                                                     | 指定接收数据包的网络代理的端口。这个值应该与网络代理监听的端口之一相匹配。                             |
+| **method** (_any \| connect \| delete \| get \| head \| options \| post \| put \| trace_; Default: ) | 请求中使用的HTTP方法（见本文末尾的HTTP方法部分）。                                                     |
+| **path** (_string_; Default: )                                                                       | 目标服务器中被请求的页面名称（即某一网页或文件的名称，但不包括其所在服务器的名称）                     |
+| **src-address** (_Ip4[-Ip4 \| /0..32] \| Ip6/0..128_; Default: )                                     | 连接发起者的源地址。                                                                                   |
 
   
 
-| 
-Property
+只读属性：
 
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                    |
- | ------------------ | -------------------------- |
- | **action** (_allow | deny_; Default: **allow**) | Specifies the action to perform on matched packets: |
-
--   allow \- cache objects from matched request
--   deny \- do not cache objects from matched request
-
- |
-| **dst-address** (_Ip4\[-Ip4 | /0..32\] | Ip6/0..128_; Default: ) | The destination address of the target server |
-| **dst-host** (_string_; Default: ) | IP address or DNS name used to make a connection to the target server (this is the string user wrote in a browser before specifying port and path to a particular web page |
-| **dst-port** (_integer\[-integer\[,integer\[,...\]\]\]: 0..65535_; Default: ) | List or range of ports the packet is destined to. |
-| **local-port** (_integer: 0..65535_; Default: ) | Specifies the port of the web proxy via which the packet was received. This value should match one of the ports the web proxy is listening on. |
-| **method** (_any | connect | delete | get | head | options | post | put | trace_; Default: ) | The HTTP method used in the request (see HTTP Methods section at the end of this document) |
-| **path** (_string_; Default: ) | Name of the requested page within the target server (i.e. the name of a particular web page or document without the name of the server it resides on) |
-| **src-address** (_Ip4\[-Ip4 | /0..32\] | Ip6/0..128_; Default: ) | The source address of the connection originator |
+| 属性                 | 说明                 |
+| -------------------- | -------------------- |
+| **hits** (_integer_) | 此规则匹配的请求数量 |
 
   
 
-Read-only properties:
+### 连接
 
-| 
-Property
+`/ip/proxy/connections`
 
- | 
+菜单包含代理正在服务的当前连接列表。
 
-Description
+只读属性：
 
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                      |
- | -------------------- | ------------------------------------------------ |
- | **hits** (_integer_) | Count of requests that were matched by this rule |
+| 属性                                                                                                                                            | 说明                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **client** ()                                                                                                                                   |
+| **dst-address** (_Ip4    \| Ip6_)                                                                                                               | 连接的IPv4/Ipv6目标地址                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **protocol** (_string_)                                                                                                                         | 协议名称                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **rx-bytes* (_integer_)                                                                                                                         | 客户端接收的字节数                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **server** ()                                                                                                                                   |
+| **src-address** (_Ip4 \| Ip6_)                                                                                                                  | 连接发起者的IPv4/IPv6地址                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **state** (_closing      \| connecting \| converting\| hotspot \| idle \| resolving \| rx-header \| tx-body \| tx-eof \| tx-header \| waiting_) | 连接状态： <br>- 关闭 - 数据传输已经完成，连接正在结束<br>- 连接--建立脚趾连接<br>- 转换 - 替换响应或请求数据包中的头和脚字段<br>- 热点 - 检查热点认证是否允许继续（对于热点代理）<br>- 闲置--保持闲置<br>- 解析--解析服务器的DNS名称<br>- rx-header - 接收HTTP头<br>- tx-body--向客户端传输HTTP正文<br>- tx-eof - 写入chunk-end(当转换为chunked响应时)<br>- tx-header - 将HTTP头传输给客户端<br>- waiting - 等待来自对等体的传输 |
+| **tx-bytes** (_integer_)                                                                                                                        | 客户端发送的字节数                                                                                                                                                                                                                                                                                                                                                                                                                |
 
   
 
-### Connections
+### 缓存插入
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+`/ip/proxy/inserts`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/connections</code></div></div></td></tr></tbody></table>
+这个菜单显示了存储在缓存中的对象的统计数据（缓存插入）。
 
-This menu contains the list of current connections the proxy is serving.
+只读属性：
 
-Read-only properties:
+| 属性                      | 说明                                 |
+| ------------------------- | ------------------------------------ |
+| **denied** (_integer_)    | 一些插入被缓存列表拒绝了。           |
+| **errors** (_integer_)    | 磁盘或其他系统相关的错误数量         |
+| **no-memory** (_integer_) | 没有足够的内存而没有存储的对象数量。 |
+| **successes** (_integer_) | 成功插入缓存的数量。                 |
+| **too-large** (_integer_) | 太大而无法存储的对象的数量。         |
 
-| 
-Property
+### 缓存查找
 
- | 
+`/ip/proxy/lookup`
 
-Description
+这个菜单显示了从缓存中读取的对象的统计数据（缓存查询）。
 
- |     |
- | --- |  |
- |     |
+只读属性：
 
-Property
+| 属性                               | 说明                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------ |
+| **denied** (_integer_)             | 被访问列表拒绝的请求的数量。                                                   |
+| **expired** (_integer_)            | 在缓存中发现的请求数，但已经过期，因此，从外部服务器请求。                     |
+| **no-expiration-info** (_integer_) | 收到的有条件的请求，该页面没有信息，无法与请求进行比较。                       |
+| **non-cacheable** (_integer_)      | 从外部服务器无条件请求的数量（因为缓存被访问列表拒绝了）。                     |
+| **not-found** (_integer_)          | 在缓存中未找到的请求，因此从外部服务器（或父级代理，如果相应配置）请求的数量。 |
+| **successes** (_integer_)          | 缓存中找到的请求数。                                                           |
 
- | 
+### 缓存内容
 
-Description
+`/ip/proxy/cache-contents`
 
- |                          |
- | ------------------------ | ------------------------------------------ |
- | **client** ()            |
- |                          |
- | **dst-address** (_Ip4    | Ip6_)                                      | IPv4/Ipv6 destination address of the connection |
- | **protocol** (_string_)  | Protocol name                              |
- | **rx-bytes** (_integer_) | The number of bytes received by the client |
- | **server** ()            |
- |                          |
- | **src-address** (_Ip4    | Ip6_)                                      | Ipv4/ipv6 address of the connection originator  |
- | **state** (_closing      | connecting                                 | converting                                      | hotspot | idle | resolving | rx-header | tx-body | tx-eof | tx-header | waiting_) | Connection state: |
+该菜单显示缓存的内容。
 
--   closing \- the data transfer is finished, and the connection is being finalized
--   connecting \- establishing toe connection
--   converting \- replacing header and footer fields in response or request packet
--   hotspot \- check if hotspot authentication allows continuing (for hotspot proxy)
--   idle \- staying idle
--   resolving \- resolving the server's DNS name
--   rx-header \- receiving HTTP header
--   tx-body \- transmitting HTTP body to the client
--   tx-eof \- writing chunk-end (when converting to chunked response)
--   tx-header \- transmitting HTTP header to the client
--   waiting \- waiting for transmission from a peer
 
- |
-| **tx-bytes** (_integer_) | The number of bytes sent by the client |
+只读属性：
+
+| 属性                            | 说明           |
+| ------------------------------- | -------------- |
+| **file-size** (_integer_)       | 缓存对象的大小 |
+| **last-accessed** (_time_)      |                |
+| **last-accessed-time** (_time_) |                |
+| **last-modified** (_time_)      |                |
+| **last-modified-time** (_time_) |                |
+| **uri** (_string_)              |                |
 
   
 
-### Cache Inserts
+# HTTP方法
 
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
+#### 选项
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/inserts</code></div></div></td></tr></tbody></table>
-
-This menu shows statistics on objects stored in a cache (cache inserts).
-
-Read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                           |
- | ------------------------- | ---------------------------------------------------------------- |
- | **denied** (_integer_)    | A number of inserts were denied by the caching list.             |
- | **errors** (_integer_)    | Number of disk or other system-related errors                    |
- | **no-memory** (_integer_) | Number of objects not stored because there was not enough memory |
- | **successes** (_integer_) | A number of successful cache inserts.                            |
- | **too-large** (_integer_) | Number of objects too large to store                             |
-
-### Cache Lookups
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/lookup</code></div></div></td></tr></tbody></table>
-
-This menu shows statistics on objects read from cache (cache lookups).
-
-Read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                    |
- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
- | **denied** (_integer_)             | Number of requests denied by the access list.                                                                                       |
- | **expired** (_integer_)            | Number of requests found in cache, but expired, and, thus, requested from an external server                                        |
- | **no-expiration-info** (_integer_) | Conditional request received for a page that does not have the information to compare the request with                              |
- | **non-cacheable** (_integer_)      | Number of requests requested from the external servers unconditionally (as their caching is denied by the cache access list)        |
- | **not-found** (_integer_)          | Number of requests not found in the cache, and, thus, requested from an external server (or parent proxy if configured accordingly) |
- | **successes** (_integer_)          | Number of requests found in the cache.                                                                                              |
-
-### Cache Contents
-
-[?](https://help.mikrotik.com/docs/display/ROS/Proxy#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/proxy/cache-contents</code></div></div></td></tr></tbody></table>
-
-This menu shows cached contents.
-
-Read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                 |
- | ------------------------------- | ------------------ |
- | **file-size** (_integer_)       | Cached object size |
- | **last-accessed** (_time_)      |
- |                                 |
- | **last-accessed-time** (_time_) |
- |                                 |
- | **last-modified** (_time_)      |
- |                                 |
- | **last-modified-time** (_time_) |
- |                                 |
- | **uri** (_string_)              |
- |                                 |
-
-  
-
-# HTTP Methods
-
-#### Options
-
-This method is a request for information about the communication options available on the chain between the client and the server identified by the **Request-URI**. The method allows the client to determine the options and (or) the requirements associated with a resource without initiating any resource retrieval
+该方法是对客户和Request-URI所确定的服务器之间的链上可用的通信选项信息的请求。该方法允许客户端确定选项和（或）与资源相关的要求，而无需启动任何资源检索。
 
 #### GET
 
-This method retrieves whatever information identified by the Request-URI. If the Request-URI refers to a data processing process then the response to the GET method should contain data produced by the process, not the source code of the process procedure(-s), unless the source is the result of the process.
+该方法检索由Request-URI确定的任何信息。如果Request-URI指的是一个数据处理过程，那么对GET方法的响应应该包含该过程产生的数据，而不是过程的源代码（-s），除非源代码是该过程的结果。
 
-The GET method can become a conditional GET if the request message includes an If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match, or If-Range header field. The conditional GET method is used to reduce the network traffic specifying that the transfer of the entity should occur only under circumstances described by conditional header field(-s).
+如果请求信息包括If-Modified-Since、If-Unmodified-Since、If-Match、If-None-Match或If-Range头域，GET方法可以成为有条件的GET。有条件的GET方法被用来减少网络流量，指定实体的传输应该只在有条件的头域（-s）描述的情况下发生。
 
-The GET method can become a partial GET if the request message includes a Range header field. The partial GET method intends to reduce unnecessary network usage by requesting only parts of entities without transferring data already held by the client.
+如果请求信息包括一个范围头字段，GET方法可以成为部分GET。部分GET方法旨在通过只请求实体的部分内容而不传输客户端已经持有的数据来减少不必要的网络使用。
 
-The response to a GET request is cacheable if and only if it meets the requirements for HTTP caching.
+当且仅当GET请求的响应满足HTTP缓存的要求时，它是可缓存的。
 
 #### HEAD
 
-This method shares all features of GET method except that the server must not return a message-body in the response. This retrieves the metainformation of the entity implied by the request which leads to its wide usage of it for testing hypertext links for validity, accessibility, and recent modification.
+这个方法共享GET方法的所有特征，除了服务器必须在响应中不返回消息体。它检索了请求所暗示的实体的元信息，这导致它被广泛用于测试超文本链接的有效性、可访问性和最近的修改。
 
-The response to a HEAD request may be cacheable in the way that the information contained in the response may be used to update the previously cached entity identified by that Request-URI.
+对HEAD请求的响应可能是可缓存的，因为响应中包含的信息可能被用来更新先前由该Request-URI识别的缓存实体。
 
 #### POST
 
-This method requests that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the Request-URI.
+这个方法请求源服务器接受请求中所包含的实体作为Request-URI所标识的资源的新下级。
 
-The actual action performed by the POST method is determined by the origin server and usually is Request-URI dependent.
+POST方法所执行的实际操作由源服务器决定，通常与Request-URI有关。
 
-Responses to POST method are not cacheable, unless the response includes appropriate Cache-Control or Expires header fields.
+对POST方法的响应是不可缓存的，除非该响应包括适当的Cache-Control或Expires头域。
 
 #### PUT
 
-This method requests that the enclosed entity be stored under the supplied Request-URI. If another entity exists under specified Request-URI, the enclosed entity should be considered as an updated (newer) version of that residing on the origin server. If the Request-URI is not pointing to an existing resource, the origin server should create a resource with that URI.
+该方法请求将所附实体存储在所提供的Request-URI下。如果在指定的Request-URI下存在另一个实体，那么所包含的实体应该被认为是驻留在源服务器上的一个更新（较新）的版本。如果Request-URI没有指向一个现有的资源，起源服务器应该用该URI创建一个资源。
 
-If the request passes through a cache and the Request-URI identifies one or more currently cached entities, those entries should be treated as stale. Responses to this method are not cacheable.
+如果请求通过了缓存，并且Request-URI标识了一个或多个当前缓存的实体，这些条目应该被视为过时的。对这种方法的响应是不可缓存的。
 
 #### TRACE
 
-This method invokes a remote, application-layer loop-back of the request message. The final recipient of the request should reflect the message received back to the client as the entity-body of a 200 (OK) response. The final recipient is either the origin server or the first proxy or gateway to receive a Max-Forwards value of 0 in the request. A TRACE request must not include an entity.
+这个方法调用了一个远程的、应用层的请求消息的回环。请求的最终接收者应该将收到的消息作为200（OK）响应的实体主体反馈给客户端。最终接收者是原服务器或在请求中收到Max-Forwards值为0的第一个代理或网关。TRACE请求必须不包括实体。
 
-Responses to this method MUST NOT be cached.
+对该方法的响应不得被缓存。

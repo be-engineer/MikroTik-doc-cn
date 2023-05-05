@@ -417,70 +417,69 @@ DHCP服务器需要一个真实的接口来接收原始以太网数据包。如�
 | **use-framed-as-classless** (_yes \| no_; Default: **yes**)                                                                           | 将RADIUS有框路由作为DHCP无框-静态路由转发给DHCP-客户端。当同时收到Framed-Route和Classless-Static-Route时，首选Classless-Static-Route。                                                                                                                                                                                                                                                                                                                                                                                   |
 | **use-radius** (_yes  \| no\| accounting_; Default: **no**)                                                                           | 是否使用RADIUS服务器：<br>- no 不使用RADIUS；<br>- yes 使用RADIUS进行会计和租赁；<br>- accounting仅使用RADIUS进行会计处理。                                                                                                                                                                                                                                                                                                                                                                                              |
 
-## Leases
+## 租约
 
 **Sub-menu:** `/ip dhcp-server lease`
 
-DHCP server lease submenu is used to monitor and manage server leases. The issued leases are shown here as dynamic entries. You can also add static leases to issue a specific IP address to a particular client (identified by MAC address).
+DHCP服务器租约子菜单被用来监视和管理服务器租约。所发布的租约在这里显示为动态条目。也可以添加静态租约，向特定客户（通过MAC地址识别）发出特定的IP地址。
 
-Generally, the DHCP lease is allocated as follows:
+一般来说，DHCP租约的分配方式如下：
 
--   an unused lease is in the "waiting" state
--   if a client asks for an IP address, the server chooses one
--   if the client receives a statically assigned address, the lease becomes offered, and then bound with the respective lease time
--   if the client receives a dynamic address (taken from an IP address pool), the router sends a ping packet and waits for an answer for 0.5 seconds. During this time, the lease is marked testing
--   in the case where the address does not respond, the lease becomes offered and then bound with the respective lease time
--   in other cases, the lease becomes busy for the lease time (there is a command to retest all busy addresses), and the client's request remains unanswered (the client will try again shortly)
+- 未使用的租约处于 "等待 "状态
+- 如果一个客户要求一个IP地址，服务器会选择一个
+- 如果客户收到一个静态分配的地址，租约就会被提供，然后与各自的租约时间绑定
+- 如果客户端收到一个动态地址（从IP地址池中获取），路由器将发送一个ping包，并等待0.5秒的答复。在这段时间内，租赁被标记为测试
+- 在地址没有回应的情况下，租约变为提供，然后与各自的租约时间绑定
+- 在其他情况下，租约在租约时间内变得繁忙（有一个命令是重新测试所有繁忙的地址），客户的请求仍然没有得到回应（客户将很快再次尝试）。
 
-A client may free the leased address. The dynamic lease is removed, and the allocated address is returned to the address pool. But the static lease becomes busy until the client reacquires the address.
+客户端可以释放租赁的地址。动态租约被删除，分配的地址被退回到地址池中。但是静态租约变得繁忙，直到客户端重新获得地址。
 
-IP addresses assigned statically are not probed!
+静态分配的IP地址不会被探测到!
 
   
-| Property                                                                                                                                                                                                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **address** (_IP_; Default: **0.0.0.0**)                                                                                                                                                                         | Specify IP address (or ip pool) for static lease. If set to **0.0.0.0**  a pool from the DHCP server will be used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **address-list** (_string_; Default: **none**)                                                                                                                                                                   | Address list to which address will be added if the lease is bound.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **allow-dual-stack-queue** (_yes                                                                                                                                                                                 | no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Creates a single simple queue entry for both IPv4 and IPv6 addresses, and uses the MAC address and DUID for identification. Requires [IPv6 DHCP Server](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPv6Server) to have this option enabled as well to work properly. |
-| **always-broadcast** (_yes                                                                                                                                                                                       | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Send all replies as broadcasts                                                                                                                                                                                                                                                   |
-| **block-access** (_yes                                                                                                                                                                                           | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Block access for this client                                                                                                                                                                                                                                                     |
-| **client-id** (_string_; Default: **none**)                                                                                                                                                                      | If specified, must match the DHCP 'client identifier' option of the request                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| **dhcp-option** (_string_; Default: **none**)                                                                                                                                                                    | Add additional DHCP options from [option list](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPOptions.1).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| **dhcp-option-set** (_string_; Default: **none**)                                                                                                                                                                | Add an additional set of DHCP options.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **insert-queue-before** (_bottom                                                                                                                                                                                 | first                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | name_; Default: **first**)                                                                                                                                                                                                                                                       | Specify where to place dynamic simple queue entries for static DCHP leases with rate-limit parameter set. |
-| **lease-time** (_time_; Default: **0s**)                                                                                                                                                                         | Time that the client may use the address. If set to **0s** lease will never expire.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| **mac-address** (_MAC_; Default: **00:00:00:00:00:00**)                                                                                                                                                          | If specified, must match the MAC address of the client                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **parent-queue** (_string                                                                                                                                                                                        | none_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | A dynamically created queue for this lease will be configured as a child queue of the specified parent queue.                                                                                                                                                                    |
-| **queue-type** (_default, ethernet-default, multi-queue-ethernet-default, pcq-download-default, synchronous-default, default-small, hotspot-default, only-hardware-queue, pcq-upload-default, wireless-default_) | Queue type that can be assigned to the specific lease                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **rate-limit** (_integer[/integer] [integer[/integer] [integer[/integer] [integer[/integer];_; Default: )                                                                                                        | Adds a dynamic simple queue to limit IP's bandwidth to a specified rate. Requires the lease to be static. Format is: rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] [rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx-burst-time]. All rates should be numbers with optional 'k' (1,000s) or 'M' (1,000,000s). If tx-rate is not specified, rx-rate is as tx-rate too. Same goes for tx-burst-rate and tx-burst-threshold and tx-burst-time. If both rx-burst-threshold and tx-burst-threshold are not specified (but burst-rate is specified), rx-rate and tx-rate is used as burst thresholds. If both rx-burst-time and tx-burst-time are not specified, 1s is used as default. |
-| _**routes**_ ([dst-address/mask] [gateway] [distance]; Default: _**none**_)                                                                                                                                      |
+| 属性                                                                                                                                                                                                             | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **address** (_IP_; Default: **0.0.0.0**)                                                                                                                                                                         | 指定静态租赁的IP地址（或ip池）。如果设置为 0.0.0.0，将使用DHCP服务器的池。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **address-list** (_string_; Default: **none**)                                                                                                                                                                   | 地址列表，如果租约被绑定，地址将被添加到该列表中。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **allow-dual-stack-queue** (_yes\| no_; Default: **yes**)                                                                                                                                                        | 为IPv4和IPv6地址创建一个简单的队列条目，并使用MAC地址和DUID进行识别。需要  [IPv6 DHCP Server](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPv6Server) 也启用此选项才能正常工作。                                                                                                                                                                                                                                                                                                                                                                  |
+| **always-broadcast** (_yes \| no_; Default: **no**)                                                                                                                                                              | 将所有回复作为广播发送。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **block-access** (_yes\| no_; Default: **no**)                                                                                                                                                                   | 屏蔽该客户的访问。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **client-id** (_string_; Default: **none**)                                                                                                                                                                      | 如果指定，必须与请求中的DHCP "客户标识符 "选项相匹配。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **dhcp-option** (_string_; Default: **none**)                                                                                                                                                                    | 从 [选项列表]中添加额外的DHCP选项(https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPOptions.1)。                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **dhcp-option-set** (_string_; Default: **none**)                                                                                                                                                                | 添加额外的DHCP选项集。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **insert-queue-before** (_bottom                                                                                                                                                                                 | first                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | name_; Default: **first**)                           | 指定设置了速率限制参数的静态DCHP租约的动态简单队列条目放置位置。 |
+| **释放时间** (_time_; Default: **0s**)                                                                                                                                                                           | 客户端可以使用该地址的时间。如果设置为**0s**，租约将永不过期。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **mac-address** (_MAC_; Default: **00:00:00:00:00**)                                                                                                                                                             | 如果指定，必须与客户机的MAC地址匹配。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **parent-queue** (_string                                                                                                                                                                                        | none_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 此租赁的动态创建队列将被配置为指定的父队列的子队列。 |
+| **queue-type** (_default, ethernet-default, multi-queue-ethernet-default, pcq-download-default, synchronous-default, default-small, hotspot-default, only-hardware-queue, pcq-upload-default, wireless-default_) | 可分配给特定租约的队列类型                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **rate-limit** (_integer[/integer] [integer[/integer] [integer[/integer] [integer[/integer];_; Default: )                                                                                                        | 添加一个动态的简单队列，将IP的带宽限制在一个指定的速率。要求租约是静态的。格式是：rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] [rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx-burst-time]。所有的速率都应该是数字，可以选择'k'（1,000s）或'M'（1,000,000s）。如果没有指定tx-rate，rx-rate也是tx-rate。tx-bulst-rate和tx-bulst-threshold以及tx-bulst-time也是如此。如果没有指定rx-burst-threshold和tx-burst-threshold（但指定了burst-rate），rx-rate和tx-rate被用作burst阈值。如果没有指定rx-burst-time和tx-burst-time，则使用1s作为默认值。 |
+| _**routes**_ ([dst-address/mask] [gateway] [distance]; Default：_**none**_)                                                                                                                                      | 客户端连接时出现在服务器上的路线。可以指定由逗号分隔的多个路由。对于OpenVPN，此设置将被忽略。                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **server** (_string_)                                                                                                                                                                                            | 为该客户端提供服务的服务器名称。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **us-src-mac** (_yes \| no_; Default: **no**)                                                                                                                                                                    | 当此选项被设置时，服务器使用源MAC地址而不是接收到的CHADDR来分配地址。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
-Routes that appear on the server when the client is connected. It is possible to specify multiple routes separated by commas. This setting will be ignored for OpenVPN.
+### 特定的菜单命令
 
- |
-| **server** (_string_) | Server name which serves this client |
-| **use-src-mac (_yes | no_; Default: no)** | When this option is set server uses the source MAC address instead of the received CHADDR to assign the address. |
+|                       |                                                                                |
+| --------------------- | ------------------------------------------------------------------------------ |
+| **check-status (id)** | 检查一个给定的繁忙状态（状态为冲突或拒绝），动态租约，如果没有回应，则释放它。 |
+| **make-static (id)**  | 将一个动态租约转换为静态租约。                                                 |
 
-### Menu specific commands
 
-<table class="relative-table wrapped confluenceTable" style="width: 77.8319%;"><colgroup><col style="width: 7.68242%;"><col style="width: 92.3176%;"></colgroup><tbody><tr><td class="confluenceTd"><strong>check-status</strong><span>&nbsp;</span>(<em>id</em>)</td><td class="confluenceTd">Check the status of a given busy (status is conflict or declined) dynamic lease, and free it in case of no response</td></tr><tr><td class="confluenceTd"><strong>make-static</strong><span>&nbsp;</span>(<em>id</em>)</td><td class="confluenceTd">Convert a dynamic lease to a static one</td></tr></tbody></table>
-
-### Store Configuration
+### 存储配置
 
 **Sub-menu:** `/ip dhcp-server config`
 
-This sub-menu allows the configuration of how often the DHCP leases will be stored on disk. If they would be saved on a disk on every lease change, a lot of disk writes would happen which is very bad for Compact Flash (especially, if lease times are very short). To minimize writes on disk, all changes are saved on disk every store-leases-disk seconds. Additionally, leases are always stored on disk on graceful shutdown and reboot.
+这个子菜单配置DHCP租约在磁盘上的存储频率。如果每次租约变化都保存在磁盘上，就会发生大量的磁盘写入，这对Compact Flash非常不利（特别是如果租约时间很短）。为了尽量减少对磁盘的写入，所有的变化都会在每一个存储-租赁-磁盘的秒数上保存。此外，在宽松的关机和重启时，租约总是被保存在磁盘上。
 
-Manual changes to leases - addition/removal of a static lease, removal of a dynamic lease will cause changes to be pushed for this lease to storage.
+对租约的手动更改-增加/删除静态租约，删除动态租约将导致该租约的更改被推送到存储。
+### 速率限制
 
-### Rate limiting
+通过使用DHCPv4租约，可以为特定的IPv4地址设置带宽。可以通过在DHCPv4租约上设置速率限制来实现，这样做，一个动态的简单队列规则将添加到与DHCPv4租约相对应的IPv4地址上。通过使用 _rate-limit_ 参数可以方便地限制一个用户的带宽。
 
-It is possible to set the bandwidth to a specific IPv4 address by using DHCPv4 leases. This can be done by setting a rate limit on the DHCPv4 lease itself, by doing this a dynamic simple queue rule will be added for the IPv4 address that corresponds to the DHCPv4 lease. By using the _rate-limit_ parameter you can conveniently limit a user's bandwidth.
-
-For any queues to work properly, the traffic must not be FastTracked, make sure your Firewall does not FastTrack traffic that you want to limit.
+为了使任何队列正常工作，流量不能被快速跟踪，请确保防火墙不对你想限制的流量进行快速跟踪。
 
   
-First, make the DHCPv4 lease static, otherwise, it will not be possible to set a rate limit to a DHCPv4 lease:
+首先，使DHCPv4租约成为静态的，否则，就不可能为DHCPv4租约设置速率限制：
 
 ```shell
 [admin@MikroTik] > /ip dhcp-server lease print
@@ -497,7 +496,7 @@ Flags: X - disabled, R - radius, D - dynamic, B - blocked
 ```
 
   
-Then you can set a rate to a DHCPv4 lease that will create a new dynamic simple queue entry:
+可以给DHCPv4租约设置一个速率，它将创建一个新的动态简单队列条目：
 
 ```shell
 [admin@MikroTik] > /ip dhcp-server lease set 0 rate-limit=10M/10M
@@ -508,11 +507,10 @@ Flags: X - disabled, I - invalid, D - dynamic
       bucket-size=0.1/0.1
 ```
 
-  
 
-By default allow-dual-stack-queue is enabled, this will add a single dynamic simple queue entry for both DCHPv6 binding and DHCPv4 lease, without this option enabled separate dynamic simple queue entries will be added for IPv6 and IPv4.
+默认情况下，allow-dual-stack-queue是启用的，这将为DCHPv6绑定和DHCPv4租赁添加一个单一的动态简单队列条目，如果不启用这个选项，将为IPv6和IPv4添加单独的动态简单队列条目。
 
-If _allow-dual-stack-queue_ is enabled, then a single dynamic simple queue entry will be created containing both IPv4 and IPv6 addresses:
+如果启用 _allow-dual-stack-queue_ ，那么将创建一个包含IPv4和IPv6地址的单一动态简单队列条目：
 
 ```shell
 [admin@MikroTik] > /queue simple print
@@ -521,31 +519,31 @@ Flags: X - disabled, I - invalid, D - dynamic
       burst-time=0s/0s bucket-size=0.1/0.1
 ```
 
-## Network
+## 网络
 
 **Sub-menu:** `/ip dhcp-server network`
 
-**Properties**
+**属性**
 
-| Property                                       | Description                                                                                                                                                                               |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **address** (_IP/netmask_; Default: )          | the network DHCP server(s) will lease addresses from                                                                                                                                      |
-| **boot-file-name** (_string_; Default: )       | Boot filename                                                                                                                                                                             |
-| **caps-manager** (_string_; Default: )         | A comma-separated list of IP addresses for one or more CAPsMAN system managers. DHCP Option 138 (capwap) will be used.                                                                    |
-| **dhcp-option** (_string_; Default: )          | Add additional DHCP options from the option list.                                                                                                                                         |
-| **dhcp-option-set** (_string_; Default: )      | Add an additional set of DHCP options.                                                                                                                                                    |
-| **dns-none** (_yes                             | no_; Default: **no**)                                                                                                                                                                     | If set, then DHCP Server will not pass dynamic DNS servers configured on the router to the DHCP clients if no DNS Server in DNS-server is set. By default, if there are no DNS servers configured, then the dynamic DNS Servers will be passed to DHCP clients. |
-| **dns-server** (_string_; Default: )           | the DHCP client will use these as the default DNS servers. Two comma-separated DNS servers can be specified to be used by the DHCP client as primary and secondary DNS servers            |
-| **domain** (_string_; Default: )               | The DHCP client will use this as the 'DNS domain' setting for the network adapter.                                                                                                        |
-| **gateway** (_IP_; Default: **0.0.0.0**)       | The default gateway to be used by DHCP Client.                                                                                                                                            |
-| **netmask** (_integer: 0..32_; Default: **0**) | The actual network mask is to be used by the DHCP client. If set to '0' - netmask from network address will be used.                                                                      |
-| **next-server** (_IP_; Default: )              | The IP address of the next server to use in bootstrap.                                                                                                                                    |
-| **ntp-server** (_IP_; Default: )               | the DHCP client will use these as the default NTP servers. Two comma-separated NTP servers can be specified to be used by the DHCP client as primary and secondary NTP servers            |
-| **wins-server** (_IP_; Default: )              | The Windows DHCP client will use these as the default WINS servers. Two comma-separated WINS servers can be specified to be used by the DHCP client as primary and secondary WINS servers |
+| 属性                                                                    | 说明                                                                                                                                                                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **address** (_IP/netmask_; Default: )                                   | 网络DHCP服务器将向其租赁地址                                                                                                                                                             |
+| **boot-file-name** (_string_; Default: )                                | 启动文件名                                                                                                                                                                               |
+| **caps-manager** (_string_; Default: )                                  | 一个逗号分隔的IP地址列表，用于一个或多个CAPsMAN系统管理器。将使用DHCP选项138（capwap）。                                                                                                 |
+| **dhcp-option** (_string_; Default: )                                   | 从选项列表中添加额外的DHCP选项。                                                                                                                                                         |
+| **dhcp-option-set** (_string_; Default: )                               | 添加额外的DHCP选项集。                                                                                                                                                                   |
+| **dns-none** (_yes                             \| no_; Default: **no**) | 如果设置了，如果没有设置DNS-server中的DNS服务器，DHCP服务器就不会把配置在路由器上的动态DNS服务器传给DHCP客户。默认情况下，如果没有配置DNS服务器，那么动态DNS服务器将被传递给DHCP客户端。 |
+| **dns-server** (_string_; Default: )                                    | DHCP客户端将使用这些作为默认的DNS服务器。可以指定两个用逗号分隔的DNS服务器，由DHCP客户端作为主要和次要DNS服务器使用。                                                                    |
+| **domain** (_string_; Default: )                                        | DHCP客户端将使用这个作为网络适配器的 "DNS域 "设置。                                                                                                                                      |
+| **gateway** (_IP_; Default: **0.0.0.0**)                                | DHCP客户端使用的默认网关。                                                                                                                                                               |
+| **netmask** (_integer: 0..32_; Default: **0**)                          | DHCP客户端将使用的实际网络掩码。如果设置为'0' - 将使用网络地址的掩码。                                                                                                                   |
+| **next-server** (_IP_; Default: )                                       | 下一个服务器的IP地址，在启动时使用。                                                                                                                                                     |
+| **ntp-server** (_IP_; Default: )                                        | DHCP客户端将使用这些作为默认的NTP服务器。可以指定两个用逗号隔开的NTP服务器，由DHCP客户端作为主要和次要NTP服务器使用。                                                                    |
+| **wins-server** (_IP_; Default: )                                       | Windows DHCP客户端将使用这些作为默认的WINS服务器。可以指定两个用逗号隔开的WINS服务器，作为DHCP客户端的主要和次要WINS服务器。                                                             |
 
-## RADIUS Support
+## RADIUS支持
 
-Since RouterOS v6.43 it is possible to use RADIUS to assign a rate limit per lease, to do so you need to pass the Mikrotik-Rate-Limit attribute from your RADIUS Server for your lease. To achieve this you first need to set your DHCPv4 Server to use RADIUS for assigning leases. Below is an example of how to set it up:
+从RouterOS v6.43开始，可以使用RADIUS为每个租约分配一个速率限制，要实现这一点，需要从RADIUS服务器为租约传递Mikrotik-Rate-Limit属性。要实现这一点，首先需要将DHCPv4服务器设置为使用RADIUS来分配租约。下面是一个设置的例子：
 
 ```shell
 /radius
@@ -554,9 +552,8 @@ add address=10.0.0.1 secret=VERYsecret123 service=dhcp
 set dhcp1 use-radius=yes
 ```
 
-After that, you need to tell your RADIUS Server to pass the Mikrotik-Rate-Limit attribute. In case you are using FreeRADIUS with MySQL, then you need to add appropriate entries into **radcheck** and **radreply** tables for a MAC address, that is being used for your DHCPv4 Client. Below is an example for table entries:
+之后需要告诉RADIUS服务器传递Mikrotik-rate-Limit属性。如果使用的是带有MySQL的FreeRADIUS，那么要在 **radcheck** 和 **radreply** 表中为DHCPv4客户端使用的MAC地址添加适当条目。下面是一个表项的例子：
 
-呈现代码宏出错: 参数'com.atlassian.confluence.ext.code.render.InvalidValueException'的值无效
 
 ```
 INSERT INTO `radcheck` (`username`, `attribute`, `op`, `value`) VALUES
@@ -567,9 +564,9 @@ INSERT INTO `radreply` (`username`, `attribute`, `op`, `value`) VALUES
 ('00:0C:42:00:D4:64', 'Mikrotik-Rate-Limit', '=', '10M'),
 ```
 
-## Alerts
+## 警报
 
-To find any rogue DHCP servers as soon as they appear in your network, the DHCP Alert tool can be used. It will monitor the interface for all DHCP replies and check if this reply comes from a valid DHCP server. If a reply from an unknown DHCP server is detected, an alert gets triggered:
+为了在网络中出现任何流氓DHCP服务器时立即发现它们，可以使用DHCP警报工具。它将监视接口上所有的DHCP回复，并检查这个回复是否来自一个有效的DHCP服务器。如果检测到一个来自未知DHCP服务器的回复，就会触发警报：
 
 ```shell
 [admin@MikroTik] ip dhcp-server alert>/log print
@@ -578,107 +575,78 @@ To find any rogue DHCP servers as soon as they appear in your network, the DHCP 
 [admin@MikroTik] ip dhcp-server alert>
 ```
 
-When the system alerts about a rogue DHCP server, it can execute a custom script.
+当系统对一个流氓DHCP服务器发出警报时，可以执行一个自定义脚本。
 
-As DHCP replies can be unicast, the rogue DHCP detector may not receive any offer to other DHCP clients at all. To deal with this, the rogue DHCP detector acts as a DHCP client as well - it sends out DHCP discover requests once a minute.
+由于DHCP的回复可以是单播的，流氓DHCP检测器可能根本就没有收到对其他DHCP客户端的任何提议。为了处理这个问题，流氓DHCP检测器也充当了DHCP客户端-它每分钟发出一次DHCP发现请求。
 
-The DHCP alert is not recommended on devices that are configured as DHCP clients. Since the alert itself generates DHCP discovery packets, it can affect the operation of the DHCP client itself. Use this feature only on devices that are DHCP servers or using a static IP address.
+在被配置为DHCP客户端的设备上，不推荐使用DHCP警报。因为警报本身会产生DHCP发现数据包，它可能会影响DHCP客户端本身的运行。只在作为DHCP服务器或使用静态IP地址的设备上使用这个功能。
 
 **Sub-menu:** `/ip dhcp-server alert`
 
-**Properties**
+**属性**
 
-| Property                               | Description                                             |
-| -------------------------------------- | ------------------------------------------------------- |
-| **alert-timeout** (none                | time; Default: 1h)                                      | Time after which the alert will be forgotten. If after that time the same server is detected, a new alert will be generated. If set to **none** timeout will never expire. |
-| **interface** (_string_; Default: )    | Interface, on which to run rogue DHCP server finder.    |
-| **on-alert** (_string_; Default: )     | Script to run, when an unknown DHCP server is detected. |
-| **valid-server** (_string_; Default: ) | List of MAC addresses of valid DHCP servers.            |
+| 属性                                   | 说明                                       |
+| -------------------------------------- | ------------------------------------------ |
+| **alert-timeout** (none                | time; Default: 1h)                         | 时间过后，警报将被遗忘。如果过了这个时间，检测到相同的服务器，将产生一个新的警报。如果设置为无，则永远不会过期。 |
+| **interface** (_string_; Default: )    | 在这个接口上运行流氓DHCP服务器搜索器。     |
+| **on-alert** (_string_; Default: )     | 当检测到一个未知的DHCP服务器时运行的脚本。 |
+| **valid-server** (_string_; Default: ) | 有效DHCP服务器的MAC地址列表。              |
 
-**Read-only properties**
+**只读属性**
 
-|Property | Description |  
-
- |                               |
- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
- | **unknown-server** (_string_) | List of MAC addresses of detected unknown DHCP servers. The server is removed from this list after alert-timeout |
+| 属性                          | 说明                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| **unknown-server** (_string_) | 检测到的未知DHCP服务器的MAC地址列表。警报超时后，该服务器将从该列表中删除 |
 
 **Menu specific commands**
 
-|Property | Description |  
+| 属性                   | 说明                 |
+| ---------------------- | -------------------- |
+| **reset-alert** (_id_) | 清除接口上的所有警告 |
 
- |                        |
- | ---------------------- | -------------------------------- |
- | **reset-alert** (_id_) | Clear all alerts on an interface |
-
-## DHCP Options
+## DHCP选项
 
 **Sub-menu:** `/ip dhcp-server option`
 
-With the help of the DHCP Option list, it is possible to define additional custom options for DHCP Server to advertise. Option precedence is as follows:
+在DHCP选项列表的帮助下，可以定义额外的自定义选项供DHCP服务器公布。选项的优先顺序如下：
 
--   radius,
--   lease,
--   server,
--   network.
+- 雷达
+- 租赁
+- 服务器
+- 网络
 
-This is the order in which the client option request will be filled in.
+这是客户端选项请求将被填入的顺序。
 
-According to the DHCP protocol, a parameter is returned to the DHCP client only if it requests this parameter, specifying the respective code in the DHCP request Parameter-List (code 55) attribute. If the code is not included in the Parameter-List attribute, the DHCP server will not send it to the DHCP client, but **since RouterOS v7.1rc5 it is possible to force the DHCP option** from the server-side even if the DHCP-client does not request such parameter:
+根据DHCP协议，只有当DHCP客户端请求该参数，并在DHCP请求的Parameter-List（代码55）属性中指定相应的代码时，该参数才会返回给DHCP客户端。如果该代码没有包含在Parameter-List属性中，DHCP服务器将不会把它发送给DHCP客户端，但是从RouterOS v7.1rc5开始，即使DHCP-客户端没有请求这样的参数，也可以从服务器端强制执行DHCP选项：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">ip</code><code class="ros constants">/dhcp-server/option/</code><code class="ros functions">set </code><code class="ros value">force</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`ip/dhcp-server/option/set force=yes`
 
-**Properties**
+**属性**
 
-|Property | Description |  
+| 属性                                   | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **code** (_integer:1..254_; Default: ) | dhcp选项代码。所有代码都可以在 [http://www.iana.org/assignments/bootp-dhcp-parameters](http://www.iana.org/assignments/bootp-dhcp-parameters)看到                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **name** (_string_; Default: )         | 选项的描述性名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **value** (_string_; Default: )        | 参数值。选项的可用数据类型是：<br>- 'test' -> ASCII到Hex 0x74657374<br>    - '10.10.10.10' -> Unicode IP 到十六进制 0x0a0a0a0a<br>    - s'10.10.10.10' -> ASCII到十六进制 0x31302e31302e31302e3130<br>    - s'160' -> ASCII转为十六进制 0x313630<br>    - '10' -> 十进制到十六进制 0x0a<br>    - 0x0a0a --> 没有转换<br>    - \$(VARIABLE) -> 硬编码值<br>RouterOS有预定义的变量可供使用：<br>- HOSTNAME - 客户端主机名 <br> - RADIUS_MT_STR1 - 来自radius MT attr nr. 24的信息 <br> - RADIUS_MT_STR2 - 来自radius MT attr nr. 25<br>- REMOTE_ID - 代理商远程ID <br> - NETWORK_GATEWAY - 来自 _/ip dhcp-server network_ 的第一个网关，注意，如果从租赁中使用，这个选项将不起作用。<br>现在也可以将数据类型合并为一个，例如： "0x01'vards'\$（HOSTNAME）" <br>例如，如果HOSTNAME是'kvm'，那么原始值将是0x0176617264736b766d。 |
+| **raw-value** (_HEX string_ )          | 只读字段，显示原始DHCP选项值（实际发送的格式）。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
- |                                        |
- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **code** (_integer:1..254_; Default: ) | dhcp option code. All codes are available at [http://www.iana.org/assignments/bootp-dhcp-parameters](http://www.iana.org/assignments/bootp-dhcp-parameters) |
- | **name** (_string_; Default: )         | Descriptive name of the option                                                                                                                              |
- | **value** (_string_; Default: )        | Parameter's value. Available data types for options are:                                                                                                    |
-
--   -   'test' -> ASCII to Hex 0x74657374
-    -   '10.10.10.10' -> Unicode IP to Hex 0x0a0a0a0a
-    -   s'10.10.10.10' -> ASCII to hex 0x31302e31302e31302e3130
-    -   s'160' -> ASCII to hex 0x313630
-    -   '10' -> Decimal to Hex 0x0a
-    -   0x0a0a -> No conversion
-    -   $(VARIABLE) -> hardcoded values
-
-RouterOS has predefined variables that can be used:
-
--   HOSTNAME - client hostname
--   RADIUS_MT_STR1 - from radius MT attr nr. 24
--   RADIUS_MT_STR2 - from radius MT attr nr. 25
--   REMOTE_ID - agent remote-id
--   NETWORK_GATEWAY - the first gateway from '_/ip dhcp-server network_', note that this option won't work if used from lease
-
-  
-Now it is also possible to combine data types into one, for example: "0x01'vards'$(HOSTNAME)"
-
-For example if HOSTNAME is 'kvm', then raw value will be 0x0176617264736b766d.
-
- |
-| **raw-value** (_HEX string_ ) | Read-only field which shows raw DHCP option value (the format actually sent out) |
-
-### DHCP Option Sets
+### DHCP选项集
 
 **Sub-menu:** `/ip dhcp-server option sets`
 
-This menu allows combining multiple options in option sets, which later can be used to override the default DHCP server option set.
+这个菜单允许在选项集中组合多个选项，以后可以用来覆盖默认的DHCP服务器选项集。
 
-### Example
+### 例子
 
-**Classless Route**
+**无类路由**
 
-A classless route adds a specified route in the clients routing table. In our example, it will add
+无类别路由在客户的路由表中添加一个指定的路由。在我们的例子中，它将添加
 
--   dst-address=160.0.0.0/24 gateway=10.1.101.1
--   dst-address=0.0.0.0/0 gateway=10.1.101.1
+- dst-address=160.0.0.0/24 gateway=10.1.101.1
+- dst-address=0.0.0.0/0 gateway=10.1.101.1
 
   
-According to RFC 3442: The first part is the netmask ("18" = netmask /24). Second part is significant part of destination network ("A00000" = 160.0.0). Third part is IP address of gateway ("0A016501" = 10.1.101.1). Then There are parts of the default route, destination netmask (0x00 = 0.0.0.0/0) followed by default route (0x0A016501 = 10.1.101.1)
+根据RFC 3442：第一部分是网络掩码（"18"=netmask/24）。第二部分是目的网络的重要部分（"A00000"=160.0.0）。第三部分是网关的IP地址（"0A016501"=10.1.101.1）。然后是默认路由的部分，目的网络掩码（0x00=0.0.0.0/0），然后是默认路由（0x0A016501=10.1.101.1）。
 
 ```shell
 /ip dhcp-server option
@@ -687,7 +655,7 @@ add code=121 name=classless value=0x18A000000A016501000A016501
 set 0 dhcp-option=classless
 ```
 
-Result:
+结果:
 
 ```shell
 [admin@MikroTik] /ip route> print
@@ -698,26 +666,26 @@ m - mme, B - blackhole, U - unreachable, P - prohibit
  1 ADS  160.0.0.0/24                       10.1.101.1         0
 ```
 
-A much more robust way would be to use built-in variables, the previous example can be rewritten as:
+一个更可靠的方法是使用内部变量，前面的例子可以改写为：
 
 `/ip dhcp-server option
 add name=classless code=121 value="0x18A00000\$(NETWORK_GATEWAY)0x00\$(NETWORK_GATEWAY)"`
 
   
-**Auto proxy config**
+**自动代理配置**
 
 `/ip dhcp-server option
   add code=252 name=auto-proxy-config value="'https://autoconfig.something.lv/wpad.dat'"`
 
-## Vendor Classes
+## 供应商类
 
-Since the 6.45beta6 version RouterOS support vendor class, ID matcher. The vendor class is used by DHCP clients to optionally identify the vendor and configuration.
+从6.45beta6版本开始，RouterOS支持厂商类、ID匹配器。供应商类被DHCP客户端用来选择性地识别供应商和配置。
 
-Vendor-class-id matcher changes to generic matcher since RouterOS v7.4beta4.
+从RouterOS v7.4beta4开始，供应商类-ID匹配器变成了通用匹配器。
 
-### Example
+### 例子
 
-In the following configuration example, we will give an IP address from a particular pool for an Android-based mobile phone. We will use the RouterBOARD with a default configuration
+在下面的配置例子中，从一个特定的池子里为一个基于Android的手机提供一个IP地址。将使用RouterBOARD的默认配置
 
 ```shell
 /ip pool
@@ -725,7 +693,7 @@ add name=default-dhcp ranges=192.168.88.10-192.168.88.254
 add name=pool-for-VID ranges=172.16.16.10-172.16.16.120
 ```
 
-Configure `vendor-class-id` matcher. DHCP servers configuration remains the default
+配置 `vendor-class-id` 。DHCP服务器的配置仍然是默认的
 
 ```shell
 /ip dhcp-server
@@ -737,7 +705,7 @@ add address-pool=pool-for-VID name=samsung server=defconf vid=android-dhcp-9
 ```
  
 
-Connect your mobile phone to the device to receive an IP address from the 172.16.16.0 network
+将手机连接到设备上，从172.16.16.0网络接收一个IP地址。
 
 ```shell
 [admin@mikrotik] > /ip dhcp-server lease print detail
@@ -749,7 +717,7 @@ Flags: X - disabled, R - radius, D - dynamic, B - blocked
 
   
 
-If you do not know your devices Vendor Class ID, you can turn on DHCP debug logs with `/system logging add topics=dhcp`. Then in the logging entries, you will see **Class-ID**
+如果不知道设备的Vendor Class ID，可以用 `/system logging add topics=dhcp` 打开DHCP调试日志。然后，在日志条目中会看到 **Class-ID**。
 
 ```shell
 10:30:31 dhcp,debug,packet defconf received request with id 4238230732 from 0.0.0.0
@@ -777,44 +745,44 @@ ewal-Time,Rebinding-Time,Vendor-Specific
 10:30:31 dhcp,debug,packet     Domain-Server = 192.168.88.1,10.155.0.1,10.155.0.126
 ```
 
-## Generic matcher
+## 通用匹配器
 
-Since RouterOS 7.4beta4 (2022-Jun-15 14:04) the vendor-id matcher is converted to a generic matcher. The genric matcher allows matching any of the DHCP options.
+自从RouterOS 7.4beta4 (2022-Jun-15 14:04)以来，供应商-ID匹配器被转换为一个通用匹配器。通用匹配器允许匹配任何DHCP选项。
 
-And an example to match DHCP option 60 similar to vendor-id-class matcher:
+举个例子，匹配DHCP选项60，类似于vendor-id类匹配器：
 
 ```shell
 /ip dhcp-server matcher
 add address-pool=pool1 code=60 name=test value=android-dhcp-11
 ```
 
-Match the client-id with option 61 configured as hex value:
+匹配客户-ID，选项61被配置为十六进制值：
 
 ```shell
 /ip dhcp-server matcher
 add address-pool=pool1 code=61 name=test value=0x016c3b6bed8364
 ```
 
-Match the code 12 using the string:
+使用字符串匹配代码12：
 
 ```shell
 /ip dhcp-server matcher
 add address-pool=testpool code=12 name=test server=dhcp1 value="MikroTik"
 ```
 
-## Configuration Examples
+## 配置实例
 
-### Setup
+### 设置
 
-To simply configure DHCP server you can use a `setup` command.
+要简单地配置DHCP服务器，可以使用setup命令。
 
-First, you configure an IP address on the interface:
+首先在接口上配置一个IP地址：
 
 `[admin@MikroTik] > /ip address add address=192.168.88.1/24 interface=ether3 disabled=no`
 
   
 
-Then you use `setup` a command which will automatically ask necessary parameters:
+然后用setup命令，它将自动询问必要的参数：
 
 ```shell
 [admin@MikroTik] > /ip dhcp-server setup
@@ -840,123 +808,101 @@ lease time: 10m
 
   
 
-That is all. You have configured an active DHCP server.
+这样就配置了一个活跃的DHCP服务器。
 
-### Manual configuration
+### 手动配置
 
-To configure the DHCP server manually to respond to local requests you have to configure the following:
+要手动配置DHCP服务器以响应本地请求，必须配置以下内容：
 
--   An **IP pool** for addresses to be given out, make sure that your gateway/DHCP server address is not part of the pool.
+- 一个IP池用于发放地址，确保网关/DHCP服务器地址不在该池中。
 
 `/ip pool add name=dhcp_pool0 ranges=192.168.88.2-192.168.88.254`
 
--   A **network** indicating subnets that DHCP-server will lease addresses from, among other information, like a gateway, DNS-server, NTP-server, DHCP options, etc.
+- 一个 **网络** 表示DHCP-server将租赁地址的子网，以及其他信息，如网关、DNS-server、NTP-server、DHCP选项，等等。
 
 `/ip dhcp-server network add address=192.168.88.0/24 dns-server=192.168.88.1 gateway=192.168.88.1`
 
--   In our case, the device itself is serving as the gateway, so we'll add the **address** to the bridge interface:
+- 在这个例子中，设备本身是作为网关的，所以将 **地址** 添加到网桥接口：
 
 `/ip address add address=192.168.88.1/24 interface=bridge1 network=192.168.88.0`
 
--   And finally, add **DHCP Server**, here we will add the previously created address **pool**, and specify on which **interface** the DHCP server should work on
+- 最后，添加 **DHCP服务器**，这里添加先前创建的地址池，并指定DHCP服务器应该在哪个接口上工作
 
 `/ip dhcp-server add address-pool=dhcp_pool0 disabled=no interface=bridge1 name=dhcp1`
 
-# DHCPv6 Server
+# DHCPv6服务器
 
-## Summary
+## 摘要
 
-**Standards:** `RFC 3315, RFC 3633`
+**标准：** `RFC 3315, RFC 3633`
 
-Single DUID is used for client and server identification, only IAID will vary between clients corresponding to their assigned interface.
+单一的DUID用于客户和服务器的识别，只有IAID在客户之间有所不同，与他们分配的接口相对应。
 
-Client binding creates a dynamic pool with a timeout set to binding's expiration time (note that now dynamic pools can have a timeout), which will be updated every time binding gets renewed.
+客户端绑定会创建一个动态池，其超时时间设置为绑定的过期时间（注意现在动态池可以有超时时间），每次绑定被更新时都会更新。
 
-When a client is bound to a prefix, the DHCP server adds routing information to know how to reach the assigned prefix.
+当一个客户被绑定到一个前缀时，DHCP服务器会添加路由信息以知道如何到达被分配的前缀。
 
-Client bindings in the server do not show MAC address anymore (as it was in v5.8), DUID (hex) and IAID are used instead. After upgrade, MAC addresses will be converted to DUIDs automatically, but due to unknown DUID type and unknown IAID, they should be further updated by the user;
+服务器中的客户端绑定不再显示MAC地址（像v5.8中那样），而是使用DUID（十六进制）和IAID。升级后，MAC地址将被自动转换为DUID，但由于DUID类型和IAID未知，它们应该由用户进一步更新；
 
-RouterOS DHCPv6 server can only delegate IPv6 prefixes, not addresses.
+RouterOS DHCPv6服务器只能委托IPv6前缀，不能委托地址。
 
-## General
+## 常规的
 
 **Sub-menu:** `/ipv6 dhcp-server`
 
-This sub-menu lists and allows to configure DHCP-PD servers.
+这个子菜单列出并允许配置DHCP-PD服务器。
 
-## DHCPv6 Server Properties
+## DHCPv6服务器属性
 
-| Property                                 | Description                                                                                                                          |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **address-pool** (_enum                  | static-only_; Default: **static-only**)                                                                                              | [IPv6 pool](https://wiki.mikrotik.com/wiki/Manual:IPv6/Pool "Manual:IPv6/Pool"), from which to take IPv6 prefix for the clients.                                                                            |
-| ****allow-dual-stack-queue**** (_yes     | no_; Default: ****yes****)                                                                                                           | Creates a single simple queue entry for both IPv4 and IPv6 addresses, and uses the MAC address and DUID for identification. Requires IPv6 DHCP Server to have this option enabled as well to work properly. |
-| **binding-script** (_string_; Default: ) | A script that will be executed after binding is assigned or de-assigned. Internal "global" variables that can be used in the script: |
+| 属性                                                                                | 说明                                                                                                                                                                                                                                           |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **address-pool** (_enum                  \| static-only_; Default: **static-only**) | [IPv6 pool](https://wiki.mikrotik.com/wiki/Manual:IPv6/Pool "Manual:IPv6/Pool")，从中为客户提取IPv6前缀。                                                                                                                                      |
+| ****allow-dual-stack-queue**** (_yes     \| no_; Default: ****yes****)              | 为IPv4和IPv6地址创建一个简单的队列条目，并使用MAC地址和DUID进行识别。需要IPv6 DHCP服务器也启用这个选项才能正常工作。                                                                                                                           |
+| **binding-script** (_string_; Default: )                                            | 在分配或取消绑定后执行的脚本。可以在脚本中使用的内部 "全局 "变量：<br>- bindingBound 如果绑定，设置为 "1"，否则设置为 "0"<br>- bindingServerName dhcp服务器名称<br>- bindingDUID DUID<br>- bindingAddress 活动地址<br>- bindingPrefix 活动前缀 |
+| **dhcp-option** (_string_; Default: **none**)                                       | 从 [选项列表](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPOptions.1) 中添加额外的DHCP选项。                                                                                                                                       |
+| **disabled** (_yes \| no_; Default: **no**)                                         | DHCP-PD服务器是否参与前缀分配过程。                                                                                                                                                                                                            |
+| **interface** (_string_; Default: )                                                 | 服务器在哪个接口上运行。                                                                                                                                                                                                                       |
+| **lease-time** (_time_; Default: **3d**)                                            | 客户端可以使用分配地址的时间。客户端将在这个时间的一半后尝试更新这个地址，并在时间限制到期后请求一个新的地址。                                                                                                                                 |
+| **name** (_string_; Default: )                                                      | 参考名称                                                                                                                                                                                                                                       |
 
--   bindingBound  set to "1" if bound, otherwise set to "0"
--   bindingServerName  dhcp server name
--   bindingDUID  DUID
--   bindingAddress  active address
--   bindingPrefix  active prefix
+**只读属性**
 
- |
-| **dhcp-option** (_string_; Default: **none**) | Add additional DHCP options from [option list](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPOptions.1). |
-| **disabled** (_yes | no_; Default: **no**) | Whether DHCP-PD server participates in the prefix assignment process. |
-| **interface** (_string_; Default: ) | The interface on which server will be running. |
-| **lease-time** (_time_; Default: **3d**) | The time that a client may use the assigned address. The client will try to renew this address after half of this time and will request a new address after the time limit expires. |
-| **name** (_string_; Default: ) | Reference name |
+| 属性                      | 说明 |
+| ------------------------- | ---- |
+| **dynamic** (_yes \| no_) |      |
+| **invalid** (_yes \| no_) |      |
 
-**Read-only Properties**
-
-|Property | Description |    
-
- |                   |
- | ----------------- | ---- |
- | **dynamic** (_yes | no_) |
- |                   |
- | **invalid** (_yes | no_) |
- |                   |
-
-## Bindings
+## 绑定
 
 **Sub-menu:** `/ipv6 dhcp-server binding`
 
-DUID is used only for dynamic bindings, so if it changes then the client will receive a different prefix than previously.
+DUID只用于动态绑定，如果它发生变化，那么客户端将收到一个与之前不同的前缀。
 
-|Property | Description |    
+| 属性                                                                                                        | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **address** (_IPv6 prefix_; Default: )                                                                      | 将分配给客户端的IPv6前缀。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **allow-dual-stack-queue** (_yes \| no_; Default: **yes**)                                                  | 为IPv4和IPv6地址创建一个简单的队列条目，使用MAC地址和DUID进行识别。需要IPv4 DHCP服务器也启用该选项才能正常工作。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **comment** (_string_; Default: )                                                                           | 项目的简短描述。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **disabled** (_yes \| no_; Default: **no**)                                                                 | 项目是否被禁用                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **dhcp-option** (_string_; Default: )                                                                       | 从选项列表中添加额外的DHCP选项。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **dhcp-option-set* (_string_; Default: )                                                                    | 添加额外的DHCP选项集。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **life-time** (_time_; Default: **3d**)                                                                     | 绑定过期的时间段。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **duid** (_hex string_; Default: )                                                                          | DUID值。只能以十六进制格式指定。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **iaid** (_integer [0..4294967295]_; Default: )                                                             | 身份协会标识符，是客户ID的一部分。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **prefix-pool** (_string_; Default: )                                                                       | 正在向DHCPv6客户端公布的前缀池。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **rate-limit** (_integer[/integer] [integer[/integer] [integer[/integer] [integer[/integer]]]]_; Default: ) | Adds a dynamic simple queue to limit IP's bandwidth to a specified rate. Requires the lease to be static. Format is: rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] [rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx-burst-time]]]]. 所有的速率都应该是数字，可以选择'k'（1,000s）或'M'（1,000,000s）。如果没有指定tx-rate，rx-rate也是tx-rate。tx-bulst-rate和tx-bulst-threshold以及tx-bulst-time也是如此。如果没有指定rx-burst-threshold和tx-burst-threshold（但指定了burst-rate），则rx-rate和tx-rate被用作burst阈值。如果没有指定rx-burst-time和tx-burst-time，则使用1s作为默认值。 |
+| **server** (_string\| all_; Default: **all**)                                                               | 服务器的名称。如果设置为 **所有**，那么绑定就适用于所有创建的DHCP-PD服务器。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
- |                                                                                                             |
- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **address** (_IPv6 prefix_; Default: )                                                                      | IPv6 prefix that will be assigned to the client                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
- | **allow-dual-stack-queue** (_yes                                                                            | no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Creates a single simple queue entry for both IPv4 and IPv6 addresses, uses the MAC address and DUID for identification. Requires IPv4 DHCP Server to have this option enabled as well to work properly. |
- | **comment** (_string_; Default: )                                                                           | Short description of an item.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
- | **disabled** (_yes                                                                                          | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Whether an item is disabled                                                                                                                                                                             |
- | **dhcp-option** (_string_; Default: )                                                                       | Add additional DHCP options from the option list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
- | **dhcp-option-set** (_string_; Default: )                                                                   | Add an additional set of DHCP options.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
- | **life-time** (_time_; Default: **3d**)                                                                     | The time period after which binding expires.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
- | **duid** (_hex string_; Default: )                                                                          | DUID value. Should be specified only in hexadecimal format.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
- | **iaid** (_integer [0..4294967295]_; Default: )                                                             | Identity Association Identifier, part of the Client ID.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
- | **prefix-pool** (_string_; Default: )                                                                       | Prefix pool that is being advertised to the DHCPv6 Client.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
- | **rate-limit** (_integer[/integer] [integer[/integer] [integer[/integer] [integer[/integer]]]]_; Default: ) | Adds a dynamic simple queue to limit IP's bandwidth to a specified rate. Requires the lease to be static. Format is: rx-rate[/tx-rate] [rx-burst-rate[/tx-burst-rate] [rx-burst-threshold[/tx-burst-threshold] [rx-burst-time[/tx-burst-time]]]]. All rates should be numbers with optional 'k' (1,000s) or 'M' (1,000,000s). If tx-rate is not specified, rx-rate is as tx-rate too. Same goes for tx-burst-rate and tx-burst-threshold and tx-burst-time. If both rx-burst-threshold and tx-burst-threshold are not specified (but burst-rate is specified), rx-rate and tx-rate is used as burst thresholds. If both rx-burst-time and tx-burst-time are not specified, 1s is used as default. |
- | **server** (_string                                                                                         | all_; Default: **all**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Name of the server. If set to **all**, then binding applies to all created DHCP-PD servers.                                                                                                             |
+**只读属性**
 
-**Read-only properties**
+| 属性                                       | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **dynamic** (_yes \| no_)                  | 项目是否是动态创建的。                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **expires-after** (_time_)                 | 绑定过期的时间段。                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **last-seen** (_time_)                     | 客户端最后一次被看到的时间段。                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **status** (_waiting \| offered \| bound_) | 有三种状态值可以选择： <br>- **waiting** 如果不使用静态绑定，则显示为静态绑定。对于动态绑定，如果以前使用过，则显示此状态，服务器将等待10分钟，让老客户获得此绑定，否则绑定将被清除，前缀将提供给其他客户。<br>- **offered** 如果收到了 **请求** 信息，并且服务器以 **广告** 信息作为回应，但没有收到 **请求**。在这个状态下，客户端有2分钟的时间来获得这个绑定，否则，它将被释放或改变状态为 **等待** 的静态绑定。<br>- **bound** 当前绑定。 |
 
-|Property | Description |    
-
- |                            |
- | -------------------------- | -------------------------------------------- |
- | **dynamic** (_yes          | no_)                                         | Whether an item is dynamically created. |
- | **expires-after** (_time_) | The time period after which binding expires. |
- | **last-seen** (_time_)     | Time period since the client was last seen.  |
- | **status** (_waiting       | offered                                      | bound_)                                 | Three status values are possible: |
-
--   **waiting**  Shown for static bindings if it is not used. For dynamic bindings this status is shown if it was used previously, the server will wait 10 minutes to allow an old client to get this binding, otherwise binding will be cleared and prefix will be offered to other clients.
--   **offered**  if **solicit** message was received, and the server responded with **advertise** a message, but the **request** was not received. During this state client have 2 minutes to get this binding, otherwise, it is freed or changed status to **waiting** for static bindings.
--   **bound**  currently bound.
-
- |
-
-For example, dynamically assigned /62 prefix
+例如，动态分配的/62前缀
 
 ```shell
 [admin@RB493G] /ipv6 dhcp-server binding> print detail
@@ -969,19 +915,19 @@ server=local-dhcp life-time=3d status=bound expires-after=2d23h43m47s
 last-seen=16m13s
 ```
 
-**Menu specific commands**
+**菜单的具体命令**
 
-| Property           | Description                    |
-| ------------------ | ------------------------------ |
-| **make-static** () | Set dynamic binding as static. |
+| 属性               | 说明               |
+| ------------------ | ------------------ |
+| **make-static** () | 设置动态绑定为静态 |
 
-### Rate limiting
+### 速率限制
 
-It is possible to set the bandwidth to a specific IPv6 address by using DHCPv6 bindings. This can be done by setting a rate limit on the DHCPv6 binding itself, by doing this a dynamic simple queue rule will be added for the IPv6 address that corresponds to the DHCPv6 binding. By using the `rate-limit` the parameter you can conveniently limit a user's bandwidth.
+可以通过使用 DHCPv6 绑定来设置特定 IPv6 地址的带宽。这可以通过在DHCPv6绑定本身上设置速率限制来实现，通过这样做，一个动态的简单队列规则将被添加到与DHCPv6绑定相对应的IPv6地址上。通过使用 `rate-limit` 参数，可以方便地限制用户的带宽。
 
-For any queues to work properly, the traffic must not be FastTracked, make sure your Firewall does not FastTrack traffic that you want to limit.
+为了使任何队列正常工作，流量必须不被快速跟踪，请确保防火墙不对想限制的流量进行快速跟踪。
 
-First, make the DHCPv6 binding static, otherwise, it will not be possible to set a rate limit to a DHCPv6 binding:
+首先，使DHCPv6绑定成为静态的，否则就不能为DHCPv6绑定设置速率限制：
 
 ```shell
 [admin@MikroTik] > /ipv6 dhcp-server binding print
@@ -997,7 +943,7 @@ Flags: X - disabled, D - dynamic
 0 fdb4:4de7:a3f8:418c::/66 0x6c3b6b7c413e DHCPv6_Server bound
 ```
 
-Then you need can set a rate to a DHCPv6 binding that will create a new dynamic simple queue entry:
+可以给DHCPv6绑定设置一个速率，它将创建一个新的动态简单队列条目：
 
 ```shell
 [admin@MikroTik] > /ipv6 dhcp-server binding set 0 rate-limit=10M/10
@@ -1008,9 +954,9 @@ Flags: X - disabled, I - invalid, D - dynamic
 burst-threshold=0/0 burst-time=0s/0s bucket-size=0.1/0.1
 ```
 
-By default `allow-dual-stack-queue` is enabled, this will add a single dynamic simple queue entry for both DCHPv6 binding and DHCPv4 lease, without this option enabled separate dynamic simple queue entries will be added for IPv6 and IPv4.
+默认情况下，`allow-dual-stack-queue` 被启用，这将为DCHPv6绑定和DHCPv4租赁添加一个单一的动态简单队列条目，如果不启用这个选项，将为IPv6和IPv4添加单独的动态简单队列条目。
 
-If `allow-dual-stack-queue` is enabled, then a single dynamic simple queue entry will be created containing both IPv4 and IPv6 addresses:
+如果 `allow-dual-stack-queue` 被启用，那么将创建一个包含IPv4和IPv6地址的单一动态队列条目：
 
 ```shell
 [admin@MikroTik] > /queue simple print
@@ -1020,9 +966,9 @@ Flags: X - disabled, I - invalid, D - dynamic
 burst-limit=0/0 burst-threshold=0/0 burst-time=0s/0s bucket-size=0.1/0.1
 ```
 
-## RADIUS Support
+## RADIUS支持
 
-Since RouterOS v6.43 it is possible to use RADIUS to assign a rate-limit per DHCPv6 binding, to do so you need to pass the Mikrotik-Rate-Limit attribute from your RADIUS Server for your DHCPv6 binding. To achieve this you first need to set your DHCPv6 Server to use RADIUS for assigning bindings. Below is an example of how to set it up:
+从RouterOS v6.43开始，可以用RADIUS为每个DHCPv6绑定分配一个速率限制，要实现这一点，需要从RADIUS服务器为DHCPv6绑定传递Mikrotik-Rate-Limit属性。要实现这一点，首先需要将DHCPv6服务器设置为使用RADIUS来分配绑定。下面是一个设置的例子：
 
 ```shell
 /radius
@@ -1031,7 +977,7 @@ add address=10.0.0.1 secret=VERYsecret123 service=dhcp
 set dhcp1 use-radius=yes
 ```
 
-After that, you need to tell your RADIUS Server to pass the Mikrotik-Rate-Limit attribute. In case you are using FreeRADIUS with MySQL, then you need to add appropriate entries into **radcheck** and **radreply** tables for a MAC address, that is being used for your DHCPv6 Client. Below is an example for table entries:
+之后需要告诉RADIUS服务器传递Mikrotik-rate-Limit属性。如果用的是带有MySQL的FreeRADIUS，那么需要在 **radcheck** 和 **radreply** 表中为一个MAC地址添加适当的条目，该地址用于DHCPv6客户端。下面是一个表项例子：
 
 ```shell
 INSERT INTO `radcheck` (`username`, `attribute`, `op`, `value`) VALUES
@@ -1041,31 +987,31 @@ INSERT INTO `radcheck` (`username`, `attribute`, `op`, `value`) VALUES
 ('000c4200d464', 'Mikrotik-Rate-Limit', '=', '10M');
 ```
 
-By default allow-dual-stack-queue is enabled and will add a single dynamic queue entry if the MAC address from the IPv4 lease (or DUID, if the DHCPv4 Client supports `Node-specific Client Identifiers` from RFC4361), but DUID from DHCPv6 Client is not always based on the MAC address from the interface on which the DHCPv6 client is running on, DUID is generated on a per-device basis. For this reason, a single dynamic queue entry might not be created, separate dynamic queue entries might be created instead.
+默认情况下，allow-dual-stack-queue是启用的，如果IPv4租约的MAC地址（或DUID，如果DHCPv4客户端支持RFC4361中的 "Node-specific Client Identifiers"），将添加一个动态队列条目，但DHCPv6客户端的DUID并不总是基于DHCPv6客户端运行的接口的MAC地址，DUID是以每个设备为单位生成的。由于这个原因，可能不会创建一个单一的动态队列条目，而会创建单独的动态队列条目。
 
-## Configuration Example
+## 配置实例
 
-### Enabling IPv6 Prefix delegation
+### 启用 IPv6 前缀授权
 
-Let's consider that we already have a running DHCP server.
+现在已经有一个正在运行的DHCP服务器。
 
-To enable IPv6 prefix delegation, first, we need to create an address pool:
+要启用IPv6前缀委托，首先要创建一个地址池：
 
 `/ipv6 pool add name=myPool prefix=2001:db8:7501::/60 prefix-length=62`
 
-Notice that prefix-length is 62 bits, which means that clients will receive /62 prefixes from the /60 pool.
+注意，前缀长度是62位，这意味着客户将从/60池中接收/62前缀。
 
-The next step is to enable DHCP-PD:
+下一步是启用DHCP-PD：
 
 `/ipv6 dhcp-server add name=myServer address-pool=myPool interface=local`
 
   
-To test our server we will set up wide-dhcpv6 on an ubuntu machine:
+为了测试服务器，将在ubuntu机器上设置owe-dhcpv6：
 
--   install wide-dhcpv6-client
--   edit "/etc/wide-dhcpv6/dhcp6c.conf" as above
+- 安装owe-dhcpv6-client
+- 像上面那样编辑"/etc/wide-dhcpv6/dhcp6c.conf"。
 
-You can use also RouterOS as a DHCP-PD client.
+也可以用RouterOS作为DHCP-PD客户端。
 
 ```shell
 interface eth2{
@@ -1080,11 +1026,11 @@ sla-len 2;
 };
 ```
 
--   Run DHCP-PD client:
+-   运行DHCP-PD客户端:
 
 `sudo dhcp6c -d -D -f eth2`
 
--   Verify that prefix was added to the:
+-  确认前缀被添加：
 
 ```shell
 mrz@bumba:/media/aaa$ ip -6 addr
@@ -1096,7 +1042,7 @@ mrz@bumba:/media/aaa$ ip -6 addr
  valid_lft forever preferred_lft forever
 ```
 
--   You can make binding to specific client static so that it always receives the same prefix:
+- 可以让特定客户的绑定成为静态的，以便它收到相同的前缀：
 
 ```shell
 [admin@RB493G] /ipv6 dhcp-server binding> print
@@ -1105,7 +1051,7 @@ Flags: X - disabled, D - dynamic
 [admin@RB493G] /ipv6 dhcp-server binding> make-static 0
 ```
 
--   DHCP-PD also installs a route to assigned prefix into IPv6 routing table:
+- DHCP-PD还将分配给前缀的路由安装到IPv6路由表：
 
 ```shell
 [admin@RB493G] /ipv6 route> print
@@ -1115,39 +1061,39 @@ Flags: X - disabled, D - dynamic
 2 ADS 2001:db8:7501:1::/62 fe80::224:1dff:fe17:8... 1
 ```
 
-# DHCP Relay
+# DHCP中继
 
-## Summary
+## 摘要
 
-**Sub-menu:** `/ip dhcp-relay`
+**Sub-menu：** `/ip dhcp-relay`。
 
-The purpose of the DHCP relay is to act as a proxy between DHCP clients and the DHCP server. It is useful in networks where the DHCP server is not on the same broadcast domain as the DHCP client.
+DHCP中继的目的是在DHCP客户和DHCP服务器之间充当一个代理。在DHCP服务器与DHCP客户不在同一广播域的网络中，它很有用。
 
-DHCP relay does not choose the particular DHCP server in the DHCP-server list, it just sends the incoming request to all the listed servers.
+DHCP中继不会在DHCP-服务器列表中选择特定的DHCP服务器，它只是将传入的请求发送到所有列出的服务器。
 
-## Properties
+## 属性
 
-| Property                                       | Description                                                                                                                                                                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **add-relay-info** (_yes                       | no_; Default: **no**)                                                                                                                                                                                  | Adds DHCP relay agent information if enabled according to RFC 3046. Agent Circuit ID Sub-option contains mac address of an interface, Agent Remote ID Sub-option contains MAC address of the client from which request was received. |
-| **delay-threshold** (_time                     | none_; Default: **none**)                                                                                                                                                                              | If secs field in DHCP packet is smaller than delay-threshold, then this packet is ignored                                                                                                                                            |
-| **dhcp-server** (_string_; Default: )          | List of DHCP servers' IP addresses which should the DHCP requests be forwarded to                                                                                                                      |
-| **interface** (_string_; Default: )            | Interface name the DHCP relay will be working on.                                                                                                                                                      |
-| **local-address** (_IP_; Default: **0.0.0.0**) | The unique IP address of this DHCP relay needed for DHCP server to distinguish relays. If set to **0.0.0.0** - the IP address will be chosen automatically                                             |
-| **relay-info-remote-id** (_string_; Default: ) | specified string will be used to construct Option 82 instead of client's MAC address. Option 82 consist of: interface from which packets was received + client mac address or **relay-info-remote-id** |
-| **name** (_string_; Default: )                 | Descriptive name for the relay                                                                                                                                                                         |
+| 属性                                                                    | 说明                                                                                                                             |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **add-relay-info** (_yes                       \| no_; Default: **no**) | 如果根据RFC 3046启用，则添加DHCP中继代理信息。代理电路ID子选项包含接口的MAC地址，代理远程ID子选项包含接收请求的客户端的MAC地址。 |
+| 如果DHCP数据包中的secs字段小于延迟阈值，那么这个数据包将被忽略。        |
+| **dhcp-server** (_string_; Default: )                                   | DHCP服务器的IP地址列表，DHCP请求应该被转发到这些地址。                                                                           |
+| **interface** (_string_; Default: )                                     | DHCP中继工作的接口名称。                                                                                                         |
+| **local-address** (_IP_; Default: **0.0.0.0**)                          | 这个DHCP中继的唯一IP地址，需要DHCP服务器来区分中继。如果设置为 **0.0.0.0** - IP地址将自动选择。                                  |
+| **relay-info-remote-id** (_string_; Default: )                          | 指定的字符串将被用来构建选项82，而不是客户的MAC地址。选项82包括：接收数据包的接口+客户的MAC地址或 **relay-info-remote-id**。     |
+| **name** (_string_; Default: )                                          | 中继的描述名称。                                                                                                                 |
 
-## Configuration Example  
+## 配置实例  
 
-Let us consider that you have several IP networks 'behind' other routers, but you want to keep all DHCP servers on a single router. To do this, you need a DHCP relay on your network which will relay DHCP requests from clients to the DHCP server.
+考虑一下有几个 "在其他路由器后面 "的IP网络，想把所有的DHCP服务器放在一个路由器上。要实现这一点，需要在网络上有一个 DHCP 中继器，把客户的 DHCP 请求转发给 DHCP 服务器。
 
-This example will show you how to configure a DHCP server and a DHCP relay that serves 2 IP networks - 192.168.1.0/24 and 192.168.2.0/24 that are behind a router DHCP-Relay.
+这个例子说明如何配置一个DHCP服务器和一个为2个IP网络服务的DHCP中继器--192.168.1.0/24和192.168.2.0/24，它们在一个路由器DHCP-Relay后面。
 
 ![](https://help.mikrotik.com/docs/download/attachments/24805500/DHCPrelay.png?version=1&modificationDate=1587718227300&api=v2)
 
-**IP Address Configuration**
+** IP地址配置**
 
-IP addresses of DHCP-Server:
+DHCP-服务器的IP地址：
 
 ```shell
 [admin@DHCP-Server] ip address> print
@@ -1158,7 +1104,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 [admin@DHCP-Server] ip address>
 ```
 
-IP addresses of DHCP-Relay:
+DHCP-Relay的IP地址：
 
 ```shell
 /ip pool add name=Local1-Pool ranges=192.168.1.11-192.168.1.100
@@ -1169,12 +1115,11 @@ IP addresses of DHCP-Relay:
  1 Local2-Pool                                  192.168.2.11-192.168.2.100
 [admin@DHCP-Server] ip pool>
 ```
-
   
 
-**DHCP Server Setup**
+**DHCP服务器的设置**
 
-To setup 2 DHCP Servers on the DHCP-Server router add 2 pools. For networks 192.168.1.0/24 and 192.168.2.0:
+要在DHCP-服务器路由器上设置2个DHCP服务器，需要添加2个池。对于网络192.168.1.0/24和192.168.2.0：
 
 ```shell
 /ip pool add name=Local1-Pool ranges=192.168.1.11-192.168.1.100
@@ -1185,10 +1130,9 @@ To setup 2 DHCP Servers on the DHCP-Server router add 2 pools. For networks 192.
  1 Local2-Pool                                  192.168.2.11-192.168.2.100
 [admin@DHCP-Server] ip pool>
 ```
+ 
 
-  
-
-Create DHCP Servers:
+创建DHCP服务器:
 
 ```shell
 /ip dhcp-server add interface=To-DHCP-Relay relay=192.168.1.1 \
@@ -1205,7 +1149,7 @@ Flags: X - disabled, I - invalid
 
   
 
-Configure respective networks:
+配置相应的网络：
 
 ```shell
 /ip dhcp-server network add address=192.168.1.0/24 gateway=192.168.1.1 \
@@ -1220,9 +1164,9 @@ Configure respective networks:
 ```
 
 
-**DHCP Relay Config**
+**DHCP中继配置**
 
-Configuration of DHCP-Server is done. Now let's configure DHCP-Relay:
+DHCP-服务器的配置已经完成。现在配置DHCP-Relay：
 
 ```shell
 /ip dhcp-relay add name=Local1-Relay interface=Local1 \

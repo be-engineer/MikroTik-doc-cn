@@ -1,239 +1,146 @@
-# Introduction
+## 介绍
 
-Domain Name System (DNS) usually refers to the Phonebook of the Internet. In other words, DNS is a database that links strings (known as hostnames), such as [www.mikrotik.com](https://www.google.com) to a specific IP address, such as 159.148.147.196.
+域名系统（DNS）通常是指互联网的电话簿。换句话说，DNS是一个数据库，它将字符串（称为主机名），如 [www.mikrotik.com](https://www.google.com) 链接到一个特定的IP地址，如159.148.147.196。
 
-A MikroTik router with a DNS feature enabled can be set as a DNS cache for any DNS-compliant client. Moreover, the MikroTik router can be specified as a primary DNS server under its DHCP server settings. When the remote requests are enabled, the MikroTik router responds to TCP and UDP DNS requests on port 53.
-
-When both static and dynamic servers are set, static server entries are preferred, however, it does not indicate that a static server will always be used (for example, previously query was received from a dynamic server, but static was added later, then a dynamic entry will be preferred).
-
-When DNS server _allow-remote-requests_ are used make sure that you limit access to your server over TCP and UDP protocol port 53 only for known hosts.
-
-There are several options on how you can manage DNS functionality on your LAN - use public DNS, use the router as a cache, or do not interfere with DNS configuration. Let us take as an example the following setup: Internet service provider (ISP) → Gateway (GW) → Local area network (LAN). The GW is RouterOS based device with the default configuration:
-
--   You do not configure any DNS servers on the "GW" DHCP server network configuration - the device will forward the DNS server IP address configuration received from \`ISP\` to \`LAN\` devices;
--   You configure DNS servers on the "GW" DHCP server network configuration - the device will give configured DNS servers to \`LAN\` devices (also "/ip dns set allow-remote-requests=yes_" must_ be enabled);
--   "dns-none" configured under DNS servers on "GW" DHCP server network configuration - the device will not forward any of the **dynamic** DNS servers to \`LAN\` devices;
-
-## DNS configuration
-
-DNS facility is used to provide domain name resolution for the router itself as well as for the clients connected to it.
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                                                      |
- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | **allow-remote-requests** (_yes_                                     | _no_; Default: **no**)                                                                                                                                                            | Specifies whether to allow router usage as a DNS cache for remote clients. Otherwise, only the router itself will use DNS configuration. |
- | **cache-max-ttl** (_time_; Default: **1w**)                          | Maximum time-to-live for cache records. In other words, cache records will expire unconditionally after cache-max-TTL time. Shorter TTLs received from DNS servers are respected. |
- | **cache-size** (_integer\[64..4294967295\]_; Default: **2048**)      | Specifies the size of the DNS cache in KiB.                                                                                                                                       |
- | **max-concurrent-queries** (_integer_; Default: **100**)             | Specifies how many concurrent queries are allowed.                                                                                                                                |
- | **max-concurrent-tcp-sessions** (_integer_; Default: **20**)         | Specifies how many concurrent TCP sessions are allowed.                                                                                                                           |
- | **max-udp-packet-size** (_integer \[50..65507\]_; Default: **4096**) | Maximum size of allowed UDP packet.                                                                                                                                               |
- | **query-server-timeout** (_time_; Default: **2s**)                   | Specifies how long to wait for a query response from a server.                                                                                                                    |
- | **query-total-timeout** (_time_; Default: **10s**)                   | Specifies how long to wait for query response in total. Note that this setting must be configured taking into account "query-server-timeout" and the number of used DNS servers.  |
- | **servers** (_list of IPv4/IPv6 addresses_; Default: )               | List of DNS server IPv4/IPv6 addresses                                                                                                                                            |
- | **cache-used** (_integer_)                                           | Shows the currently used cache size in KiB                                                                                                                                        |
- | **dynamic-server** (_IPv4/IPv6 list_)                                | List of dynamically added DNS servers from different services, for example, DHCP.                                                                                                 |
- |                                                                      |
-
-**doh-max-concurrent-queries** (_integer_; Default: **50**)
-
- | Specifies how many DoH concurrent queries are allowed. |
-| 
-
-**doh-max-server-connections** (_integer_; Default: **5**)
-
- | Specifies how many concurrent connections to the DoH server are allowed. |
-| 
-
-**doh-timeout** (_time_; Default: **5s**)
-
- | Specifies how long to wait for query response from the DoH server. |
-| 
-
-**use-doh-server** (_string; Default: )_
-
- | Specified which DoH server must be used for DNS queries. DoH functionality overrides "_servers_" usage if specified. The server must be specified with an "https://" prefix. |
-| 
-
-**verify-doh-cert**  (_yes_ | _no_; Default: **no**)
-
- | 
-
-Specifies whether to validate the DoH server, when one is being used. Will use the "/certificate" list in order to verify server validity.
-
- |
-
-  
-
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] &gt; ip dns print&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">servers:</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">dynamic-servers: 10.155.0.1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">use-doh-server:</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">verify-doh-cert: no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;</code><code class="text plain">doh-max-server-connections: 5</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;</code><code class="text plain">doh-max-concurrent-queries: 50</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">doh-timeout: 5s</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">allow-remote-requests: yes</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">max-udp-packet-size: 4096</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">query-server-timeout: 2s</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">query-total-timeout: 10s</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">max-concurrent-queries: 100</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;</code><code class="text plain">max-concurrent-tcp-sessions: 20</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">cache-size: 2048KiB</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">cache-max-ttl: 1d</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">cache-used: 48KiB</code></div></div></td></tr></tbody></table>
-
-Dynamic DNS servers are obtained from different facilities available in RouterOS, for example, DHCP client, VPN client, IPv6 Router Advertisements, etc. 
-
-## DNS Cache
-
-This menu provides two lists with DNS records stored on the server:
-
--   _"_/ip dns cache_"_: this menu provides a list with cache DNS entries that RouterOS cache can reply with to client requests ;
--   _"_/ip dns cache all_"_: This menu provides a complete list with all cached DNS records stored including also, for example, PTR records.
-
-You can empty the DNS cache with the command: "/ip dns cache flush"_._
-
-## DNS Static
-
-The MikroTik RouterOS DNS cache has an additional embedded DNS server feature that allows you to configure multiple types of DNS entries that can be used by the DNS clients using the router as their DNS server. This feature can also be used to provide false DNS information to your network clients. For example, resolving any DNS request for a certain set of domains (or for the whole Internet) to your own page.
-
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] /ip dns static add name=www.mikrotik.com address=10.0.0.1</code></div></div></td></tr></tbody></table>
-
-The server is also capable of resolving DNS requests based on POSIX basic regular expressions so that multiple requests can be matched with the same entry. In case an entry does not conform with DNS naming standards, it is considered a regular expression. The list is ordered and checked from top to bottom. Regular expressions are checked first, then the plain records.
-
-Use regex to match DNS requests:
-
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] /ip dns static add regexp="[*mikrotik*]" address=10.0.0.2</code></div></div></td></tr></tbody></table>
-
-If DNS static entries list matches the requested domain name, then the router will assume that this router is responsible for any type of DNS request for the particular name. For example, if there is only an "A" record in the list, but the router receives an "AAAA" request, then it will reply with an "A" record from the static list and will query the upstream server for the "AAAA" record. If a record exists, then the reply will be forwarded, if not, then the router will reply with an "ok" DNS reply without any records in it. If you want to override domain name records from the upstream server with unusable records, then you can, for example, add a static entry for the particular domain name and specify a dummy IPv6 address for it "::ffff".
-
-List all of the configured DNS entries as an ordered list:
-
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@MikroTik] /ip/dns/static/print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Columns: NAME, REGEXP, ADDRESS, TTL</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain"># NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; REGEXP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESS&nbsp;&nbsp; TTL</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0 www.mikrotik.com&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.0.0.1&nbsp; 1d</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [*mikrotik*]&nbsp; 10.0.0.2&nbsp; 1d</code></div></div></td></tr></tbody></table>
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                                      |
- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
- | **address** (_IPv4/IPv6_)            | The address that will be used for "A" or "AAAA" type records.                                                     |
- | **cname** (_string__)_               | Alias name for a domain name.                                                                                     |
- | **forward-to**                       | The IP address of a domain name server to which a particular DNS request must be forwarded.                       |
- | **mx-exchange** (_string_)           | The domain name of the MX server.                                                                                 |
- | **name** (_string)_                  | Domain name.                                                                                                      |
- | **srv-port** (_integer_; Default: 0) | The TCP or UDP port on which the service is to be found.                                                          |
- | **srv-target**                       | The canonical hostname of the machine providing the service ends in a dot.                                        |
- | **text** (_string__)_                | Textual information about the domain name.                                                                        |
- | **type** (_A_                        | _AAAA_                                                                                                            | _CNAME_ | _FWD_ | _MX_ | _NS_ | _NXDOMAIN_ | _SRV_ | _TXT_ ; Default: _A_) | Type of the DNS record. |
- | **address-list** (_string__)_        | Name of the Firewall address list to which address must be dynamically added when some request matches the entry. |
- | **comment** (_string__)_             | Comment about the domain name record.                                                                             |
- |                                      |
-
-**disabled** (_yes_ | _no_; Default: yes)
-
- | Whether the DNS record is active. |
-| 
-
-**match-subdomain** (_yes_ | _no_; Default: no)
-
- | Whether the record will match requests for subdomains. |
-| 
-
-**mx-preference** (_integer_; Default: 0)
-
- | Preference of the particular MX record. |
-| 
-
-**ns** (_string_)
-
- | Name of the authoritative domain name server for the particular record. |
-| 
-
-**regexp** (POSIX regex)
-
- | Regular expression against which domain names should be verified. |
-| 
-
-**srv-priority** (_integer_; Default: 0)
-
- | 
-
-Priority of the particular SRV record.
-
- |
-| 
-
-**src-weight** (_integer_; Default: 0)
-
- | 
-
-Weight of the particular SRC record.
-
- |
-| 
-
-**ttl** (_time_; Default: _24h_)
-
- | 
-
-Maximum time-to-live for cached records.
-
- |
-
-Regexp is case-sensitive, but DNS requests are not case sensitive, RouterOS converts DNS names to lowercase before matching any static entries. You should write regex only with lowercase letters. Regular expression matching is significantly slower than plain text entries, so it is advised to minimize the number of regular expression rules and optimize the expressions themselves.
-
-Be careful when you configure regex through mixed user interfaces - CLI and GUI. Adding the entry itself might require escape characters when added from CLI. It is recommended to add an entry and the execute print command in order to verify that regex was not changed during addition.
+启用了DNS功能的MikroTik路由器可以设置为任何符合DNS的客户端的DNS缓存。此外，MikroTik路由器可以在其DHCP服务器设置下被指定为一个主要的DNS服务器。当远程请求被启用时，MikroTik路由器会在53端口响应TCP和UDP的DNS请求。
+
+当静态和动态服务器都被设置时，静态服务器条目会被优先考虑，然而，这并不表明静态服务器会一直被使用（例如，之前收到来自动态服务器的查询，但后来添加了静态服务器，那么动态条目会被优先考虑）。
+
+当DNS服务器_allow-remote-requests_被使用时，确保限制通过TCP和UDP协议端口53访问服务器，只针对已知的主机。
+
+关于如何管理局域网上的DNS功能，有几种选择--使用公共DNS，使用路由器作为缓存，或者不干涉DNS配置。让我们以下面的设置为例： 互联网服务提供商（ISP）→网关（GW）→局域网（LAN）。网关是基于RouterOS的设备，具有默认配置：
+
+- 不在 "GW "的DHCP服务器网络配置上配置任何DNS服务器-设备将把从 "ISP "收到的DNS服务器IP地址配置转发给 "LAN "设备；
+- 在 "GW "DHCP服务器网络配置上配置DNS服务器--设备将把配置的DNS服务器给"LAN "设备（还必须启用"/ip dns set allow-remote-requests=yes_" ）；
+- 在 "GW "DHCP服务器网络配置下配置的 "dns-none"-设备不会将任何 **动态** 的DNS服务器转发给"LAN "设备；
+
+## DNS配置
+
+DNS设施用于为路由器本身以及连接到它的客户提供域名解析。
+
+| 属性                                                               | 说明                                                                                                                  |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **allow-remote-requests** (_yes_                                   | _no_; Default: **no**)                                                                                                | 指定是否允许路由器作为远程客户端的DNS缓存使用。否则只有路由器本身会使用DNS配置。 |
+| **cache-max-ttl* (_time_; Default: **1w**)                         | 缓存记录的最长生存时间。换句话说，缓存记录将在cache-max-TTL时间后无条件过期。从DNS服务器收到的较短的TTL会被尊重。     |
+| **cache-size** (_integer[64..4294967295]_; Default: **2048**)      | 指定DNS缓存的大小，KiB。                                                                                              |
+| **max-current-queries** (_integer_; Default: **100**)              | 指定允许多少个并发的查询。                                                                                            |
+| **max-concurrent-tcp-sessions** (_integer_; Default: **20**)       | 指定允许多少个并发的TCP会话。                                                                                         |
+| **max-udp-packet-size** (_integer [50..65507]_; Default: **4096**) | 允许UDP数据包的最大尺寸。                                                                                             |
+| **query-server-timeout** (_time_; Default: **2s**)                 | 指定等待服务器的查询响应的时间。                                                                                      |
+| **query-total-timeout** (_time_; Default: **10s**)                 | 指定等待查询响应的总时间。注意，这个设置必须考虑到 "查询服务器超时 "和使用的DNS服务器的数量。                         |
+| **servers** (_list of IPv4/IPv6 addresses_; Default: )             | DNS服务器的IPv4/IPv6地址列表。                                                                                        |
+| **cache-used** (_integer_)                                         | 显示当前使用的缓存大小（KiB）。                                                                                       |
+| **dynamic-server** (_IPv4/IPv6 list_)                              | 来自不同服务的动态添加的DNS服务器列表，例如DHCP。                                                                     |
+| **doh-max-concurrent-queries** (_integer_; Default: **50**)        | 指定允许多少个DoH并发查询。                                                                                           |
+| **doh-max-server-connections** (_integer_; Default: **5**)         | 指定允许多少个与DoH服务器的并发连接。                                                                                 |
+| **doh-timeout** (_time_; Default: **5s**)                          | 指定等待DoH服务器的查询响应的时间。                                                                                   |
+| **use-doh-server** (_string; Default: )_                           | 指定必须使用哪个DoH服务器进行DNS查询。如果指定了DoH功能，将覆盖"servers"的使用。服务器必须以 "https://"为前缀来指定。 |
+| **verify-doh-cert**  (_yes_ \| _no_; Default: **no**)              | 指定是否验证DoH服务器，如果使用的是DoH服务器，则使用"/certificate "列表验证服务器的有效性。                           |
+
+
+```shell
+[admin@MikroTik] > ip dns print        
+                      servers:
+              dynamic-servers: 10.155.0.1
+               use-doh-server:
+              verify-doh-cert: no
+   doh-max-server-connections: 5
+   doh-max-concurrent-queries: 50
+                  doh-timeout: 5s
+        allow-remote-requests: yes
+          max-udp-packet-size: 4096
+         query-server-timeout: 2s
+          query-total-timeout: 10s
+       max-concurrent-queries: 100
+  max-concurrent-tcp-sessions: 20
+                   cache-size: 2048KiB
+                cache-max-ttl: 1d
+                   cache-used: 48KiB
+```
+
+动态DNS服务器是通过RouterOS中的不同设施获得的，例如，DHCP客户端、VPN客户端、IPv6路由器广告等。 
+
+## DNS缓存
+
+这个菜单提供了两个存储在服务器上的DNS记录的列表：
+
+- "/ip dns cache"：这个菜单提供了一个带有缓存DNS条目的列表，RouterOS缓存可以回复客户端的请求；
+- "/ip dns cache all"： 这个菜单提供了一个完整的列表，包括所有存储的缓存DNS记录，例如，PTR记录。
+
+可以用命令清空DNS缓存： "/ip dns cache flush"。
+
+## DNS静态
+
+MikroTik RouterOS的DNS缓存有一个额外的嵌入式DNS服务器功能，允许配置多种类型的DNS条目，可以被使用路由器作为DNS服务器的DNS客户使用。这个功能也可以用来向网络客户提供虚假的DNS信息。例如，将某一组域（或整个互联网）的任何DNS请求解析到自己的页面。
+
+`[admin@MikroTik] /ip dns static add namewww.mikrotik.com address=10.0.0.1`
+
+服务器也能够根据POSIX基本正则表达式来解析DNS请求，因此多个请求可以与同一个条目匹配。在条目不符合DNS命名标准的情况下，它被认为是一个正则表达式。列表被排序，并从上到下检查。首先检查正则表达式，然后是普通记录。
+
+使用regex来匹配DNS请求：
+
+`[admin@MikroTik] /ip dns static add regexp="[*mikrotik*]" address=10.0.0.2`
+
+如果DNS静态条目列表与请求的域名相匹配，那么路由器将认为该路由器负责该特定名称的任何类型的DNS请求。例如，如果列表中只有一个 "A "记录，但路由器收到一个 "AAAA "请求，那么它将从静态列表中回复一个 "A "记录，并将查询上游服务器的 "AAAA "记录。如果有记录存在，那么回复将被转发，如果没有，那么路由器将回复一个没有任何记录的 "ok "DNS回复。如果想用不可用的记录覆盖来自上游服务器的域名记录，那么可以为特定的域名添加一个静态条目，并为它指定一个假的IPv6地址":fff"。
+
+将所有配置的DNS条目作为一个有序的列表列出：
+
+```shell
+[admin@MikroTik] /ip/dns/static/print
+Columns: NAME, REGEXP, ADDRESS, TTL
+# NAME             REGEXP       ADDRESS   TTL
+0 www.mikrotik.com               10.0.0.1  1d
+1                  [*mikrotik*]  10.0.0.2  1d
+```
+
+| 属性                                                                                                        | 说明                                                                           |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **address** (_IPv4/IPv6_)                                                                                   | 用于 "A "或 "AAAA "类型记录的地址。                                            |
+| **cname** (_string_)                                                                                        | 一个域名的别名。                                                               |
+| **forward-to**                                                                                              | 域名服务器的IP地址，特定的DNS请求必须被转发到该服务器。                        |
+| **mx-exchange** (_string_)                                                                                  | MX服务器的域名。                                                               |
+| **name** (_string)_                                                                                         | 域名。                                                                         |
+| **srv-port** (_integer_; Default: 0)                                                                        | 查找服务的TCP或UDP端口。                                                       |
+| **srv-target**                                                                                              | 提供服务的机器的标准主机名，以点结束。                                         |
+| **text** (_string_)                                                                                         | 域名的文本信息。                                                               |
+| **type** (_A_ \| _AAAA_ \| _CNAME_ \| _FWD_ \| _MX_ \| _NS_ \| _NXDOMAIN_ \| _SRV_ \| _TXT_ ; Default: _A_) | DNS记录类型                                                                    |
+| **address-list** (_string_)                                                                                 | 防火墙地址列表的名称，当某些请求与该条目匹配时，必须将地址动态添加到该列表中。 |
+| **comment** (_string_)                                                                                      | 关于域名记录的评论。                                                           |
+| **disabled** (_yes_ \| _no_; Default: yes)                                                                  | 域名记录是否激活。                                                             |
+| **match-subdomain** (_yes_ \| _no_; Default: no)                                                            | 该记录是否会匹配子域的请求。                                                   |
+| **mx-preference** (_integer_; Default: 0)                                                                   | 特定MX记录的偏好。                                                             |
+| ***ns** (_string_)                                                                                          | 特定记录的权威域名服务器的名称。                                               |
+| **regexp** (POSIX regex)                                                                                    | 正则表达式，应根据它来验证域名。                                               |
+| **srv-priority** (_integer_; Default: 0)                                                                    | 特定SRV记录的优先级。                                                          |
+| **src-weight** (_integer_; Default: 0)                                                                      | 特定SRC记录的重量。                                                            |
+| **ttl** (_time_; Default: _24h_)                                                                            | 缓存记录的最长生存时间。                                                       |
+
+Regexp是区分大小写的，但是DNS请求不区分大小写，RouterOS在匹配任何静态条目之前会将DNS名称转换为小写。应该用小写字母来编写regex。正则表达式匹配的速度明显比纯文本慢，所以建议尽量减少正则表达式规则的数量，并优化表达式本身。
+
+当通过混合用户界面CLI和GUI配置regex时要小心。从CLI添加条目时，条目本身可能需要转义字符。建议添加一个条目并执行打印命令，以验证在添加过程中没有改变regex。
 
 # DNS over HTTPS (DoH)
 
-Starting from RouterOS version v6.47 it is possible to use DNS over HTTPS (DoH). DoH uses HTTPS protocol to send and receive DNS requests for better data integrity. The main goal is to provide privacy by eliminating "man-in-the-middle" attacks (MITM). Currently, DoH is not compatible with FWD-type static entries, in order to utilize FWD entries, DoH must not be configured.   
+从RouterOS v6.47版本开始，可以使用HTTPS的DNS（DoH）。DoH使用HTTPS协议来发送和接收DNS请求，以提高数据的完整性。其主要目的是通过消除 "中间人 "攻击（MITM）来提供隐私。目前，DoH与FWD型静态条目不兼容，为了利用FWD条目，必须不配置DoH。   
   
-Watch our [video about this feature](https://youtu.be/w4erB0VzyIE). 
+请观看 [关于此功能的视频](https://youtu.be/w4erB0VzyIE)。 
 
-It is strongly recommended to import the root CA certificate of the DoH server you have chosen to use for increased security. We strongly suggest not using third-party download links for certificate fetching. Use the Certificate Authority's own website.
+强烈建议导入你选择使用的DoH服务器的根CA证书以提高安全性。我们强烈建议不要使用第三方的下载链接来获取证书。使用证书颁发机构自己的网站。
 
-There are various ways to find out what root CA certificate is necessary. The easiest way is by using your WEB browser, navigating to the DoH site, and checking the security of the website. Using, for example, Firefox we can see that DigiCert Global Root CA is used by the Cloudflare DoH server. You can download the certificate straight from the browser or navigate to the DigiCert website and fetch the certificate from a trusted source. 
+有多种方法可以找出所需的根 CA 证书。最简单的方法是使用WEB浏览器导航到DoH网站并检查网站的安全性。例如，使用Firefox可以看到Cloudflare DoH服务器使用的是DigiCert全球根CA。可以直接从浏览器中下载证书，或者导航到DigiCert网站，从一个受信任的来源获取证书。 
 
 ![](https://help.mikrotik.com/docs/download/attachments/37748767/Rootca.PNG?version=1&modificationDate=1628148171413&api=v2)
 
-Download the certificate, upload it to your router and import it: 
+下载证书，将其上传到你的路由器，然后导入： 
 
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
+`/certificate import file-name=DigiCertGlobalRootCA.crt.pem`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/certificate </code><code class="ros functions">import </code><code class="ros value">file-name</code><code class="ros plain">=DigiCertGlobalRootCA.crt.pem</code></div></div></td></tr></tbody></table>
+配置DoH服务器： 
 
-Configure the DoH server: 
+`/ip dns set use-doh-server=https://cloudflare-dns.com/dns-query verify-doh-cert=yes`
 
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
+请注意，至少要为路由器配置一个常规的DNS服务器来解析DoH主机名本身。如果没有配置任何动态或静态的DNS服务器，要为DoH服务器域名添加一个静态DNS条目，像这样： 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip dns </code><code class="ros functions">set </code><code class="ros value">use-doh-server</code><code class="ros plain">=<a href="https://cloudflare-dns.com/dns-query">https://cloudflare-dns.com/dns-query</a></code> <code class="ros value">verify-doh-cert</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+`/ip dns set servers=1.1.1.1`
 
-Note that you need at least one regular DNS server configured for the router to resolve the DoH hostname itself. If you do not have any dynamical or static DNS server configured, add a static DNS entry for the DoH server domain name like this: 
-
-[?](https://help.mikrotik.com/docs/display/ROS/DNS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip dns </code><code class="ros functions">set </code><code class="ros value">servers</code><code class="ros plain">=1.1.1.1</code></div></div></td></tr></tbody></table>
-
-RouterOS prioritizes DoH over the DNS server if both are configured on the device.
+如果设备上同时配置了DoH和DNS服务器，RouterOS会优先考虑DoH。
