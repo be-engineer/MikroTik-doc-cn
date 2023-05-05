@@ -43,7 +43,7 @@ Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/downl
 - **密码** - 用于验证的密码
 - **保留密码** - 如果不勾选，密码不会被保存到列表中。
 
-###菜单项目
+### 菜单项目
 
 - **文件**
     - **新建** - 在指定的位置创建一个新的管理路由器列表
@@ -170,8 +170,8 @@ Winbox的界面设计得很直观，适合大多数用户。该界面由以下�
 在主工具条的左边有一个位置：
 
 - **undo**
-- **重做**
-- **安全模式** 
+- **redo**
+- **safe mode** 
 - 当前加载的会话
 
 更多关于安全模式和撤销已执行的操作，请阅读 [本文]（https://help.mikrotik.com/docs/display/ROS/Configuration+Management）。
