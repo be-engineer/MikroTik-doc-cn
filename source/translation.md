@@ -10,11 +10,11 @@
 | 6.   | Firewall and Quality of Service             | be-engineer | 100% | 2023/02/09~2023/02/16 |
 | 7.   | Hardware                                    | be-engineer | 100% | 2023/02/09~2023/02/16 |
 | 8.   | High Availability Solutions                 | be-engineer | 100% | 2023/02/20~2023/03/06 |
-| 9.   | Internet of Things                          | be-engineer | 90%  | 2023/03/10~2023/04/26 |
+| 9.   | Internet of Things                          | be-engineer | 100% | 2023/03/10~2023/04/26 |
 | 10.  | IPv4 and IPv6 Fundamentals                  | be-engineer | 90%  | 2023/04/26~2023/04/26 |
 | 11.  | Management tools                            | be-engineer | 90%  | 2023/04/26~2023/04/28 |
 | 12.  | Mobile Networking                           | be-engineer | 90%  | 2023/04/28~2023/04/28 |
-| 13.  | Network Management                          | be-engineer | 0%   | ?                     |
+| 13.  | Network Management                          | be-engineer | 90%  | 2023/05/04~2023/05/05 |
 | 14.  | Routing                                     | be-engineer | 0%   | ?                     |
 | 15.  | Multi Protocol Label Switching (MPLS)       | be-engineer | 0%   | ?                     |
 | 16.  | System Information and Utilities            | be-engineer | 0%   | ?                     |
