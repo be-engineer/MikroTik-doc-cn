@@ -42,5 +42,5 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
    High_Availability_Solutions/index.rst
    Internet_of_Things/index.rst
    IPv4_and_IPv6_Fundamentals/index.rst
-..   Management_tools/index.rst
+   Management_tools/index.rst
 ..   Mobile_Networking/index.rst
