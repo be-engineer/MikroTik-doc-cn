@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'RouterOS 中文使用手册'
+project = 'RouterOS7.6 中文使用手册'
 copyright = '2023, be-engineer'
 author = 'be-engineer'
 release = '7.x'

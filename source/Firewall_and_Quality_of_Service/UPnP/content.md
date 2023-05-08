@@ -1,10 +1,18 @@
+<!--
+ * @Author: be-engineer 41234995@qq.com
+ * @Date: 2023-05-04 21:55:23
+ * @LastEditors: be-engineer 41234995@qq.com
+ * @LastEditTime: 2023-05-05 21:46:30
+ * @FilePath: /MikroTik-doc-cn/source/Firewall_and_Quality_of_Service/UPnP/content.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # 介绍
 
 MikroTik RouterOS支持通用即插即用架构，用于个人电脑和支持网络的智能设备或电器的透明对等网络连接。
 
 UPnP使任何两个设备在网络上任何控制设备的命令下进行数据通信。通用即插即用完全独立于任何特定的物理介质。无需任何初始配置就能自动发现的网络，据此，设备可以动态地加入一个网络。DHCP和DNS服务器是可选的，如果网络上有，就会使用。UPnP实现了一个简单而强大的NAT穿越解决方案，使客户能够从NAT后面获得完全的双向对等网络支持。
 
-UPnP有两种接口类型。**内部**（本地客户连接的接口）和 **外部**（互联网连接的接口）。**一个路由器只能有一个活动的外部接口，上面有一个 "公共 "IP地址**，并根据需要有许多内部接口，都有源NAT的 "内部 "IP地址。该协议通过创建动态NAT条目工作。
+UPnP有两种接口类型。内部（本地客户连接的接口）和外部（互联网连接的接口）。一个路由器只能有一个活动的外部接口，上面有一个"公共"IP地址，并根据需要有许多内部接口，都有源NAT的 "内部"IP地址。该协议通过创建动态NAT条目工作。
 
 UPnP协议用于许多现代应用，如大多数DirectX游戏，以及各种Windows Messenger功能，如远程协助、应用共享、文件传输、语音、防火墙后的视频。
 
