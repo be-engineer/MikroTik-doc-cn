@@ -1,4 +1,4 @@
-GPIO
+Serial console
 ===============================
 
 .. toctree::

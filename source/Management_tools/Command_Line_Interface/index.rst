@@ -1,4 +1,4 @@
-GPIO
+Command Line interface
 ===============================
 
 .. toctree::
