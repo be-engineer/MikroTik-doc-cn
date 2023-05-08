@@ -28,5 +28,9 @@
         "/home/leon/.vscode-insiders/extensions/rt-thread.rt-thread-micropython-1.0.11/microExamples/code-completion"
     ],
     "svn.ignoreMissingSvnWarning": true,
-    "esbonio.sphinx.confDir": "${workspaceFolder}\\source"
+    "esbonio.sphinx.confDir": "${workspaceFolder}\\source",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none"
 }
