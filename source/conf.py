@@ -17,10 +17,10 @@ release = '7.x'
 extensions = [
     # 'myst_parser',
     # 'recommonmark',
-    #'sphinx_mdinclude',
+    'sphinx_mdinclude',
     #'sphinxcontrib-markdown',
     # 'sphinx.ext.mathjax',
-    #'sphinx_markdown_tables'
+    'sphinx_markdown_tables'
     # 'sphinxnotes.strike'
 ]
 
