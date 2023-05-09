@@ -1,249 +1,311 @@
-# Routing Tables
+# 路由表
 
-By default, all routes are added to the "main" routing table as it was before. From a configuration point of view, the biggest differences are routing table limit increase, routing table monitoring differences, and how routes are added to specific routing tables (see next example)  
-v7 introduces a new menu /routing route, which shows all address family routes as well as all filtered routes with all possible route attributes. `/ip route` and `/ipv6 route` menus are used to add static routes and for simplicity show only basic route attributes.
+默认情况下，所有路由都像以前一样被添加到 "主 "路由表中。从配置的角度来看，最大的区别是路由表的限制增加，路由表监控的不同，以及路由如何被添加到特定的路由表（见下例）  
+v7引入了一个新的菜单/routing route，它显示所有地址族路由以及所有可能的路由属性的过滤路由。`/ip route` 和 `/ipv6 route` 菜单用于添加静态路由，为了简单起见，只显示基本的路由属性。
 
-For more in-depth information on routing see this article ([IP Routing](https://help.mikrotik.com/docs/display/ROS/IP+Routing)).
+关于路由的更深入信息，请看 [IP路由](https://help.mikrotik.com/docs/display/ROS/IP+Routing)
 
-Another new change is that most common route print requests are processed by the routing process which significantly improves the speed compared to v6.
+另一个新的变化是，大多数常见的路由打印请求都由路由处理，与v6相比，速度明显提高。
 
-# Use of Routing Tables and Policy Routing
-
+# 使用路由表和策略路由
   
 
-The main difference from v6 is that the routing table must be added to the `/routing table` menu before actually referencing it anywhere in the configuration.  And **fib** parameter should be specified if the routing table is intended to push routes to the  FIB.  
-The routing rule configuration is the same except for the menu location (instead of `/ip route rule`, now it is `/routing rule`).
+与v6的主要区别是，在配置中实际引用路由表之前，必须将其添加到 `/routing table` 菜单中。  如果路由表要推送路由到FIB，应该指定 **fib** 参数。 
+除了菜单的位置外，路由规则的配置是一样的（不是`/ip route rule`，现在是`/routing rule`）。
 
-Let's consider a basic example where we want to resolve 8.8.8.8 only in the routing table named myTable to the gateway 172.16.1.1:
+让我们考虑一个基本的例子，我们想在名为myTable的路由表中只解析8.8.8.8到网关172.16.1.1：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing table </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=myTable</code> <code class="ros plain">fib</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/routing rule </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=8.8.8.8</code> <code class="ros value">action</code><code class="ros plain">=lookup-only-in-table</code> <code class="ros value">table</code><code class="ros plain">=myTable</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=8.8.8.8</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@main</code> <code class="ros value">routing-table</code><code class="ros plain">=myTable</code></div></div></td></tr></tbody></table>
-
-  
-Instead of routing rules, you could use mangle to mark packets with routing-mark, the same way as it was in ROSv6.
-
-# OSPF Configuration
-
-OSPFv3 and OSPFv2 are now merged into one single menu `/routing ospf`. At the time of writing this article, there are no default instances and areas.  
-To start both OSPFv2 and OSPF v3 instances, first, you need to create an instance for each and then add an area to the instance.  
-  
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=v2inst</code> <code class="ros value">version</code><code class="ros plain">=2</code> <code class="ros value">router-id</code><code class="ros plain">=1.2.3.4</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=v3inst</code> <code class="ros value">version</code><code class="ros plain">=3</code> <code class="ros value">router-id</code><code class="ros plain">=1.2.3.4</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=backbone_v2</code> <code class="ros value">area-id</code><code class="ros plain">=0.0.0.0</code> <code class="ros value">instance</code><code class="ros plain">=v2inst</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=backbone_v3</code> <code class="ros value">area-id</code><code class="ros plain">=0.0.0.0</code> <code class="ros value">instance</code><code class="ros plain">=v3inst</code></div></div></td></tr></tbody></table>
+```shell
+/routing table add name=myTable fib
+/routing rule add dst-address=8.8.8.8 action=lookup-only-in-table table=myTable
+/ip route add dst-address=8.8.8.8 gateway=172.16.1.1@main routing-table=myTable
+```
 
   
+可以用mangle来代替路由规则，用routing-mark标记数据包，与ROSv6中的方式相同。
 
-At this point, you are ready to start OSPF on the network interface. In the case of IPv6, you add either interface on which you want to run OSPF (the same as ROSv6) or the IPv6 network. In the second case, OSPF will automatically detect the interface. Here are some interface configuration examples:
+# OSPF 配置
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">network</code><code class="ros plain">=192.168.0.0/24</code> <code class="ros value">area</code><code class="ros plain">=backbone_v2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">network</code><code class="ros plain">=2001:db8::/64</code> <code class="ros value">area</code><code class="ros plain">=backbone_v3</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">network</code><code class="ros plain">=ether1</code> <code class="ros value">area</code><code class="ros plain">=backbone_v3</code></div></div></td></tr></tbody></table>
-
-ROSv7 uses templates to match the interface against the template and apply configuration from the matched template.  OSPF menus `interface` and `neighbor` contains read-only entries purely for status monitoring.
-
-~All route distribution control is now done purely with routing filter select, no more redistribution knobs in the instance~ (Since the v7.1beta7 redistribution knob is back, you still need to use routing filters to set route costs and type if necessary). This gives greater flexibility on what routes from which protocols you want to redistribute.  
-For example, let's say you want to redistribute only static IPv4 routes from the 192.168.0.0/16 network range.  
+OSPFv3和OSPFv2现在合并到一个菜单 `/routing ospf`。在写这篇文章的时候，没有默认的实例和区域。 
+要同时启动OSPFv2和OSPFv3实例，要为每个实例创建一个实体，然后为实例添加一个区域。 
   
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+```shell
+/routing ospf instance
+add name=v2inst version=2 router-id=1.2.3.4
+add name=v3inst version=3 router-id=1.2.3.4
+/routing ospf area
+add name=backbone_v2 area-id=0.0.0.0 instance=v2inst
+add name=backbone_v3 area-id=0.0.0.0 instance=v3inst
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">backbone_v2 </code><code class="ros value">out-filter-chain</code><code class="ros plain">=ospf_out</code> <code class="ros value">redistribute</code><code class="ros plain">=static</code></div></div></td></tr></tbody></table>
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+在这里，已经准备好在网络接口上启动OSPF。在IPv6情况下，可以添加想运行OSPF的接口（与ROSv6相同）或IPv6网络。在第二种情况下，OSPF会自动检测接口。下面是一些接口配置的例子：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing filter rule </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=ospf_out</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (dst in 192.168.0.0/16) {accept}"</code></div></div></td></tr></tbody></table>
+```shell
+/routing ospf interface-template
+add network=192.168.0.0/24 area=backbone_v2
+add network=2001:db8::/64 area=backbone_v3
+add network=ether1 area=backbone_v3
+```
 
-The default action of the routing filter chain is "drop"
+ROSv7使用模板将接口与模板进行匹配，并应用匹配模板的配置。 OSPF菜单 `interface` 和 `neighbor` 包含只读条目，纯粹用于状态监控。
 
-# BGP Configuration
-
-There is a complete redesign of the BGP configuration compared to ROSv6. The first biggest difference is that there is no more `**instance**` and **`peer`** configuration menus. Instead, we have **`connection`**, **`template`** and **`session`** menus.  
-The reason for such a structure is to strictly split parameters that are responsible for connection and parameters that are BGP protocol specific.
-
-Let's start with the Template. It contains all BGP protocol-related configuration options. It can be used as a template for dynamic peers and apply a similar config to a group of peers. Note that this is not the same as peer groups on Cisco devices, where the group is more than just a common configuration.
-
-By default, there is a default template that requires you to set your own AS.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/bgp/template </code><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">as</code><code class="ros plain">=65533</code></div></div></td></tr></tbody></table>
-
-Starting from v7.1beta4 template parameters are exposed in the "connection" configuration. This means that the template is not mandatory anymore, allowing for an easier basic BGP connection setup, similar to what it was in ROSv6.
-
-Most of the parameters are similar to ROSv6 except that some are grouped in the output and input section making the config more readable and easier to understand whether the option is applied on input or output. If you are familiar with CapsMan then the syntax is the same, for example, to specify the output selection chain you set `output.filter-chain=myBgpChain`.
-
-You can even inherit template parameters from another template, for example:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/bgp/template</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=myAsTemplate</code> <code class="ros value">as</code><code class="ros plain">=65500</code> <code class="ros value">output.filter-chain</code><code class="ros plain">=myAsFilter</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">template</code><code class="ros plain">=myAsTemplate</code></div></div></td></tr></tbody></table>
-
-Another important aspect of the new routing configuration is the global Router ID, which sets router-id and group peers in one instance. RouterOS adds a default ID which picks instance-id from any interface's highest IP. The default BGP template by default is set to use the "default" ID.  
-If for any reason you need to tweak or add new instances it can be done in `/routing id` menu.  
+所有的路由分配控制现在纯粹是用路由过滤器选择完成的，在实例中不再有重分配旋钮（由于v7.1beta7的重分配旋钮回来了，需要使用路由过滤器来设置路由成本和类型（如果需要的话）。这具有更大的灵活性，想从哪些协议中重新分配什么路由。 
+例如，假设你只想重新分配192.168.0.0/16网络范围内的静态IPv4路由。 
   
 
-Very interesting parameters are **`input.``affinity`** `and` **`output.affinity`**, they allow control in which process input and output of active session will be processed:
+```shell
+/routing ospf instance
+set backbone_v2 out-filter-chain=ospf_out redistribute=static
+```
 
--   **alone** - input and output of each session are processed in its own process, most likely the best option when there are a lot of cores and a lot of peers
--   **afi, instance, vrf, remote-as** - try to run input/output of new session in process with similar parameters
--   **main** - run input/output in the main process (could potentially increase performance on single-core even possibly on multicore devices with small amount of cores)
--   **input** - run output in the same process as input (can be set only for output affinity)
+`/routing filter rule add chain=ospf_out rule="if (dst in 192.168.0.0/16) {accept}"`
 
-Now that we have parameters set for the template we can add BGP connections. A minimal set of parameters are `remote.address`, `template, connect`, `listen` and `local.role`
+路由过滤链的默认动作是"丢弃"
 
-Connect and listen to parameters specify whether peers will try to connect and listen to a remote address or just connect or just listen. It is possible that in setups where peer uses the multi-hop connection `local.address` must be configured too (similar as it was with `update-source` in ROSv6).
+# BGP配置
 
-It is not mandatory to specify a remote AS number. ROS v7 can determine remote ASN from an open message. You should specify the remote AS only when you want to accept a connection from that specific AS.
+与ROSv6相比，BGP的配置有一个完全的重新设计。第一个最大的区别是没有 **instance** 和 **peer** 配置菜单。取而代之的是 **connection**, **template**  和  **session** 菜单。 
+之所以采用这样的结构，是为了严格分割负责连接的参数和BGP协议的特定参数。
 
-Peer role is now a mandatory parameter, for basic setups, you can just use ibgp, ebgp (more information on available roles can be found in the corresponding RFC draft [https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-open-policy/?include\_text=1](https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-open-policy/?include_text=1)), keep in mind that at the moment capabilities, communities, and filtering described in the draft is not implemented.
+让我们从Template开始。它包含所有与BGP协议相关的配置选项。它可以作为动态对等体的模板，对一组对等体应用类似的配置。注意，这与思科设备上的对等体组不一样，在思科设备上，对等体组不仅仅是一个普通的配置。
 
-Very basic iBGP set up to listen on the whole local network for connections:
+默认情况下，有一个默认模板，需要设置自己的AS。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+`/routing/bgp/template set default as=65533`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/bgp/connection</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote.address</code><code class="ros plain">=10.155.101.0/24</code> <code class="ros value">listen</code><code class="ros plain">=yes</code> <code class="ros value">template</code><code class="ros plain">=default</code> <code class="ros value">local.role</code><code class="ros plain">=ibgp</code></div></div></td></tr></tbody></table>
+从v7.1beta4开始，模板参数在 "连接 "配置中显示。这意味着模板不再是强制性的，基本的BGP连接设置更加简单，类似于ROSv6中的情况。
 
-Now you can monitor the status of all connected and disconnected peers from `/routing bgp session` menu.
+大多数参数与ROSv6相似，只是有些参数被分组在输出和输入部分，使配置更易读，更容易理解该选项是应用在输入还是输出。如果你熟悉CapsMan，那么语法是一样的，例如，要指定输出选择链，你要设置 `output.filter-chain=myBgpChain`。
 
-Other great debugging information on all routing processes can be monitored from `/routing stats` menu
+也可以从另一个模板继承参数，例如：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+```shell
+/routing/bgp/template
+add name=myAsTemplate as=65500 output.filter-chain=myAsFilter
+set default template=myAsTemplate
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@v7_ccr_bgp] /routing/stats/process&gt; print interval=1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Columns: TASKS, PRIVATE-MEM-BLOCKS, SHARED-MEM-BLOCKS, PSS, RSS, VMS, RETIRED, ID, PID, RPID, PROCESS-TIME, KERNEL-TIME, CUR-B&gt;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain"># TASKS PRIVATE-M SHARED-ME PSS RSS VMS RET ID PID R PROCESS-TI KERN&gt;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">0 routing tables 12.2MiB 20.0MiB 18.7MiB 42.2MiB 83.4MiB 8 main 319 0 19s750ms 8s50&gt;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">rib &gt;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">connected networks &gt;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">1 fib 512.0KiB 0 7.4MiB 30.9MiB 83.4MiB fib 384 1 5s160ms 22s5&gt;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">2 ospf 1024.0KiB 1024.0KiB 5.9MiB 25.9MiB 83.4MiB 382 ospf 388 1 1m42s170ms 1m31&gt;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">connected networks &gt;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">3 fantasy 512.0KiB 0 2061.0KiB 5.9MiB 83.4MiB fantasy 389 1 1s410ms 870m&gt;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">4 configuration and reporting 40.0MiB 512.0KiB 45.0MiB 64.8MiB 83.4MiB static 390 1 12s550ms 1s17&gt;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text plain">5 rip 768.0KiB 0 5.3MiB 24.7MiB 83.4MiB rip 387 1 1s380ms 1s20&gt;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text plain">connected networks &gt;</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text plain">6 routing policy configuration 512.0KiB 256.0KiB 2189.0KiB 6.0MiB 83.4MiB policy 385 1 1s540ms 1s20&gt;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">7 BGP service 768.0KiB 0 2445.0KiB 6.2MiB 83.4MiB bgp 386 1 6s170ms 9s38&gt;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text plain">8 BGP Input 10.155.101.217 8.8MiB 6.0MiB 15.6MiB 38.5MiB 83.4MiB 20 21338 1 25s170ms 3s23&gt;</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text plain">BGP Output 10.155.101.217 &gt;</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="text plain">9 Global memory 256.0KiB global 0 0 &gt;</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="text plain">-- [Q quit|D dump|C-z pause|right]</code></div></div></td></tr></tbody></table>
-
-Route filtering differs a bit from ROSv6. In the BGP template, you can now specify output.filter-chain, output.filter-select, input.filter as well as several input.accept-\* options.
-
-Now input.accept-\* allows filtering incoming messages directly before they are even parsed and stored in memory, that way significantly reducing memory usage. Regular input filter chain can only reject prefixes which means that it will still eat memory and will be visible in /routing route table as "not active, filtered", 
-
-A very basic example of a BGP input filter to accept prefixes from 192.168.0.0/16 subnet without modifying any attributes. For other prefixes subtract 1 from the received local pref value and set IGP metric to value from OSPF ext. Additionally, we will accept only specific  prefixes from the address list to reduce memory usage
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/firewall/address-list</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">list</code><code class="ros plain">=bgp_list</code> <code class="ros value">dst-address</code><code class="ros plain">=192.168.1.0/24</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">list</code><code class="ros plain">=bgp_list</code> <code class="ros value">dst-address</code><code class="ros plain">=192.168.0.0/24</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">list</code><code class="ros plain">=bgp_list</code> <code class="ros value">dst-address</code><code class="ros plain">=172.16.0.0/24</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/routing/bgp/template</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">input.filter</code><code class="ros plain">=bgp_in</code> <code class="ros plain">.</code><code class="ros value">accept-nlri</code><code class="ros plain">=bgp_list</code></div></div></td></tr></tbody></table>
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (dst in 192.168.0.0/16) {accept}"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"set bgp-local-pref -1; set bgp-igp-metric ospf-ext-metric; accept"</code></div></div></td></tr></tbody></table>
-
-If the routing filter chain is not specified BGP will try to advertise every active route it can find in the routing table
-
-The default action of the routing filter chain is "drop"
-
-## Monitoring Advertisements
-
-RouterOS v7 by default disables monitoring of the BGP output. This allows to significantly reduce resource usage on setups with large routing tables.
-
-To be able to see output advertisements several steps should be taken:
-
--   enable "output.keep-sent-attributes" in BGP connection configuration
--   run "dump-saved-advertisements" from BGP session menu
--   view saved output from "/routing/stats/pcap" menu
-
+新的路由配置的另一个重要方面是全局的Router ID，在实例中设置router-id和组对等。RouterOS增加了一个默认ID，从任何接口的最高IP中挑选实例-id。默认的BGP模板被设置为使用 "默认 "ID。 
+如果出于任何原因需要调整或添加新的实例，可以在 `/routing id` 菜单中完成。 
   
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+非常有趣的参数是 **input.affinity** 和 **output.affinity**，它们允许控制活动会话的输入和输出将在哪个进程中被处理：
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/routing/bgp/connection&gt;&nbsp; </code><code class="ros functions">set </code><code class="ros plain">0 </code><code class="ros value">output.keep-sent-attributes</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/routing/bgp/session&gt; </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: E - established</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 E </code><code class="ros value">remote.address</code><code class="ros plain">=10.155.101.183</code> <code class="ros plain">.</code><code class="ros value">as</code><code class="ros plain">=444</code> <code class="ros plain">.</code><code class="ros value">id</code><code class="ros plain">=192.168.44.2</code> <code class="ros plain">.</code><code class="ros value">refused-cap-opt</code><code class="ros plain">=no</code> <code class="ros plain">.</code><code class="ros value">capabilities</code><code class="ros plain">=mp,rr,gr,as4</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">.</code><code class="ros value">afi</code><code class="ros plain">=ip,ipv6</code> <code class="ros plain">.</code><code class="ros value">messages</code><code class="ros plain">=4</code> <code class="ros plain">.</code><code class="ros value">bytes</code><code class="ros plain">=219</code> <code class="ros plain">.</code><code class="ros value">eor</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">local.address</code><code class="ros plain">=10.155.101.186</code> <code class="ros plain">.</code><code class="ros value">as</code><code class="ros plain">=456</code> <code class="ros plain">.</code><code class="ros value">id</code><code class="ros plain">=10.155.255.186</code> <code class="ros plain">.</code><code class="ros value">capabilities</code><code class="ros plain">=mp,rr,gr,as4</code> <code class="ros plain">.</code><code class="ros value">afi</code><code class="ros plain">=ip,ipv6</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">.</code><code class="ros value">messages</code><code class="ros plain">=1</code> <code class="ros plain">.</code><code class="ros value">bytes</code><code class="ros plain">=19</code> <code class="ros plain">.</code><code class="ros value">eor</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">output.procid</code><code class="ros plain">=66</code> <code class="ros plain">.</code><code class="ros value">filter-chain</code><code class="ros plain">=bgp_out</code> <code class="ros plain">.</code><code class="ros value">network</code><code class="ros plain">=bgp-nets</code> <code class="ros plain">.</code><code class="ros value">keep-sent-attributes</code><code class="ros plain">=yes</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">input.procid</code><code class="ros plain">=66</code> <code class="ros plain">ebgp</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">hold-time</code><code class="ros plain">=3m</code> <code class="ros value">keepalive-time</code><code class="ros plain">=1m</code> <code class="ros value">uptime</code><code class="ros plain">=4s30ms</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/routing/bgp/session&gt; dump-saved-advertisements 0 save-to=test_out.pcap</code></div></div></td></tr></tbody></table>
+- **alone** - 每个会话的输入和输出都在自己的进程中处理，当有很多内核和很多对等体时，这可能是最好的选择。
+- **afi, instance, vrf, remote-as** - 尝试在具有类似参数的进程中运行新会话的输入/输出。
+- **main** - 在主进程中运行输入/输出（可能会提高单核的性能，甚至可能在具有少量内核的多核设备上）。
+- **input** - 在与输入相同的进程中运行输出（可以只为输出亲和力设置）。
 
-## Networks
+现在我们已经为模板设置了参数，我们可以添加BGP连接。一组最小的参数是 `remote.address`, `template, connect`, `listen` 和 `local.role`。
 
-Lastly, you might notice that the **`network`** menu is missing and probably wondering how to advertise your own networks. Now networks are added to the firewall address-list and referenced in the BGP configuration.  
-Following ROSv6 network configuration:
+连接和监听参数指定对等体是否将尝试连接和监听远程地址，或者只是连接或只是监听。在对等体使用多跳连接的情况下，`local.address` 也必须配置（类似于ROSv6中的`update-source`）。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+指定一个远程AS号码不是强制性的。ROS v7可以从一个开放的消息中确定远程ASN。只有想接受来自该特定AS的连接时，才应该指定远程AS。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp network </code><code class="ros functions">add </code><code class="ros value">network</code><code class="ros plain">=192.168.0.0/24</code> <code class="ros value">synchronize</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.0.0/24</code> <code class="ros value">type</code><code class="ros plain">=blackhole</code></div></div></td></tr></tbody></table>
+对等体角色现在是一个强制参数，对于基本设置，可以只使用ibgp、ebgp（关于可用角色的更多信息可以在相应的RFC草案 [https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-open-policy/?include\_text=1](https://datatracker.ietf.org/doc/draft-ietf-idr-bgp-open-policy/?include_text=1) 中找到），目前草案中描述的能力、社区和过滤功能还没有实现。
+
+非常基本的iBGP设置是在整个本地网络上监听连接：
+
+```shell
+/routing/bgp/connection
+add remote.address=10.155.101.0/24 listen=yes template=default local.role=ibgp
+```
+
+现在你可以从 `/routing bgp session` 菜单监控所有连接和断开的对等体的状态。
+
+所有路由进程的其他重要调试信息可以从 `/routing stats` 菜单中监控。
+
+```shell
+[admin@v7_ccr_bgp] /routing/stats/process> print interval=1
+Columns: TASKS, PRIVATE-MEM-BLOCKS, SHARED-MEM-BLOCKS, PSS, RSS, VMS, RETIRED, ID, PID, RPID, PROCESS-TIME, KERNEL-TIME, CUR-B>
+# TASKS PRIVATE-M SHARED-ME PSS RSS VMS RET ID PID R PROCESS-TI KERN>
+0 routing tables 12.2MiB 20.0MiB 18.7MiB 42.2MiB 83.4MiB 8 main 319 0 19s750ms 8s50>
+rib >
+connected networks >
+1 fib 512.0KiB 0 7.4MiB 30.9MiB 83.4MiB fib 384 1 5s160ms 22s5>
+2 ospf 1024.0KiB 1024.0KiB 5.9MiB 25.9MiB 83.4MiB 382 ospf 388 1 1m42s170ms 1m31>
+connected networks >
+3 fantasy 512.0KiB 0 2061.0KiB 5.9MiB 83.4MiB fantasy 389 1 1s410ms 870m>
+4 configuration and reporting 40.0MiB 512.0KiB 45.0MiB 64.8MiB 83.4MiB static 390 1 12s550ms 1s17>
+5 rip 768.0KiB 0 5.3MiB 24.7MiB 83.4MiB rip 387 1 1s380ms 1s20>
+connected networks >
+6 routing policy configuration 512.0KiB 256.0KiB 2189.0KiB 6.0MiB 83.4MiB policy 385 1 1s540ms 1s20>
+7 BGP service 768.0KiB 0 2445.0KiB 6.2MiB 83.4MiB bgp 386 1 6s170ms 9s38>
+8 BGP Input 10.155.101.217 8.8MiB 6.0MiB 15.6MiB 38.5MiB 83.4MiB 20 21338 1 25s170ms 3s23>
+BGP Output 10.155.101.217 >
+9 Global memory 256.0KiB global 0 0 >
+-- [Q quit|D dump|C-z pause|right]
+```
+
+路由过滤与ROSv6有一些不同。在BGP模板中，你现在可以指定output.filter-chain、output.filter-select、input.filter以及几个input.accept-\*选项。
+
+现在input.accept-*允许在传入的消息被解析并存储在内存中之前直接进行过滤，这样可以大大减少内存的使用。常规的输入过滤链只能拒绝前缀，这意味着它仍然会占用内存，并在/routing路由表中显示为 "未激活，已过滤"、 
+
+一个非常基本的BGP输入过滤器的例子，接受来自192.168.0.0/16子网的前缀而不修改任何属性。对于其他前缀，从收到的本地pref值中减去1，并将IGP度量设置为OSPF ext的值。 此外，只接受地址列表中的特定前缀，以减少内存的使用。
+
+```shell
+/ip/firewall/address-list
+add list=bgp_list dst-address=192.168.1.0/24
+add list=bgp_list dst-address=192.168.0.0/24
+add list=bgp_list dst-address=172.16.0.0/24
+ 
+/routing/bgp/template
+set default input.filter=bgp_in .accept-nlri=bgp_list
+```
+
+```shell
+/routing/filter/rule
+add chain=bgp_in rule="if (dst in 192.168.0.0/16) {accept}"
+add chain=bgp_in rule="set bgp-local-pref -1; set bgp-igp-metric ospf-ext-metric; accept"
+```
+
+如果没有指定路由过滤链，BGP将尝试公布它在路由表中能找到的所有活动路由。
+
+路由过滤链的默认动作是 "丢弃"
+
+## 监控广告
+
+RouterOS v7默认关闭了对BGP输出的监控。可以大大减少具有大型路由表的设置中的资源使用。
+
+为了能够看到输出广告，应该采取几个步骤：
+
+- 在BGP连接配置中启用 "output.keep-sent-attributes"。
+- 从BGP会话菜单中运行 "dump-saved-advertisements"。
+- 从"/routing/stats/pcap "菜单中查看保存的输出。
+
+```shell
+[admin@arm-bgp] /routing/bgp/connection>  set 0 output.keep-sent-attributes=yes
+[admin@arm-bgp] /routing/bgp/session> print
+Flags: E - established
+ 0 E remote.address=10.155.101.183 .as=444 .id=192.168.44.2 .refused-cap-opt=no .capabilities=mp,rr,gr,as4
+     .afi=ip,ipv6 .messages=4 .bytes=219 .eor=""
+     local.address=10.155.101.186 .as=456 .id=10.155.255.186 .capabilities=mp,rr,gr,as4 .afi=ip,ipv6
+     .messages=1 .bytes=19 .eor=""
+     output.procid=66 .filter-chain=bgp_out .network=bgp-nets .keep-sent-attributes=yes
+     input.procid=66 ebgp
+     hold-time=3m keepalive-time=1m uptime=4s30ms
+ 
+[admin@arm-bgp] /routing/bgp/session> dump-saved-advertisements 0 save-to=test_out.pcap
+```
+
+## 网络
+
+最后，你可能注意到 **network** 菜单不见了，可能想知道如何广播自己的网络。现在网络添加到防火墙地址列表中，并在BGP配置中引用。 
+以下是ROSv6网络配置：
+
+```shell
+/routing bgp network add network=192.168.0.0/24 synchronize=yes
+/ip route add dst-address=192.168.0.0/24 type=blackhole
+```
 
 would translate to v7 as:
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+```shell
+/ip/firewall/address-list/
+add list=bgp-networks address=192.168.0.0/24
+ 
+/ip/route
+add dst-address=192.168.0.0/24 blackhole
+ 
+/routing/bgp/connection
+set peer_name output.network=bgp-networks
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip/firewall/address-list/</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">list</code><code class="ros plain">=bgp-networks</code> <code class="ros value">address</code><code class="ros plain">=192.168.0.0/24</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip/route</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.0.0/24</code> <code class="ros plain">blackhole</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/routing/bgp/connection</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">peer_name </code><code class="ros value">output.network</code><code class="ros plain">=bgp-networks</code></div></div></td></tr></tbody></table>
+当只添加一个网络时，需要做更多的配置，当必须处理大量的网络时，则提供了简单性。 
 
-There is more configuration to be done when adding just one network but offers simplicity when you have to deal with a large number of networks. v7 even allows specifying for each BGP connection its own set of networks. 
+在v7中，不可能关闭与IGP路由的同步（只有当路由表中存在相应的IGP路由时，网络才会被公布）。
 
-In v7 it is not possible to turn off synchronization with IGP routes (the network will be advertised only if the corresponding IGP route is present in the routing table).
+# 路由过滤器
 
-# Routing Filters
+从ROSv7.1beta4开始，路由过滤器的配置被改为类似脚本的配置。规则现在可以有 "if ... then "的语法，根据 "if "语句的条件设置参数或应用动作。
 
-Starting from ROSv7.1beta4, the routing filter configuration is changed to a script-like configuration. The rule now can have "if .. then" syntax to set parameters or apply actions based on conditions from the "if" statement.
-
-Multiple rules without action are stacked in a single rule and executed in order like a firewall, the reason is that the "set" parameter order is important and writing one "set"s per line, allows for an easier understanding from top to bottom on what actions were applied.  
+多个没有动作的规则被堆叠在一个规则中，像防火墙一样按顺序执行，原因是 "设置 "参数的顺序很重要，每行写一个 "设置"，可以让人从上到下更容易理解应用了什么动作。 
   
-For example, match static default route and apply action accept can be written in one config rule:
+例如，匹配静态默认路由和应用接受动作可以写在一条配置规则中：
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=ospf_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (dst==0.0.0.0/0 &amp;&amp; protocol static) { accept }"</code></div></div></td></tr></tbody></table>
-
-  
-For example, ROSv6 rule "/routing filter add chain=ospf\_in prefix=172.16.0.0/16 prefix-length=24 protocol=static action=accept" converted to ROSv7 would be:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=ospf_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (dst in 172.16.0.0/16 &amp;&amp; dst-len==24 &amp;&amp; protocol static) { accept }"</code></div></div></td></tr></tbody></table>
-
-Another example, to match prefixes from the 172.16.0.0/16 range with prefix length equal to 24 and set BGP med and prepend values
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=BGP_OUT</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros plain">"</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros value">dst-len</code><code class="ros plain">==24</code> <code class="ros plain">&amp;&amp; dst </code><code class="ros variable">in</code> <code class="ros color1">172.16.0.0/16</code><code class="ros plain">) { \n</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros functions">set </code><code class="ros plain">bgp-med 20; </code><code class="ros functions">set </code><code class="ros plain">bgp-path-prepend 2; accept }"</code></div></div></td></tr></tbody></table>
+```shell
+/routing/filter/rule
+add chain=ospf_in rule="if (dst==0.0.0.0/0 && protocol static) { accept }"
+```
 
   
+例如，ROSv6规则"/routing filter add chain=ospf\_in prefix=172.16.0.0/16 prefix-length=24 protocol=static action=accept "转换为ROSv7时将是这样的：
 
-It is also possible to match prefix length range like this
+```shell
+/routing/filter/rule
+add chain=ospf_in rule="if (dst in 172.16.0.16 && dst-len==24 && protocol static) { accept }"
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+另一个例子从172.16.0.0/16范围内匹配前缀长度等于24的前缀，并设置BGP的med和prepend值
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=BGP_OUT</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (dst-len&gt;13 &amp;&amp; dst-len&lt;31 &amp;&amp; dst in 172.16.0.0/16) { accept }"</code></div></div></td></tr></tbody></table>
-
-  
-Filter rules now can be used to match or set communities,  large communities, and extended communities from the community list:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"set bgp-large-communities 200001:200001:10 "</code></div></div></td></tr></tbody></table>
-
-If there are a lot of community sets, that need to be applied in multiple rules, then it is possible to define community sets and use them to match or set:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/large-community-</code><code class="ros plain">set</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">set</code><code class="ros plain">=myLargeComSet</code> <code class="ros value">communities</code><code class="ros plain">=200001:200001:10</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"append bgp-large-communities myLargeComSet "</code></div></div></td></tr></tbody></table>
-
+```shell
+/routing/filter/rule
+add chain=BGP_OUT rule="if (dst-len==24 && dst in 172.16.0.0/16) { \n
+    set bgp-med 20; set bgp-path-prepend 2; accept }"
+```
   
 
-Since route-target is encoded in extended community attribute to change or match RT you need to operate on extended community attribute, for example:
+也可以像这样来匹配前缀的长度范围
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+```shell
+/routing/filter/rule
+add chain=BGP_OUT rule="if (dst-len>13 && dst-len<31 && dst in 172.16.0.0/16) { accept }"
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"set bgp-ext-communities rt:327824:20 "</code></div></div></td></tr></tbody></table>
+  
+现在可以用过滤规则来匹配或设置社区、大型社区和社区列表中的扩展社区：
+
+```shell
+/routing/filter/rule
+add chain=bgp_in rule="set bgp-large-communities 200001:200001:10 "
+```
+
+如果有很多社区集需要在多个规则中应用，可以定义社区集，用它们来匹配或设置：
+
+```shell
+/routing/filter/large-community-set
+add set=myLargeComSet communities=200001:200001:10
+ 
+ 
+/routing/filter/rule
+add chain=bgp_in rule="append bgp-large-communities myLargeComSet "
+```
+
+  
+
+由于路由目标是在扩展社区属性中编码的，要改变或匹配RT，需要对扩展社区属性进行操作，比如说：
+
+```shell
+/routing/filter/rule
+add chain=bgp_in rule="set bgp-ext-communities rt:327824:20 "
+```
 
 # RPKI
 
-RouterOS implements an RTR client. You connect to the server which will send route validity information. This information then can be used to validate routes in route filters against a group with "rpki-validate" and further in filters "match-rpki" can be used to match the exact state.
+RouterOS实现了一个RTR客户端。你连接到服务器，它将发送路由的有效性信息。这个信息可以用来在路由过滤器中用 "rpki-validate "来验证路由，进一步在过滤器中用 "match-rpki "来匹配确切的状态。
 
-For more info refer to the [RPKI](https://help.mikrotik.com/docs/display/ROS/RPKI) documentation.
+更多信息请参考 [RPKI](https://help.mikrotik.com/docs/display/ROS/RPKI) 文档。
 
-# RIP Configuration
+# RIP 配置
 
-To start RIP, the instance should be configured. There you should select which routes will be redistributed by RIP and if it will redistribute the default route.
+要启动 RIP，应该配置好实例。在那里应该选择哪些路由将被 RIP 重新分配，以及是否会重新分配默认路由。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+```shell
+/routing/rip/instance
+add name=instance1 originate-default=never redistribute=connected,static ;
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/rip/instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=instance1</code> <code class="ros value">originate-default</code><code class="ros plain">=never</code> <code class="ros value">redistribute</code><code class="ros plain">=connected,static&nbsp;</code><code class="ros plain">;</code></div></div></td></tr></tbody></table>
+应该配置接口-模板。在ROS第7版中不需要像第6版那样定义网络。
 
-Then interface-template should be configured. There is no need to define networks in ROS version 7 as it was in version 6.
+```shell
+/routing/rip/interface-template
+add interfaces=ether1 instance=instance1
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Moving+from+ROSv6+to+v7+with+examples#)
+现在路由器上完成了基本配置。RIP 邻居路由器应该以类似的方式进行配置。 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/rip/interface-template</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interfaces</code><code class="ros plain">=ether1</code> <code class="ros value">instance</code><code class="ros plain">=instance1</code></div></div></td></tr></tbody></table>
+在ROS v7中，只有当有路由要发送或接收时，邻居才会出现。
 
-Now the basic configuration is completed on one router. RIP neighbor router should be configured in a similar way. 
-
-In ROS v7 the neighbors will appear only when there are routes to be sent or/and to be received.
-
-  
-
-Prefix lists from ROSv6 are deprecated, now all the filtering must be done by the routing filters.
+ROSv6的前缀列表已被废弃，现在所有的过滤必须由路由过滤器完成。

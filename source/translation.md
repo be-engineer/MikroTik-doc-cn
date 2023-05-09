@@ -15,7 +15,7 @@
 | 11.  | Management tools                            | be-engineer | 90%  | 2023/04/26~2023/04/28 |
 | 12.  | Mobile Networking                           | be-engineer | 90%  | 2023/04/28~2023/04/28 |
 | 13.  | Network Management                          | be-engineer | 90%  | 2023/05/04~2023/05/05 |
-| 14.  | Routing                                     | be-engineer | 0%   | ?                     |
+| 14.  | Routing                                     | be-engineer | 50%  | 2023/05/08~2023/05/?  |
 | 15.  | Multi Protocol Label Switching (MPLS)       | be-engineer | 0%   | ?                     |
 | 16.  | System Information and Utilities            | be-engineer | 0%   | ?                     |
 | 17.  | Virtual Private Networks                    | be-engineer | 0%   | ?                     |
