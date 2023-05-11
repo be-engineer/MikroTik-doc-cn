@@ -80,20 +80,20 @@
 
 下面的汇总表可以为你的应用选择合适的电缆。
 
-| No handshake                                 | Loopback handshake | Partial  handshake | Full  handshake |
-| -------------------------------------------- | ------------------ | ------------------ | --------------- | --- |
-| RouterBoards with limited port functionality | Y                  | Y                  | N               | N   |
-| RouterBoards   with full functionality       | Y                  | Y                  | Y               | N   |
+| 无握手                     | 回环握手 | 部分握手 | 完全握手 |
+| -------------------------- | -------- | -------- | -------- | --- |
+| 端口功能有限的RouterBoards | Y        | Y        | N^1^     | N   |
+| 全功能的RouterBoards       | Y        | Y        | Y        | N   |
 
-1. 只有硬件流量控制被禁用时才可能工作
+1. 只有硬件流控禁用时才能工作
 
   
-| No handshake                                        | Loopback  handshake | Partial handshake | Full  handshake |
-| --------------------------------------------------- | ------------------- | ----------------- | --------------- | ------------- |
-| Software flow control only                          | Y                   | Y<sup>1</sup>     | Y<sup>2</sup>   | Y<sup>2</sup> |
-| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y<sup>1</sup>   | N             |
-| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y<sup>2</sup>   | N             |
-| High speed communication using special software     | N                   | N                 | Y<sup>1</sup>   | Y             |
+| 无握手                  | 回环握手 | 部分握手 | 完全握手 |
+| ----------------------- | -------- | -------- | -------- | ---- |
+| 软件流控                | Y        | Y^1^     | Y^2^     | Y^2^ |
+| 低速DTE/DCE兼容硬件流控 | N        | Y        | Y^1^     | N    |
+| 高速DTE/DCE兼容硬件流控 | N        | Y        | Y^2^     | N    |
+| 使用特殊软件的高速通信  | N        | N        | Y^1^     | Y    |
 
 1. 可以作为替代方案使用
 2. 可以使用，但不建议使用
