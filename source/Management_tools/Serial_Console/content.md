@@ -82,7 +82,7 @@
 
 | No handshake                                 | Loopback handshake | Partial  handshake | Full  handshake |
 | -------------------------------------------- | ------------------ | ------------------ | --------------- | --- |
-| RouterBoards with limited port functionality | Y                  | Y                  | N<sup>1</sup>   | N   |
+| RouterBoards with limited port functionality | Y                  | Y                  | N               | N   |
 | RouterBoards   with full functionality       | Y                  | Y                  | Y               | N   |
 
 1. 只有硬件流量控制被禁用时才可能工作
@@ -100,7 +100,7 @@
 
 ## RJ45串口
 
-这种类型的端口用于RouterBOARD 2011、3011、4011、CCR1072、CCR1036 r2、CCR2xxx和CRS系列设备，有时被称为 "思科式"串行端口。
+这种类型的端口用于RouterBOARD 2011、3011、4011、CCR1072、CCR1036 r2、CCR2xxx和CRS系列设备，有时被称为 "思科式"串口。
 
 RJ45到DB9电缆引脚：
 
@@ -142,12 +142,12 @@ RouterOS允许使用 `/system serial-terminal` 命令与通过串口连接到路
 
 请确保只是禁用控制台，而不是删除，当真正删除它时，RouterOS会在下次重启后重新创建控制台。
 
-**注意，有一些注意事项是你应该注意的! 花点时间了解这些限制，以避免在将设备连接到RouterBoard的串行端口时发生奇怪的事情：**。
+**注意，有一些注意事项是你应该注意的! 花点时间了解这些限制，以避免在将设备连接到RouterBoard的串行端口时发生奇怪的事情：**
 
 - 通过重新配置RouterBoard上的Serial0端口，如上图所示，你会失去对RouterOS的串行控制台访问。这意味着如果不能再通过网络访问你的RouterBoard，甚至可能不得不重新设置它的整个配置以再次获得访问权。
 - 当重启RouterBoard时，启动加载器（RouterBOOT）将始终使用串行控制台（RouterBoards上的Serial0）来发送一些启动信息并提供对RouterBOOT菜单的访问。
     
-    让文本从串行端口出来到所连接的设备上，可能会使你所连接的设备感到困惑。此外，在标准配置中，你可以通过按 **任意** 键进入RouterBOOT菜单。因此，如果你的串行设备在启动时向RouterBoard的串行端口发送任何字符，RouterBoard将进入RouterBOOT菜单，除非你手动干预，否则将 **不** 启动RouterOS!
+    让文本从串行端口出来到所连接的设备上，可能会使连接的设备感到困惑。此外，在标准配置中，可以通过按 **任意** 键进入RouterBOOT菜单。因此，如果串行设备在启动时向RouterBoard的串行端口发送任何字符，RouterBoard将进入RouterBOOT菜单，除非手动干预，否则将 **不** 启动RouterOS!
     
     可以重新配置RouterBOOT，使其只在收到 **DEL** 字符时才进入RouterBOOT菜单-用这个方法来减少重启时路由器卡住的机会!
     
