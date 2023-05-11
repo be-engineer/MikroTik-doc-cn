@@ -78,24 +78,25 @@
 
 ## 空调制解调器兼容性
 
-下面的汇总表将使你能够为你的应用选择合适的电缆。
+下面的汇总表可以为你的应用选择合适的电缆。
 
 | No handshake                                 | Loopback handshake | Partial  handshake | Full  handshake |
 | -------------------------------------------- | ------------------ | ------------------ | --------------- | --- |
-| RouterBoards with limited port functionality | Y                  | Y                  | N\*             | N   |
+| RouterBoards with limited port functionality | Y                  | Y                  | N<sup>1</sup>   | N   |
 | RouterBoards   with full functionality       | Y                  | Y                  | Y               | N   |
 
-\* 只有硬件流量控制被禁用时才可能工作
+1. 只有硬件流量控制被禁用时才可能工作
 
   
 | No handshake                                        | Loopback  handshake | Partial handshake | Full  handshake |
-| --------------------------------------------------- | ------------------- | ----------------- | --------------- | ---- |
-| Software flow control only                          | Y                   | Y*                | Y\**            | Y\** |
-| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y\*             | N    |
-| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y\**            | N    |
-| High speed communication using special software     | N                   | N                 | Y\*             | Y    |
-\* 可以作为替代方案使用
-\** 可以使用，但不建议使用
+| --------------------------------------------------- | ------------------- | ----------------- | --------------- | ------------- |
+| Software flow control only                          | Y                   | Y<sup>1</sup>     | Y<sup>2</sup>   | Y<sup>2</sup> |
+| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y<sup>1</sup>   | N             |
+| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y<sup>2</sup>   | N             |
+| High speed communication using special software     | N                   | N                 | Y<sup>1</sup>   | Y             |
+
+1. 可以作为替代方案使用
+2. 可以使用，但不建议使用
 
 ## RJ45串口
 
