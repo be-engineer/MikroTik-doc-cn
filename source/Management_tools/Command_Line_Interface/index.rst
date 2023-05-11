@@ -1,4 +1,4 @@
-Command Line interface
+命令行接口
 ===============================
 
 .. toctree::

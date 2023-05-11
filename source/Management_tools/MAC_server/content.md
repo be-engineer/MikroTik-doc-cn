@@ -6,7 +6,7 @@ MAC Winbox用于通过MAC地址提供Winbox对路由器的访问。
 
 MAC Ping用于允许MAC ping到路由器的MAC地址。
 
-**MAC-服务器** 设置包含在 "系统 "包中。
+**MAC-服务器** 设置包含在 "system"包中。
 
 ## MAC Telnet 服务器
 
@@ -37,7 +37,7 @@ MAC Ping用于允许MAC ping到路由器的MAC地址。
 0 ether5 64:D1:54:FB:E3:E6 17s
 ```
 
-### MAC Telnet Client
+### MAC Telnet客户端
 
 当MAC Telnet服务器启用时，可以用另一台RouterOS设备，用mac-telnet客户端连接到服务器：
 
@@ -120,7 +120,7 @@ MAC Ping服务器可以设置为 "禁用 "或 "启用"：
   enabled: yes
 ```
 
-可以在命令的帮助下启用或禁用MAC ping（**enable=yes**→启用该功能；**enable=no**→禁用该功能）：
+可以在命令的帮助下启用或禁用MAC ping（**enable=yes** →启用该功能；**enable=no** →禁用该功能）：
 
 ```shell
 [admin@device] > tool mac-server ping set enabled=yes

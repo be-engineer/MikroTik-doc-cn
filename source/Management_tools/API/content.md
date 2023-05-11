@@ -32,7 +32,7 @@ API-ssl服务能够以两种模式工作-有证书和无证书。如果在 _/ip 
 - 如果字的第一个字节是 **>=0xF8**，那么就是一个保留控制字节。在收到未知的控制字节后，API客户端无法继续，因为不知道如何解释下面的字节；
 - 目前控制字节不使用；
 
-一般来说，_字_可以这样描述《编码的字长》《字内容》。字内容可以分成5个部分： [命令词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Commandword), [属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Attributeword), [API属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-APIattributeword). [查询词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Queryword),和[回复词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Replyword)。
+一般来说，_字_ 可以这样描述《编码的字长》《字内容》。字内容可以分成5个部分： [命令词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Commandword), [属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Attributeword), [API属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-APIattributeword). [查询词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Queryword),和 [回复词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Replyword)。
 
 #### 命令词
 
@@ -162,11 +162,11 @@ API句子是使用API进行通信的主要对象。
 - 空的句子会被忽略。
 - 句子在收到零长度的单词后被处理。
 - 客户端在登录之前可以发送的句子的数量和大小是有限制的。
-- 属性词的顺序不应该被依赖。因为顺序和数量是可以通过_.proplist_属性改变的。
+- 属性词的顺序不应该被依赖。因为顺序和数量是可以通过 _.proplist_ 属性改变的。
 - 句子结构如下：
     - 第一个词应包含一个 _命令词_；
     - 应包含 _零长度的词_ 来终止句子；
-    - 可以不包含或包含几个 _属性词_。属性词在句子中的发送顺序没有特别规定，顺序对_属性词_来说并不重要；
+    - 可以不包含或包含几个 _属性词_。属性词在句子中的发送顺序没有特别规定，顺序对 _属性词_ 来说并不重要；
     - 可以不包含或包含几个 _查询词_。句子中的_查询词_的顺序很重要。
 
 零长度词是句子的终点。如果没有提供这个词，路由器将不评估发送的词，并将所有的输入视为同一个句子的一部分。
@@ -184,7 +184,7 @@ v6.43之后的登录方法：
  
 - 现在，客户在第一条信息中发送一个用户名和密码。
 - 密码是以纯文本形式发送的。
-- 如果出现错误，回复中包含=message= _error message_。
+- 如果出现错误，回复中包含 =message= error message。
 - 在登录成功的情况下，客户端可以开始发布命令。
 
 ## 标签
@@ -231,15 +231,15 @@ print命令接受限制返回句子集的查询词。 
 - 一个查询是用一个布尔值的堆栈来评估的。最初，堆栈包含无限量的 "真 "值。在评估结束时，如果堆栈中至少有一个 "假 "值，则查询失败。
 - 查询词按照以下规则操作：
 
-| 查询               | 说明                                                                                                                                                                                                                                                                                                                                         |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **?name**          | 如果一个项目有属性 _name_ 值，则推送'true'，如果没有则推送'false'。                                                                                                                                                                                                                                                                          |
-| **?-name**         | 如果一个项目没有属性 _name_ 值，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                              |
-| **?_name_=_x_**    | **?                                                                                                                                                                                                                                                                                                                                          |
-| **?=_name_=_x_**   | 如果属性 _name_ 的值等于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
-| **?<name=_x_**     | 如果属性 _name_ 的值小于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
-| **?>name=_x_**     | 如果属性 _name_ 的值大于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                |
-| **?#_operations_** | 将操作用于堆栈中的值。<br>- 操作字符串从左到右进行评估。<br>- 小数点后的任何其他字符或字尾的序列被解释为堆栈索引。 最上面的值有索引0。<br>- 后面是一个字符的索引，推送该索引的值的副本。<br>- 后面是字尾的索引，用该索引的值替换所有的值。<br>- **!** 字符用相反的值替换顶部的值。<br>- **&** 弹出两个值并推送逻辑 "和 "操作的结果。<br>- ** | ** 弹出两个值，并推送逻辑 "或 "操作的结果。<br>- **.** 在一个索引之后不做任何事情。<br>- **.** 在另一个字符后推送一个顶层值的副本。 |
+| 查询               | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **?name**          | 如果一个项目有属性 _name_ 值，则推送'true'，如果没有则推送'false'。                                                                                                                                                                                                                                                                                                                                                                                               |
+| **?-name**         | 如果一个项目没有属性 _name_ 值，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **?_name_=_x_**    | **?                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **?=_name_=_x_**   | 如果属性 _name_ 的值等于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **?<name=_x_**     | 如果属性 _name_ 的值小于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **?>name=_x_**     | 如果属性 _name_ 的值大于 _x_，则推送'true'，否则推送'false'。                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **?#_operations_** | 将操作用于堆栈中的值。<br>- 操作字符串从左到右进行评估。<br>- 小数点后的任何其他字符或字尾的序列被解释为堆栈索引。 最上面的值有索引0。<br>- 后面是一个字符的索引，推送该索引的值的副本。<br>- 后面是字尾的索引，用该索引的值替换所有的值。<br>- **!** 字符用相反的值替换顶部的值。<br>- & 弹出两个值并推送逻辑 "和 "操作的结果。<br>- \| 弹出两个值，并推送逻辑 "或 "操作的结果。<br>- . 在一个索引之后不做任何事情。<br>- . 在另一个字符后推送一个顶层值的副本。 |
 
   
 
@@ -265,7 +265,7 @@ API中不支持正则表达式，所以不要用 **~** 符号来查询。
 
 ```
 
--   [Forum thread with a detailed explanation of the use of queries](http://forum.mikrotik.com/viewtopic.php?f=2&t=72298)
+-   [论坛主题，对查询的使用进行了详细解释](http://forum.mikrotik.com/viewtopic.php?f=2&t=72298)
 
 ### OID
 
@@ -521,11 +521,11 @@ debian@localhost:~/api-test$ ./api.py 10.0.0.1 admin ''
 
 ### API examples
 
-不同语言的API实现，由不同来源提供。它们不以任何特定的顺序排列。
+不同语言的API实现，由不同来源提供。不以特定顺序排列。
 
 -   [in Python3](https://help.mikrotik.com/docs/display/ROS/Python3+Example) by MikroTik
 -   [in .NET (C#) high-level API solution](https://github.com/danikf/tik4net) [forum thread](http://forum.mikrotik.com/viewtopic.php?f=9&t=99954) [additional info](https://github.com/danikf/tik4net/wiki) by danikf
--   [in PHP](https://sourceforge.net/projects/netrouteros/) by boen\_robot
+-   [in PHP](https://sourceforge.net/projects/netrouteros/) by boen_robot
 -   [in C](https://github.com/haakonnessjoen/librouteros-api) by Håkon Nessjøen
 -   [in Java](https://github.com/GideonLeGrange/mikrotik-java) by Gideon LeGrange
 -   [in Erlang](https://github.com/comtihon/erotik) by Valery Comtihon

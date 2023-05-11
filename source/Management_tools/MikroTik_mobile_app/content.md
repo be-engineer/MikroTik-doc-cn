@@ -4,7 +4,7 @@
 
 ## 下载应用程序
 
-MikroTik应用程序可在App Store和Google Play上下载，请参见我们的网页 [页面软件部分](https://mikrotik.com/mobile_app) 以获取直接下载链接或扫描QR码。
+MikroTik应用程序可在App Store和Google Play上下载，请参见网页 [软件部分](https://mikrotik.com/mobile_app) 获取下载链接或扫描QR码。
 
 使用MikroTik智能手机应用程序在现场配置路由器，或者为MikroTik家庭接入点应用最基本的初始设置。
 

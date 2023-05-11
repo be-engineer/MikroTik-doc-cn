@@ -1,4 +1,4 @@
-IPV6 neighbor disconvery
+IPV6邻居发现
 ===============================
 
 .. toctree::

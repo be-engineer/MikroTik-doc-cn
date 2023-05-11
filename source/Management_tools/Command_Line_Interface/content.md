@@ -22,7 +22,7 @@ The console is used for accessing the MikroTik Router's configuration and manage
 | ----- | ---- | ---- | -------------------- |
 | **w** | auto | auto | 设置终端宽度         |
 | **h** | auto | auto | 设置终端高度         |
-| **c** | on   | off  | 禁用/启用控制台颜色  |
+| **c** | on   | off  | 禁用启用控制台颜色   |
 | **t** | on   | off  | 做终端功能的自动检测 |
 | **e** | on   | off  | 启用 "哑巴 "终端模式 |
 
@@ -94,7 +94,7 @@ dec/10/2007 10:40:09 system,error,critical login failure for user test from 10.0
 
 使用向上箭头从命令历史中调用以前的命令，**TAB** 键自动完成正在输入的命令中的单词，**ENTER** 键执行命令，**Control-C** 中断当前运行的命令并返回到提示符，**?** 显示内置帮助，在RouterOS v7中，必须使用 **F1** 代替。
 
-退出控制台的最简单方法是在命令行为空时按下 **Control-D**（你可以用 **Control-C** 取消当前命令并得到一个空行，所以在大多数情况下，**Control-C** 和 **Control-D** 会退出）。
+退出控制台的最简单方法是在命令行为空时按下 **Control-D** （可以用 **Control-C** 取消当前命令并得到一个空行，所以在大多数情况下，**Control-C** 和 **Control-D** 会退出）。
 
 编写由多行组成的命令是可能的。当输入的行不是一个完整的命令，并且期望有更多的输入时，控制台会显示一个继续提示，列出所有开放的小括号、大括号、小括号和引号，如果前一行以 **反斜线** -空格结束，也会出现尾部反斜线。
 
@@ -265,7 +265,7 @@ Flags: X - disabled, D - dynamic, R - running
 
 - **Normal mode** - 以正常的命令提示表示。
 - **Safe mode** - 安全模式由命令提示后的SAFE字样表示。在这种模式下，只有在安全模式关闭后，配置才会被保存到磁盘。安全模式可以用 **Ctrl+X或F4** 打开/关闭。 [阅读全文](https://help.mikrotik.com/docs/display/ROS/Configuration+Management#ConfigurationManagement-SafeMode)
-- **Hot-lock mode** - 由额外的黄色>表示。 热锁模式自动完成命令，可以用 **F7** 打开/关闭。
+- **Hot-lock mode** - 由额外的黄色表示。 热锁模式自动完成命令，可以用 **F7** 打开/关闭。
 
 # 快速打字
 

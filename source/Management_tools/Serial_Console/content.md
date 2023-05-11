@@ -82,20 +82,20 @@
 
 | No handshake                                 | Loopback handshake | Partial  handshake | Full  handshake |
 | -------------------------------------------- | ------------------ | ------------------ | --------------- | --- |
-| RouterBoards with limited port functionality | Y                  | Y                  | N*              | N   |
+| RouterBoards with limited port functionality | Y                  | Y                  | N\*             | N   |
 | RouterBoards   with full functionality       | Y                  | Y                  | Y               | N   |
 
 \* 只有硬件流量控制被禁用时才可能工作
 
   
 | No handshake                                        | Loopback  handshake | Partial handshake | Full  handshake |
-| --------------------------------------------------- | ------------------- | ----------------- | --------------- | --- |
-| Software flow control only                          | Y                   | Y*                | Y**             | Y** |
-| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y*              | N   |
-| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y**             | N   |
-| High speed communication using special software     | N                   | N                 | Y*              | Y   |
+| --------------------------------------------------- | ------------------- | ----------------- | --------------- | ---- |
+| Software flow control only                          | Y                   | Y*                | Y\**            | Y\** |
+| Low-speed DTE/DCE compatible hardware flow control  | N                   | Y                 | Y\*             | N    |
+| High-speed DTE/DCE compatible hardware flow control | N                   | Y                 | Y\**            | N    |
+| High speed communication using special software     | N                   | N                 | Y\*             | Y    |
 \* 可以作为替代方案使用
-** 可以使用，但不建议使用
+\** 可以使用，但不建议使用
 
 ## RJ45串口
 
