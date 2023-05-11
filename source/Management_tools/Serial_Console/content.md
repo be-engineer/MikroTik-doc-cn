@@ -88,12 +88,12 @@
 1. 只有硬件流控禁用时才能工作
 
   
-|                         | 无握手 | 回环握手      | 部分握手      | 完全握手      |
-| ----------------------- | ------ | ------------- | ------------- | ------------- |
-| 软件流控                | Y      | Y<sup>1</sup> | Y<sup>2</sup> | Y<sup>2</sup> |
-| 低速DTE/DCE兼容硬件流控 | N      | Y             | Y<sup>1</sup> | N             |
-| 高速DTE/DCE兼容硬件流控 | N      | Y             | Y<sup>2</sup> | N             |
-| 使用特殊软件的高速通信  | N      | N             | Y<sup>1</sup> | Y             |
+|                         | 无握手 | 回环握手       | 部分握手       | 完全握手       |
+| ----------------------- | ------ | -------------- | -------------- | -------------- |
+| 软件流控                | Y      | Y <sup>1</sup> | Y <sup>2</sup> | Y <sup>2</sup> |
+| 低速DTE/DCE兼容硬件流控 | N      | Y              | Y <sup>1</sup> | N              |
+| 高速DTE/DCE兼容硬件流控 | N      | Y              | Y <sup>2</sup> | N              |
+| 使用特殊软件的高速通信  | N      | N              | Y <sup>1</sup> | Y              |
 
 1. 可以作为替代方案使用
 2. 可以使用，但不建议使用
@@ -122,7 +122,7 @@ RJ45到DB9电缆引脚：
 
 对于RBM33G，额外的串口接头可以连接到GPIO引脚U3_RXD, GND, U3_TXD, 和3V3上。
 
-需要RouterOS 6.45.1+和固件!
+需要RouterOS 6.45.1+固件!
 
 ## CCR 串口接头
 
@@ -162,19 +162,19 @@ RouterOS允许使用 `/system serial-terminal` 命令与通过串口连接到路
 
 `/port set serial0 baud-rate=auto`
 
-现在是连接设备的时候了，如果尚未完成的话。通常必须使用 [空调制解调器电缆](https://help.mikrotik.com/docs/display/ROS/Serial+Console#SerialConsole-NullModemWithoutHandshake)（与以太网的交叉电缆相同）。现在可以开始了：
+现在可以连接设备了，如果还没完成，则必须使用 [空调制解调器电缆](https://help.mikrotik.com/docs/display/ROS/Serial+Console#SerialConsole-NullModemWithoutHandshake) （和以太网的交叉电缆相同）。现在可以开始了：
 
 `/system serial-terminal serial0`
 
-这将使你能够访问你连接到Serial0端口的设备。**_Ctrl-A_** 是前缀键，这意味着你将进入一个小 "菜单"。如果你需要发送 **_Ctrl-A_** 字符到远程设备，请按 **_Ctrl-A_** 两次。
+这将使你能够访问你连接到Serial0端口的设备。**Ctrl-A** 是前缀键，这意味着你将进入一个小 "菜单"。如果你需要发送 **Ctrl-A** 字符到远程设备，请按 **Ctrl-A** 两次。
 
-如果你想退出与串行设备的连接，输入 **_Ctrl-A_**，然后按 **_Q_**。这将使你回到RouterOS的控制台。
+如果你想退出与串行设备的连接，输入 **Ctrl-A**，然后按 **Q**。这将使你回到RouterOS的控制台。
 
 不要以不正确的速度连接设备，避免转储二进制数据。
 
 # 特殊登录
 
-特殊登录用来访问另一个通过串行电缆连接的设备（例如交换机），打开一个telnet/ssh会话，可以直接进入这个设备（无需先登录RouterOS）。 
+特殊登录用来访问另一个通过串行电缆连接的设备（例如交换机），打开一个telnet/ssh会话，直接进入这个设备（无需先登录RouterOS）。 
 
 为了演示，使用两个RouterBoards和一台PC。 
 
