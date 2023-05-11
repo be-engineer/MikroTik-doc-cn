@@ -8,7 +8,7 @@ TR069-client菜单参数。当软件包被安装时（首次在RouterOS 6.38中�
 
 客户端配置设置。
 
-| Property                          | Description                                                                                                                                                                   |
+| 属性                          | 说明                                                                                                                                                                   |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **enabled**                       | 启用/禁用CWMP协议                                                                                                                                                             |
 | **acs-url**                       | ACS的URL例子: [https://example.com:8080/path/](https://example.com:8080/path/), [https://192.168.1.100/](https://192.168.1.100/)                                              |
@@ -42,13 +42,13 @@ CWMP客户端通常在不同的事件中开始与ACS通信（会话）-首次启
 
 参数是简单的名称+值对，每个供应商可以决定在其设备中支持哪些参数。所有支持的参数的组合被称为数据模型（DM）。BBF定义了三个根数据模型(TR-098, TR-181:1, TR-181:2)，供应商应在此基础上支持其参数。**RouterOS数据模型是基于 "TR-181 Issue 2 Amendment 11"**，这是最新的DM，由BBF推荐。
 
-[RouterOS TR069 client supported parameter reference document](https://wiki.mikrotik.com/tr069ref/current.html)
+[RouterOS TR069客户端支持的参数参考](https://wiki.mikrotik.com/tr069ref/current.html)
 
 ## 下载RPC
 
-### RouterOS更新(1个固件升级图像)
+### RouterOS更新(1个固件升级镜像)
 
-CWMP标准规定，CPE的固件可以使用Download RPC进行更新，FileType="1 Firmware Upgrade Image "和可下载文件的单一URL（支持HTTP和HTTPS）。标准还指出，下载的文件可以是任何类型，并且可以应用供应商的特定流程来完成固件更新。因为MikroTik的更新是基于软件包的（也是为了获得额外的灵活性），所以使用XML文件来描述固件升级/降级。目前，XML配置支持提供多个文件的URL，这些文件将被下载并应用，就像常规的RouterOS更新通过固件/包文件上传一样。
+CWMP标准规定，CPE的固件可以使用Download RPC进行更新，FileType="1 Firmware Upgrade Image "和可下载文件的URL（支持HTTP和HTTPS）。标准还指出，下载的文件可以是任何类型，并且可以应用供应商的特定流程来完成固件更新。因为MikroTik的更新是基于软件包的（也是为了获得额外的灵活性），所以使用XML文件来描述固件升级或降级。目前，XML配置支持提供多个文件的URL，这些文件将被下载并应用，就像常规的RouterOS更新通过固件包文件上传一样。
 
 一个RouterOS捆绑包和tr069-client包更新的例子（别忘了也要更新tr069-client包）。一个XML文件应该放在某个HTTP服务器上，可以从CPE上访问，以供下载。另外，可下载的RouterOS包文件也应以同样的方式访问（可以在任何HTTP服务器上）。使用ACS执行下载RPC，URL指向XML文件（例如：[https://example.com/path/upgrade.xml](https://example.com/path/upgrade.xml)），内容是：
 
@@ -67,15 +67,13 @@ CWMP标准规定，CPE的固件可以使用Download RPC进行更新，FileType="
 
 ```
 
-CPE将下载XML，解析/验证其内容，从提供的URL下载文件并尝试升级。结果将通过TransferComplete RPC报告。
+CPE将下载XML，解析验证其内容，从提供的URL下载文件并尝试升级。结果将通过TransferComplete RPC报告。
 
 注意
 
 始终使固件更新增量 - 首先，更新本地测试的设备，并确保CWMP通信以新的版本恢复，并且所需的ROS功能可以工作。其次，重复步骤，渐进地更新CPE组。不建议一次性更新所有远程设备。
 
 **警告：** 在生产中使用HTTPS进行固件管理。
-
-  
 
 ### 配置更改 (3个供应商配置文件)
 
@@ -114,11 +112,11 @@ RouterOS有很多配置属性，不是所有的东西都可以移植到CWMP参�
 
 ```
 
-请注意，每个设备的默认出厂配置可能不同（见[[1]](https://wiki.mikrotik.com/wiki/Manual:Default_Configurations)），执行此命令会删除所有配置并执行内部存储的默认配置脚本。
+请注意，每个设备的默认出厂配置可能不同（见 [1](https://wiki.mikrotik.com/wiki/Manual:Default_Configurations) ），执行此命令会删除所有配置并执行内部存储的默认配置脚本。
 
-[为TR069准备具有自定义出厂设置的CPE的最佳实践指南 [https://wiki.mikrotik.com/wiki/Tr069-best-practices](https://wiki.mikrotik.com/wiki/Tr069-best-practices)]
+为TR069准备具有自定义出厂设置的CPE的最佳实践指南 [https://wiki.mikrotik.com/wiki/Tr069-best-practices](https://wiki.mikrotik.com/wiki/Tr069-best-practices)
 
-##上传RPC
+## 上传RPC
 
 ### 上传当前配置(1个供应商配置文件)
 
@@ -145,15 +143,15 @@ RouterOS有很多配置属性，不是所有的东西都可以移植到CWMP参�
 
 我们已经测试并验证了以下商业ACS解决方案的有效性：
 
--   [AVSystem](https://www.avsystem.com)
--   [Axiros](https://axiros.com)
--   [Friendly Tech](https://friendly-tech.com)
+- [AVSystem](https://www.avsystem.com)
+- [Axiros](https://axiros.com)
+- [Friendly Tech](https://friendly-tech.com)
 
 ### 开放源代码
 
 - [GenieACS](https://github.com/zaidka/genieacs)
 
-注意：下面这些ACS系统没有得到维护，因此不建议作为有用的选择。
+注意：下面这些ACS系统没有维护，不建议作为有用的选择。
 
--   [FreeACS](https://www.freeacs.com)
--   [LibreACS](https://github.com/navisidhu/libreacs)
+- [FreeACS](https://www.freeacs.com)
+- [LibreACS](https://github.com/navisidhu/libreacs)

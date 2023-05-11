@@ -12,7 +12,7 @@ WebFig允许执行三个基本动作：
 
 # 连接到路由器
 
-正如在 [首次配置](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration)部分已经知道的，设备默认配置了用户名 **admin** 和 **无密码**。只要打开一个Web浏览器，在搜索栏中输入设备的IP地址，默认为 **192.168.88.1.**，确保设备有同一网络的IP地址，例如192.168.88.2，否则第三层通信将无法工作。
+正如在 [首次配置](https://help.mikrotik.com/docs/display/ROS/First+Time+Configuration) 部分已经知道的，设备默认配置了用户名 **admin** 和 **无密码**。只要打开一个Web浏览器，在搜索栏中输入设备的IP地址，默认为 **192.168.88.1.**，确保设备有同一网络的IP地址，例如192.168.88.2，否则第三层通信将无法工作。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328131/webfig.png?version=3&modificationDate=1571210992820&api=v2)
 
@@ -56,7 +56,7 @@ Columns:NAME        COMMON-NAME     FINGERPRINT
 set www-ssl certificate=webfig disabled=no
 ```
 
-现在可以访问 [https://192.168.88.1](https://192.168.88.1)并安全地配置路由器了。
+现在可以访问 [https://192.168.88.1](https://192.168.88.1) 并安全地配置路由器了。
 
 默认情况下，浏览器不信任自签证书，需要在第一次访问浏览器的页面时，将证书添加为受信任的。另一种方法是导出根CA证书，将其作为受信任的根证书导入电脑，这样一来，由该路由器签署的所有证书都会被认为是有效的，也会使网络中的证书管理变得更加容易。
 

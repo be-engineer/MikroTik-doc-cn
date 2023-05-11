@@ -1,4 +1,4 @@
-# 摘要
+# 概述
 
 Winbox是一个小工具，允许使用快速和简单的GUI来管理MikroTik RouterOS。它是一个原生的Win32二进制文件，但可以使用Wine在 **Linux和macOS（OSX）** 上运行。所有的Winbox界面功能都尽可能地反映了控制台的功能，这就是为什么手册中没有Winbox部分。一些高级和关键的系统配置不可能从Winbox中实现，比如在接口上改变MAC地址 [Winbox changelog](https://wiki.mikrotik.com/wiki/Winbox_changelog)
 
@@ -12,7 +12,7 @@ Winbox是一个小工具，允许使用快速和简单的GUI来管理MikroTik Ro
 
 # 启动Winbox
 
-Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/download）下载。当winbox.exe被下载后，双击它，Winbox加载器窗口将弹出。有两种Winbox加载器模式：默认启用的简单模式和高级模式。
+Winbox加载器可以从 [MikroTik下载页面](https://www.mikrotik.com/download) 下载。当winbox.exe被下载后，双击它，Winbox加载器窗口将弹出。有两种Winbox加载器模式：默认启用的简单模式和高级模式。
 
 ## 简单模式
 
@@ -20,7 +20,7 @@ Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/downl
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox_loader_simple_.png?version=1&modificationDate=1570715133744&api=v2)
 
-要连接到路由器，请输入路由器的IP或MAC地址，指定用户名和密码（如果有），然后点击 **连接** 按钮。你也可以在IP地址后面输入端口号，用冒号隔开，像这样192.168.88.1:9999。端口可以在RouterOS的**services** 菜单中改变。
+要连接到路由器，请输入路由器的IP或MAC地址，指定用户名和密码（如果有），然后点击 **连接** 按钮。你也可以在IP地址后面输入端口号，用冒号隔开，像这样192.168.88.1:9999。端口可以在RouterOS的 **services** 菜单中改变。
 
  建议尽可能使用一个IP地址。MAC会话使用网络广播，并非100%可靠。
 
@@ -46,18 +46,18 @@ Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/downl
 ### 菜单项目
 
 - **文件**
-    - **新建** - 在指定的位置创建一个新的管理路由器列表
-    - **打开** - 打开管理的路由器列表文件
-    - **另存为** - 将当前管理的路由器列表保存到文件中
-    - **退出** - 退出 Winbox 载入器
+  - **新建** - 在指定的位置创建一个新的管理路由器列表
+  - **打开** - 打开管理的路由器列表文件
+  - **另存为** - 将当前管理的路由器列表保存到文件中
+  - **退出** - 退出 Winbox 载入器
 
 - **工具**
-    - **高级模式** - 启用/禁用高级模式视图
-    - **导入** - 导入保存的会话文件
-    - **导出** -导出保存的会话文件
-    - **移动会话文件夹** - 改变会话文件的存储路径
-    - **清除缓存** - 清除Winbox缓存
-    - **检查更新** - 检查Winbox加载器的更新。
+  - **高级模式** - 启用/禁用高级模式视图
+  - **导入** - 导入保存的会话文件
+  - **导出** -导出保存的会话文件
+  - **移动会话文件夹** - 改变会话文件的存储路径
+  - **清除缓存** - 清除Winbox缓存
+  - **检查更新** - 检查Winbox加载器的更新。
 
 ## 高级模式
 
@@ -65,7 +65,7 @@ Winbox加载器可以从 [MikroTik下载页面]（https://www.mikrotik.com/downl
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/winbox_loader_advanced.png?version=1&modificationDate=1570715647131&api=v2)
 
-### 按钮/复选框和其他字段
+### 按钮复选框和其他字段
 
 按钮/复选框
 
@@ -119,30 +119,28 @@ winbox.exe --romon 10.5.101.1 D4:CA:6D:E1:B5:7D admin ""
 
 ## IPv6连接
 
-Winbox支持IPv6连接。要连接到路由器的IPv6地址，必须把它放在方括号里，就像在网络浏览器中连接IPv6服务器时一样。例子： 
-
+Winbox支持IPv6连接。要连接到路由器的IPv6地址，必须把它放在方括号里，就像在网络浏览器中连接IPv6服务器时一样。例子：
   
-
-[2001:db8::1] 。
+db8::1
 
 连接到链路本地地址时，接口索引必须在%之后输入：
 
-[fe80::a00:27ff:fe70:e88c\\%2]
+:a00:27ff:fe70:e88c%2
 
 要把Winbox连接到默认之外的其他端口时，端口号设置在方括号之后：
 
-[fe80::a00:27ff:fe70:e88c\\%2]:8299
+:a00:27ff:fe70:e88c%2:8299
 
 Winbox邻居发现能够发现支持IPv6的路由器。每个启用IPv6的路由器都有两个条目，一个条目是IPv4地址，另一个是IPv6链路本地地址。你可以很容易地选择你想连接的那一个。
 
 ## 在macOS上运行Winbox  
 
-从macOS 10.15 Catalina开始，苹果已经取消了对32位应用程序的支持，这意味着在这个操作系统中不再可能使用普通的Wine和普通的Winbox。Wine已经为macOS提供了一个64位版本，MikroTik也发布了一个特殊的 [Winbox64.exe](https://mt.lv/winbox64)版本。
+从macOS 10.15 Catalina开始，苹果已经取消了对32位应用程序的支持，这意味着在这个操作系统中不再可能使用普通的Wine和普通的Winbox。Wine已经为macOS提供了一个64位版本，MikroTik也发布了一个特殊的 [Winbox64.exe](https://mt.lv/winbox64) 版本。
 
 要运行Winbox64，需要以下步骤。
 
-1.  从 [Wine macOS builds页面](https://github.com/Gcenx/macOS_Wine_builds/releases) 安装最新的Wine ( win-devel-7.X-osx64.tar.xz)，并确保从MikroTik的下载页面下载了 [winbox64.exe](https://mt.lv/winbox64)。
-2.  用 "打开文件">Wine64.app启动Winbox64.exe。
+1. 从 [Wine macOS builds页面](https://github.com/Gcenx/macOS_Wine_builds/releases) 安装最新的Wine ( win-devel-7.X-osx64.tar.xz)，并确保从MikroTik的下载页面下载了 [winbox64.exe](https://mt.lv/winbox64)。
+2. 用 "打开文件">Wine64.app启动Winbox64.exe。
 
 ## 在Linux上运行Winbox
 
@@ -165,16 +163,16 @@ Winbox的界面设计得很直观，适合大多数用户。该界面由以下�
 
 ```
 
-从上面的截图可以看到，用户 **krisjanis** 以IPv4/IPv6地址 **[fe80::4e5e:cff:fef6:c0ab%3]** 登录了路由器。路由器的ID是 **3C18-Krisjanis_GW**，当前安装的RouterOS版本是 **v6.36rc6**，RouterBoard是 **CCR1036-12G-4S**，平台是 **tile*。
+从上面的截图可以看到，用户 **krisjanis** 以IPv4/IPv6地址 **[fe80::4e5e:cff:fef6:c0ab%3]** 登录了路由器。路由器的ID是 **3C18-Krisjanis_GW**，当前安装的RouterOS版本是 **v6.36rc6**，RouterBoard是 **CCR1036-12G-4S**，平台是 **tile**。
 
 在主工具条的左边有一个位置：
 
 - **undo**
 - **redo**
-- **safe mode** 
+- **safe mode**
 - 当前加载的会话
 
-更多关于安全模式和撤销已执行的操作，请阅读 [本文]（https://help.mikrotik.com/docs/display/ROS/Configuration+Management）。
+更多关于安全模式和撤销已执行的操作，请阅读 [本文](https://help.mikrotik.com/docs/display/ROS/Configuration+Management)。
 
 右边的位置：
 
@@ -216,12 +214,12 @@ Winbox有一个MDI界面，所有的菜单配置（子窗口）都附属于主Wi
 
 这个例子显示了如何快速过滤掉10.0.0.0/8范围内的路由
 
-1.  按 **排序** 按钮
-2.  从第一个下拉框中选择 **Dst.Address**。
-3.  在第二个下拉框中选择 **in**。"in "表示过滤器将检查DST地址值是否在指定网络的范围内。
-4.  输入将被比较的网络（在我们的例子中输入 "10.0.0.0/8"）。
-5.  这些按钮是为了在堆栈中添加或删除另一个过滤器。
-6.  按 **过滤器** 按钮来应用我们的过滤器。
+1. 按 **排序** 按钮
+2. 从第一个下拉框中选择 **Dst.Address**。
+3. 在第二个下拉框中选择 **in**。"in "表示过滤器将检查DST地址值是否在指定网络的范围内。
+4. 输入将被比较的网络（在我们的例子中输入 "10.0.0.0/8"）。
+5. 这些按钮是为了在堆栈中添加或删除另一个过滤器。
+6. 按 **过滤器** 按钮来应用过滤器。
 
 正如你从截图中看到的，Winbox只对10.0.0.0/8范围内的路由进行排序。
 
@@ -232,7 +230,7 @@ Winbox允许建立一个过滤器的堆栈。例如，如果需要按目标地�
 - 设置第一个过滤器，如上面的例子所述、
 - 按 **[+]** 按钮，在堆栈中添加另一个过滤器栏。
 - 设置第二个过滤器，按网关进行过滤
-- 按**过滤器**按钮来应用过滤器。
+- 按 **过滤器** 按钮来应用过滤器。
 
 也可以通过按 **[-]** 按钮从堆栈中删除不必要的过滤器。
 
@@ -242,8 +240,8 @@ Winbox允许建立一个过滤器的堆栈。例如，如果需要按目标地�
 
 Winbox允许为每个单独的窗口定制显示列。例如，要添加BGP AS路径栏：
 
-- 点击列标题右侧的小箭头按钮（**1**）或在路由列表上点击鼠标右键。
-- 从弹出的菜单中移到 **显示列**（**2**），从子菜单中选择所需的列，在我们的例子中点击 **BGP AS路径**（**3**）。
+- 点击列标题右侧的小箭头按钮（1）或在路由列表上点击鼠标右键。
+- 从弹出的菜单中移到 **显示列**（2），从子菜单中选择所需的列，在我们的例子中点击 **BGP AS路径**（3）。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-field.png?version=1&modificationDate=1570717546327&api=v2)
 
@@ -305,15 +303,15 @@ Winbox可以作为一个工具，实时监控每个接口、队列或防火墙�
 
 # 故障排除
 
-## Winbox无法连接到路由器的IP地址
+**Winbox无法连接到路由器的IP地址**
 
 确保Windows防火墙被设置为允许Winbox连接，或者禁用Windows防火墙。
 
-## 当连接到路由器的MAC地址时，得到一个错误'20561端口超时'。
+**当连接到路由器的MAC地址时，得到一个错误'20561端口超时'**
 
 如果文件和打印共享被禁用，Windows（7/8）不允许Mac连接。
 
-## 在WinBox IPv4邻居列表中找不到设备，或者MAC连接失败，"ERROR无法连接到XX-XX-XX-XX-XX"
+**在WinBox IPv4邻居列表中找不到设备，或者MAC连接失败，"ERROR无法连接到XX-XX-XX-XX-XX"**
 
 除非主机设备有一个IP配置，否则大多数网络驱动不会启用IP堆栈。需要在主机设备上设置IPv4。
 
