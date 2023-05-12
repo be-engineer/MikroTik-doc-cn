@@ -300,10 +300,10 @@ _x.x.x.x/yy - 允许访问路由器的 IP 和子网。_
 
 如果你使用 Winbox/Webfig 进行配置，这里是一个如何添加已建立/相关规则的示例：
 
-- 打开 **Ip -> Firewall**窗口, 点击**Filter rules** 标签;
+- 打开 **Ip -> Firewall**窗口, 点击 **Filter rules** 标签;
 - 点击 **+** 按键, 打开一个新的对话框;
-- 选择chain input, 点击 **Connection state,** 选择 **established** 和 **related**复选框;
-- 点击 **Action** 标签，确保 **action accept**被选中;
+- 选择chain input, 点击 **Connection state,** 选择 **established** 和 **related** 复选框;
+- 点击 **Action** 标签，确保 **action accept** 被选中;
 - 点击 **Ok** 按钮应用设置.
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_ip_fw.png?version=1&modificationDate=1569856324140&api=v2&effects=drop-shadow)
