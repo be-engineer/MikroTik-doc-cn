@@ -1,741 +1,612 @@
-# Description
-
-RouterOS allows to create multiple Virtual Routing and Forwarding instances on a single router. This is useful for BGP-based MPLS VPNs. Unlike BGP VPLS, which is OSI Layer 2 technology, BGP VRF VPNs work in Layer 3 and as such exchange IP prefixes between routers. VRFs solve the problem of overlapping IP prefixes and provide the required privacy (via separated routing for different VPNs).
-
-It is possible to set up vrf-lite setups or use multi-protocol BGP with VPNv4 address family to distribute routes from VRF routing tables - not only to other routers, but also to different routing tables in the router itself.
-
-# Configuration
-
-VRF table is created in **`/ip vrf`** menu. After the VRF config is created routing table mapping is added (a dynamic table with the same name is created). Each active VRF will always have a mapped routing table.
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/vrf&gt; </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled; * - builtin</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"main"</code> <code class="ros value">interfaces</code><code class="ros plain">=all</code>&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/routing/table&gt; </code><code class="ros functions">print</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - dynamic; X - disabled, I - invalid; U - used</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 D&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"main"</code> <code class="ros plain">fib</code></div></div></td></tr></tbody></table>
-
-Note that the order of the added VRFs is significant. To properly match which interface will belong to the VRF care must be taken to place VRFs in the correct order (matching is done starting from the top entry, just like firewall rules).
-
-Since each VRF has mapped routing table, count of max unique VRFs is also limited to 4096.
-
-  
-
-Let's look at the following example:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/vrf&gt; </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled; * - builtin</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"main"</code> <code class="ros value">interfaces</code><code class="ros plain">=all</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"myVrf"</code> <code class="ros value">interfaces</code><code class="ros plain">=lo_vrf</code></div></div></td></tr></tbody></table>
-
-Since the first entry is matching all the interfaces, the second VRF will not have any interfaces added. To fix the problem order of the entries must be changed.
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/vrf&gt; </code><code class="ros functions">move </code><code class="ros plain">1 0</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/vrf&gt; </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled; * - builtin</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"myVrf"</code> <code class="ros value">interfaces</code><code class="ros plain">=lo_vrf</code>&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp; * </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"main"</code> <code class="ros value">interfaces</code><code class="ros plain">=all</code></div></div></td></tr></tbody></table>
-
-Connected routes from the interfaces assigned to the VRF will be installed in the right routing table automatically.
-
-When the interface is assigned to the VRF as well as connected routes it does not mean that RouterOS services will magically know which VRF to use just by specifying the IP address in the configuration. Each service needs VRF support to be added and explicit configuration. Whether the service has VRF support and has VRF configuration options refer to appropriate service documentation.
-
-For example, let's make an SSH service to listen for connections on the interfaces belonging to the VRF:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/service&gt; </code><code class="ros functions">set </code><code class="ros plain">ssh </code><code class="ros value">vrf</code><code class="ros plain">=myVrf</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@arm-bgp] </code><code class="ros constants">/ip/service&gt; </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X, I - INVALID</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, PORT, CERTIFICATE, VRF</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp; NAME&nbsp;&nbsp;&nbsp;&nbsp; PORT&nbsp; CERTIFICATE&nbsp; VRF&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0&nbsp;&nbsp; telnet&nbsp;&nbsp;&nbsp;&nbsp; 23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&nbsp;&nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">1&nbsp;&nbsp; ftp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">2&nbsp;&nbsp; www&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&nbsp;&nbsp;&nbsp;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">3&nbsp;&nbsp; ssh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; myVrf</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">4 X www-ssl&nbsp;&nbsp; 443&nbsp; none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&nbsp;&nbsp;&nbsp;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">5&nbsp;&nbsp; api&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8728&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&nbsp;&nbsp;&nbsp;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">6&nbsp;&nbsp; winbox&nbsp;&nbsp; 8291&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main&nbsp;&nbsp;&nbsp;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">7&nbsp;&nbsp; api-ssl&nbsp; 8729&nbsp; none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; main</code></div></div></td></tr></tbody></table>
-
-Adding routes to the VRF is as simple as specifying the routing-table parameter when adding the route and specifying in which routing table to resolve the gateway by specifying @name after the gateway IP:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@myVrf</code> <code class="ros value">routing-table</code><code class="ros plain">=myVrf</code></div></div></td></tr></tbody></table>
-
-Traffic leaking between VRFs is possible if the gateway is explicitly set to be resolved in another VRF, for example:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># add route in the myVrf, but resolve the gateway in the main table</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@main</code> <code class="ros value">routing-table</code><code class="ros plain">=myVrf</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># add route in the main table, but resolve the gateway in the myVrf</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@myVrf</code></div></div></td></tr></tbody></table>
-
-If the gateway configuration does not have an explicitly configured table to be resolved in, then it is considered, that gateway should be resolved in the "main" table.
-
-# Supported features
-
-Different services can be placed in specific VRF on which the service is listening for incoming or creating outgoing connections. By default, all services are using the `main` table, but it can be changed with a separate `vrf` parameter or by specifying the VRF name separated by "@" at the end of the IP address.
-
-Below is the list of supported services.
-
-| 
-Feature
-
-
-
- | 
-
-Support
-
-
-
- | 
-
-Comment
-
-
-
- |
-| --- | --- | --- |
-| 
-
-Feature
-
-
-
- | 
-
-Support
-
-
-
- | 
-
-Comment
-
-
-
- |
-| --- | --- | --- |
-| **[BGP](https://help.mikrotik.com/docs/display/ROS/BGP)** | + | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp template</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bgp-template1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp vpls</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bgp-vpls1</code> <code class="ros value">site-id</code><code class="ros plain">=10</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp vpn</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">label-allocation-policy</code><code class="ros plain">=per-vrf</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[E-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)** | + | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[IP Services](https://help.mikrotik.com/docs/display/ROS/Services)** | + | 
-
-VRF is supported for `telnet`, `www`, `ssh`, `www-ssl`, `api`, `winbox`, `api-ssl` services. The `ftp` service does not support changing the VRF.
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip service</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">telnet </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[L2TP Client](https://help.mikrotik.com/docs/display/ROS/L2TP)** | + | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.88.1@vrf1</code> <code class="ros value">name</code><code class="ros plain">=l2tp-out1</code> <code class="ros value">user</code><code class="ros plain">=l2tp-client</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[MPLS](https://help.mikrotik.com/docs/display/ROS/Mpls+Overview)** | + | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[Netwatch](https://help.mikrotik.com/docs/display/ROS/Netwatch)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool netwatch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">host</code><code class="ros plain">=192.168.88.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[NTP](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=40992869)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ntp client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system ntp server</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[OSPF](https://help.mikrotik.com/docs/display/ROS/OSPF)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=ospf-instance-1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[ping](https://help.mikrotik.com/docs/display/ROS/Ping)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">192.168.88.1 </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[RADIUS](https://help.mikrotik.com/docs/display/ROS/RADIUS)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1@vrf1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius incoming </code><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[RIP](https://help.mikrotik.com/docs/display/ROS/RIP)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing rip instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=rip-instance-1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[RPKI](https://help.mikrotik.com/docs/display/ROS/RPKI)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing rpki</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[SNMP](https://help.mikrotik.com/docs/display/ROS/SNMP)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/snmp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[EoIP](https://help.mikrotik.com/docs/display/ROS/EoIP)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface eoip</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[IPIP](https://help.mikrotik.com/docs/display/ROS/IPIP)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ipip</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[GRE](https://help.mikrotik.com/docs/display/ROS/GRE)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface gre</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[SSTP-client](https://help.mikrotik.com/docs/display/ROS/SSTP#SSTP-SSTPClient)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface sstp-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[OVPN-client](https://help.mikrotik.com/docs/display/ROS/OpenVPN#OpenVPN-OVPNClient)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ovpn-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **L2TP-ether** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-ether</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.2.2@vrf</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| **[VXLAN](https://help.mikrotik.com/docs/display/ROS/VXLAN)** | 
-
-+
-
- | 
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vxlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vni</code><code class="ros plain">=10</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-
-# Examples
-
-## Simple VRF-Lite setup
-
-Let's consider a setup where we need two customer VRFs that require access to the internet:  
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.1.2/24</code> <code class="ros value">interface</code><code class="ros plain">=public</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.2.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/ip route</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=172.16.1.1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros comments"># add VRF configuration</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/ip vrf</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=cust_a</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros plain">place-before 0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=cust_b</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros plain">place-before 0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros comments"># add vrf routes</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">/ip route</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@main</code> <code class="ros value">routing-table</code><code class="ros plain">=cust_a</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">gateway</code><code class="ros plain">=172.16.1.1@main</code> <code class="ros value">routing-table</code><code class="ros plain">=cust_b</code></div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros comments"># masquerade local source</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall nat </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">out-interface</code><code class="ros plain">=public</code> <code class="ros value">action</code><code class="ros plain">=masquerade</code></div></div></td></tr></tbody></table>
-
-It might be necessary to ensure that packets coming in the "public" interface can actually reach the correct VRF.   
-This can be solved by marking new connections originated by the VRF customers and steering the traffic by routing marks of incoming packets on the "public" interface.
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># mark new customer connections</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=mark-connection</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">connection-state</code><code class="ros plain">=new</code> <code class="ros value">new-connection-mark</code><code class="ros plain">=\</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cust_a_conn </code><code class="ros value">src-address</code><code class="ros plain">=192.168.1.0/24</code> <code class="ros value">passthrough</code><code class="ros plain">=no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=mark-connection</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">connection-state</code><code class="ros plain">=new</code> <code class="ros value">new-connection-mark</code><code class="ros plain">=\</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">cust_b_conn </code><code class="ros value">src-address</code><code class="ros plain">=192.168.2.0/24</code> <code class="ros value">passthrough</code><code class="ros plain">=no</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros comments"># mark routing</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall mangle&nbsp;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=mark-routing</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">connection-mark</code><code class="ros plain">=cust_a_conn</code> <code class="ros plain">\</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">in-interface</code><code class="ros plain">=public</code> <code class="ros value">new-routing-mark</code><code class="ros plain">=cust_a</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=mark-routing</code> <code class="ros value">chain</code><code class="ros plain">=prerouting</code> <code class="ros value">connection-mark</code><code class="ros plain">=cust_b_conn</code> <code class="ros plain">\</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">in-interface</code><code class="ros plain">=public</code> <code class="ros value">new-routing-mark</code><code class="ros plain">=cust_b</code></div></div></td></tr></tbody></table>
-
-## Static inter-VRF routes
-
-In general, it is recommended that all routes between VRF should be exchanged using BGP local import and export functionality. If that is not enough, static routes can be used to achieve this so-called route leaking.
-
-There are two ways to install a route that has a gateway in a different routing table than the route itself.
-
-The first way is to explicitly specify the routing table in the gateway field when adding a route. This is only possible when leaking a route and gateway from the "main" routing table to a different routing table (VRF). Example:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># add route to 5.5.5.0/24 in 'vrf1' routing table with gateway in the main routing table</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=5.5.5.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.0.1@main</code> <code class="ros value">routing-table</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>
-
-  
-
-The second way is to explicitly specify the interface in the gateway field. The interface specified can belong to a VRF instance. Example:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># add route to 5.5.5.0/24 in the main routing table with gateway at 'ether2' VRF interface</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=5.5.5.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.0.1%ether2</code> <code class="ros value">routing-table</code><code class="ros plain">=main</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># add route to 5.5.5.0/24 in the main routing table with 'ptp-link-1' VRF interface as gateway</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=5.5.5.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=ptp-link-1</code> <code class="ros value">routing-table</code><code class="ros plain">=main</code></div></div></td></tr></tbody></table>
-
-  
-
-As can be observed, there are two variations possible - to specify gateway as _ip\_address%interface_ or to simply specify an _interface_. The first should be used for broadcast interfaces in most cases. The second should be used for point-to-point interfaces, and also for broadcast interfaces, if the route is a connected route in some VRF. For example, if you have an address `1.2.3.4/24` on interface _ether2_ that is put in a VRF, there will be a connected route to `1.2.3.0/24` in that VRF's routing table. It is acceptable to add a static route `1.2.3.0/24` in a different routing table with an interface-only gateway, even though _ether2_ is a broadcast interface:
-
-  
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=1.2.3.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=ether2</code> <code class="ros value">routing-table</code><code class="ros plain">=main</code></div></div></td></tr></tbody></table>
-
-## The simplest MPLS VPN setup
+# 描述
+
+RouterOS支持在一台路由器上创建多个Virtual Routing and Forwarding实例。这对于基于bgp的MPLS vpn非常有用。与OSI第二层技术BGP VPLS不同，BGP VRF vpn工作在第三层，并在路由器之间交换IP前缀。vrf解决了IP前缀重叠的问题，并提供了所需的隐私(通过不同vpn的分离路由)。
+
+可以建立VRF -lite设置或使用VPNv4地址族的多协议BGP从VRF路由表分发路由——不仅分发给其他路由器，而且分发给路由器本身的不同路由表。
+
+# 配置
+
+VRF表在 **/ip VRF** 菜单中创建。VRF配置完成后，添加路由表映射(创建一个同名的动态表)。每个活动VRF总是有一个映射的路由表。
+
+```shell
+[admin@arm-bgp] /ip/vrf> print
+Flags: X - disabled; * - builtin
+ 0  * name="main" interfaces=all 
+ 
+[admin@arm-bgp] /routing/table> print
+Flags: D - dynamic; X - disabled, I - invalid; U - used
+ 0 D   name="main" fib
+```
+
+注意，添加的vrf的顺序很重要。要正确匹配哪个接口将属于VRF，必须注意将VRF按正确的顺序放置(匹配从顶部条目开始，就像防火墙规则一样)。
+
+由于每个VRF都映射了路由表，所以最大唯一VRF的数量也被限制为4096。
+
+请看下面的例子:
+
+```shell
+[admin@arm-bgp] /ip/vrf> print
+Flags: X - disabled; * - builtin
+ 0  * name="main" interfaces=all
+ 1    name="myVrf" interfaces=lo_vrf
+```
+
+因为第一个表项匹配所有接口，所以第二个VRF不会添加任何接口。要解决这个问题，必须更改条目的顺序。
+
+```shell
+[admin@arm-bgp] /ip/vrf> move 1 0
+[admin@arm-bgp] /ip/vrf> print
+Flags: X - disabled; * - builtin
+ 0    name="myVrf" interfaces=lo_vrf 
+ 1  * name="main" interfaces=all
+```
+
+分配到VRF的接口所连接的路由会自动安装到相应的路由表中。
+
+当接口被分配给VRF以及连接的路由时，这并不意味着RouterOS服务仅仅通过在配置中指定IP地址就能神奇地知道使用哪个VRF。每个服务都需要添加VRF支持并进行显式配置。服务是否支持VRF并具有VRF配置选项，请参考相应的服务文档。
+
+例如，创建一个SSH服务来监听属于VRF的接口上的连接:
+
+```shell
+[admin@arm-bgp] /ip/service> set ssh vrf=myVrf
+[admin@arm-bgp] /ip/service> print
+Flags: X, I - INVALID
+Columns: NAME, PORT, CERTIFICATE, VRF
+#   NAME     PORT  CERTIFICATE  VRF    
+0   telnet     23               main   
+1   ftp        21                      
+2   www        80               main   
+3   ssh        22               myVrf
+4 X www-ssl   443  none         main   
+5   api      8728               main   
+6   winbox   8291               main   
+7   api-ssl  8729  none         main
+```
+
+向VRF添加路由非常简单，只需在添加路由时指定路由表参数，并在网关IP后指定@name，指定在哪个路由表中解析网关即可。
+
+`/ip route add dst-address=192.168.1.0/24 gateway=172.16.1.1@myVrf routing-table=myVrf`
+
+如果网关被显式设置为在另一个VRF中解析，则可能在VRF之间发生流量泄漏，例如:
+
+```shell
+# add route in the myVrf, but resolve the gateway in the main table
+/ip route add dst-address=192.168.1.0/24 gateway=172.16.1.1@main routing-table=myVrf
+ 
+# add route in the main table, but resolve the gateway in the myVrf
+/ip route add dst-address=192.168.1.0/24 gateway=172.16.1.1@myVrf
+```
+
+如果网关配置没有显式配置的表来解析，则认为网关应该在“main”表中解析。
+
+# 支持的功能
+
+不同的服务可以放置在特定的VRF中，服务在VRF上监听传入连接或创建传出连接。默认情况下，所有服务都使用“main”表，但可以使用单独的“vrf”参数或在IP地址末尾指定以“@”分隔的vrf名称来更改。
+
+下面是受支持的服务列表。
+
+| Feature                                                                                  | Support | Comment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[BGP](https://help.mikrotik.com/docs/display/ROS/BGP)**                                | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp template</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bgp-template1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp vpls</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bgp-vpls1</code> <code class="ros value">site-id</code><code class="ros plain">=10</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp vpn</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">label-allocation-policy</code><code class="ros plain">=per-vrf</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table> |
+| **[E-mail](https://help.mikrotik.com/docs/display/ROS/E-mail)**                          | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **[IP Services](https://help.mikrotik.com/docs/display/ROS/Services)**                   | +       | VRF is supported for `telnet`, `www`, `ssh`, `www-ssl`, `api`, `winbox`, `api-ssl` services. The `ftp` service does not support changing the VRF.<br><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip service</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">telnet </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **[L2TP Client](https://help.mikrotik.com/docs/display/ROS/L2TP)**                       | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.88.1@vrf1</code> <code class="ros value">name</code><code class="ros plain">=l2tp-out1</code> <code class="ros value">user</code><code class="ros plain">=l2tp-client</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **[MPLS](https://help.mikrotik.com/docs/display/ROS/Mpls+Overview)**                     | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **[Netwatch](https://help.mikrotik.com/docs/display/ROS/Netwatch)**                      | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool netwatch</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">host</code><code class="ros plain">=192.168.88.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **[NTP](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=40992869)**          | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ntp client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system ntp server</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **[OSPF](https://help.mikrotik.com/docs/display/ROS/OSPF)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=ospf-instance-1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **[ping](https://help.mikrotik.com/docs/display/ROS/Ping)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">192.168.88.1 </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **[RADIUS](https://help.mikrotik.com/docs/display/ROS/RADIUS)**                          | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1@vrf1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius incoming </code><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **[RIP](https://help.mikrotik.com/docs/display/ROS/RIP)**                                | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing rip instance</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=rip-instance-1</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **[RPKI](https://help.mikrotik.com/docs/display/ROS/RPKI)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing rpki</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **[SNMP](https://help.mikrotik.com/docs/display/ROS/SNMP)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/snmp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **[EoIP](https://help.mikrotik.com/docs/display/ROS/EoIP)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface eoip</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **[IPIP](https://help.mikrotik.com/docs/display/ROS/IPIP)**                              | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ipip</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **[GRE](https://help.mikrotik.com/docs/display/ROS/GRE)**                                | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface gre</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">remote-address</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **[SSTP-client](https://help.mikrotik.com/docs/display/ROS/SSTP#SSTP-SSTPClient)**       | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface sstp-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **[OVPN-client](https://help.mikrotik.com/docs/display/ROS/OpenVPN#OpenVPN-OVPNClient)** | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ovpn-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.1.1@vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **L2TP-ether**                                                                           | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-ether</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.2.2@vrf</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **[VXLAN](https://help.mikrotik.com/docs/display/ROS/VXLAN)**                            | +       | <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface vxlan</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vni</code><code class="ros plain">=10</code> <code class="ros value">vrf</code><code class="ros plain">=vrf1</code></div></div></td></tr></tbody></table>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+# 例子
+
+简单的VRF-Lite设置
+
+让我们考虑一个设置，其中我们需要两个需要访问互联网的客户vrf: 
+
+```shell
+/ip address
+add address=172.16.1.2/24 interface=public
+add address=192.168.1.1/24 interface=ether1
+add address=192.168.2.1/24 interface=ether2
+ 
+/ip route
+add gateway=172.16.1.1
+ 
+# add VRF configuration
+/ip vrf
+add name=cust_a interface=ether1 place-before 0
+add name=cust_b interface=ether2 place-before 0
+ 
+# add vrf routes
+/ip route
+add gateway=172.16.1.1@main routing-table=cust_a
+add gateway=172.16.1.1@main routing-table=cust_b
+ 
+# masquerade local source
+/ip firewall nat add chain=srcnat out-interface=public action=masquerade
+```
+
+可能有必要确保来自“公共”接口的数据包能够真正到达正确的VRF。
+这可以通过标记VRF客户发起的新连接来解决，并通过“公共”接口上传入数据包的路由标记来引导流量。
+
+```shell
+# mark new customer connections
+/ip firewall mangle
+add action=mark-connection chain=prerouting connection-state=new new-connection-mark=\
+    cust_a_conn src-address=192.168.1.0/24 passthrough=no
+add action=mark-connection chain=prerouting connection-state=new new-connection-mark=\
+    cust_b_conn src-address=192.168.2.0/24 passthrough=no
+ 
+# mark routing
+/ip firewall mangle 
+add action=mark-routing chain=prerouting connection-mark=cust_a_conn \
+    in-interface=public new-routing-mark=cust_a
+add action=mark-routing chain=prerouting connection-mark=cust_b_conn \
+    in-interface=public new-routing-mark=cust_b
+```
+
+静态vrf间路由
+
+一般情况下，建议所有VRF之间的路由都使用BGP本地导入和导出功能进行交换。如果这还不够，还可以使用静态路由来实现这种所谓的路由泄漏。
+
+有两种方法可以安装路由，使其网关位于与路由本身不同的路由表中。
+
+第一种方法是在添加路由时在gateway字段中显式指定路由表。这只有在将路由和网关从“主”路由表泄漏到另一个路由表(VRF)时才有可能。例子:
+
+```shell
+# add route to 5.5.5.0/24 in 'vrf1' routing table with gateway in the main routing table
+add dst-address=5.5.5.0/24 gateway=10.3.0.1@main routing-table=vrf1
+```
+
+第二种方法是在gateway字段中显式指定接口。指定的接口可以属于VRF实例。例子:
+
+```shell
+# add route to 5.5.5.0/24 in the main routing table with gateway at 'ether2' VRF interface
+add dst-address=5.5.5.0/24 gateway=10.3.0.1%ether2 routing-table=main
+# add route to 5.5.5.0/24 in the main routing table with 'ptp-link-1' VRF interface as gateway
+add dst-address=5.5.5.0/24 gateway=ptp-link-1 routing-table=main
+```
+
+
+可以看到，有两种可能的变化—将网关指定为 _ip_address%interface_ 或简单地指定一个 _interface_。在大多数情况下，前者应该用于广播接口。第二种应该用于点到点接口，如果路由是某个VRF中的连通路由，也可以用于广播接口。例如，如果你在接口 _ether2_ 上有一个地址' 1.2.3.4/24 '，它被放在一个VRF中，那么在这个VRF的路由表中就会有一条到' 1.2.3.0/24 '的连接路由。在不同的路由表中添加静态路由' 1.2.3.0/24 '是可以接受的，即使_ether2_是一个广播接口:
+
+`add dst-address=1.2.3.0/24 gateway=ether2 routing-table=main`
+
+## 最简单的MPLS VPN设置
 
 ![](https://help.mikrotik.com/docs/download/attachments/328206/L3vpn-simple.png?version=2&modificationDate=1621329532209&api=v2)
 
-In this example, a rudimentary MPLS backbone (consisting of two Provider Edge (PE) routers PE1 and PE2) is created and configured to forward traffic between Customer Edge (CE) routers CE1 and CE2 routers that belong to _cust-one_ VPN.
+在本例中，创建并配置一个基本的MPLS骨干网(由两个PE路由器PE1和PE2组成)，用于转发属于 _customer -one_  VPN的CE路由器CE1和CE2之间的流量。
 
-### CE1 Router
+CE1路由器
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.1.1.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros comments"># use static routing</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.3.3.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.1.1.2</code></div></div></td></tr></tbody></table>
-
-  
-
-### CE2 Router
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.3.3.4/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.1.1.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.3.3</code></div></div></td></tr></tbody></table>
+```shell
+/ip address add address=10.1.1.1/24 interface=ether1
+# use static routing
+/ip route add dst-address=10.3.3.0/24 gateway=10.1.1.2
+```
 
   
 
-### PE1 Router
+### CE2路由器
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lobridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.1.1.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.2.2.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.5.5.2/32</code> <code class="ros value">interface</code><code class="ros plain">=lobridge</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip vrf </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=cust-one</code> <code class="ros value">interfaces</code><code class="ros plain">=ether1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/mpls ldp </code><code class="ros functions">add </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">transport-address</code><code class="ros plain">=10.5.5.2</code> <code class="ros value">lsr-id</code><code class="ros plain">=10.5.5.2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp template </code><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">as</code><code class="ros plain">=65000</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp vpn</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=cust-one</code> <code class="ros plain">\</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">route-distinguisher</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">import.route-targets</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">import.router-id</code><code class="ros plain">=cust-one</code> <code class="ros plain">\</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.redistribute</code><code class="ros plain">=connected</code> <code class="ros plain">\</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.route-targets</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">label-allocation-policy</code><code class="ros plain">=per-vrf</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp connection</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">template</code><code class="ros plain">=default</code> <code class="ros value">remote.address</code><code class="ros plain">=10.5.5.3</code> <code class="ros value">address-families</code><code class="ros plain">=vpnv4</code> <code class="ros value">local.address</code><code class="ros plain">=10.5.5.2</code></div><div class="line number20 index19 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros comments"># add route to the remote BGP peer's loopback address</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.5.5.3/32</code> <code class="ros value">gateway</code><code class="ros plain">=10.2.2.3</code></div></div></td></tr></tbody></table>
-
-  
-
-  
-
-### PE2 Router (Cisco)
+```shell
+/ip address add address=10.3.3.4/24 interface=ether1
+/ip route add dst-address=10.1.1.0/24 gateway=10.3.3.3
+```
 
   
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
+### PE1路由器
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">ip vrf cust-one</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">rd 1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">export </code><code class="ros plain">1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">import </code><code class="ros plain">1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">exit</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">interface Loopback0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">ip address 10.5.5.3 255.255.255.255</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">mpls ldp router-id Loopback0 force</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">mpls label protocol ldp</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">interface FastEthernet0</code><code class="ros constants">/0</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">ip address 10.2.2.3 255.255.255.0</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">mpls ip</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">interface FastEthernet1</code><code class="ros constants">/0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">ip vrf forwarding cust-one</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">ip address 10.3.3.3 255.255.255.0</code></div><div class="line number20 index19 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">router bgp 65000</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">neighbor 10.5.5.2 remote-as 65000</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">neighbor 10.5.5.2 update-source Loopback0</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros plain">address-family vpnv4</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros plain">neighbor 10.5.5.2 activate</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros plain">neighbor 10.5.5.2 send-community both</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros plain">exit-address-family</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros plain">address-family ipv4 vrf cust-one</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros plain">redistribute connected</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros plain">exit-address-family</code></div><div class="line number31 index30 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros plain">ip route 10.5.5.2 255.255.255.255 10.2.2.2</code></div></div></td></tr></tbody></table>
+```shell
+/interface bridge add name=lobridge
+/ip address add address=10.1.1.2/24 interface=ether1
+/ip address add address=10.2.2.2/24 interface=ether2
+/ip address add address=10.5.5.2/32 interface=lobridge
+/ip vrf add name=cust-one interfaces=ether1
+/mpls ldp add enabled=yes transport-address=10.5.5.2 lsr-id=10.5.5.2
+/mpls ldp interface add interface=ether2
+/routing bgp template set default as=65000
+ 
+/routing bgp vpn
+add vrf=cust-one \
+  route-distinguisher=1.1.1.1:111 \
+  import.route-targets=1.1.1.1:111 \
+  import.router-id=cust-one \
+  export.redistribute=connected \
+  export.route-targets=1.1.1.1:111 \
+  label-allocation-policy=per-vrf
+/routing bgp connection
+add template=default remote.address=10.5.5.3 address-families=vpnv4 local.address=10.5.5.2
+ 
+# add route to the remote BGP peer's loopback address
+/ip route add dst-address=10.5.5.3/32 gateway=10.2.2.3
+```
 
-Results
 
-Check that VPNv4 route redistribution is working:
+### PE2路由器(Cisco)
+ 
 
+```shell
+ip vrf cust-one
+rd 1.1.1.1:111
+route-target export 1.1.1.1:111
+route-target import 1.1.1.1:111
+exit
+ 
+interface Loopback0
+ip address 10.5.5.3 255.255.255.255
+ 
+mpls ldp router-id Loopback0 force
+mpls label protocol ldp
+ 
+interface FastEthernet0/0
+ip address 10.2.2.3 255.255.255.0
+mpls ip
+ 
+interface FastEthernet1/0
+ip vrf forwarding cust-one
+ip address 10.3.3.3 255.255.255.0
+ 
+router bgp 65000
+neighbor 10.5.5.2 remote-as 65000
+neighbor 10.5.5.2 update-source Loopback0
+address-family vpnv4
+neighbor 10.5.5.2 activate
+neighbor 10.5.5.2 send-community both
+exit-address-family
+address-family ipv4 vrf cust-one
+redistribute connected
+exit-address-family
+ 
+ip route 10.5.5.2 255.255.255.255 10.2.2.2
+```
+
+结果
+
+检查VPNv4路由重新分配是否正常工作:
   
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
+```shell
+[admin@PE1] /routing/route> print detail where afi="vpn4"
+Flags: X - disabled, F - filtered, U - unreachable, A - active;
+c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l
+dp-mapping, g - slaac, y - bgp-mpls-vpn;
+H - hw-offloaded; + - ecmp, B - blackhole
+ Ab   afi=vpn4 contribution=active dst-address=111.16.0.0/24&;1.1.1.1:111 routing-table=main label=16
+       gateway=111.111.111.4 immediate-gw=111.13.0.2%ether9 distance=200 scope=40 target-scope=30
+       belongs-to="bgp-VPN4-111.111.111.4"
+       bgp.peer-cache-id=*2C00011 .as-path="65511" .ext-communities=rt:1.1.1.1:111 .local-pref=100
+       .atomic-aggregate=yes .origin=igp
+       debug.fwp-ptr=0x202427E0
+ 
+[admin@PE1] /routing/bgp/advertisements> print
+ 0 peer=to-pe2-1 dst=10.1.1.0/24 local-pref=100 origin=2 ext-communities=rt:1.1.1.1:111 atomic-aggregate=yes
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE1] </code><code class="ros constants">/routing/route&gt; </code><code class="ros functions">print </code><code class="ros functions">detail </code><code class="ros plain">where </code><code class="ros value">afi</code><code class="ros plain">=</code><code class="ros string">"vpn4"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, F - filtered, U - unreachable, A - active;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">dp-mapping, g - slaac, y - bgp-mpls-vpn;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">H - hw-offloaded; + - ecmp, B - blackhole</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Ab&nbsp;&nbsp; </code><code class="ros value">afi</code><code class="ros plain">=vpn4</code> <code class="ros value">contribution</code><code class="ros plain">=active</code> <code class="ros value">dst-address</code><code class="ros plain">=111.16.0.0/24&amp;</code><code class="ros plain">;1.1.1.1:111 </code><code class="ros value">routing-table</code><code class="ros plain">=main</code> <code class="ros value">label</code><code class="ros plain">=16</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">gateway</code><code class="ros plain">=111.111.111.4</code> <code class="ros value">immediate-gw</code><code class="ros plain">=111.13.0.2%ether9</code> <code class="ros value">distance</code><code class="ros plain">=200</code> <code class="ros value">scope</code><code class="ros plain">=40</code> <code class="ros value">target-scope</code><code class="ros plain">=30</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">belongs-to</code><code class="ros plain">=</code><code class="ros string">"bgp-VPN4-111.111.111.4"</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">bgp.peer-cache-id</code><code class="ros plain">=*2C00011</code> <code class="ros plain">.</code><code class="ros value">as-path</code><code class="ros plain">=</code><code class="ros string">"65511"</code> <code class="ros plain">.</code><code class="ros value">ext-communities</code><code class="ros plain">=rt:1.1.1.1:111</code> <code class="ros plain">.</code><code class="ros value">local-pref</code><code class="ros plain">=100</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">.</code><code class="ros value">atomic-aggregate</code><code class="ros plain">=yes</code> <code class="ros plain">.</code><code class="ros value">origin</code><code class="ros plain">=igp</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">debug.fwp-ptr</code><code class="ros plain">=0x202427E0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE1] </code><code class="ros constants">/routing/bgp/advertisements&gt; </code><code class="ros functions">print</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 </code><code class="ros value">peer</code><code class="ros plain">=to-pe2-1</code> <code class="ros value">dst</code><code class="ros plain">=10.1.1.0/24</code> <code class="ros value">local-pref</code><code class="ros plain">=100</code> <code class="ros value">origin</code><code class="ros plain">=2</code> <code class="ros value">ext-communities</code><code class="ros plain">=rt:1.1.1.1:111</code> <code class="ros value">atomic-aggregate</code><code class="ros plain">=yes</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code>&nbsp;</div></div></td></tr></tbody></table>
+检查IP路由表中是否安装了10.3.3.0版本，在cost -one路由表中:
 
-Check that the 10.3.3.0 is installed in IP routes, in the cust-one route table:
+```shell
+[admin@PE1] > /ip route print where routing-table="cust-one"
+Flags: D - DYNAMIC; A - ACTIVE; c, b, y - BGP-MPLS-VPN
+Columns: DST-ADDRESS, GATEWAY, DISTANCE
+# DST-ADDRESS     GATEWAY         DISTANCE
+0 ADC 10.1.1.0/24 ether1@cust-one        0
+1 ADb 10.3.3.0/24 10.5.5.3              20
+```
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
+让我们仔细看看单VRF中的IP路由。10.1.1.0/24是已连接的路由，该路由属于已配置为cost - 1 VRF的接口。10.3.3.0/24 IP前缀作为VPNv4路由从PE2通过BGP发布，并被引入到VRF路由表中，因为我们配置的import-route-targets**与发布时的BGP扩展团体属性相匹配。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE1] &gt; </code><code class="ros constants">/ip route </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">routing-table</code><code class="ros plain">=</code><code class="ros string">"cust-one"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - DYNAMIC; A - ACTIVE; c, b, y - BGP-MPLS-VPN</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DST-ADDRESS, GATEWAY, DISTANCE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp; GATEWAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISTANCE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 ADC </code><code class="ros color1">10.1.1.0/24</code> <code class="ros plain">ether1@cust-one&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">1 ADb </code><code class="ros color1">10.3.3.0/24</code> <code class="ros plain">10.5.5.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20</code></div></div></td></tr></tbody></table>
+```shell
+[admin@PE1] /routing/route> print detail where routing-table="cust-one"
+Flags: X - disabled, F - filtered, U - unreachable, A - active;
+c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l
+dp-mapping, g - slaac, y - bgp-mpls-vpn;
+H - hw-offloaded; + - ecmp, B - blackhole
+ Ac   afi=ip4 contribution=active dst-address=10.1.1.0/24 routing-table=cust-one
+       gateway=ether1@cust-one immediate-gw=ether1 distance=0 scope=10 belongs-to="connected"
+       local-address=10.1.1.2%ether1@cust-one
+       debug.fwp-ptr=0x202420C0
+ 
+ Ay   afi=ip4 contribution=active dst-address=10.3.3.0/24 routing-table=cust-one label=16
+       gateway=10.5.5.3 immediate-gw=10.2.2.3%ether2 distance=20 scope=40 target-scope=30
+       belongs-to="bgp-mpls-vpn-1-bgp-VPN4-10.5.5.3-import"
+       bgp.peer-cache-id=*2C00011 .ext-communities=rt:1.1.1.1:111 .local-pref=100
+       .atomic-aggregate=yes .origin=igp
+       debug.fwp-ptr=0x20242840
+ 
+ 
+[admin@PE1] /routing/route> print detail where afi="vpn4"                
+Flags: X - disabled, F - filtered, U - unreachable, A - active;
+c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l
+dp-mapping, g - slaac, y - bgp-mpls-vpn;
+H - hw-offloaded; + - ecmp, B - blackhole
+ Ay   afi=vpn4 contribution=active dst-address=10.1.1.0/24&;1.1.1.1:111 routing-table=main label=19
+       gateway=ether1@cust-one immediate-gw=ether1 distance=200 scope=40 target-scope=10
+       belongs-to="bgp-mpls-vpn-1-connected-export"
+       bgp.ext-communities=rt:1.1.1.1:1111 .atomic-aggregate=no .origin=incomplete
+       debug.fwp-ptr=0x202426C0
+ 
+ Ab   afi=vpn4 contribution=active dst-address=10.3.3.0/24&;1.1.1.1:111 routing-table=main label=16
+       gateway=10.5.5.3 immediate-gw=10.2.2.3%ether2 distance=200 scope=40 target-scope=30
+       belongs-to="bgp-VPN4-10.5.5.3"
+       bgp.peer-cache-id=*2C00011 .ext-communities=rt:1.1.1.1:111 .local-pref=100
+       .atomic-aggregate=yes .origin=igp
+       debug.fwp-ptr=0x202427E0
+```
 
   
+思科也是如此:
 
-Let's take a closer look at IP routes in cust-one VRF. The 10.1.1.0/24 IP prefix is a connected route that belongs to an interface that was configured to belong to cust-one VRF. The 10.3.3.0/24 IP prefix was advertised via BGP as a VPNv4 route from PE2 and is imported in this VRF routing table, because our configured **import-route-targets** matched the BGP extended communities attribute it was advertised with.
+```shell
+PE2#show ip bgp vpnv4 all
+BGP table version is 5, local router ID is 10.5.5.3
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+Network Next Hop Metric LocPrf Weight Path
+Route Distinguisher: 1.1.1.1:111 (default for vrf cust-one)
+*>i10.1.1.0/24 10.5.5.2 100 0 ?
+*> 10.3.3.0/24 0.0.0.0 0 32768 ?
+ 
+PE2#show ip route vrf cust-one
+Routing Table: cust-one
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+E1 - OSPF external type 1, E2 - OSPF external type 2
+i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+ia - IS-IS inter area, * - candidate default, U - per-user static route
+o - ODR, P - periodic downloaded static route
+ 
+Gateway of last resort is not set
+10.0.0.0/24 is subnetted, 1 subnets
+B 10.1.1.0 [200/0] via 10.5.5.2, 00:05:33
+10.0.0.0/24 is subnetted, 1 subnets
+C 10.3.3.0 is directly connected, FastEthernet1/0
+```
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
+应该能从CE1 ping到CE2，反之亦然。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE1] </code><code class="ros constants">/routing/route&gt; </code><code class="ros functions">print </code><code class="ros functions">detail </code><code class="ros plain">where </code><code class="ros value">routing-table</code><code class="ros plain">=</code><code class="ros string">"cust-one"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, F - filtered, U - unreachable, A - active;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">dp-mapping, g - slaac, y - bgp-mpls-vpn;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">H - hw-offloaded; + - ecmp, B - blackhole</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Ac&nbsp;&nbsp; </code><code class="ros value">afi</code><code class="ros plain">=ip4</code> <code class="ros value">contribution</code><code class="ros plain">=active</code> <code class="ros value">dst-address</code><code class="ros plain">=10.1.1.0/24</code> <code class="ros value">routing-table</code><code class="ros plain">=cust-one</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">gateway</code><code class="ros plain">=ether1@cust-one</code> <code class="ros value">immediate-gw</code><code class="ros plain">=ether1</code> <code class="ros value">distance</code><code class="ros plain">=0</code> <code class="ros value">scope</code><code class="ros plain">=10</code> <code class="ros value">belongs-to</code><code class="ros plain">=</code><code class="ros string">"connected"</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">local-address</code><code class="ros plain">=10.1.1.2%ether1@cust-one</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">debug.fwp-ptr</code><code class="ros plain">=0x202420C0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Ay&nbsp;&nbsp; </code><code class="ros value">afi</code><code class="ros plain">=ip4</code> <code class="ros value">contribution</code><code class="ros plain">=active</code> <code class="ros value">dst-address</code><code class="ros plain">=10.3.3.0/24</code> <code class="ros value">routing-table</code><code class="ros plain">=cust-one</code> <code class="ros value">label</code><code class="ros plain">=16</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">gateway</code><code class="ros plain">=10.5.5.3</code> <code class="ros value">immediate-gw</code><code class="ros plain">=10.2.2.3%ether2</code> <code class="ros value">distance</code><code class="ros plain">=20</code> <code class="ros value">scope</code><code class="ros plain">=40</code> <code class="ros value">target-scope</code><code class="ros plain">=30</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">belongs-to</code><code class="ros plain">=</code><code class="ros string">"bgp-mpls-vpn-1-bgp-VPN4-10.5.5.3-import"</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">bgp.peer-cache-id</code><code class="ros plain">=*2C00011</code> <code class="ros plain">.</code><code class="ros value">ext-communities</code><code class="ros plain">=rt:1.1.1.1:111</code> <code class="ros plain">.</code><code class="ros value">local-pref</code><code class="ros plain">=100</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">.</code><code class="ros value">atomic-aggregate</code><code class="ros plain">=yes</code> <code class="ros plain">.</code><code class="ros value">origin</code><code class="ros plain">=igp</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">debug.fwp-ptr</code><code class="ros plain">=0x20242840</code></div><div class="line number17 index16 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE1] </code><code class="ros constants">/routing/route&gt; </code><code class="ros functions">print </code><code class="ros functions">detail </code><code class="ros plain">where </code><code class="ros value">afi</code><code class="ros plain">=</code><code class="ros string">"vpn4"</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, F - filtered, U - unreachable, A - active;</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">c - connect, s - static, r - rip, b - bgp, o - ospf, d - dhcp, v - vpn, m - modem, a - ldp-address, l - l</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">dp-mapping, g - slaac, y - bgp-mpls-vpn;</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">H - hw-offloaded; + - ecmp, B - blackhole</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Ay&nbsp;&nbsp; </code><code class="ros value">afi</code><code class="ros plain">=vpn4</code> <code class="ros value">contribution</code><code class="ros plain">=active</code> <code class="ros value">dst-address</code><code class="ros plain">=10.1.1.0/24&amp;</code><code class="ros plain">;1.1.1.1:111 </code><code class="ros value">routing-table</code><code class="ros plain">=main</code> <code class="ros value">label</code><code class="ros plain">=19</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">gateway</code><code class="ros plain">=ether1@cust-one</code> <code class="ros value">immediate-gw</code><code class="ros plain">=ether1</code> <code class="ros value">distance</code><code class="ros plain">=200</code> <code class="ros value">scope</code><code class="ros plain">=40</code> <code class="ros value">target-scope</code><code class="ros plain">=10</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">belongs-to</code><code class="ros plain">=</code><code class="ros string">"bgp-mpls-vpn-1-connected-export"</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">bgp.ext-communities</code><code class="ros plain">=rt:1.1.1.1:1111</code> <code class="ros plain">.</code><code class="ros value">atomic-aggregate</code><code class="ros plain">=no</code> <code class="ros plain">.</code><code class="ros value">origin</code><code class="ros plain">=incomplete</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">debug.fwp-ptr</code><code class="ros plain">=0x202426C0</code></div><div class="line number29 index28 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Ab&nbsp;&nbsp; </code><code class="ros value">afi</code><code class="ros plain">=vpn4</code> <code class="ros value">contribution</code><code class="ros plain">=active</code> <code class="ros value">dst-address</code><code class="ros plain">=10.3.3.0/24&amp;</code><code class="ros plain">;1.1.1.1:111 </code><code class="ros value">routing-table</code><code class="ros plain">=main</code> <code class="ros value">label</code><code class="ros plain">=16</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">gateway</code><code class="ros plain">=10.5.5.3</code> <code class="ros value">immediate-gw</code><code class="ros plain">=10.2.2.3%ether2</code> <code class="ros value">distance</code><code class="ros plain">=200</code> <code class="ros value">scope</code><code class="ros plain">=40</code> <code class="ros value">target-scope</code><code class="ros plain">=30</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">belongs-to</code><code class="ros plain">=</code><code class="ros string">"bgp-VPN4-10.5.5.3"</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">bgp.peer-cache-id</code><code class="ros plain">=*2C00011</code> <code class="ros plain">.</code><code class="ros value">ext-communities</code><code class="ros plain">=rt:1.1.1.1:111</code> <code class="ros plain">.</code><code class="ros value">local-pref</code><code class="ros plain">=100</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">.</code><code class="ros value">atomic-aggregate</code><code class="ros plain">=yes</code> <code class="ros plain">.</code><code class="ros value">origin</code><code class="ros plain">=igp</code></div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">debug.fwp-ptr</code><code class="ros plain">=0x202427E0</code></div></div></td></tr></tbody></table>
+```shell
+[admin@CE1] > /ping 10.3.3.4
+10.3.3.4 64 byte ping: ttl=62 time=18 ms
+10.3.3.4 64 byte ping: ttl=62 time=13 ms
+10.3.3.4 64 byte ping: ttl=62 time=13 ms
+10.3.3.4 64 byte ping: ttl=62 time=14 ms
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 13/14.5/18 ms
+```
 
-  
-
-The same for Cisco:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">PE2</code><code class="ros comments">#show ip bgp vpnv4 all</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">BGP table version is 5, </code><code class="ros functions">local </code><code class="ros plain">router ID is 10.5.5.3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Status codes</code><code class="ros constants">: s suppressed, d damped, h history, * valid, &gt; best, i - internal,</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">r RIB-failure, S Stale</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">Origin codes</code><code class="ros constants">: i - IGP, e - EGP,&nbsp;? - incomplete</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">Network Next Hop Metric LocPrf Weight Path</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">Route Distinguisher</code><code class="ros constants">: 1.1.1.1:111 (default </code><code class="ros functions">for </code><code class="ros plain">vrf cust-one)</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">*&gt;i</code><code class="ros color1">10.1.1.0/24</code> <code class="ros plain">10.5.5.2 100 0&nbsp;?</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">*&gt; </code><code class="ros color1">10.3.3.0/24</code> <code class="ros plain">0.0.0.0 0 32768&nbsp;?</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">PE2</code><code class="ros comments">#show ip route vrf cust-one</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">Routing Table</code><code class="ros constants">: cust-one</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">Codes</code><code class="ros constants">: C - connected, S - static, R - RIP, M - mobile, B - BGP</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">E1 - OSPF external type 1, E2 - OSPF external type 2</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">ia - IS-IS inter area, * - candidate default, U - per-user static route</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">o - ODR, P - periodic downloaded static route</code></div><div class="line number20 index19 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">Gateway of last resort is not </code><code class="ros functions">set</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros color1">10.0.0.0/24</code> <code class="ros plain">is subnetted, 1 subnets</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">B 10.1.1.0 [200</code><code class="ros constants">/0] via 10.5.5.2, 00:05:33</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros color1">10.0.0.0/24</code> <code class="ros plain">is subnetted, 1 subnets</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros plain">C 10.3.3.0 is directly connected, FastEthernet1</code><code class="ros constants">/0</code></div></div></td></tr></tbody></table>
-
-  
-
-You should be able to ping from CE1 to CE2 and vice versa.
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CE1] &gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">10.3.3.4</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">10.3.3.4 64 byte ping</code><code class="ros constants">: ttl=62 time=18 ms</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">10.3.3.4 64 byte ping</code><code class="ros constants">: ttl=62 time=13 ms</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">10.3.3.4 64 byte ping</code><code class="ros constants">: ttl=62 time=13 ms</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">10.3.3.4 64 byte ping</code><code class="ros constants">: ttl=62 time=14 ms</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">4 packets transmitted, 4 packets received, 0% packet loss</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 13/14.5/18 ms</code></div></div></td></tr></tbody></table>
-
-  
-
-## A more complicated setup (changes only)
+更复杂的设置(只能更改)
 
 ![](https://help.mikrotik.com/docs/download/attachments/328206/800px-L3vpn-two-customers.png?version=2&modificationDate=1621329573471&api=v2)
 
-As opposed to the simplest setup, in this example, we have two customers: cust-one and cust-two.
+与最简单的设置相反，在本例中，有两个客户:客户1和客户2。
 
-We configure two VPNs for them, cust-one and cust-two respectively, and exchange all routes between them. (This is also called "route leaking").
+为它们配置了两个vpn，分别是cost - 1和cost - 2，并交换它们之间的所有路由。(这也被称为“路由泄漏”)。
 
-Note that this could be not the most typical setup, because routes are usually not exchanged between different customers. In contrast, by default, it should not be possible to gain access from one VRF site to a different VRF site in another VPN. (This is the "Private" aspect of VPNs.) Separate routing is a way to provide privacy, and it is also required to solve the problem of overlapping IP network prefixes. Route exchange is in direct conflict with these two requirements but may sometimes be needed (e.g. temp. solution when two customers are migrating to a single network infrastructure).
+注意，这可能不是最典型的设置，因为路由通常不会在不同的客户之间交换。相反，默认情况下，不可能从一个VRF站点访问另一个VPN中的另一个VRF站点。(这是vpn的“私有”方面。)分离路由是提供隐私的一种方式，也是解决IP网络前缀重叠问题所必需的。路由交换与这两个需求直接冲突，但有时可能需要(例如，当两个客户迁移到单个网络基础设施时，临时解决方案)。
 
-### CE1 Router, _cust-one_
+### CE1路由器，客户1
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
+`/ip route add dst-address=10.4.4.0/24 gateway=10.1.1.2`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.4.4.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.1.1.2</code></div></div></td></tr></tbody></table>
+### CE2路由器，客户1
+
+
+`/ip route add dst-address=10.4.4.0/24 gateway=10.3.3.3`
+
+### CE1路由器，客户2
+
+```shell
+/ip address add address=10.4.4.5 interface=ether1
+/ip route add dst-address=10.1.1.0/24 gateway=10.3.3.3
+/ip route add dst-address=10.3.3.0/24 gateway=10.3.3.3
+```
+
+### PE1路由器
+
+```shell
+# replace the old BGP VPN with this:
+/routing bgp vpn
+add vrf=cust-one \
+  export.redistribute=connected \
+  route-distinguisher=1.1.1.1:111 \
+  import.route-targets=1.1.1.1:111,2.2.2.2:222  \
+  export.route-targets=1.1.1.1:111
+```
+
+### PE2路由器(Cisco)
+
+```shell
+ip vrf cust-one
+rd 1.1.1.1:111
+route-target export 1.1.1.1:111
+route-target import 1.1.1.1:111
+route-target import 2.2.2.2:222
+exit
+ 
+ip vrf cust-two
+rd 2.2.2.2:222
+route-target export 2.2.2.2:222
+route-target import 1.1.1.1:111
+route-target import 2.2.2.2:222
+exit
+ 
+interface FastEthernet2/0
+ip vrf forwarding cust-two
+ip address 10.4.4.3 255.255.255.0
+ 
+router bgp 65000
+address-family ipv4 vrf cust-two
+redistribute connected
+exit-address-family
+```
+
+## 变化:用另一台MT替换思科
+
+### PE2 Mikrotik配置
+
+```shell
+/interface bridge add name=lobridge
+/ip address
+add address=10.2.2.3/24 interface=ether1
+add address=10.3.3.3/24 interface=ether2
+add address=10.4.4.3/24 interface=ether3
+add address=10.5.5.3/32 interface=lobridge
+/ip vrf
+add name=cust-one interfaces=ether2
+add name=cust-two interfaces=ether3
+/mpls ldp add enabled=yes transport-address=10.5.5.3
+/mpls ldp interface add interface=ether1
+ 
+/routing bgp template set default as=65000
+/routing bgp vpn
+add vrf=cust-one \
+  export.redistribute=connected \
+  route-distinguisher=1.1.1.1:111 \
+  import.route-targets=1.1.1.1:111,2.2.2.2:222 \
+  export.route-targets=1.1.1.1:111 \
+add vrf=cust-two \
+  export.redistribute=connected \
+  route-distinguisher=2.2.2.2:222 \
+  import.route-targets=1.1.1.1:111,2.2.2.2:222 \
+  export.route-targets=2.2.2.2:222 \
+ 
+/routing bgp connection
+add template=default remote.address=10.5.5.2 address-families=vpnv4 local.address=10.5.5.3
+ 
+# add route to the remote BGP peer's loopback address
+/ip route add dst-address=10.5.5.2/32 gateway=10.2.2.2
+```
+
+结果
+
+现在，**/ip route print** 的输出非常有趣，值得仔细观察。
+
+  
+```shell
+[admin@PE2] /ip route> print
+Flags: X - disabled, A - active, D - dynamic,
+C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,
+B - blackhole, U - unreachable, P - prohibit
+# DST-ADDRESS PREF-SRC GATEWAY DISTANCE
+0 ADb 10.1.1.0/24 10.5.5.2 recurs... 20
+1 ADC 10.3.3.0/24 10.3.3.3 ether2 0
+2 ADb 10.4.4.0/24 20
+3 ADb 10.1.1.0/24 10.5.5.2 recurs... 20
+4 ADb 10.3.3.0/24 20
+5 ADC 10.4.4.0/24 10.4.4.3 ether3 0
+6 ADC 10.2.2.0/24 10.2.2.3 ether1 0
+7 A S 10.5.5.2/32 10.2.2.2 reacha... 1
+8 ADC 10.5.5.3/32 10.5.5.3 lobridge 0
+```
+
+从远端BGP对等体接收到10.1.1.0/24路由，并安装在两个VRF路由表中。
+
+路由10.3.3.0/24和10.4.4.0/24也安装在两个VRF路由表中。每条路由在一个表中是一条连接路由，在另一个表中是一条BGP路由。这与他们通过BGP发布广告无关。它们只是被“发布”到本地VPNv4路由表，然后在本地重新引入。Import和export **route-targets** 决定它们将在哪个表中结束。
+
+这可以从它的属性中推断出来——它们不具有通常的BGP属性。(路线10.4.4.0/24。)
 
   
 
-### CE2 Router, _cust-one_
+`[admin@PE2] /routing/route> print detail where routing-table=cust-one
+...`
+
+vrf间路由泄漏
+
+目前，还没有机制可以将路由从一个VRF实例泄漏到同一路由器内的另一个VRF实例。
+
+作为一种解决方案，可以在两个本地配置的环回地址之间创建隧道，并将每个隧道端点分配给自己的VRF。然后可以运行动态路由协议或设置静态路由在两个vrf之间泄漏。
+
+这种方法的缺点是必须在每个VRF之间创建隧道，路由应该泄漏(创建一个完整的网格)，这使得配置非常复杂，即使只有几个VRF，更不用说更复杂的设置了。
+
+例如，要在5个vrf之间泄漏路由，需要n * (n - 1) / 2个连接，这将导致在一台路由器上设置20个隧道端点和20个OSPF实例。
+
+使用该方法的两个vrf的配置示例:
+
+```shell
+/interface bridge
+add name=dummy_custC
+add name=dummy_custB
+add name=lo1
+add name=lo2
+ 
+/ip address
+add address=111.255.255.1 interface=lo1 network=111.255.255.1
+add address=111.255.255.2 interface=lo2 network=111.255.255.2
+add address=172.16.1.0/24 interface=dummy_custC network=172.16.1.0
+add address=172.16.2.0/24 interface=dummy_custB network=172.16.2.0
+ 
+/interface ipip
+add local-address=111.255.255.1 name=ipip-tunnel1 remote-address=111.255.255.2
+add local-address=111.255.255.2 name=ipip-tunnel2 remote-address=111.255.255.1
+ 
+/ip address
+add address=192.168.1.1/24 interface=ipip-tunnel1 network=192.168.1.0
+add address=192.168.1.2/24 interface=ipip-tunnel2 network=192.168.1.0
+ 
+/ip vrf
+add interfaces=ipip-tunnel1,dummy_custC name=custC
+add interfaces=ipip-tunnel2,dummy_custB name=custB
+ 
+/routing ospf instance
+add disabled=no name=i2_custB redistribute=connected,static,copy router-id=192.168.1.1 routing-table=custB vrf=custB
+add disabled=no name=i2_custC redistribute=connected router-id=192.168.1.2 routing-table=custC vrf=custC
+/routing ospf area
+add disabled=no instance=i2_custB name=custB_bb
+add disabled=no instance=i2_custC name=custC_bb
+/routing ospf interface-template
+add area=custB_bb disabled=no networks=192.168.1.0/24
+add area=custC_bb disabled=no networks=192.168.1.0/24
+```
+
+结果:
+
+```shell
+[admin@rack1_b36_CCR1009] /routing/ospf/neighbor> print
+Flags: V - virtual; D - dynamic
+ 0  D instance=i2_custB area=custB_bb address=192.168.1.1 priority=128 router-id=192.168.1.2 dr=192.168.1.1 bdr=192.168.1.2
+      state="Full" state-changes=6 adjacency=41m28s timeout=33s
+ 
+ 1  D instance=i2_custC area=custC_bb address=192.168.1.2 priority=128 router-id=192.168.1.1 dr=192.168.1.1 bdr=192.168.1.2
+      state="Full" state-changes=6 adjacency=41m28s timeout=33s
+ 
+ 
+[admin@rack1_b36_CCR1009] /ip/route> print where routing-table=custB
+Flags: D - DYNAMIC; A - ACTIVE; c, s, o, y - COPY
+Columns: DST-ADDRESS, GATEWAY, DISTANCE
+     DST-ADDRESS       GATEWAY                         DISTANCE
+  DAo 172.16.1.0/24     192.168.1.1%ipip-tunnel2@custB       110
+  DAc 172.16.2.0/24     dummy_custB@custB                      0
+  DAc 192.168.1.0/24    ipip-tunnel2@custB                     0
+ 
+ 
+[admin@rack1_b36_CCR1009] > /ip route/print where routing-table=custC
+Flags: D - DYNAMIC; A - ACTIVE; c, o, y - COPY
+Columns: DST-ADDRESS, GATEWAY, DISTANCE
+    DST-ADDRESS       GATEWAY                         DISTANCE
+  DAc 172.16.1.0/24     dummy_custC@custC                      0
+  DAo 172.16.2.0/24     192.168.1.2%ipip-tunnel1@custC       110
+  DAc 192.168.1.0/24    ipip-tunnel1@custC                     0
+```
 
   
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.4.4.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.3.3</code></div></div></td></tr></tbody></table>
-
-CE1 Router,_cust-two_
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.4.4.5</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.1.1.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.3.3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.3.3.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=10.3.3.3</code></div></div></td></tr></tbody></table>
-
-  
-
-### PE1 Router
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># replace the old BGP VPN with this:</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp vpn</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=cust-one</code> <code class="ros plain">\</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.redistribute</code><code class="ros plain">=connected</code> <code class="ros plain">\</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">route-distinguisher</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">import.route-targets</code><code class="ros plain">=1.1.1.1:111,2.2.2.2:222</code>&nbsp; <code class="ros plain">\</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.route-targets</code><code class="ros plain">=1.1.1.1:111</code></div></div></td></tr></tbody></table>
-
-PE2 Router (Cisco)
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">ip vrf cust-one</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">rd 1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">export </code><code class="ros plain">1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">import </code><code class="ros plain">1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">import </code><code class="ros plain">2.2.2.2</code><code class="ros constants">:222</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">exit</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">ip vrf cust-two</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">rd 2.2.2.2</code><code class="ros constants">:222</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">export </code><code class="ros plain">2.2.2.2</code><code class="ros constants">:222</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">import </code><code class="ros plain">1.1.1.1</code><code class="ros constants">:111</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">route-target </code><code class="ros functions">import </code><code class="ros plain">2.2.2.2</code><code class="ros constants">:222</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">exit</code></div><div class="line number14 index13 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">interface FastEthernet2</code><code class="ros constants">/0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">ip vrf forwarding cust-two</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">ip address 10.4.4.3 255.255.255.0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">router bgp 65000</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">address-family ipv4 vrf cust-two</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">redistribute connected</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">exit-address-family</code></div></div></td></tr></tbody></table>
-
-  
-
-## Variation: replace the Cisco with another MT
-
-### PE2 Mikrotik config
-
-  
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lobridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.2.2.3/24</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.3.3.3/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.4.4.3/24</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.5.5.3/32</code> <code class="ros value">interface</code><code class="ros plain">=lobridge</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/ip vrf</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=cust-one</code> <code class="ros value">interfaces</code><code class="ros plain">=ether2</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=cust-two</code> <code class="ros value">interfaces</code><code class="ros plain">=ether3</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/mpls ldp </code><code class="ros functions">add </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">transport-address</code><code class="ros plain">=10.5.5.3</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/routing bgp template </code><code class="ros functions">set </code><code class="ros plain">default </code><code class="ros value">as</code><code class="ros plain">=65000</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp vpn</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=cust-one</code> <code class="ros plain">\</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.redistribute</code><code class="ros plain">=connected</code> <code class="ros plain">\</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">route-distinguisher</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">import.route-targets</code><code class="ros plain">=1.1.1.1:111,2.2.2.2:222</code> <code class="ros plain">\</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.route-targets</code><code class="ros plain">=1.1.1.1:111</code> <code class="ros plain">\</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">vrf</code><code class="ros plain">=cust-two</code> <code class="ros plain">\</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.redistribute</code><code class="ros plain">=connected</code> <code class="ros plain">\</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">route-distinguisher</code><code class="ros plain">=2.2.2.2:222</code> <code class="ros plain">\</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">import.route-targets</code><code class="ros plain">=1.1.1.1:111,2.2.2.2:222</code> <code class="ros plain">\</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">export.route-targets</code><code class="ros plain">=2.2.2.2:222</code> <code class="ros plain">\</code></div><div class="line number25 index24 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros constants">/routing bgp connection</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">template</code><code class="ros plain">=default</code> <code class="ros value">remote.address</code><code class="ros plain">=10.5.5.2</code> <code class="ros value">address-families</code><code class="ros plain">=vpnv4</code> <code class="ros value">local.address</code><code class="ros plain">=10.5.5.3</code></div><div class="line number28 index27 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros comments"># add route to the remote BGP peer's loopback address</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.5.5.2/32</code> <code class="ros value">gateway</code><code class="ros plain">=10.2.2.2</code></div></div></td></tr></tbody></table>
-
-Results
-
-The output of **/ip route print** now is interesting enough to deserve detailed observation.
-
-  
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE2] </code><code class="ros constants">/ip route&gt; </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, A - active, D - dynamic,</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">B - blackhole, U - unreachable, P - prohibit</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># DST-ADDRESS PREF-SRC GATEWAY DISTANCE</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 ADb </code><code class="ros color1">10.1.1.0/24</code> <code class="ros plain">10.5.5.2 recurs... 20</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">1 ADC </code><code class="ros color1">10.3.3.0/24</code> <code class="ros plain">10.3.3.3 ether2 0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">2 ADb </code><code class="ros color1">10.4.4.0/24</code> <code class="ros plain">20</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">3 ADb </code><code class="ros color1">10.1.1.0/24</code> <code class="ros plain">10.5.5.2 recurs... 20</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">4 ADb </code><code class="ros color1">10.3.3.0/24</code> <code class="ros plain">20</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">5 ADC </code><code class="ros color1">10.4.4.0/24</code> <code class="ros plain">10.4.4.3 ether3 0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">6 ADC </code><code class="ros color1">10.2.2.0/24</code> <code class="ros plain">10.2.2.3 ether1 0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">7 A S </code><code class="ros color1">10.5.5.2/32</code> <code class="ros plain">10.2.2.2 reacha... 1</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">8 ADC </code><code class="ros color1">10.5.5.3/32</code> <code class="ros plain">10.5.5.3 lobridge 0</code></div></div></td></tr></tbody></table>
-
-The route 10.1.1.0/24 was received from a remote BGP peer and is installed in both VRF routing tables.
-
-The routes 10.3.3.0/24 and 10.4.4.0/24 are also installed in both VRF routing tables. Each is a connected route in one table and a BGP route in another table. This has nothing to do with their being advertised via BGP. They are simply being "advertised" to the local VPNv4 route table and locally reimported after that. Import and export **route-targets** determine in which tables they will end up.
-
-This can be deduced from its attributes - they don't have the usual BGP properties. (Route 10.4.4.0/24.)
-
-  
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@PE2] </code><code class="ros constants">/routing/route&gt; </code><code class="ros functions">print </code><code class="ros functions">detail </code><code class="ros plain">where </code><code class="ros value">routing-table</code><code class="ros plain">=cust-one</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">...</code></div></div></td></tr></tbody></table>
-
-## Leaking routes between VRFs
-
-Currently, there is no mechanism to leak routes from one VRF instance to another within the same router.
-
-As a workaround, it is possible to create a tunnel between two locally configure loopback addresses and assign each tunnel endpoint to its own VRF. Then it is possible to run either dynamic routing protocols or set up static routes to leak between both VRFs.
-
-The downside of this approach is that tunnel must be created between each VRF where routes should be leaked (create a full mesh), which significantly complicates configuration even if there are just several VRFs, not to mention more complicated setups.
-
-For example, to leak routes between 5 VRFs it would require n \* ( n – 1) / 2 connections, which will lead to the setup with 20 tunnel endpoints and 20 OSPF instances on one router.
-
-Example config with two VRFs of this method:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=dummy_custC</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=dummy_custB</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lo1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lo2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.255.255.1</code> <code class="ros value">interface</code><code class="ros plain">=lo1</code> <code class="ros value">network</code><code class="ros plain">=111.255.255.1</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.255.255.2</code> <code class="ros value">interface</code><code class="ros plain">=lo2</code> <code class="ros value">network</code><code class="ros plain">=111.255.255.2</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.1.0/24</code> <code class="ros value">interface</code><code class="ros plain">=dummy_custC</code> <code class="ros value">network</code><code class="ros plain">=172.16.1.0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.2.0/24</code> <code class="ros value">interface</code><code class="ros plain">=dummy_custB</code> <code class="ros value">network</code><code class="ros plain">=172.16.2.0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/interface ipip</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">local-address</code><code class="ros plain">=111.255.255.1</code> <code class="ros value">name</code><code class="ros plain">=ipip-tunnel1</code> <code class="ros value">remote-address</code><code class="ros plain">=111.255.255.2</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">local-address</code><code class="ros plain">=111.255.255.2</code> <code class="ros value">name</code><code class="ros plain">=ipip-tunnel2</code> <code class="ros value">remote-address</code><code class="ros plain">=111.255.255.1</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ipip-tunnel1</code> <code class="ros value">network</code><code class="ros plain">=192.168.1.0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ipip-tunnel2</code> <code class="ros value">network</code><code class="ros plain">=192.168.1.0</code></div><div class="line number20 index19 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros constants">/ip vrf</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interfaces</code><code class="ros plain">=ipip-tunnel1,dummy_custC</code> <code class="ros value">name</code><code class="ros plain">=custC</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interfaces</code><code class="ros plain">=ipip-tunnel2,dummy_custB</code> <code class="ros value">name</code><code class="ros plain">=custB</code></div><div class="line number24 index23 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=i2_custB</code> <code class="ros value">redistribute</code><code class="ros plain">=connected,static,copy</code> <code class="ros value">router-id</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">routing-table</code><code class="ros plain">=custB</code> <code class="ros value">vrf</code><code class="ros plain">=custB</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=i2_custC</code> <code class="ros value">redistribute</code><code class="ros plain">=connected</code> <code class="ros value">router-id</code><code class="ros plain">=192.168.1.2</code> <code class="ros value">routing-table</code><code class="ros plain">=custC</code> <code class="ros value">vrf</code><code class="ros plain">=custC</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">instance</code><code class="ros plain">=i2_custB</code> <code class="ros value">name</code><code class="ros plain">=custB_bb</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">instance</code><code class="ros plain">=i2_custC</code> <code class="ros value">name</code><code class="ros plain">=custC_bb</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=custB_bb</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">networks</code><code class="ros plain">=192.168.1.0/24</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=custC_bb</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">networks</code><code class="ros plain">=192.168.1.0/24</code></div></div></td></tr></tbody></table>
-
-Result:
-
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@rack1_b36_CCR1009] </code><code class="ros constants">/routing/ospf/neighbor&gt; </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: V - virtual; D - dynamic</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; D </code><code class="ros value">instance</code><code class="ros plain">=i2_custB</code> <code class="ros value">area</code><code class="ros plain">=custB_bb</code> <code class="ros value">address</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">priority</code><code class="ros plain">=128</code> <code class="ros value">router-id</code><code class="ros plain">=192.168.1.2</code> <code class="ros value">dr</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">bdr</code><code class="ros plain">=192.168.1.2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">state</code><code class="ros plain">=</code><code class="ros string">"Full"</code> <code class="ros value">state-changes</code><code class="ros plain">=6</code> <code class="ros value">adjacency</code><code class="ros plain">=41m28s</code> <code class="ros value">timeout</code><code class="ros plain">=33s</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp; D </code><code class="ros value">instance</code><code class="ros plain">=i2_custC</code> <code class="ros value">area</code><code class="ros plain">=custC_bb</code> <code class="ros value">address</code><code class="ros plain">=192.168.1.2</code> <code class="ros value">priority</code><code class="ros plain">=128</code> <code class="ros value">router-id</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">dr</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">bdr</code><code class="ros plain">=192.168.1.2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">state</code><code class="ros plain">=</code><code class="ros string">"Full"</code> <code class="ros value">state-changes</code><code class="ros plain">=6</code> <code class="ros value">adjacency</code><code class="ros plain">=41m28s</code> <code class="ros value">timeout</code><code class="ros plain">=33s</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">[admin@rack1_b36_CCR1009] </code><code class="ros constants">/ip/route&gt; </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">routing-table</code><code class="ros plain">=custB</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - DYNAMIC; A - ACTIVE; c, s, o, y - COPY</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DST-ADDRESS, GATEWAY, DISTANCE</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GATEWAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISTANCE</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAo </code><code class="ros color1">172.16.1.0/24</code>&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">192.168.1.1%ipip-tunnel2@custB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 110</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAc </code><code class="ros color1">172.16.2.0/24</code>&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">dummy_custB@custB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAc </code><code class="ros color1">192.168.1.0/24</code>&nbsp;&nbsp;&nbsp; <code class="ros plain">ipip-tunnel2@custB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number17 index16 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number18 index17 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">[admin@rack1_b36_CCR1009] &gt; </code><code class="ros constants">/ip route/</code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">routing-table</code><code class="ros plain">=custC</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: D - DYNAMIC; A - ACTIVE; c, o, y - COPY</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: DST-ADDRESS, GATEWAY, DISTANCE</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GATEWAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISTANCE</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAc </code><code class="ros color1">172.16.1.0/24</code>&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">dummy_custC@custC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAo </code><code class="ros color1">172.16.2.0/24</code>&nbsp;&nbsp;&nbsp;&nbsp; <code class="ros plain">192.168.1.2%ipip-tunnel1@custC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 110</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">DAc </code><code class="ros color1">192.168.1.0/24</code>&nbsp;&nbsp;&nbsp; <code class="ros plain">ipip-tunnel1@custC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div></div></td></tr></tbody></table>
-
-  
-
-# References
+# 参考文献
 
 [RFC 4364: BGP/MPLS IP Virtual Private Networks (VPNs)](http://www.ietf.org/rfc/rfc4364.txt)
 

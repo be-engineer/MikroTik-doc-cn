@@ -1,98 +1,90 @@
-## Summary
+# 概述
 
-MikroTik RouterOS implements RIP version 2 (RFC 2453). Version 1 (RFC 1058) is not supported.
+microtik RouterOS实现RIP version 2 (RFC 2453)。不支持Version 1 (RFC 1058)。
 
-RIP enables routers in an autonomous system to exchange routing information. It always uses the best path (the path with the fewest number of hops (i.e. routers)) available.
+RIP使自治系统中的路由器能够相互交换路由信息。它总是使用可用的最佳路径(跳数最少的路径(即路由器))。
 
-## General
+## 常规
 
 **Sub-menu:** `/routing rip instance`
 
-| Property | Description |
-| --- | --- |
-| **name**  | name of the instance |
-| **vrf** ( Default: **main**) | which [VRF](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206) to use |
-| **afi** (_ipv4 | ipv6_; Default: ) | specifies which afi to use. |
-| **in-filter-chain** (Default: ) | input filter chain |
-| **out-filter-chain** (Default: ) | output filter chain |
-| **out-filter-select** (Default: ) | output filter select rule chain |
-| **redistribute** (_bgp, bgp-mpls-vpn, connected, dhcp, fantasy, modem, ospf, rip, static, vpn_; Default: ) | which routes to redistribute |
-| **originate-default** ( Default:) | whether to originate default route |
-| **routing-table** ( Default: main) | in which routing table the routes will be added |
-| **route-timeout** (Default: ) | route timeout |
-| **route-gc-timeout**  (Default: ) |   
- |
-| **update-interval** (_time_; Default: ) | specifies time interval after which the route is considered invalid |
+| 属性                                                                                                     | 说明                                                                               |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **name**                                                                                                 | 实例名                                                                             |
+| **vrf**(Default:**main**)                                                                                | 使用哪个 [vrf](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206) |
+| **afi** (_ipv4 \| ipv6_;Default:)                                                                        | 指定使用哪个afi。                                                                  |
+| **in-filter-chain**(Default:)                                                                            | 输入过滤器链                                                                       |
+| **out-filter-chain**(Default:)                                                                           | 输出过滤器链                                                                       |
+| **out-filter-select**(Default:)                                                                          | 输出过滤器选择规则链                                                               |
+| **redistribute** (_bgp, bgp-mpls-vpn, connected, dhcp, fantasy, modem, ospf, rip, static, vpn_;Default:) | 重新分发哪些路由                                                                   |
+| **originate- Default** (Default:)                                                                        | 是否发起默认路由                                                                   |
+| **routing-table**(Default:main)                                                                          | 在该路由表中添加路由                                                               |
+| **route-timeout**(Default:)                                                                              | 路由超时                                                                           |
+| **route-gc-timeout**(Default:)                                                                           |                                                                                    |
+| **update-interval** (_time_;Default:)                                                                    | 指定时间间隔，超过该时间间隔，路由将被视为无效                                     |
 
+**备注:** RIP路由的最大度量值为15。大于15的度量值被认为是“无穷大”，具有该度量值的路由被认为是不可达的。因此，RIP不能用于任何两个路由器之间的跳数超过15的网络，使用大于1的重分发度量会进一步减少这个最大跳数。
 
-**Note:** The maximum metric of RIP route is 15. Metric higher than 15 is considered 'infinity' and routes with such metric are considered unreachable. Thus RIP cannot be used on networks with more than 15 hops between any two routers, and using redistribute metrics larger that 1 further reduces this maximum hop count.
-
-## Interface
+## 接口
 
 **Sub-menu:** `/routing rip interface-template`
 
-  | Property | Description |
-| --- | --- |
-| **name**  | name of the instance |
-| **instance** | which [VRF](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206) to use |
-| **interfaces**  | specifies which afi to use. |
-| **source-addresses**  | input filter chain |
-| **cost** (Default: ) | output filter chain |
-| **split-horizon** (_no__| yes_ ) |   
- |
-| **poison-reverse** (_no__| yes_ ) |   
- |
-| **mode** (_passive| strict_) |   
- |
-| **key-chain** (_name_) | name of key-chain |
-| **password**  | password |
+| 属性                            | 说明                                                                               |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| **name**                        | 实例名                                                                             |
+| **instance**                    | 使用哪个 [VRF](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=328206) |
+| **interfaces**                  | 指定使用哪个afi。                                                                  |
+| **source-addresses**            | 输入过滤器链                                                                       |
+| **cost**(Default:)              | 输出过滤器链                                                                       |
+| **split-horizon** (_no\| yes_)  |                                                                                    |
+| **poison-reverse** (_no\| yes_) |                                                                                    |
+| **mode** (_passive\| strict_)   |                                                                                    |
+| **key-chain** (_name_)          | key-chain名称                                                                      |
+| **password**                    | 密码                                                                               |
   
-
 **Sub-menu:** `/routing rip interface`
 
-_Read-only properties:_
+只读属性:
 
-| Property | Description |
-| --- | --- |
-| **instance** (_name_) | name of the instance |
-| **address** (_address%interface_ ) | IP address and interface name |
+| 属性                              | 说明           |
+| --------------------------------- | -------------- |
+| **instance** (_name)              | 实例名         |
+| **address** (_address%interface_) | IP地址和接口名 |
 
-
-## Neighbor
+## 邻居
 
 **Sub-menu:** `/routing rip neighbor`
 
-This submenu is used to define a neighboring routers to exchange routing information with. Normally there is no need to add the neighbors, if multicasting is working properly within the network. If there are problems with exchanging routing information, neighbor routers can be added to the list. It will force the router to exchange the routing information with the neighbor using regular unicast packets.
+该子菜单用于定义邻居路由器，以便与之交换路由信息。通常情况下，如果组播在网络中正常工作，则不需要添加邻居。如果路由信息交换有问题，可以将邻居路由器加入到列表中。它将强制路由器使用常规的单播报文与邻居交换路由信息。
 
-Read-only properties:
+只读属性:
 
-| Property | Description |
-| --- | --- |
-| **address** (_IP address_) | IP address of neighboring router |
-| **routes** | amount of routes |
-| **packets-total** | amount of all packets |
-| **packets-bad** | amount of bad packets |
-| **entries-bad** | amount of bad entries |
-| **last-update** (_time_) | time from last update |
-
+| 属性                       | 说明               |
+| -------------------------- | ------------------ |
+| **address** (_IP address_) | 邻居路由器的IP地址 |
+| **routes**                 | 路由数量           |
+| **packets-total**          | 所有数据包总数     |
+| **packets-bad**            | 坏包数量           |
+| **entries-bad**            | 错误条目数量       |
+| **last-update** (_time_)   | 上次更新的时间     |
 
 **Sub-menu:** `/routing rip static-neighbor`
 
-| Property | Description |
-| --- | --- |
-| **instance** (name) | name of used instance |
-| **address** (_IP address_) | IP address of neighboring router |
+| 属性                       | 说明               |
+| -------------------------- | ------------------ |
+| **instance** (name)        | 使用的实例名称     |
+| **address** (_IP address_) | 邻居路由器的IP地址 |
 
-## Keys
+## 密钥
 
 **Sub-menu:** `/routing rip keys`
 
-MD5 authentication key chains.
+MD5认证密钥链。
 
-| Property                                                                   | Description                                                                                                                                                |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **chain** (_string_; Default: **""**)                                      | chain name to place this key in.                                                                                                                           |
-| **key** (_string_; Default: **""**)                                        | authentication key. Maximal length 16 characters                                                                                                           |
-| **key-id** (_integer:0..255_; Default: )                                   | key identifier. This number is included in MD5 authenticated RIP messages, and determines witch key to use to check authentication for a specific message. |
-| **valid-from** (_date and time_; Default: today's date and time: 00:00:00) | key is valid from this date and time                                                                                                                       |
-| **valid-till** (_date and time_; Default: today's date and time: 00:00:00) | key is valid until this date and time                                                                                                                      |
+| 属性                                                               | 说明                                                                                   |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| **chain** (_string_;Default:**""**)                                | 放置此密钥的链名。                                                                     |
+| **key** (_string_;Default:**""**)                                  | 认证密钥。最大长度16个字符                                                             |
+| **key-id** (_integer:0..255_;Default:)                             | 密钥标识符。该数字包含在经过MD5验证的RIP消息中，并决定使用哪个密钥对特定消息进行验证。 |
+| **valid-from** (_date and time_;Default:今天的日期和时间:00:00:00) | 密钥从这个日期和时间开始生效                                                           |
+| **valid-till** (_date and time_;Default:今天的日期和时间:00:00:00) | 密钥在此日期和时间之前有效                                                             |

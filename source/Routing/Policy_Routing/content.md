@@ -1,20 +1,20 @@
-# Overview
+# 概述
 
-Policy routing is the method to steer traffic matching certain criteria to a certain gateway. This can be used to force some customers or specific protocols from the servers (for example HTTP traffic) to always be routed to a certain gateway. It can even be used to steer local and overseas traffic to different gateways.
+策略路由是将符合特定条件的流量引导到特定网关的方法。这可以用于强制来自服务器的某些客户或特定协议(例如HTTP流量)始终被路由到某个网关。它甚至可以用来引导本地和海外的流量到不同的网关。
 
-RouterOS implements several components that can be used to achieve said task:
+RouterOS实现了几个可以用来完成上述任务的组件:
 
-- routing tables
-- routing rules
-- firewall mangle marking
+-路由表
+-路由规则
+-防火墙mangle标记
 
-# Routing Tables
+# 路由表
 
-A router can have multiple routing tables with its own set of routes routing the same destination to different gateways.
+一台路由器可以有多个路由表，它们有自己的一组路由，将同一个目的地路由到不同的网关。
 
-Tables can be seen and configured from the `/routing/table` menu.
+可以从“/routing/table”菜单中查看和配置表。
 
-By default, RouterOS has only the **main** routing table:
+缺省情况下，RouterOS只有 **main** 路由表:
 
 ```shell
 [admin@rack1_b33_CCR1036] /routing/table> print
@@ -22,9 +22,9 @@ Flags: D - dynamic; X - disabled, I - invalid; U - used
 0 D name="main" fib
 ```
 
-If a custom routing table is required, it should be defined in this menu prior to using it anywhere in the configuration.
+如果需要自定义路由表，在使用之前，应该在菜单中定义它。
 
-Let's consider a basic example where we have two gateways 172.16.1.1 and 172.16.2.1 and we want to resolve 8.8.8.8 only in the routing table named '**myTable**' to the gateway 172.16.2.1:
+考虑一个基本的例子，有两个网关172.16.1.1和172.16.2.1，希望只在名为 **myTable** 的路由表中解析到网关172.16.2.1的8.8.8.8:
 
 ```shell
 /routing table add name=myTable fib
@@ -32,9 +32,9 @@ Let's consider a basic example where we have two gateways 172.16.1.1 and 172.16.
 /ip route add dst-address=8.8.8.8 gateway=172.16.2.1@main routing-table=myTable
 ```
 
-For a user-created table to be able to resolve the destination, the main routing table should be able to resolve the destination too.
+为了让用户创建的表能够解析目的地，主路由表也应该能够解析目的地。
 
-In our example, the **main** routing table should also have a route to destination 8.8.8.8 or at least a default route, since the default route is dynamically added by the DHCP for safety reasons it is better to add 8.8.8.8 also in the main table.
+在示例中，主路由表也应该有一条到目的地址8.8.8.8的路由，或者至少有一条缺省路由，因为缺省路由是由DHCP动态添加的，出于安全考虑，最好在主表中也添加8.8.8.8。
 
 ```shell
 [admin@rack1_b33_CCR1036] /ip/route> print detail Flags: D - dynamic; X - disabled, I - inactive, A - active;
@@ -58,48 +58,43 @@ H - hw-offloaded; + - ecmp
          immediate-gw=172.16.2.1%ether7 distance=1 scope=30 target-scope=10 suppress-hw-offload=no
 ```
 
-But configuration above is not enough, we need a method to force the traffic to actually use our newly created table. RouterOS gives you two options to choose from:
+但是上面的配置还不够，需要一种方法来强制流量使用新创建的表。RouterOS提供了两种选择:
 
-- firewall mangle - it gives more control over the criteria to be used to steer traffic, for example, per connection or per packet balancing, etc. For more info on how to use mangle marking see [Firewall Marking](https://help.mikrotik.com/docs/display/ROS/Firewall+Marking) examples.
-- routing rules - a basic set of parameters that can be used to quickly steer traffic. This is the method we are going to use for our example.
+-防火墙mangle-它提供了更多的控制标准，用于引导流量，例如，每个连接或每个包平衡等。有关如何使用mangle标记的更多信息，请参阅 [防火墙标记](https://help.mikrotik.com/docs/display/ROS/Firewall+Marking) 示例。
+-路由规则-一组基本参数，可用于快速引导流量。这就是例子中要用到的方法。
 
-It is not recommended to use both methods at the same time or you should know exactly what you are doing. If you really do need to use both mangle and routing rules in the same setup then keep in mind that mangle has higher priority, meaning if the mangle marked traffic can be resolved in the table then route rules will never see this traffic.
+不建议同时使用这两种方法，否则您应该确切地知道自己在做什么。如果确实需要在同一设置中同时使用mangle和路由规则，那么请记住，mangle具有更高的优先级，这意味着如果mangle标记的流量可以在表中被解析，那么路由规则将永远不会看到该流量。
 
-Routing table count is limited to 4096 unique tables.
+路由表的数量限制为4096个唯一表。
 
-# Routing Rules
+# 路由规则
 
-Routing rules allow steering traffic based on basic parameters like a source address, a destination address, or in-interface as well as other parameters.
+路由规则允许基于基本参数(如源地址、目的地址或接口内)以及其他参数来控制流量。
 
-For our example, we want to select traffic with destination 8.8.8.8 and do not fall back to the **main** table:
+在这个例子中，希望选择目的地址为8.8.8.8的流量，并且不返回到 **main** 表:
 
 `/routing rule add dst-address=8.8.8.8 action=lookup-only-in-table table=myTable`
 
-Lets's say that we know that customer is connected to ether4 and we want only that customer to route 8.8.8.8 to a specific gateway. We can use the following rule:
+假设知道客户连接到ether4，并且只希望该客户将8.8.8.8路由到特定的网关。可以用以下规则:
 
 `/routing rule add dst-address=8.8.8.8 action=lookup-only-in-table table=myTable interface=ether4`
 
-If for some reason the gateway used in our table goes down, the whole lockup will fail and the destination will not be reachable. In active-backup setups we want the traffic to be able to fall back to the **main** table. To do that change the action from `lookup-only-in-table` to `lookup`.
+如果由于某种原因，表中使用的网关发生故障，那么整个锁将失败，并且目的地将不可达。在active-backup设置中，我们希望流量能够回到 **main** 表。要做到这一点，将操作从' lookup-only-in-table'更改为' lookup'。
 
-Also, routing rules can be used as a very "basic firewall". Let's say we do not want to allow a customer connected to ether4 to be able to access the 192.168.1.0/24 network:
+此外，路由规则可以用作“基本的防火墙”。如果不想让连接到ether4的客户访问192.168.1.0/24网络:
 
 `/routing rule add dst-address=192.168.1.0/24 interface=ether4 action=drop`
 
-List of all the parameters that can be used by routing rules:
+路由规则可以使用的所有参数列表:
 
-| Property | Description |
+|属性|说明|
 | --- | --- |
-| **action** (_drop | lookup | lookup-only-in-table | unreachable_) | 
-An action to take on the matching packet:
-- drop - silently drop the packet.
-- lookup - perform a lookup in routing tables.
-- lookup-only-in-table - perform lookup only in the specified routing table (see table parameter).
-- unreachable - generate ICMP unreachable message and send it back to the source. |
-| **comment** (_string_) | |
-| **disabled** (_yes | no_) | The disabled rule is not used. |
-| **dst-address**() | The destination address of the packet to match. |
-| **interface** (_string_) | Incoming interface to match. |
-| **min-prefix** (_integer [0..4294967295]_) | Equivalent to Linux IP rule `suppress_prefixlength` . For example to suppress the default route in the routing decision set the value to 0. |
-| **routing-mark** (_string_) | Match specific routing mark. |
-| **src-address** (_string_) | The source address of the packet to match. |
-| **table** (_name_) | Name of the routing table to use for lookup. |
+| **action** (_drop \| lookup \| lookup-only-in-table \| unreachable_) |对匹配数据包采取的动作:<br>- drop -无声地丢弃数据包。<br>- lookup - 在路由表中进行查找。<br>- lookup-only-in-table -只在指定的路由表中查找(参见table参数)。<br>- unreachable - 生成ICMP不可达报文，并返回给源。|
+| **comment** (_string_) | |
+| **disabled** (_yes \| no_) |禁用规则未使用。|
+| **dst-address**() |要匹配的报文的目的地址。|
+| **interface** (_string_) |匹配的输入接口。|
+| **min-prefix** (_integer[0..4294967295]_) |相当于Linux IP规则' suppress_prefixlength '。例如，如果要抑制路由决策中的缺省路由，则将该值设置为0。|
+| **routing-mark** (_string_) |匹配特定的路由标记。|
+| **src-address** (_string_) |匹配报文的源地址。|
+| **table** (_name_) |要查找的路由表名。|

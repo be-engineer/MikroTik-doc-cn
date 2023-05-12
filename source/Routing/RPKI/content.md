@@ -1,71 +1,49 @@
-# Overview
+# 概述
 
-RouterOS implements the Resource Public Key Infrastructure (RPKI) to Router Protocol defined in [RFC8210](https://tools.ietf.org/html/rfc8210). RTR is a very lightweight low memory footprint protocol, to reliably get prefix validation data from RPKI validators.  
-More information on RPKI and how to set up validators can be found in the RIPE blog:  
+RouterOS实现了 [RFC8210](https://tools.ietf.org/html/rfc8210) 中定义的到路由器协议的RPKI (Resource Public Key Infrastructure)。RTR是一种非常轻量级的低内存占用协议，用于从RPKI验证器可靠地获取前缀验证数据。
+关于RPKI和如何设置验证器的更多信息可以在RIPE博客中找到:
 [https://blog.apnic.net/2019/10/28/how-to-installing-an-rpki-validator/](https://blog.apnic.net/2019/10/28/how-to-installing-an-rpki-validator/)
 
-# Basic Example
+# 基本示例
 
-Let's consider that we have our own RTR server on our network with IP address 192.168.1.1:
+假设网络上有自己的RTR服务器，IP地址为192.168.1.1:
 
-[?](https://help.mikrotik.com/docs/display/ROS/RPKI#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/bgp/rpki</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">group</code><code class="ros plain">=myRpkiGroup</code> <code class="ros value">address</code><code class="ros plain">=192.168.1.1</code> <code class="ros value">port</code><code class="ros plain">=8282</code> <code class="ros value">refresh-interval</code><code class="ros plain">=20</code></div></div></td></tr></tbody></table>
+`/routing/bgp/rpki
+add group=myRpkiGroup address=192.168.1.1 port=8282 refresh-interval=20`
 
 If the connection is established and a database from the validator is received, we can check prefix validity:
 
-[?](https://help.mikrotik.com/docs/display/ROS/RPKI#)
+```shell
+[admin@rack1_b33_CCR1036] /routing> rpki-check group=myRpkiGroup prfx=70.132.18.0/24 origin-as=16509
+    valid
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b33_CCR1036] /routing&gt; rpki-check group=myRpkiGroup prfx=70.132.18.0/24 origin-as=16509</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">valid</code></div></div></td></tr></tbody></table>
+现在，路由过滤器可以使用缓存的数据库来根据RPKI有效性接受拒绝前缀。首先需要设置一个过滤器规则，该规则定义哪个RPKI组执行验证。之后，过滤器准备好匹配来自RPKI数据库的状态。Status可以有三个值:
 
-Now the cached database can be used by routing filters to accept/reject prefixes based on RPKI validity. At first, we need to set up a filter rule which defines against which RPKI group performs the verification. After that filters are ready to match the status from the RPKI database. Status can have one of three values:
+- **valid** -数据库中有记录且原始AS有效。
+- **invalid** -数据库中有记录，源AS无效。
+- **unknown** -数据库中没有前缀AS和原始AS的信息。
+- **unverified** -当RPKI组的所有RPKI会话都没有同步过数据库时设置。此值可用于处理RPKI的总故障。
 
--   **valid** - database has a record and origin AS is valid.
--   **invalid** - the database has a record and origin AS is invalid.
--   **unknown** - database does not have information of prefix and origin AS.
--   **unverified** - set when none of the RPKI sessions of the RPKI group has synced database. This value can be used to handle the total failure of the RPKI.
+```shell
+/routing/filter/rule
+add chain=bgp_in rule="rpki-verify myRpkiGroup"
+add chain=bgp_in rule="if (rpki invalid) { reject } else { accept }"
+```
 
-  
+# 配置选项
 
-[?](https://help.mikrotik.com/docs/display/ROS/RPKI#)
+**Sub-Menu:** `/routing/rpki`
+ 
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/routing/filter/rule</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"rpki-verify myRpkiGroup"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=bgp_in</code> <code class="ros value">rule</code><code class="ros plain">=</code><code class="ros string">"if (rpki invalid) { reject } else { accept }"</code></div></div></td></tr></tbody></table>
-
-# Configuration Options
-
-`**Sub-Menu:** /routing/rpki`
-
-  
-
-| 
-Property
-
- | 
-
-Description
-
- |
-| --- | --- |
-| 
-
-Property
-
- | 
-
-Description
-
- |
-| --- | --- |
-| **address** (_IPv4/6_) mandatory | Address of the RTR server |
-| **disabled**(_yes | no_; Default: **no**) | Whether the item is ignored. |
-| **expire-interval** (_integer \[600..172800\]_; Default: 7200) | Time interval \[s\] polled data is considered valid in the absence of a valid subsequent update from the validator. |
-| **group** (_string_) mandatory | Name of the group a database is assigned to. |
-| **port** (_integer \[0..65535\]_; Default: 323) | Connection port number |
-| **preference** (_integer \[0..4294967295\]_; Default: 0) | 
-
-If there are multiple RTR sources, the preference number indicates a more preferred one. A lesser number is preferred.
-
- |
-| **refresh-interval** (_integer \[1..86400\]_; Default: 3600) | Time interval \[s\] to poll the newest data from the validator. |
-| **retry-interval** (_integer \[1..7200\]_; Default: 600) | Time Interval \[s\] to retry after the failed data poll from the validator. |
-| **vrf**(_name_; Default: main) | Name of the VRF table used to bind the connection to. |
+| 属性                                                       | 说明                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------- |
+| **address** (_IPv4/6_) mandatory                           | RTR服务器地址                                                       |
+| **disabled**(_yes\| no_;Default:**no**)                    | 是否忽略该项。                                                      |
+| **expire-interval** (_integer [600..172800]_;Default:7200) | 时间间隔[s]轮询数据在验证器没有进行有效的后续更新时被认为是有效的。 |
+| **group** (_string_) mandatory                             | 数据库被分配给的组名。                                              |
+| **port** (_integer [0..65535]_;Default:323)                | 连接端口号                                                          |
+| **preference** (_integer [0..4294967295]_;Default:0)       | 如果有多个RTR源，则优先级号表示更优先的RTR源。越少越好。            |
+| **refresh-interval** (_integer [1..86400]_;Default:3600)   | 从验证器轮询最新数据的时间间隔[s]                                   |
+| **retry-interval** (_integer [1..7200]_;Default:600)       | 验证器轮询失败后重试的时间间隔[s]。                                 |
+| **vrf** (_name_;Default:main)                              | 用于绑定连接的VRF表名。                                             |

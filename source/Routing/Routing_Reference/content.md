@@ -1,72 +1,34 @@
-Global Router ID election configuration. ID can be configured explicitly or set to be elected from one of the Routers IP addresses.
+# 路由参考
 
-For each VRF table RouterOS adds dynamic ID instance, that elects the ID from one of the IP addresses belonging to a particular VRF:
+`/routing/id`
 
-[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59965506#)
+全局Router ID选举配置。ID可以显式配置，也可以设置为从路由器的一个IP地址中选出。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b33_CCR1036] /routing/id&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: D - DYNAMIC, I - INACTIVE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: NAME, DYNAMIC-ID, SELECT-DYNAMIC-ID, SELECT-FROM-VRF</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp; NAME&nbsp;&nbsp; DYNAMIC-ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SELECT-D&nbsp;&nbsp; SELE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 D main&nbsp;&nbsp; 111.111.111.2&nbsp;&nbsp; only-vrf&nbsp;&nbsp; main</code></div></div></td></tr></tbody></table>
+对于每个VRF表，RouterOS添加动态ID实例，从属于特定VRF的一个IP地址中选择ID:
 
-### **Configuration Options**
+```shell
+[admin@rack1_b33_CCR1036] /routing/id> print
+Flags: D - DYNAMIC, I - INACTIVE
+Columns: NAME, DYNAMIC-ID, SELECT-DYNAMIC-ID, SELECT-FROM-VRF
+#   NAME   DYNAMIC-ID      SELECT-D   SELE
+0 D main   111.111.111.2   only-vrf   main
+```
 
-| 
-Property
+## 配置选项
 
- | 
+| 属性                                                                                              | 说明                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **comment** (_string_)                                                                            |                                                                                                                                                                                                                                                                                      |
+| **disabled** (_yes \| no_)                                                                        | 没有用ID引用。                                                                                                                                                                                                                                                                       |
+| **id**(_IP_)                                                                                      | 参数显式设置Router id。如果没有显式指定ID，则可以从路由器上配置的IP地址中选择一个。参见参数select-dynamic-id和select-from-vrf。                                                                                                                                                      |
+| **name** (_string_)                                                                               | 引用名                                                                                                                                                                                                                                                                               |
+| **select-dynamic-id**(_any \| lowest \| only-active \| only-loopback \| only-static \| only-vrf_) | 说明在选举ID时用的IP地址:<br>- any - 在路由器上找到的任何地址都可以被选为router ID。<br>- lowest - 选择最低的IP地址。<br>- only-active - 只从主IP地址中选择。<br>- only-loopback -只从loopback地址中选择ID。<br>- only- VRF - 只从选定的VRF中选择ID。与select-from-vrf属性一起工作。 |
+| **select-from-vrf** (_name_)                                                                      | 选择IP地址进行ID选举的VRF。                                                                                                                                                                                                                                                          |
 
-Description
+**只读属性**
 
- |
-| --- | --- |
-| 
-
-Property
-
- | 
-
-Description
-
- |
-| --- | --- |
-| **comment** (_string_) |   
- |
-| **disabled** (_yes | no_) | ID reference is not used. |
-| **id**(_IP_) | Parameter to explicitly set the Router ID. If ID is not explicitly specified, then it can be elected from one of the configured IP addresses on the router. See parameters select-dynamic-id and select-from-vrf. |
-| **name** (_string_) | Reference name |
-| **select-dynamic-id**(_any | lowest | only-active | only-loopback | only-static | only-vrf_) | States what IP addresses to use for the ID election:  
-
--   any - any address found on the router can be elected as the Router ID.
--   lowest - pick the lowest IP address.
--   only-active - pick an ID only from active IP addresses.
--   only-loopback - pick an ID only from loopback addresses.
--   only-vrf - pick an ID only from selected VRF. Works with select-from-vrf property.
-
- |
-| **select-from-vrf** (_name_) | VRF from which to select IP addresses for the ID election. |
-
-  
-
-### **Read-only Properties**
-
-| 
-Property
-
- | 
-
-Description
-
- |
-| --- | --- |
-| 
-
-Property
-
- | 
-
-Description
-
- |
-| --- | --- |
-| **dynamic** (_yes | no_) |   
- |
-| **dynamic-id** (_IP_) | Currently selected ID. |
-| **inactive** (_yes | no_) | If there was a problem to get a valid ID, then item can become inactive. |
+| 属性                       | 说明                                             |
+| -------------------------- | ------------------------------------------------ |
+| **dynamic** (_yes \| no_)  |                                                  |
+| **dynamic-id** (_IP_)      | 当前选择的ID。                                   |
+| **inactive** (_yes \| no_) | 如果获取有效ID有问题，那么项目可以变为inactive。 |
