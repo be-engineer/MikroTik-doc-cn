@@ -1,137 +1,89 @@
-# Label Range and TTL
+# 标签范围和TTL
 
-From the `/mpls settings` menu it is possible to assign specific dynamic label range and TTL propagation. If for some reason static label mapping is used then the dynamic range can be adjusted to exclude statically assigned label numbers from being dynamically assigned by any of the label distribution protocols.
+从“/mpls设置”菜单中，可以分配特定的动态标签范围和TTL传播。如果由于某种原因使用了静态标签映射，则可以调整动态范围，以排除任何标签分发协议动态分配静态分配的标签号。
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                                      |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **dynamic-label-range** (_range of integer\[16..1048575\]_; Default: **16-1048575**) | Range of Label numbers used for dynamic allocation. The first 16 labels are reserved for special purposes (as defined in RFC). If you intend to configure labels statically then adjust the dynamic default range not to include numbers that will be used in a static configuration. |
-| **propagate-ttl** (_yes                                                              | no_; Default: **yes**)                                                                                                                                                                                                                                                                | Whether to copy TTL values from IP header to MPLS header. If this option is set to **no** then hops inside the MPLS cloud will be invisible from traceroutes. |
-| **allow-fast-path(**_yes                                                             | no_; Default: **yes)**                                                                                                                                                                                                                                                                | Enable/disable MPLS fast-path support.                                                                                                                        |
+| 属性                                                                               | 说明                                                                                                                                                    |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **dynamic-label-range** (_range of integer[16..1048575]_; Default: **16-1048575**) | 用于动态分配的标签号范围。前16个标签保留用于特殊用途(如RFC中定义的)。如果您打算静态配置标签，那么调整动态默认范围，使其不包括将在静态配置中使用的数字。 |
+| **propagate-ttl** (_yes\| no_;Default:**yes**)                                     | 是否将TTL值从IP头复制到MPLS头。如果将此选项设置为 **no**，则MPLS云中的跳将对traceroutes不可见。                                                         |
+| **allow-fast-path**(_yes\| no_;Default:**yes)**                                    | 开启/关闭MPLS快速路径支持                                                                                                                               |
 
 # MPLS MTU
 
-Configuration of MPLS MTU (path MTU + MPLS tag size) is useful in cases when there is a large variety of possible MTUs along the path. Configuring MPLS MTU to a minimum value that can pass all the hops will ensure that the MPLS packet will not be silently dropped on the devices that do not support big enough MTU.
+配置MPLS MTU(路径MTU + MPLS标签大小)在路径上可能存在多种MTU的情况下非常有用。将MPLS MTU配置为可以通过所有跳数的最小值，可以保证MPLS报文在MTU不够大的设备上不会被静默丢弃。
 
-MPLS MTUs are configured from the `/mpls interface` menu.
+通过“/MPLS interface”菜单配置MPLS mtu。
 
-[?](https://help.mikrotik.com/docs/display/ROS/MPLS+MTU%2C+Forwarding+and+Label+Bindings#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b35_CCR1036] /mpls/interface&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: X - disabled; * - builtin</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0&nbsp;&nbsp;&nbsp; ;;; router-test</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">interface=ether1 mpls-mtu=1580 input=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1&nbsp;&nbsp;&nbsp; ;;; router-test</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">interface=ether2 mpls-mtu=1580 input=yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2&nbsp;&nbsp;&nbsp; interface=all mpls-mtu=1500</code></div></div></td></tr></tbody></table>
-
-  
-
-**Properties**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                            |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **comment** (_string_; Default: )                          | Short description of the interface                                                              |
-| **disabled** (_yes                                         | no_; Default: **no**)                                                                           | If set to **yes** then this configuration is ignored. |
-| **interface** (_name_; Default:)                           | Name of the interface or interface-list to match.                                               |
-| **input** (_yes                                            | no_; Default: **yes**)                                                                          | Whether to allow MPLS input on the interface          |
-| **mpls-mtu** (_integer \[512..65535\]_; Default: **1508**) | The option represents how big packets can be carried over the interface with added MPLS labels. |
+```shell
+[admin@rack1_b35_CCR1036] /mpls/interface> print
+Flags: X - disabled; * - builtin
+ 0    ;;; router-test
+      interface=ether1 mpls-mtu=1580 input=yes
+ 
+ 1    ;;; router-test
+      interface=ether2 mpls-mtu=1580 input=yes
+ 
+ 2    interface=all mpls-mtu=1500
+```
 
   
 
-Listed entries are ordered, and the first entry (iterating from the top to the bottom) that matches the interface will be used.
+**属性**
 
-The order of the entries is important due to the possibility that different interface lists can contain the same interface and in addition, that interface can be referenced directly.
-
-Selection of the MPLS MTU happens in the following manner:
-
--   If the interface matched the entry from this table, then try to use configured MPLS MTU value
--   If the interface does not match any entry then consider MPLS MTU equal to L2MTU
--   If the interface does not support L2MTU, then consider MPLS MTU equal to L3 MTU
-
-On the MPLS ingress path, MTU is chosen by min(MPLS MTU - tagsize, l3mtu). This means that on interfaces that do not support L2MTU and default L3 MTU is set to 1500, max path MTU will be 1500 - tag size (the interface will not be able to pass full IP frame without fragmentation). In such scenarios, L3MTU must be increased by max observed tag size.
-
-Read more on MTUs in the [MTU in RouterOS](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS) article.
+| 属性                                                   | 说明                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------ |
+| **comment** (_string_;Default:)                        | 接口的简短描述                                         |
+| **disabled** (_yes\| no_;Default:**no**)               | 如果设置为 **yes**，则忽略此配置。                     |
+| **interface** (_name_;Default:)                        | 要匹配的接口名或接口列表名。                           |
+| **input** (_yes \| no_;Default:**yes**)                | 接口是否允许MPLS输入                                   |
+| **mpls-mtu** (_integer [512. 65535]_;Default:**1508**) | 该选项表示在添加MPLS标签的接口上可以携带多大的数据包。 |
 
   
 
-## Forwarding Table
+列出的条目是有序的，与接口匹配的第一个条目(从上到下迭代)将被使用。
 
-Entries in the `/mpls forwarding-table` menu show label bindings for specific routes that will be used in MPLS label switching. Properties in this menu are read-only.
+条目的顺序很重要，因为不同的接口列表可能包含相同的接口，此外，该接口可以被直接引用。
 
-[?](https://help.mikrotik.com/docs/display/ROS/MPLS+MTU%2C+Forwarding+and+Label+Bindings#)
+MPLS MTU的选择有以下几个步骤:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@rack1_b35_CCR1036] /mpls/forwarding-table&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: L, V - VPLS</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: LABEL, VRF, PREFIX, NEXTHOPS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp; LABEL&nbsp; VRF&nbsp;&nbsp; PREFIX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXTHOPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 L&nbsp;&nbsp;&nbsp; 16&nbsp; main&nbsp; 10.0.0.0/8&nbsp;&nbsp;&nbsp;&nbsp; { nh=10.155.130.1; interface=ether12 }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">1 L&nbsp;&nbsp;&nbsp; 18&nbsp; main&nbsp; 111.111.111.3&nbsp; { label=impl-null; nh=111.12.0.1; interface=ether2 }</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">2 L&nbsp;&nbsp;&nbsp; 17&nbsp; main&nbsp; 111.111.111.2&nbsp; { label=impl-null; nh=111.11.0.1; interface=ether1 }</code></div></div></td></tr></tbody></table>
+- 如果接口匹配该表项，则尝试使用配置的MPLS MTU值
+- 如果接口没有匹配到任何表项，则认为MPLS MTU等于L2MTU
+- 如果接口不支持L2MTU，则认为MPLS MTU等于L3 MTU
+
+在MPLS入接口路径上，MTU用min(MPLS MTU - tagsize, l3mtu)来选择。这意味着在不支持L2MTU和默认L3 MTU设置为1500的接口上，最大路径MTU将是1500 -标签大小(接口将无法通过完整的IP帧而不分片)。在这种情况下，L3MTU必须增加到最大观察到的标签大小。
+
+在 [RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)文章中阅读更多关于MTU的信息。
 
   
 
-| 
-Property
+## 转发表
 
- | 
+' /mpls forwarding-table '菜单中的表项显示用于mpls标签交换的特定路由的标签绑定。此菜单中的属性是只读的。
 
-Description
+```shell
+[admin@rack1_b35_CCR1036] /mpls/forwarding-table> print
+Flags: L, V - VPLS
+Columns: LABEL, VRF, PREFIX, NEXTHOPS
+#   LABEL  VRF   PREFIX         NEXTHOPS                                           
+0 L    16  main  10.0.0.0/8     { nh=10.155.130.1; interface=ether12 }             
+1 L    18  main  111.111.111.3  { label=impl-null; nh=111.12.0.1; interface=ether2 }
+2 L    17  main  111.111.111.2  { label=impl-null; nh=111.11.0.1; interface=ether1 }
+```
 
-|     |
-| --- |  |
-|     |
+  
 
-Property
-
- | 
-
-Description
-
-|                        |
-| ---------------------- | ------------------------------------------------ |
-| **prefix** (_IP/Mask_) | Destination prefix for which labels are assigned |
-| **label** (_integer_)  | Ingress MPLS label                               |
-| **ldp** (_yes          | no_)                                             | Whether labels are [LDP](https://help.mikrotik.com/docs/display/ROS/LDP) signaled |
-| **nexthops** ()        |
-
-An array of the next-hops, each entry in the array represents one ECMP next-hop. Array entry can contain several parameters:
-
--   **label** - egress MPLS label
--   **nh** - out next-hop IP address
--   **interface** - out the interface
-
- |
-| **out-label** (_integer_) | Label number which is added or switched to for outgoing packet. |
-| **packets** (_integer_) | Number of packets matched by this entry |
-| **te-sender** |   
- |
-| **te-session**  |   
- |
-| **traffic-eng**  | Shows whether the entry is signaled by RSVP-TE (Traffic Engineering) |
-| **type** _(string)_ | Type of the entry, for example, "vpls", etc. |
-| **vpls** (_yes | no_) | Shows whether the entry is used for [VPLS](https://help.mikrotik.com/docs/display/ROS/VPLS) tunnels. |
-| **vpn** |   
- |
-| **vrf** | Name of the VRF table this entry belongs to |
+| 属性                      | 说明                                                                                                                                                                  |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **prefix** (_IP/Mask_)    | 指定标签的目的前缀                                                                                                                                                    |
+| **label** (_integer_)     | 入接口MPLS标签                                                                                                                                                        |
+| **ldp** (_yes\| no_)      | 标签是否有 [ldp](https://help.mikrotik.com/docs/display/ROS/LDP) 信号                                                                                                 |
+| **nexthops** ()           | 下一跳的数组，数组中的每个表项代表一个ECMP下一跳。数组条目可以包含几个参数:<br>- **label** -出接口MPLS标签<br>- **nh** - out下一跳IP地址<br>- **interface** -输出接口 |
+| **out-label** (_integer_) | 为出包添加或切换的标签号。                                                                                                                                            |
+| **packets** (_integer_)   | 此表项匹配的数据包数                                                                                                                                                  |
+| **te-sender**             |                                                                                                                                                                       |
+| **te-session**            |                                                                                                                                                                       |
+| **Traffic -eng**          | 显示条目是否由RSVP-TE (Traffic Engineering)发出信号                                                                                                                   |
+| **type** _(string)_       | 表项类型，如“vpls”等                                                                                                                                                  |
+| **vpls** (_yes \| no_)    | 显示该表项是否用于 [vpls](https://help.mikrotik.com/docs/display/ROS/VPLS) 隧道。                                                                                     |
+| **vpn**                   |                                                                                                                                                                       |
+| **vrf**                   | 该表项所属vrf表名                                                                                                                                                     |

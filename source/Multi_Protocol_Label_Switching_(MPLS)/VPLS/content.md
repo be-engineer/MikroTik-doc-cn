@@ -1,170 +1,111 @@
-# Summary
+# 概述
 
-The virtual Private Lan Service (VPLS) interface can be considered a tunnel interface just like the [EoIP](https://help.mikrotik.com/docs/display/ROS/EoIP) interface. To achieve transparent ethernet segment forwarding between customer sites.
+VPLS (virtual Private Lan Service)接口和 [EoIP](https://help.mikrotik.com/docs/display/ROS/EoIP) 接口一样，可以看作是一个隧道接口。在客户站点之间实现透明的以太网段转发。
 
-Negotiation of VPLS tunnels can be done by LDP protocol or MP-BGP - both endpoints of tunnel exchange labels they are going to use for the tunnel.
+VPLS隧道的协商可以通过LDP协议或MP-BGP协议来完成——隧道的两端交换标签，它们将在隧道中使用。
 
-Data forwarding in the tunnel happens by imposing 2 labels on packets: tunnel label and transport label - a label that ensures traffic delivery to the other endpoint of the tunnel.
+隧道中的数据转发是通过在数据包上施加两个标签来实现的:隧道标签和传输标签——传输标签是一种确保流量能够传递到隧道另一端的标签。
 
-  
-MikroTik RouterOS implements the following VPLS features:
 
--   VPLS LDP signaling (RFC 4762)
--   Cisco style static VPLS pseudowires (RFC 4447 FEC type 0x80)
--   VPLS pseudowire fragmentation and reassembly (RFC 4623)
--   VPLS MP-BGP based autodiscovery and signaling (RFC 4761)
--   Cisco VPLS BGP-based auto-discovery (draft-ietf-l2vpn-signaling-08)
--   support for multiple import/export route-target extended communities for BGP based VPLS (both, RFC 4761 and draft-ietf-l2vpn-signaling-08)
+microtik RouterOS实现了以下VPLS特性:
 
-  
-
-# VPLS Prerequisities
-
-For VPLS to be able to transport MPLS packets, one of the label distribution protocols should be already running on the backbone, it can be LDP, RSVP-TE, or static bindings.
-
-Before moving forward, familiarize yourself with the [prerequisites required for LDP](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-PrerequisitesforMPLS) and prerequisites for RSVP-TE.
-
-In case, if BGP should be used as a VPLS discovery and signaling protocol, the backbone should be running iBGP preferably with route reflector/s.
+- VPLS LDP信令(RFC 4762)
+- Cisco风格的静态VPLS伪线(RFC 4447 FEC类型0x80)
+- VPLS伪线分片和重组(RFC 4623)
+- 基于VPLS MP-BGP的自动发现和信令(RFC 4761)
+- Cisco VPLS基于bgp的自动发现(draft-ietf-l2vpn-signaling-08)
+- 支持基于BGP的VPLS的多个导入/导出路由目标扩展团体(RFC 4761和draft-ietf-l2vpn-signaling-08)
 
   
 
-# Example Setup
+# VPLS必备条件
 
-Let's consider that we already have a working LDP setup from the [LDP configuration example](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-ExampleSetup).
+为了使VPLS能够传输MPLS数据包，骨干网上必须已经运行其中一个标签分发协议，它可以是LDP、RSVP-TE或静态绑定。
 
-Routers R1, R3, and R4 have connected Customer A sites, and routers R1 and R3 have connected Customer B sites. Customers require transparent L2 connectivity between the sites.
+在继续之前，请先熟悉 [LDP的先决条件](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-PrerequisitesforMPLS) 和RSVP-TE的先决条件。
+
+在这种情况下，如果要使用BGP作为VPLS发现和信令协议，骨干网应该运行iBGP，最好带路由反射器/s。
 
   
 
+# 示例设置
+
+考虑已经从 [LDP配置示例](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-ExampleSetup) 中获得了一个工作的LDP设置。
+
+R1、R3和R4连接客户A站点，R1和R3连接客户B站点。客户需要站点之间透明的L2连接。
+
+  
   
 
-# Reference
+# 参考
 
-## General
+## 常规的
 
 **Sub-menu:** `/interface vpls`
 
   
-List of all VPLS interfaces. This menu shows also dynamically created BGP-based VPLS interfaces.
+所有VPLS接口列表。该菜单还显示了动态创建的基于bgp的VPLS接口。
 
-### Properties
+**属性**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                   |
-| ----------------------------------------------------------------- | ---------------------------------------- |
-| **arp** (_disabled                                                | enabled                                  | proxy-arp                                                                                                                      | reply-only_; Default: **enabled**)                                                                                                                                                                                                                                       | Address Resolution Protocol |
-| **arp-timeout** (_time interval                                   | auto_; Default: auto)                    |
-|                                                                   |
-| **bridge** (_name_; Default:)                                     |
-|                                                                   |
-| **bridge-cost** (_integer \[0..4294967295\]_; Default: **50**)    | Cost of the bridge port.                 |
-| **bridge-horizon** (_none                                         | integer_; Default: **none**)             | If set to **none** bridge horizon will not be used.                                                                            |
-| **cisco-static-id** (_integer \[0..4294967295\]_; Default: **0**) | Cisco-style VPLS tunnel ID.              |
-| **comment** (_string_; Default: )                                 | Short description of the item            |
-| **disable-running-check** (_yes                                   | no_; Default: **no**)                    | Specifies whether to detect if an interface is running or not. If set to **no** interface will always have the `running` flag. |
-| **disabled** (_yes                                                | no_; Default: **yes**)                   | Defines whether an item is ignored or used. By default VPLS interface is disabled.                                             |
-| **mac-address** (_MAC_; Default: )                                |
-|                                                                   |
-| **mtu** (_integer \[32..65536\]_; Default: **1500**)              |
-|                                                                   |
-| **name** (_string_; Default: )                                    | Name of the interface                    |
-| **pw-l2mtu** (_integer \[0..65536\]_; Default: **1500**)          | L2MTU value advertised to a remote peer. |
-| **pw-type** (_raw-ethernet                                        | tagged-ethernet                          | vpls_; Default: **raw-ethernet**)                                                                                              | Pseudowire type.                                                                                                                                                                                                                                                         |
-| **peer** (_IP_; Default: )                                        | The IP address of the remote peer.       |
-| **pw-control-word** (_disabled                                    | enabled                                  | default_; Default: **default**)                                                                                                | Enables/disables Control Word usage. Default values for regular and cisco style VPLS tunnels differ. Cisco style by default has control word usage disabled. Read more in the [VPLS Control Word](https://help.mikrotik.com/docs/display/ROS/VPLS+Control+Word) article. |
-| **vpls-id** (_AsNum                                               | AsIp_; Default: )                        | A unique number that identifies the VPLS tunnel. Encoding is 2byte+4byte or 4byte+2byte number.                                |
+| 属性                                                                            | 说明                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **arp** (_disabled \| enabled\| proxy-arp\| reply-only_; Default: **enabled**)  | 地址解析协议                                                                                                                                                                                |
+| **arp-timeout** (_time interval                                                 | auto_;Default:auto)                                                                                                                                                                         |  |
+| **bridge** (_name_;Default : )                                                  |                                                                                                                                                                                             |  |
+| **bridge-cost** (_integer [0..4294967295]_;Default:**50**)                      | 网桥端口的开销。                                                                                                                                                                            |
+| **bridge-horizon** (_none \| integer_; Default:**none**)                        | 如果设置为 **none** 网桥水平线将不会使用。                                                                                                                                                  |
+| **cisco-static-id** (_integer [0 . . 4294967295] _;Default:**0**)               | cisco式VPLS隧道ID。                                                                                                                                                                         |
+| **comment** (_string_; Default: )                                               | 注释                                                                                                                                                                                        |
+| **disable-running-check** (_yes \| no_;Default:**no**)                          | 是否检测接口是否正在运行。如果设置为 **no** 接口将始终具有'running'标志。                                                                                                                   |
+| **disabled** (_yes \| no_;Default:**yes**)                                      | 定义项是被忽略还是被使用。缺省情况下，VPLS接口处于禁用状态。                                                                                                                                |
+| **mac-address** (_MAC_; Default: )                                              |                                                                                                                                                                                             |  |
+| **mtu** (_integer [32..65536]_; Default: **1500**)                              |                                                                                                                                                                                             |  |
+| **name** (_string_; Default: )                                                  | 接口名称                                                                                                                                                                                    |
+| **pw-l2mtu** (_integer [0..65536]_;Default:**1500**)                            | 通告给远端对等体的L2MTU值。                                                                                                                                                                 |
+| **pw-type** (_raw-ethernet \| tagged-ethernet \| vpls_;默认值:**raw-ethernet**) | 伪线类型                                                                                                                                                                                    |
+| **peer** (_IP_;Default:)                                                        | 远端对等体IP地址。                                                                                                                                                                          |
+| **pw-control-word** (_disabled\| enabled\| default_;Default:**Default**)        | 启用/禁用控制字使用。常规VPLS隧道和思科VPLS隧道的缺省值不同。思科风格默认禁用控制词使用。在 [VPLS控制词](https://help.mikrotik.com/docs/display/ROS/VPLS+Control+Word) 文章中阅读更多内容。 |
+| **vpls-id** (_AsNum \| AsIp_;Default:)                                          | 唯一标识VPLS隧道的编号。编码方式为2byte+4byte或4byte+2byte。                                                                                                                                |
 
   
-**Read-only properties**
+**只读属性**
 
-| 
-Property
+| 属性                                  | 说明                                                                                                      |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **cisco-bgp-signaling** (_yes \| no_) |                                                                                                           |  |
+| **vpls** (_string_)                   | 用于创建动态vpls接口的 [bgp-vpls实例](https://wiki.mikrotik.com/wiki/Manual:Interface/VPLS#BGP_VPLS) 名称 |
+| **bgp-signaled**                      |                                                                                                           |  |
+| **bgp-vpls**                          |                                                                                                           |  |
+| **bgp-vpls-prfx**                     |                                                                                                           |  |
+| **dynamic** (_yes \| no_)             |                                                                                                           |  |
+| **l2mtu** (integer)                   |                                                                                                           |  |
+| **running** (_yes            \| no_)  |                                                                                                           |  |
 
- | 
+### 监控
 
-Description
+命令/interface vpls monitor [id]将显示当前vpls接口的状态
 
-|     |
-| --- |  |
-|     |
+例如:
 
-Property
+```shell
+[admin@10.0.11.23] /interface vpls> monitor vpls2
+remote-label: 800000
+local-label: 43
+remote-status:
+transport: 10.255.11.201/32
+transport-nexthop: 10.0.11.201
+imposed-labels: 800000
+```
 
- | 
+可用的只读属性:
 
-Description
-
-|                              |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **cisco-bgp-signaled** (_yes | no_)                                                                                                                                 |
-|                              |
-| **vpls** (_string_)          | name of the [bgp-vpls instance](https://wiki.mikrotik.com/wiki/Manual:Interface/VPLS#BGP_VPLS) used to create dynamic vpls interface |
-| **bgp-signaled**             |
-|                              |
-| **bgp-vpls**                 |
-|                              |
-| **bgp-vpls-prfx**            |
-|                              |
-| **dynamic** (_yes            | no_)                                                                                                                                 |
-|                              |
-| **l2mtu** (integer)          |
-|                              |
-| **running** (_yes            | no_)                                                                                                                                 |
-|                              |
-
-### Monitoring
-
-Command `/interface vpls monitor [id]` will display the current VPLS interface status
-
-For example:
-
-[?](https://help.mikrotik.com/docs/display/ROS/VPLS#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@10.0.11.23] </code><code class="ros constants">/interface vpls&gt; </code><code class="ros functions">monitor </code><code class="ros plain">vpls2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">remote-label</code><code class="ros constants">: 800000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">local-label</code><code class="ros constants">: 43</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">remote-status</code><code class="ros constants">:</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">transport</code><code class="ros constants">: 10.255.11.201/32</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">transport-nexthop</code><code class="ros constants">: 10.0.11.201</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">imposed-labels</code><code class="ros constants">: 800000</code></div></div></td></tr></tbody></table>
-
-Available read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                     |
-| ----------------------------------- | -------------------------------------------------------------------------------------------- |
-| **imposed-label** (_integer_)       | VPLS imposed label                                                                           |
-| **local-label** (_integer_)         | Local VPLS label                                                                             |
-| **remote-group** ()                 |
-|                                     |
-| **remote-label** (_integer_)        | Remote VPLS label                                                                            |
-| **remote-status** (_integer_)       |
-|                                     |
-| **transport-nexthop** (_IP prefix_) | Shows used transport address (typically Loopback address).                                   |
-| **transport** (_string_)            | Name of the transport interface. Set if VPLS is running over the Traffic Engineering tunnel. |
+| Property                            | Description                                            |
+| ----------------------------------- | ------------------------------------------------------ |
+| **imposed-label** (_integer_)       | VPLS强制标签                                           |
+| **Local -label** (_integer_)        | 本地VPLS标签                                           |
+| **remote-group** ()                 |                                                        |
+| **Remote -label** (_integer_)       | 远端VPLS标签                                           |
+| **remote-status** (_integer_)       |                                                        |
+| **transport-nexthop** (_IP prefix_) | 显示使用的传输地址(通常是Loopback地址)。               |
+| **transport** (_string_)            | 传输接口的名称。如果VPLS运行在流量工程隧道上，请设置。 |

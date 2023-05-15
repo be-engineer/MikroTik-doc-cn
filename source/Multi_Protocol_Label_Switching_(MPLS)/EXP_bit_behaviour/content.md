@@ -1,33 +1,33 @@
-# Overview
+# 概述
 
-When the MPLS label is attached to the packet, it increases packet length by 32 bits (4 bytes). These 32 bits are broken down as follows:
+当在报文上附加MPLS标签时，报文长度增加32比特(4字节)。这32位分解如下:
 
--   label value itself (20 bits)
--   EXP ("experimental") field (3 bits)
--   time to live field (8 bits)
--   bottom of stack field (1 bit)
+-标签值本身(20位)
+- EXP(“实验”)字段(3位)
+- 生存域时间(8位)
+- 栈底字段(1位)
 
-The use of "experimental" bits is not specified by MPLS standards, but the most common use is to carry QoS information, similar to 802.1q priority in the VLAN tag. Note that the EXP field is 3 bits only therefore it can carry values from 0 to 7 only, which allows having 8 traffic classes.
+MPLS标准没有规定“实验”位的使用，但最常见的用途是承载QoS信息，类似于VLAN标签中的802.1q优先级。注意，EXP字段只有3位，因此它只能携带0到7的值，允许有8个流量类。
 
-# EXP field treatment in RouterOS
+# EXP在RouterOS中的字段处理
 
-When RouterOS receives an MPLS packet, it sets the "ingress priority" value for the packet to that carried inside the top label. Note that "ingress priority" **is not** a field inside packet headers - it can be thought of as an additional mark assigned to a packet while being processed by the router. When RouterOS labels an MPLS packet, it sets EXP bits to "priority" (not "ingress priority"!) assigned to the packet. When RouterOS switches MPLS packet, "ingress priority" is automatically copied to "priority", this way regular MPLS switching communicates priority info over the whole label switched path.
+当RouterOS收到一个MPLS报文时，它会将该报文的“入站优先级”设置为顶部标签内的优先级。注意，“入站优先级”并不是包头中的一个字段，它可以认为是路由器在处理数据包时分配给数据包的额外标记。当RouterOS标记MPLS报文时，它将EXP位设置为分配给该报文的“优先级”(而不是“入站优先级”!)。当RouterOS交换MPLS报文时，“入站优先级”自动复制为“优先级”，这样常规的MPLS交换就可以在整个标签交换路径上交换优先级信息。
 
-Additional info on "ingress priority" and "priority" handling is also in [WMM and VLAN priority](https://help.mikrotik.com/docs/display/ROS/WMM+and+VLAN+priority).
+关于“入站优先级”和“优先级”处理的其他信息也见于 [WMM和VLAN优先级](https://help.mikrotik.com/docs/display/ROS/WMM+and+VLAN+priority)。
 
-Therefore what happens to the EXP field depends based on what action is taken on the packet:
+因此EXP字段发生的情况取决于对数据包采取的操作:
 
--   if the packet is MPLS switched (by popping the label off the packet and pushing on the new one), the EXP field in the new label will be the same as in the received label, because:
-    -   RouterOS sets "ingress priority" to EXP bits in the received label
-    -   Switching automatically sets "priority" to "ingress priority"
-    -   RouterOS labels the packet with a new label and sets its EXP bits to value in "priority".
--   if the packet is MPLS switched by using penultimate-hop-popping (the received label is popped off and no new one is pushed on), the EXP field of received priority stays in the "priority" field of the packet and may be used by some other MAC protocol, e.g. WMM or 802.1q VLAN, for example:
-    -   RouterOS sets "ingress priority" to EXP bits in the received label
-    -   Switching automatically sets "priority" to "ingress priority"
-    -   RouterOS switches the packet to the next hop (without pushing on the label) and that happens over the VLAN interface
-    -   VLAN interface sets 802.1q priority in the VLAN header to the "priority" value of the packet.
+- 如果数据包是MPLS交换的(通过从数据包中弹出标签并推送新标签)，新标签中的EXP字段将与接收到的标签中的EXP字段相同，因为:
+- RouterOS将入站优先级设置为接收标签中的EXP位
+切换自动将“优先级”设置为“入站优先级”
+- RouterOS给报文贴上新的标签，并将其EXP位设置为priority值。
+- 如果数据包是通过倒数第二跳跳交换的MPLS(收到的标签被弹出，没有新的标签被推送)，收到的优先级的EXP字段保留在数据包的“优先级”字段中，并且可能被其他MAC协议使用，例如WMM或802.1q VLAN，例如:
+- RouterOS将入站优先级设置为接收标签中的EXP位
+切换自动将“优先级”设置为“入站优先级”
+- 在VLAN接口上，RouterOS将报文切换到下一跳(不推送标签)
+- VLAN接口将VLAN头中的802.1q优先级设置为报文的“priority”值。
 
-Note that penultimate-hop-popping can therefore lose QoS information carried over label switched path at the last hop. In cases where this is not desirable, penultimate-hop-popping behavior should be disabled by using the Explicit NULL label instead of the Implicit NULL label for the last hop in the label switched path. Using an Explicit NULL label for the last hop is the default behavior for MPLS TE tunnels.
+请注意，倒数第二跳弹出会丢失在最后一跳的标签交换路径上携带的QoS信息。如果不希望出现这种情况，则应该通过对标签交换路径中的最后一跳使用显式NULL标签而不是隐式NULL标签来禁用倒数第二跳弹出行为。对最后一跳使用显式NULL标签是MPLS TE隧道的默认行为。
 
--   if a packet is supposed to be sent over label switched path (the first label will get pushed on the packet), EXP bits will be set to value in "priority", which in turn can be set up properly using firewall rules or other means (e.g. from DSCP field in IP header)
--   if a packet is received for local processing, "ingress priority" is set to the EXP field of the received packet and can therefore be used to update the DSCP field of the packet or set "priority" from "ingress priority" using firewall rules
+- 如果数据包应该通过标签交换路径发送(第一个标签将被推送到数据包上)，EXP位将被设置为“优先级”的值，这反过来可以使用防火墙规则或其他方法(例如，从IP报头中的DSCP字段)来正确设置
+- 如果接收到本地处理的数据包，则将“入站优先级”设置为接收到的数据包的EXP字段，因此可以用来更新数据包的DSCP字段，或者使用防火墙规则将“入站优先级”设置为“优先级”

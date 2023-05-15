@@ -1,211 +1,351 @@
-# Overview
+# 概述
 
-MikroTik RouterOS implements Label Distribution Protocol (RFC 3036, RFC 5036, and RFC 7552) for IPv4 and IPv6 address families. LDP is a protocol that performs the set of procedures and exchange messages by which Label Switched Routers (LSRs) establish Label Switched Paths (LSPs) through a network by mapping network-layer routing information directly to data-link layer switched paths.
+MikroTik RouterOS针对IPv4和IPv6地址族实现了标签分发协议(RFC 3036、RFC 5036和RFC 7552)。LDP是lsr (Label Switched Routers)通过网络将网络层路由信息直接映射到数据链路层交换路径上，从而建立lsp的一组过程和交换消息的协议。
 
-# Prerequisites for MPLS
+# MPLS的先决条件
 
-## "Loopback" IP address
+“回环”IP地址
 
-Although not a strict requirement, it is advisable to configure routers participating in the MPLS network with "loopback" IP addresses (not attached to any real network interface) to be used by LDP to establish sessions.
+虽然没有严格的要求，但建议在参与MPLS网络的路由器上配置“回环”IP地址(不附加在任何真实的网络接口上)，供LDP建立会话使用。
+这有两个目的:
 
-This serves 2 purposes:
+- 由于任意两台路由器之间只有一个LDP会话，因此无论连接它们的链路有多少，回环 IP地址都可以确保LDP会话不受接口状态或地址变化的影响
+- 使用回环地址作为LDP传输地址，可以保证在报文附加多个标签(如VPLS)时正确的倒数第二跳弹出行为
 
--   as there is only one LDP session between any 2 routers, no matter how many links connect them, the loopback IP address ensures that the LDP session is not affected by interface state or address changes
--   use of loopback address as LDP transport address ensures proper penultimate hop popping behavior when multiple labels are attached to the packet as in the case of VPLS
+在RouterOS中，“回环”IP地址可以通过创建一个没有任何端口的虚拟网桥接口来配置，并将该地址添加到该接口中。例如:
 
-In RouterOS "loopback" IP address can be configured by creating a dummy bridge interface without any ports and adding the address to it. For example:
+```shell
+/interface bridge add name=lo
+/ip address add address=255.255.255.1/32 interface=lo
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lo</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=255.255.255.1/32</code> <code class="ros value">interface</code><code class="ros plain">=lo</code></div></div></td></tr></tbody></table>
+## IP连接
 
-  
+由于LDP为活动路由分配标签，因此基本要求是正确配置IP路由。缺省情况下，LDP对活动的IGP路由(即非连接路由、静态路由和路由协议学习路由，BGP除外)分发标签。
 
-  
+有关如何正确设置IGP的说明，请参阅相应的文档部分:
 
-## IP connectivity
+- [OSPF](https://help.mikrotik.com/docs/display/ROS/OSPF)
+- [静态路由](https://help.mikrotik.com/docs/display/ROS/IP+Routing)
 
-As LDP distributes labels for active routes, the essential requirement is properly configured IP routing. LDP by default distributes labels for active IGP routes (that is - connected, static, and routing protocol learned routes, except BGP).
 
-For instructions on how to set up properly IGP refer to appropriate documentation sections:
+LDP支持ECMP路由。
 
--   [OSPF](https://help.mikrotik.com/docs/display/ROS/OSPF)
--   [Static Routing](https://help.mikrotik.com/docs/display/ROS/IP+Routing)
--   etc
+在继续进行LDP配置之前，您应该能够从网络的任何位置访问任何环回地址。可以使用从loopback地址到loopback地址的ping工具来验证连通性。
 
-LDP supports ECMP routes.
+# 示例设置
 
-You should be able to reach any loopback address from any location of your network before continuing with the LDP configuration. Connectivity can be verified with the ping tool running from loopback address to loopback address.
+考虑已经设置了四个路由器，具有工作IP连接。
 
-# Example Setup
-
-Let's consider that we have already existing four routers setup, with working IP connectivity.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">(lo</code><code class="ros constants">:111.111.111.1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (lo:111.111.111.2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (lo:111.111.111.3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (lo:111.111.111.4)</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">|---------R1-----(</code><code class="ros color1">111.11.0.0/24</code><code class="ros plain">)-----R2-----(</code><code class="ros color1">111.12.0.0/24</code><code class="ros plain">)-----R3-----(</code><code class="ros color1">111.13.0.0/24</code><code class="ros plain">)-----R4---------|</code></div></div></td></tr></tbody></table>
+```shell
+   (lo:111.111.111.1)       (lo:111.111.111.2)          (lo:111.111.111.3)         (lo:111.111.111.4)
+|---------R1-----(111.11.0.0/24)-----R2-----(111.12.0.0/24)-----R3-----(111.13.0.0/24)-----R4---------|
+```
 
   
 
-## Ip Reachability
+### Ip可达性
 
-Not going deep into routing setup here is the quit export of the IP and OSPF configurations:
+不深入路由设置，导出这是IP和OSPF配置:
 
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments">#R1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=loopback</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.11.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.111.111.1</code> <code class="ros value">interface</code><code class="ros plain">=loopback</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=default_ip4</code> <code class="ros value">router-id</code><code class="ros plain">=111.111.111.1</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">instance</code><code class="ros plain">=default_ip4</code> <code class="ros value">name</code><code class="ros plain">=backbone_ip4</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.111.111.1</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.11.0.0/24</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros comments">#R2</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=loopback</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.11.0.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.12.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.111.111.2</code> <code class="ros value">interface</code><code class="ros plain">=loopback</code></div><div class="line number24 index23 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=default_ip4</code> <code class="ros value">router-id</code><code class="ros plain">=111.111.111.2</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">instance</code><code class="ros plain">=default_ip4</code> <code class="ros value">name</code><code class="ros plain">=backbone_ip4</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.111.111.2</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.11.0.0/24</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.12.0.0/24</code></div><div class="line number33 index32 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number34 index33 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros comments">#R3</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number37 index36 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=loopback</code></div><div class="line number38 index37 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number39 index38 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number40 index39 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.12.0.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number41 index40 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.13.0.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ether3</code></div><div class="line number42 index41 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.111.111.3</code> <code class="ros value">interface</code><code class="ros plain">=loopback</code></div><div class="line number43 index42 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number44 index43 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number45 index44 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=default_ip4</code> <code class="ros value">router-id</code><code class="ros plain">=111.111.111.3</code></div><div class="line number46 index45 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number47 index46 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">instance</code><code class="ros plain">=default_ip4</code> <code class="ros value">name</code><code class="ros plain">=backbone_ip4</code></div><div class="line number48 index47 alt1" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number49 index48 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.111.111.3</code></div><div class="line number50 index49 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.12.0.0/24</code></div><div class="line number51 index50 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.13.0.0/24</code></div><div class="line number52 index51 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number53 index52 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number54 index53 alt1" data-bidi-marker="true"><code class="ros comments">#R4</code></div><div class="line number55 index54 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number56 index55 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=loopback</code></div><div class="line number57 index56 alt2" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number58 index57 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.13.0.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number59 index58 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=111.111.111.4</code> <code class="ros value">interface</code><code class="ros plain">=loopback</code></div><div class="line number60 index59 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number61 index60 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf instance</code></div><div class="line number62 index61 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=default_ip4</code> <code class="ros value">router-id</code><code class="ros plain">=111.111.111.4</code></div><div class="line number63 index62 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf area</code></div><div class="line number64 index63 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">instance</code><code class="ros plain">=default_ip4</code> <code class="ros value">name</code><code class="ros plain">=backbone_ip4</code></div><div class="line number65 index64 alt2" data-bidi-marker="true"><code class="ros constants">/routing ospf interface-template</code></div><div class="line number66 index65 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.111.111.4</code></div><div class="line number67 index66 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">area</code><code class="ros plain">=backbone_ip4</code> <code class="ros value">dead-interval</code><code class="ros plain">=10s</code> <code class="ros value">hello-interval</code><code class="ros plain">=1s</code> <code class="ros value">networks</code><code class="ros plain">=111.13.0.0/24</code></div></div></td></tr></tbody></table>
-
-  
-
+```shell
+#R1
+/interface bridge
+add name=loopback
+/ip address
+add address=111.11.0.1/24 interface=ether2
+add address=111.111.111.1 interface=loopback
+ 
+/routing ospf instance
+add name=default_ip4 router-id=111.111.111.1
+/routing ospf area
+add instance=default_ip4 name=backbone_ip4
+/routing ospf interface-template
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.111.111.1
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.11.0.0/24
+ 
+ 
+#R2
+/interface bridge
+add name=loopback
+/ip address
+add address=111.11.0.2/24 interface=ether2
+add address=111.12.0.1/24 interface=ether3
+add address=111.111.111.2 interface=loopback
+ 
+/routing ospf instance
+add name=default_ip4 router-id=111.111.111.2
+/routing ospf area
+add instance=default_ip4 name=backbone_ip4
+/routing ospf interface-template
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.111.111.2
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.11.0.0/24
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.12.0.0/24
+ 
+ 
+#R3
+/interface bridge
+add name=loopback
+ 
+/ip address
+add address=111.12.0.2/24 interface=ether2
+add address=111.13.0.1/24 interface=ether3
+add address=111.111.111.3 interface=loopback
+ 
+/routing ospf instance
+add name=default_ip4 router-id=111.111.111.3
+/routing ospf area
+add instance=default_ip4 name=backbone_ip4
+/routing ospf interface-template
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.111.111.3
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.12.0.0/24
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.13.0.0/24
+ 
+ 
+#R4
+/interface bridge
+add name=loopback
+/ip address
+add address=111.13.0.2/24 interface=ether2
+add address=111.111.111.4 interface=loopback
+ 
+/routing ospf instance
+add name=default_ip4 router-id=111.111.111.4
+/routing ospf area
+add instance=default_ip4 name=backbone_ip4
+/routing ospf interface-template
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.111.111.4
+add area=backbone_ip4 dead-interval=10s hello-interval=1s networks=111.13.0.0/24
 Verify that IP connectivity and routing are working properly
 
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R4] /ip/address&gt; /tool traceroute 111.111.111.1 src-address=111.111.111.4</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Columns: ADDRESS, LOSS, SENT, LAST, AVG, BEST, WORST, STD-DEV</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">#&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LOSS&nbsp; SENT&nbsp; LAST&nbsp;&nbsp; AVG&nbsp; BEST&nbsp; WORST&nbsp; STD-DEV</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">1&nbsp; 111.13.0.1&nbsp;&nbsp;&nbsp;&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp; 0.6ms&nbsp; 0.6&nbsp; 0.6&nbsp;&nbsp; 0.6&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">2&nbsp; 111.12.0.1&nbsp;&nbsp;&nbsp;&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp; 0.5ms&nbsp; 0.6&nbsp; 0.5&nbsp;&nbsp; 0.6&nbsp;&nbsp;&nbsp; 0.1&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">3&nbsp; 111.111.111.1&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp; 0.6ms&nbsp; 0.6&nbsp; 0.6&nbsp;&nbsp; 0.6&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div></div></td></tr></tbody></table>
-
-  
-
-## LDP Setup
-
-In order to start distributing labels, LDP is enabled on interfaces that connect other LDP routers and not enabled on interfaces that connect customer networks.
-
-On R1 it will look like this:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">afi</code><code class="ros plain">=ip</code> <code class="ros value">lsr-id</code><code class="ros plain">=111.111.111.1</code> <code class="ros value">transport-addresses</code><code class="ros plain">=111.111.111.1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> &nbsp; &nbsp;</div></div></td></tr></tbody></table>
-
-Note that the transport address gets set to 111.111.111.1. This makes the router originate LDP session connections with this address and also advertise this address as a transport address to LDP neighbors.
+[admin@R4] /ip/address> /tool traceroute 111.111.111.1 src-address=111.111.111.4
+Columns: ADDRESS, LOSS, SENT, LAST, AVG, BEST, WORST, STD-DEV
+#  ADDRESS        LOSS  SENT  LAST   AVG  BEST  WORST  STD-DEV
+1  111.13.0.1     0%       4  0.6ms  0.6  0.6   0.6    0     
+2  111.12.0.1     0%       4  0.5ms  0.6  0.5   0.6    0.1   
+3  111.111.111.1  0%       4  0.6ms  0.6  0.6   0.6    0     
+```
 
   
 
-Other routers are set up similarly.
+## LDP设置
+
+为了分发标签，需要在连接其他LDP路由器的接口上使能LDP，而在连接客户网络的接口上不使能LDP。
+
+在R1上是这样的:
+
+```shell
+/mpls ldp
+add afi=ip lsr-id=111.111.111.1 transport-addresses=111.111.111.1
+/mpls ldp interface
+add interface=ether2    
+```
+
+注意，传输地址设置为111.111.111.1。路由器使用此地址发起LDP会话连接，并将此地址作为传输地址通告给LDP邻居。
+
+
+
+其他路由器的设置也类似。
 
 R2:
 
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">afi</code><code class="ros plain">=ip</code> <code class="ros value">lsr-id</code><code class="ros plain">=111.111.111.2</code> <code class="ros value">transport-addresses</code><code class="ros plain">=111.111.111.2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> &nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether3</code> &nbsp;</div></div></td></tr></tbody></table>
-
-On R3:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">afi</code><code class="ros plain">=ip</code> <code class="ros value">lsr-id</code><code class="ros plain">=111.111.111.3</code> <code class="ros value">transport-addresses</code><code class="ros plain">=111.111.111.3</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> &nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether3</code> &nbsp;</div></div></td></tr></tbody></table>
-
-On R4:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">afi</code><code class="ros plain">=ip</code> <code class="ros value">lsr-id</code><code class="ros plain">=111.111.111.4</code> <code class="ros value">transport-addresses</code><code class="ros plain">=111.111.111.4</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> &nbsp;</div></div></td></tr></tbody></table>
-
-  
-
-  
-
-After LDP sessions are established, R2 should have two LDP neighbors:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /mpls/ldp/neighbor&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: D, I - INACTIVE; O, T - THROTTLED; p - PASSIVE</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: TRANSPORT, LOCAL-TRANSPORT, PEER, ADDRESSES</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp;&nbsp;&nbsp; TRANSPORT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LOCAL-TRANSPORT&nbsp; PEER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADDRESSES&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 DO&nbsp; 111.111.111.1&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp; 111.111.111.1:0&nbsp; 111.11.0.1&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">1 DOp 111.111.111.3&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp; 111.111.111.3:0&nbsp; 111.12.0.2&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.13.0.1&nbsp;&nbsp;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3</code></div></div></td></tr></tbody></table>
-
-  
-
-The local mappings table shows what label is assigned to what route and peers the router have distributed labels to.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /mpls/ldp/local-mapping&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: I - INACTIVE; D - DYNAMIC; E - EGRESS; G - GATEWAY; L - LOCAL</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: VRF, DST-ADDRESS, LABEL, PEERS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; VRF&nbsp;&nbsp; DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LABEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PEERS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0&nbsp; D G&nbsp; main&nbsp; 10.0.0.0/8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">1 IDE L main&nbsp; 10.155.130.0/25&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">2 IDE L main&nbsp; 111.11.0.0/24&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">3 IDE L main&nbsp; 111.12.0.0/24&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text plain">4 IDE L main&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">5&nbsp; D G&nbsp; main&nbsp; 111.111.111.1&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text plain">6&nbsp; D G&nbsp; main&nbsp; 111.111.111.3&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="text plain">7&nbsp; D G&nbsp; main&nbsp; 111.111.111.4&nbsp;&nbsp;&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="text plain">8&nbsp; D G&nbsp; main&nbsp; 111.13.0.0/24&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">111.111.111.3:0</code></div></div></td></tr></tbody></table>
-
-  
-
-  
-
-Remote mappings table on the other hand shows labels that are allocated for routes by neighboring LDP routers and advertised to this router:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /mpls/ldp/remote-mapping&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: I - INACTIVE; D - DYNAMIC</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: VRF, DST-ADDRESS, NEXTHOP, LABEL, PEER</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">#&nbsp;&nbsp;&nbsp; VRF&nbsp;&nbsp; DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXTHOP&nbsp;&nbsp;&nbsp;&nbsp; LABEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PEER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">0 ID main&nbsp; 10.0.0.0/8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">1 ID main&nbsp; 10.155.130.0/25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">2 ID main&nbsp; 111.11.0.0/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">3 ID main&nbsp; 111.12.0.0/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">4&nbsp; D main&nbsp; 111.111.111.1&nbsp;&nbsp;&nbsp; 111.11.0.1&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">5 ID main&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">6 ID main&nbsp; 111.111.111.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">7 ID main&nbsp; 111.111.111.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">8 ID main&nbsp; 111.13.0.0/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;</code><code class="text plain">9 ID main&nbsp; 0.0.0.0/0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="text plain">10 ID main&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="text plain">11 ID main&nbsp; 111.111.111.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="text plain">12&nbsp; D main&nbsp; 111.111.111.3&nbsp;&nbsp;&nbsp; 111.12.0.2&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="text plain">13&nbsp; D main&nbsp; 111.111.111.4&nbsp;&nbsp;&nbsp; 111.12.0.2&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="text plain">14 ID main&nbsp; 10.155.130.0/25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="text plain">15 ID main&nbsp; 111.11.0.0/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="text plain">16 ID main&nbsp; 111.12.0.0/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="text plain">17&nbsp; D main&nbsp; 111.13.0.0/24&nbsp;&nbsp;&nbsp; 111.12.0.2&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div></div></td></tr></tbody></table>
-
-  
-
-We can observe that router has received label bindings for all routes from both its neighbors - R1 and R3.
-
-The remote mapping table will have active mappings only for the destinations that have direct next-hop, for example, let's take a closer look at 111.111.111.4 mappings. The routing table indicates that the network 111.111.111.4 is reachable via 111.12.0.2 (R3):
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /ip/route&gt; print where dst-address=111.111.111.4</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: D - DYNAMIC; A - ACTIVE; o, y - COPY</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: DST-ADDRESS, GATEWAY, DISTANCE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="text plain">DST-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GATEWAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISTANCE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">DAo 111.111.111.4/32&nbsp; 111.12.0.2%ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 110</code></div></div></td></tr></tbody></table>
-
-And if we look again at the remote mapping table, the only active mapping is the one received from R3 with assigned label 19. This implies that when R2 when routing traffic to this network, will impose label 19.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">17&nbsp; D main&nbsp; 111.111.111.4&nbsp;&nbsp;&nbsp; 111.12.0.2&nbsp; 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div></div></td></tr></tbody></table>
-
-  
-
-  
-
-Label switching rules can be seen in the forwarding table:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /mpls/forwarding-table&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: L, V - VPLS</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: LABEL, VRF, PREFIX, NEXTHOPS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp; LABEL&nbsp; VRF&nbsp;&nbsp; PREFIX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXTHOPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 L&nbsp;&nbsp;&nbsp; 16&nbsp; main&nbsp; 10.0.0.0/8&nbsp;&nbsp;&nbsp;&nbsp; { nh=10.155.130.1; interface=ether1 }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">1 L&nbsp;&nbsp;&nbsp; 18&nbsp; main&nbsp; 111.111.111.3&nbsp; { label=impl-null; nh=111.12.0.2; interface=ether3 }</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">2 L&nbsp;&nbsp;&nbsp; 19&nbsp; main&nbsp; 111.111.111.4&nbsp; { label=19; nh=111.12.0.2; interface=ether3 }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">3 L&nbsp;&nbsp;&nbsp; 20&nbsp; main&nbsp; 111.13.0.0/24&nbsp; { label=impl-null; nh=111.12.0.2; interface=ether3 }</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">4 L&nbsp;&nbsp;&nbsp; 17&nbsp; main&nbsp; 111.111.111.1&nbsp; { label=impl-null; nh=111.11.0.1; interface=ether2 }</code></div></div></td></tr></tbody></table>
-
-If we take a look at rule number 2, the rule says that when R2 received the packet with label 19, it will change the label to new label 19 (assigned by the R3).
-
-As you can see from this example it is not mandatory that labels along the path should be unique.
-
-  
-
-Now if we look at the forwarding table of R3:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R3] /mpls/forwarding-table&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: L, V - VPLS</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: LABEL, VRF, PREFIX, NEXTHOPS</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp; LA&nbsp; VRF&nbsp;&nbsp; PREFIX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXTHOPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 L 19&nbsp; main&nbsp; 111.111.111.4&nbsp; { label=impl-null; nh=111.13.0.2; interface=ether3 }</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">1 L 17&nbsp; main&nbsp; 111.11.0.0/24&nbsp; { label=impl-null; nh=111.12.0.1; interface=ether2 }</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">2 L 16&nbsp; main&nbsp; 111.111.111.2&nbsp; { label=impl-null; nh=111.12.0.1; interface=ether2 }</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">3 L 18&nbsp; main&nbsp; 111.111.111.1&nbsp; { label=17; nh=111.12.0.1; interface=ether2 }</code></div></div></td></tr></tbody></table>
-
-Rule number 0, shows that the out label is "**impl-null**". The reason for this is that R3 is the last hop before 111.111.111.4 will be reachable and there is no need to swap to any real label. It is known that R4 is the egress point for the 111.111.111.4 network (router is the egress point for directly connected networks because the next hop for traffic is not MPLS router), therefore it advertises the "implicit null" label for this route. This tells R3 to forward traffic for the destination 111.111.111.4/32 to R4 unlabelled, which is exactly what R3 forwarding table entry tells.
-
-Action, when the label is not swapped to any real label, is called **Penultimate hop popping,** it ensures that routers do not have to do unnecessary label lookup when it is known in advance that the router will have to route the packet.
-
-  
-
-# Using traceroute in MPLS networks
-
-RFC4950 introduces extensions to the ICMP protocol for MPLS. The basic idea is that some ICMP messages may carry an MPLS "label stack object" (a list of labels that were on the packet when it caused a particular ICMP message). ICMP messages of interest for MPLS are Time Exceeded and Need Fragment.
-
-MPLS label carries not only label value, but also TTL field. When imposing a label on an IP packet, MPLS TTL is set to value in the IP header, when the last label is removed from the IP packet, IP TTL is set to value in MPLS TTL. Therefore MPLS switching network can be diagnosed by means of a traceroute tool that supports MPLS extension.
-
-For example, the traceroute from R4 to R1 looks like this:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R1] /mpls/ldp/neighbor&gt; /tool traceroute 111.111.111.4 src-address=111.111.111.1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Columns: ADDRESS, LOSS, SENT, LAST, AVG, BEST, WORST, STD-DEV, STATUS</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">#&nbsp; ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LOSS&nbsp; SENT&nbsp; LAST&nbsp;&nbsp; AVG&nbsp; BEST&nbsp; WORST&nbsp; STD-DEV&nbsp; STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">1&nbsp; 111.11.0.2&nbsp;&nbsp;&nbsp;&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp; 0.7ms&nbsp; 0.7&nbsp; 0.7&nbsp;&nbsp; 0.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; &lt;MPLS:L=19,E=0&gt;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">2&nbsp; 111.12.0.2&nbsp;&nbsp;&nbsp;&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp; 0.4ms&nbsp; 0.4&nbsp; 0.4&nbsp;&nbsp; 0.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; &lt;MPLS:L=19,E=0&gt;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">3&nbsp; 111.111.111.4&nbsp; 0%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp; 0.5ms&nbsp; 0.5&nbsp; 0.5&nbsp;&nbsp; 0.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div></div></td></tr></tbody></table>
-
-  
-
-Traceroute results show MPLS labels on the packet when it produced ICMP Time Exceeded. The above means: that when R3 received a packet with MPLS TTL 1, it had label 18 on it. This match advertised label by R3 for 111.111.111.4. In the same way, R2 observed label 17 on the packet on the next traceroute iteration - R3 switched label 17 to label 17, as explained above. R1 received packet without labels - R2 did penultimate hop popping as explained above.
-
-  
-
-## Drawbacks of using traceroute in MPLS network
-
-### Label switching ICMP errors
-
-One of the drawbacks of using traceroute in MPLS networks is the way MPLS handles produced ICMP errors. In IP networks ICMP errors are simply routed back to the source of the packet that caused the error. In an MPLS network, it is possible that a router that produces an error message does not even have a route to the source of the IP packet (for example in the case of asymmetric label switching paths or some kind of MPLS tunneling, e.g. to transport MPLS VPN traffic).
-
-Due to this produced ICMP errors are not routed to the source of the packet that caused the error but switched further along the label switching path, assuming that when the label switching path endpoint will receive an ICMP error, it will know how to properly route it back to the source.
-
-This causes the situation, that traceroute in MPLS network can not be used the same way as in IP network - to determine failure point in the network. If the label switched path is broken anywhere in the middle, no ICMP replies will come back, because they will not make it to the far endpoint of the label switching path.
-
-### Penultimate hop popping and traceroute source address
-
-A thorough understanding of penultimate hop behavior and routing is necessary to understand and avoid problems that penultimate hop popping causes to traceroute.
-
-In the example setup, a regular traceroute from R5 to R1 would yield the following results:
-
+```shell
+/mpls ldp
+add afi=ip lsr-id=111.111.111.2 transport-addresses=111.111.111.2
+/mpls ldp interface
+add interface=ether2  
+add interface=ether3  
 ```
+
+R3:
+
+```shell
+/mpls ldp
+add afi=ip lsr-id=111.111.111.3 transport-addresses=111.111.111.3
+/mpls ldp interface
+add interface=ether2  
+add interface=ether3 
+```
+
+R4:
+
+```shell
+/mpls ldp
+add afi=ip lsr-id=111.111.111.4 transport-addresses=111.111.111.4
+/mpls ldp interface
+add interface=ether2  
+```
+
+LDP会话建立后，R2应该有两个LDP邻居:
+
+```shell
+[admin@R2] /mpls/ldp/neighbor> print
+Flags: D, I - INACTIVE; O, T - THROTTLED; p - PASSIVE
+Columns: TRANSPORT, LOCAL-TRANSPORT, PEER, ADDRESSES
+#     TRANSPORT      LOCAL-TRANSPORT  PEER             ADDRESSES   
+0 DO  111.111.111.1  111.111.111.2    111.111.111.1:0  111.11.0.1  
+                                                       111.111.111.1
+1 DOp 111.111.111.3  111.111.111.2    111.111.111.3:0  111.12.0.2  
+                                                       111.13.0.1  
+                                                       111.111.111.3
+```
+ 
+
+本地映射表显示了路由器将标签分配给了哪些路由和对等体。
+
+```shell
+[admin@R2] /mpls/ldp/local-mapping> print
+Flags: I - INACTIVE; D - DYNAMIC; E - EGRESS; G - GATEWAY; L - LOCAL
+Columns: VRF, DST-ADDRESS, LABEL, PEERS
+#       VRF   DST-ADDRESS      LABEL      PEERS         
+0  D G  main  10.0.0.0/8       16         111.111.111.1:0
+                                          111.111.111.3:0
+1 IDE L main  10.155.130.0/25  impl-null  111.111.111.1:0
+                                          111.111.111.3:0
+2 IDE L main  111.11.0.0/24    impl-null  111.111.111.1:0
+                                          111.111.111.3:0
+3 IDE L main  111.12.0.0/24    impl-null  111.111.111.1:0
+                                          111.111.111.3:0
+4 IDE L main  111.111.111.2    impl-null  111.111.111.1:0
+                                          111.111.111.3:0
+5  D G  main  111.111.111.1    17         111.111.111.1:0
+                                          111.111.111.3:0
+6  D G  main  111.111.111.3    18         111.111.111.1:0
+                                          111.111.111.3:0
+7  D G  main  111.111.111.4    19         111.111.111.1:0
+                                          111.111.111.3:0
+8  D G  main  111.13.0.0/24    20         111.111.111.1:0
+                                          111.111.111.3:0
+```
+  
+
+另一方面，远程映射表显示邻居LDP路由器为路由分配的标签，并向本路由器发布。
+
+```shell
+[admin@R2] /mpls/ldp/remote-mapping> print
+Flags: I - INACTIVE; D - DYNAMIC
+Columns: VRF, DST-ADDRESS, NEXTHOP, LABEL, PEER
+ #    VRF   DST-ADDRESS      NEXTHOP     LABEL      PEER          
+ 0 ID main  10.0.0.0/8                   16         111.111.111.1:0
+ 1 ID main  10.155.130.0/25              impl-null  111.111.111.1:0
+ 2 ID main  111.11.0.0/24                impl-null  111.111.111.1:0
+ 3 ID main  111.12.0.0/24                17         111.111.111.1:0
+ 4  D main  111.111.111.1    111.11.0.1  impl-null  111.111.111.1:0
+ 5 ID main  111.111.111.2                19         111.111.111.1:0
+ 6 ID main  111.111.111.3                20         111.111.111.1:0
+ 7 ID main  111.111.111.4                21         111.111.111.1:0
+ 8 ID main  111.13.0.0/24                18         111.111.111.1:0
+ 9 ID main  0.0.0.0/0                    impl-null  111.111.111.3:0
+10 ID main  111.111.111.2                16         111.111.111.3:0
+11 ID main  111.111.111.1                18         111.111.111.3:0
+12  D main  111.111.111.3    111.12.0.2  impl-null  111.111.111.3:0
+13  D main  111.111.111.4    111.12.0.2  19         111.111.111.3:0
+14 ID main  10.155.130.0/25              impl-null  111.111.111.3:0
+15 ID main  111.11.0.0/24                17         111.111.111.3:0
+16 ID main  111.12.0.0/24                impl-null  111.111.111.3:0
+17  D main  111.13.0.0/24    111.12.0.2  impl-null  111.111.111.3:0
+```
+
+  
+
+可以观察到路由器已经从它的邻居R1和R3接收到所有路由的标签绑定。
+
+远程映射表将仅对具有直接下一跳的目的地具有活动映射，例如，仔细查看111.111.111.4映射。由路由表可知，网络111.111.111.4可以通过111.12.0.2 (R3)到达:
+
+```shell
+[admin@R2] /ip/route> print where dst-address=111.111.111.4
+Flags: D - DYNAMIC; A - ACTIVE; o, y - COPY
+Columns: DST-ADDRESS, GATEWAY, DISTANCE
+    DST-ADDRESS       GATEWAY            DISTANCE
+DAo 111.111.111.4/32  111.12.0.2%ether3       110
+```
+
+如果再看一下远程映射表，唯一的活动映射是从R3接收到的标签为19的映射。这意味着当R2将流量路由到此网络时，将强加19号标签。
+
+`17  D main  111.111.111.4    111.12.0.2  19         111.111.111.3:0`
+
+  
+
+在转发表中可以看到标签交换规则:
+
+```shell
+[admin@R2] /mpls/forwarding-table> print
+Flags: L, V - VPLS
+Columns: LABEL, VRF, PREFIX, NEXTHOPS
+#   LABEL  VRF   PREFIX         NEXTHOPS                                           
+0 L    16  main  10.0.0.0/8     { nh=10.155.130.1; interface=ether1 }              
+1 L    18  main  111.111.111.3  { label=impl-null; nh=111.12.0.2; interface=ether3 }
+2 L    19  main  111.111.111.4  { label=19; nh=111.12.0.2; interface=ether3 }      
+3 L    20  main  111.13.0.0/24  { label=impl-null; nh=111.12.0.2; interface=ether3 }
+4 L    17  main  111.111.111.1  { label=impl-null; nh=111.11.0.1; interface=ether2 }
+```
+
+如果看一下规则2，规则说，当R2收到标签为19的数据包时，它将把标签更改为新标签19(由R3分配)。
+
+从这个例子中可以看到，路径上的标签并不一定是唯一的。
+
+
+
+现在看一下R3的转发表:
+
+```shell
+[admin@R3] /mpls/forwarding-table> print
+Flags: L, V - VPLS
+Columns: LABEL, VRF, PREFIX, NEXTHOPS
+#   LA  VRF   PREFIX         NEXTHOPS                                           
+0 L 19  main  111.111.111.4  { label=impl-null; nh=111.13.0.2; interface=ether3 }
+1 L 17  main  111.11.0.0/24  { label=impl-null; nh=111.12.0.1; interface=ether2 }
+2 L 16  main  111.111.111.2  { label=impl-null; nh=111.12.0.1; interface=ether2 }
+3 L 18  main  111.111.111.1  { label=17; nh=111.12.0.1; interface=ether2 }
+```
+
+规则0表示输出标签为 **impl-null**。这样做的原因是R3是111.111.111.4之前的最后一跳，不需要交换到任何真实的标签。已知R4是111.111.111.4网络的出口点(路由器是直连网络的出口点，因为流量的下一跳不是MPLS路由器)，因此它为该路由发布“隐式null”标签。这告诉R3将目的地111.111.111.4/32的流量转发到未标记的R4，这正是R3转发表项所告诉的。
+
+当标签没有交换到任何实际标签时，称为倒数第二跳弹出，确保路由器在事先知道路由器必须路由数据包时不必进行不必要的标签查找。
+
+  
+
+# 在MPLS网络中使用traceroute
+
+RFC4950为MPLS引入了对ICMP协议的扩展。基本思想是，一些ICMP消息可能携带MPLS“标签堆栈对象”(当它引起特定ICMP消息时，包上的标签列表)。MPLS关心的ICMP消息是超时和需要分片。
+
+MPLS标签不仅包含标签值，还包含TTL字段。在IP报文上添加标签时，将MPLS TTL设置为IP报头中的值，当IP报文的最后一个标签被移除时，将IP TTL设置为MPLS TTL中的值。因此，可以使用支持MPLS扩展的traceroute工具对MPLS交换网络进行诊断。
+
+例如，从R4到R1的跟踪路由是这样的:
+
+```shell
+[admin@R1] /mpls/ldp/neighbor> /tool traceroute 111.111.111.4 src-address=111.111.111.1
+Columns: ADDRESS, LOSS, SENT, LAST, AVG, BEST, WORST, STD-DEV, STATUS
+#  ADDRESS        LOSS  SENT  LAST   AVG  BEST  WORST  STD-DEV  STATUS        
+1  111.11.0.2     0%       2  0.7ms  0.7  0.7   0.7          0  <MPLS:L=19,E=0>
+2  111.12.0.2     0%       2  0.4ms  0.4  0.4   0.4          0  <MPLS:L=19,E=0>
+3  111.111.111.4  0%       2  0.5ms  0.5  0.5   0.5          0
+```
+
+  
+
+Traceroute结果显示产生ICMP超时报文上的MPLS标签。上面的意思是:当R3接收到一个MPLS TTL为1的数据包时，它的标签为18。这场比赛由R3为111.111.111.4广告标签。以同样的方式，R2在下一个traceroute迭代中观察到数据包上的标签17 - R3将标签17切换到标签17，如上所述。R1收到没有标签的数据包- R2像上面解释的那样做倒数第二跳弹出。
+
+
+
+在MPLS网络中使用traceroute的缺点
+
+标签交换ICMP错误
+
+在MPLS网络中使用traceroute的缺点之一是MPLS处理产生的ICMP错误的方式。在IP网络中，ICMP错误被简单地路由回引起错误的数据包的源。在MPLS网络中，产生错误消息的路由器甚至可能没有到IP数据包源的路由(例如在非对称标签交换路径或某种MPLS隧道的情况下，例如传输MPLS VPN流量)。
+
+由于产生的ICMP错误不会路由到引起错误的数据包的源，而是沿着标签交换路径进一步交换，假设当标签交换路径端点接收到ICMP错误时，它将知道如何正确地将其路由回源。
+
+这导致在MPLS网络中不能像在IP网络中那样使用traceroute来确定网络中的故障点。如果标签交换路径在中间的任何地方中断，则不会返回ICMP应答，因为它们不会到达标签交换路径的远端点。
+
+倒数第二跳弹出和traceroute源地址
+
+彻底了解倒数第二跳的行为和路由是理解和避免倒数第二跳弹出导致traceroute问题的必要条件。
+
+在示例设置中，从R5到R1的常规跟踪路由将产生以下结果:
+
+```shell
 [admin@R5] > /tool traceroute 9.9.9.1
      ADDRESS                                    STATUS
    1         0.0.0.0 timeout timeout timeout
@@ -215,9 +355,9 @@ In the example setup, a regular traceroute from R5 to R1 would yield the followi
 
 ```
 
-compared to:
+比较:
 
-```
+```shell
 [admin@R5] > /tool traceroute 9.9.9.1 src-address=9.9.9.5
      ADDRESS                                    STATUS
    1         4.4.4.3 15ms 5ms 5ms
@@ -228,9 +368,9 @@ compared to:
 
 ```
 
-The reason why the first traceroute does not get a response from R3 is that by default traceroute on R5 uses source address 4.4.4.5 for its probes because it is the preferred source for a route over which next-hop to 9.9.9.1/32 is reachable:
+第一个traceroute没有得到R3的响应的原因是，默认情况下，R5上的traceroute使用源地址4.4.4.5作为其探测，因为它是路由的首选源，下一跳可以到达9.9.9.1/32。
 
-```
+```shell
 [admin@R5] > /ip route print
 Flags: X - disabled, A - active, D - dynamic,
 C - connect, S - static, r - rip, b - bgp, o - ospf, m - mme,
@@ -244,11 +384,11 @@ B - blackhole, U - unreachable, P - prohibit
 
 ```
 
-When the first traceroute probe is transmitted (source: 4.4.4.5, destination 9.9.9.1), R3 drops it and produces an ICMP error message (source 4.4.4.3 destination 4.4.4.5) that is switched all the way to R1. R1 then sends ICMP error back - it gets switched along the label switching path to 4.4.4.5.
+当发送第一个traceroute探测(源:4.4.4.5，目的9.9.9.1)时，R3丢弃它并产生一个ICMP错误消息(源4.4.4.3，目的4.4.4.5)，该消息一路切换到R1。然后R1发送回ICMP错误——它沿着标签交换路径切换到4.4.4.5。
 
-R2 is the penultimate hop popping router for network 4.4.4.0/24 because 4.4.4.0/24 is directly connected to R3. Therefore R2 removes the last label and sends ICMP error to R3 unlabelled:
+R2是网络4.4.4.0/24的倒数第二个跳跳路由器，因为4.4.4.0/24直接连接到R3。因此，R2删除最后一个标签，并发送ICMP错误给无标签的R3:
 
-```
+```shell
 [admin@R2] > /mpls forwarding-table print
  # IN-LABEL             OUT-LABELS           DESTINATION        INTERFACE            NEXTHOP
  ...
@@ -257,476 +397,301 @@ R2 is the penultimate hop popping router for network 4.4.4.0/24 because 4.4.4.0/
 
 ```
 
-R3 drops the received IP packet because it receives a packet with its own address as a source address. ICMP errors produced by following probes come back correctly because R3 receives unlabelled packets with source addresses 2.2.2.2 and 9.9.9.1, which are acceptable to a route.
+R3会丢弃接收到的IP数据包，因为它收到了一个以自己的地址作为源地址的数据包。以下探测产生的ICMP错误会正确返回，因为R3接收到源地址为2.2.2.2和9.9.9.1的未标记数据包，这是路由可以接受的。
 
-Command:
+命令:
 
-```
+```shell
 [admin@R5] > /tool traceroute 9.9.9.1 src-address=9.9.9.5
  ...
 
 ```
 
-produces expected results, because the source address of traceroute probes is 9.9.9.5. When ICMP errors are traveling back from R1 to R5, the penultimate hop popping for the 9.9.9.5/32 network happens at R3, therefore it never gets to route packet with its own address as a source address.
+产生预期的结果，因为traceroute探测的源地址是9.9.9.5。当ICMP错误从R1返回到R5时，9.9.9.5/32网络的倒数第二跳发生在R3，因此它永远不会用自己的地址作为源地址路由数据包。
 
-# Optimizing label distribution
+# 优化标签分配
 
-## Label binding filtering
+标签绑定过滤
 
-During the implementation of the given example setup, it has become clear that not all label bindings are necessary. For example, there is no need to exchange IP route label bindings between R1 and R3 or R2 and R4, as there is no chance they will ever be used. Also, if the given network core is providing connectivity only for mentioned customer ethernet segments, there is no real use to distribute labels for networks that connect routers between themselves, the only routes that matter are /32 routes to endpoints or attached customer networks.
+在实现给定示例设置期间，很明显并非所有标签绑定都是必需的。例如，不需要在R1和R3或R2和R4之间交换IP路由标签绑定，因为它们永远不会被使用。此外，如果给定的网络核心仅为所提到的客户以太网段提供连接，则没有必要为它们之间连接路由器的网络分发标签，唯一重要的路由是到端点或附加客户网络的/32路由。
 
-Label binding filtering can be used to distribute only specified sets of labels to reduce resource usage and network load.
+通过标签绑定过滤，可以只分发指定的标签集，以减少资源使用和网络负载。
 
-There are 2 types of label binding filters:
+有两种类型的标签绑定过滤器:
 
--   which label bindings should be advertised to LDP neighbors, configured in the `/mpls ldp advertise-filter` menu
--   which label bindings should be accepted from LDP neighbors, configured in `/mpls ldp accept-filter` menu
+-在“/mpls LDP advertise-filter”菜单中配置向LDP邻居通告哪些标签绑定
+-从LDP邻居接收哪些标签绑定，在/mpls LDP accept-filter菜单中配置
 
-Filters are organized in the ordered list, specifying prefixes that must include the prefix that is tested against the filter and neighbor (or wildcard).
+过滤器在有序列表中组织，指定的前缀必须包含针对过滤器和邻居(或通配符)进行测试的前缀。
 
-In the given example setup all routers can be configured so that they advertise labels only for routes that allow reaching the endpoints of tunnels. For this 2 advertise filters need to be configured on all routers:
+在给定的示例设置中，可以配置所有路由器，以便它们仅为允许到达隧道端点的路由发布标签。为此，需要在所有路由器上配置2个通告过滤器:
 
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
+```shell
+/mpls ldp advertise-filter add prefix=111.111.111.0/24 advertise=yes
+/mpls ldp advertise-filter add prefix=0.0.0.0/0 advertise=no
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp advertise-filter </code><code class="ros functions">add </code><code class="ros value">prefix</code><code class="ros plain">=111.111.111.0/24</code> <code class="ros value">advertise</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/mpls ldp advertise-filter </code><code class="ros functions">add </code><code class="ros value">prefix</code><code class="ros plain">=0.0.0.0/0</code> <code class="ros value">advertise</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
 
-  
+该过滤器使路由器只发布包含111.111.111.0/24前缀的路由绑定，该前缀包括环回(111.111.111.1/32、111.111.111.2/32等)。第二条规则是必要的，因为当没有规则匹配时，默认过滤器将允许所讨论的操作。
 
-  
+在给定的设置中，不需要设置接受过滤器，因为根据上述2条规则引入的约定，没有LDP路由器会分发不必要的绑定。
 
-This filter causes routers to advertise only bindings for routes that are included by the 111.111.111.0/24 prefix which covers loopbacks (111.111.111.1/32, 111.111.111.2/32, etc). The second rule is necessary because the default filter results when no rule matches are to allow the action in question.
+注意，过滤器的更改不会影响现有的映射，因此要使过滤器生效，需要重置邻居之间的连接。可以从LDP邻居表中删除邻居，也可以重启LDP实例。
 
-In the given setup there is no need to set up accept filter because by convention introduced by 2 abovementioned rules no LDP router will distribute unnecessary bindings.
+例如，在R2上得到:
 
-Note that filter changes do not affect existing mappings, so to take the filter into effect, connections between neighbors need to be reset. either by removing neighbors from the LDP neighbor table or by restarting the LDP instance.
-
-So on R2, for example, we get:
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="text plain">[admin@R2] /mpls/ldp/remote-mapping&gt; print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="text plain">Flags: I - INACTIVE; D - DYNAMIC</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="text plain">Columns: VRF, DST-ADDRESS, NEXTHOP, LABEL, PEER</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="text plain">#&nbsp;&nbsp;&nbsp; VRF&nbsp;&nbsp; DST-ADDRESS&nbsp;&nbsp;&nbsp; NEXTHOP&nbsp;&nbsp;&nbsp;&nbsp; LABEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PEER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="text plain">0 ID main&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="text plain">1 ID main&nbsp; 111.111.111.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="text plain">2&nbsp; D main&nbsp; 111.111.111.3&nbsp; 111.12.0.2&nbsp; impl-null&nbsp; 111.111.111.3:0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="text plain">3&nbsp; D main&nbsp; 111.111.111.4&nbsp; 111.12.0.2&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.3:0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="text plain">4 ID main&nbsp; 111.111.111.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="text plain">5&nbsp; D main&nbsp; 111.111.111.1&nbsp; 111.11.0.1&nbsp; impl-null&nbsp; 111.111.111.1:0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="text plain">6 ID main&nbsp; 111.111.111.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="text plain">7 ID main&nbsp; 111.111.111.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 111.111.111.1:0</code></div></div></td></tr></tbody></table>
-
-  
-
-# LDP on Ipv6 and Dual-Stack links
-
-RouterOS implements RFC 7552 to support LDP on dual-stack links.
-
-Supported AFIs can be selected by LDP instance, as well as explicitly configured per LDP interface.
-
-[?](https://help.mikrotik.com/docs/display/ROS/LDP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">afi</code><code class="ros plain">=ip,ipv6</code> <code class="ros value">lsr-id</code><code class="ros plain">=111.111.111.1</code> <code class="ros value">preferred-afi</code><code class="ros plain">=ipv6</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/mpls ldp interface</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether2</code> <code class="ros value">afi</code><code class="ros plain">=ip</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether3</code> <code class="ros value">afi</code><code class="ros plain">=ipv6</code></div></div></td></tr></tbody></table>
-
-The example above enables LDP instance to use IPv4 and IPv6 address families and sets the preference to IPv6 with `preferred-afi` parameter. LDP interface configuration on the other hand explicitly sets that **ether2** supports only IPv4 and **ether3** supports only IPv6.
+```shell
+[admin@R2] /mpls/ldp/remote-mapping> print
+Flags: I - INACTIVE; D - DYNAMIC
+Columns: VRF, DST-ADDRESS, NEXTHOP, LABEL, PEER
+#    VRF   DST-ADDRESS    NEXTHOP     LABEL      PEER          
+0 ID main  111.111.111.2              17         111.111.111.3:0
+1 ID main  111.111.111.1              16         111.111.111.3:0
+2  D main  111.111.111.3  111.12.0.2  impl-null  111.111.111.3:0
+3  D main  111.111.111.4  111.12.0.2  18         111.111.111.3:0
+4 ID main  111.111.111.2              16         111.111.111.1:0
+5  D main  111.111.111.1  111.11.0.1  impl-null  111.111.111.1:0
+6 ID main  111.111.111.3              17         111.111.111.1:0
+7 ID main  111.111.111.4              18         111.111.111.1:0
+```
 
   
 
-The main question occurs how AFI is selected when there are a mix of different AFIs and what if one of the supported AFIs flaps. 
+# LDP on Ipv6和Dual-Stack链路
 
-The logic behind sending hellos is as follows:
+RouterOS采用RFC 7552实现了在双栈链路上支持LDP。
 
--   if an interface has only one AFI:
-    -   dual-stack element is not sent
-    -   sends hello only if there is an IP address on the interface from the corresponding AFI.
--   If an interface has both AFIs:
-    -   dual-stack element is always sent and contains the value from preferred-afi
-    -   sends hellos on each AFI if a corresponding address is present on the interface.
+支持的afi可以根据LDP实例选择，也可以根据每个LDP接口显式配置。
+
+```shell
+/mpls ldp
+add afi=ip,ipv6 lsr-id=111.111.111.1 preferred-afi=ipv6
+/mpls ldp interface
+add interface=ether2 afi=ip
+add interface=ether3 afi=ipv6
+```
+
+上面的示例使能LDP实例使用IPv4和IPv6地址族，并通过参数preferred-afi设置优先级为IPv6。另一方面，LDP接口配置显式设置 **ether2** 只支持IPv4， **ether3** 只支持IPv6。
+
+
+
+主要的问题是，当有不同的AFI混合时，如何选择AFI，以及如果支持的AFI之一发生皮瓣移位怎么办。
+
+发送hello背后的逻辑如下:
+
+- 如果一个接口只有一个AFI:- 不发送双栈元素
+  - 仅当接口上存在对应AFI的IP地址时才发送hello。
+- 如果一个接口有两个afi:
+  - 总是发送双栈元素，并且包含来自preferred-afi的值
+  - 如果接口上有对应的地址，则对每个AFI发送hello。
+
+  
+
+从所有收到的hello中，对等体决定使用哪个AFI进行连接，以及为哪个AFI绑定和发送标签。为了使LDP能够使用特定的AFI，接收特定AFI的hello是强制性的。Hello报文中包含LDP正常运行所必需的传输地址。通过比较收到的AFI地址，确定主动/被动角色。
+
+接收和处理hello的逻辑如下:
+
+- 如果LDP实例只有一个AFI(这意味着所有接口只能有特定的AFI操作):
+  - 从不支持的AFI中删除hello
+  - 忽略/忘记hello报文的双栈元素
+  - 这个角色只针对一个特定的AFI
+  - 标签只发送给这一个特定的AFI
+- 如果LDP实例有两个afi(接口可以有不同的afi支持组合):
+  - 删除接口不支持的来自AFI的hello。
+  - 如果一个接口只支持一种AFI，忽略/忘记hello报文的双栈元素(不考虑优先级)。
+  - 如果收到的优先级与配置的'preferred-afi'不匹配，则丢弃hello。
 
   
 
-From all received hellos peer determines which AFI to use for connection and for which AFIs to bind and send labels. For LDP to be able to use a specific AFI, receiving hello for that specific AFI is mandatory. Hello packet contains the transport address necessary for proper LDP operation. By comparing received AFI addresses, is determined active/passive role.
+如果Hello数据包发生更改，则仅在更改标签使用的地址系列的情况下，现有会话才会终止，否则将保留会话。
 
-The logic behind receiving and processing hellos is as follows:
+仅当确定接口兼容界面时，Hello数据包中的双堆栈元素才设置。
 
--   if the LDP instance has only one AFI (it means that all interfaces can have only that specific AFI operational):
-    -   drop hellos from not supported AFI
-    -   ignore/forget the dual-stack element for the hello packet
-    -   the role is determined only for this one specific AFI
-    -   labels are sent only for this one specific AFI
--   if the LDP instance has both AFIs (interfaces can have different combinations of supported AFIs):
-    -   drop hellos from AFI that are not configured as supported on the interface.
-    -   ignore/forget the dual-stack element (preference is not taken into account) for hello packets, if an interface has only one supported AFI.
-    -   drop hello if received preference in dual-stack element does not match configured `preferred-afi`.
+ - 通常，这样的界面应该能够从两个AFI中接收Hellos，
+      - 在继续前进之前，应等待首选AFI的您好。
+      - 如果仅从一个AFI收到Hello：
+          - 如果未收到首选AFI的Hello，则将其视为错误。
+          - 否则，请等待缺少X秒的Hello（x = 3 \* Hello-Interval）
+              - 如果缺少Hello出现在时间间隔内
+              - 如果缺少Hello
+              - 如果缺少Hello在时间间隔之后出现，请重新启动会话。
+ - 双堆栈元素表明LDP想要为两个AFIS分发标签。
 
-  
+综上所述，假设preferred-afi=ipv6，以下afi和双栈元素(ds6)的组合是可能的:
 
-If there are changes in hello packets, the existing session is terminated only in case if address family used by labels is changed, otherwise, the session is preserved.
+1.  ipv4 -等待X秒，如果没有变化，则使用ipv4 LDP会话并分发ipv4标签
+2.  ipv4+ds6 - wait for IPv6 hello，双栈元素表示应该有IPv6
+3.ipv6 -等待X秒，如果没有变化，则使用ipv6 LDP会话并分发ipv6标签
+4.  ipv6+ds6 -使用ipv6 LDP会话，分发ipv6标签
+5.  ipv4、ipv6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
+6.  ipv4、ipv6+ds6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
 
-Dual-stack element in hello packets is set only if an interface is determined to be dual-stack compatible:
+# 属性参考
 
--   Normally such an interface should be able to receive hellos from both AFIs,
-    -   Before proceeding LDP should wait for hello from the preferred AFI.
-    -   if hello is received only from one AFI:
-        -   if hello from preferred AFI is not received then it is considered an error. 
-        -   otherwise, wait for missing hello for x seconds (x = 3 \* hello-interval)
-            -   if missing hello appears within a time interval consider peer to be dual-stack
-            -   if missing hello did not appear, then consider peer to be single-stack
-            -   if missing hello appeared after the time interval then restart the session.
--   the dual-stack element indicates that LDP wants to distribute labels for both AFIs.
+## LDP实例
 
-In summary, the following combinations of AFIs and dual-stack element (ds6) are possible assuming that preferred-afi=ipv6:
-
-1.  ipv4 - wait X seconds, if no changes, then use the IPv4 LDP session and distribute IPv4 labels
-2.  ipv4+ds6 - wait for IPv6 hello, dual-stack element indicates that there should be IPv6
-3.  ipv6 - wait X seconds, if no changes, then use the IPv6 LDP session and distribute IPv6 labels
-4.  ipv6+ds6 - use IPv6 LDP session and distribute IPv6 labels
-5.  ipv4,ipv6 - use IPv6 LDP session and distribute IPv4 and IPv6 labels
-6.  ipv4,ipv6+ds6 - use IPv6 LDP session and distribute IPv4 and IPv6 labels
-
-# Property Reference
-
-## LDP Instance
-
-  
 
 **Sub-menu:** `/mpls`
 
-**Properties**
+**属性**
 
-| 
-Property
+| 属性                                                | 描述                                                                                               |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **afi** (_ip\| ipv6_;Default:)                      | 由实例确定支持的地址族。                                                                           |
+| **comments** (_string_;Default:)                    | 条目的简短描述                                                                                     |
+| **disabled** (_yes \| no_;Default:**no**)           |                                                                                                    |  |
+| **distribute-for-default** (_yes\| no_;Default: no) | 定义是否为默认路由映射标签。                                                                       |
+| **hop-limit** (_integer[0..255]_;Default:)          | 用于环路检测的最大跳数限制。与 **loop-detect** 属性结合使用。                                      |
+| **loop-detect** (_yes\| no_; Default: )             | 定义是否进行LSP环路检测。如果没有在所有lsr上启用，将无法正常工作。应该只在非ttl网络(如atm)上使用。 |
+| **lsr-id** (_IP_;Default:)                          | 唯一标签交换路由器的ID。                                                                           |
+| **path-vector-limit** (_IP_;Default:)               | 用于循环检测的最大路径矢量限制。与 **loop-detect** 属性结合使用。                                  |
+| **preferred-afi** (ip\| ipv6; Default: **ipv6**)    | 确定首选哪个地址族连接。Value也可以在双栈元素中设置(如果使用的话)。                                |
+| **transport-addresses** (_IP_;Default:)             | 指定LDP会话连接的起始地址，并将这些地址作为传输地址发布给LDP邻居。                                 |
+| **use-explicit-null** (_yes\| no_;Default:no)       | 是否分发显式空标签绑定。                                                                           |
+| **vrf** (_name;Default:**main**)                    | 该实例将操作的VRF表名。                                                                            |
 
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **afi (**_ip                                   | ipv6_**;** Default: **)**                                                                                                       | Determines supported address families by the instance.                                                                                               |
-| **comments** (_string_; Default: )             | Short description of the entry                                                                                                  |
-| **disabled** (_yes                             | no_; Default: **no**)                                                                                                           |
-|                                                |
-| **distribute-for-default** (_yes               | no_; Default: no)                                                                                                               | Defines whether to map label for the default route.                                                                                                  |
-| **hop-limit** (_integer\[0..255\]_; Default: ) | Max hop limit used for loop detection. Works in combination with the **loop-detect** property.                                  |
-| **loop-detect** (_yes                          | no_; Default: )                                                                                                                 | Defines whether to run LSP loop detection. Will not work correctly if not enabled on all LSRs. Should be used only on non-TTL networks such as ATMs. |
-| **lsr-id** (_IP_; Default: )                   | Unique label switching router's ID.                                                                                             |
-| **path-vector-limit** (_IP_; Default: )        | Max path vector limit used for loop detection. Works in combination with the **loop-detect** property.                          |
-| **preferred-afi** (ip                          | ipv6; Default: **ipv6**)                                                                                                        | Determining which address family connection is preferred. Value is also set in dual-stack element (if used).                                         |
-| **transport-addresses** (_IP_; Default: )      | Specifies LDP session connections origin addresses and also advertises these addresses as transport addresses to LDP neighbors. |
-| **use-explicit-null** (_yes                    | no_; Default: no)                                                                                                               | Whether to distribute explicit-null label bindings.                                                                                                  |
-| **vrf (**_name_; Default: main**)**            | Name of the VRF table this instance will operate on.                                                                            |
-
-## Interface
+## 接口
 
 **Sub-menu:** `/mpls ldp interface`
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                    |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **afi (**_ip                                       | ipv6_**;** Default: **)**                                                                                                         | Determines interface address family. Only AFIs that are configured as supported by the instance is taken into account. If the value is not explicitly specified then it is considered to be equal to the instance-supported AFIs. |
-| **accept-dynamic-neighbors** (_yes                 | no_; Default:)                                                                                                                    | Defines whether to discover neighbors dynamically or use only statically configured in [LDP neighbors menu](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-Neighbors)                                                         |
-| **comments** (_string_; Default: )                 | Short description of the entry                                                                                                    |
-| **disabled** (_yes                                 | no_; Default: **no**)                                                                                                             |
-|                                                    |
-| **hello-interval** (_string_; Default: )           | The interval between hello packets that the router sends out on specified interface/s. The default value is 5s.                   |
-| **hold-time** (_string_; Default: )                | Specifies the interval after which a neighbor discovered on the interface is declared as not reachable. The default value is 15s. |
-| **interface** (_string_; Default: )                | Name of the interface or interface list where LDP will be listening.                                                              |
-| **transport-addresses** (List of _IPs_; Default: ) | Used transport addresses if differs from LDP Instance settings.                                                                   |
+| 属性                                               | 说明                                                                                                              |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **afi (**_ip\| ipv6_**;**Default:**)**             | 确定接口地址族。只有配置为实例支持的afi才会被考虑在内。如果没有显式指定该值，则认为它等于实例支持的afi。          |
+| **accept-dynamic-neighbors** (_yes\| no_;Default:) | 定义是动态发现邻居，还是只使用 [LDP neighbors menu](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-Neighbors) | 中静态配置的邻居 |
+| **comments** (_string_;Default:)                   | 条目的简短描述                                                                                                    |
+| **disabled** (_yes \| no_;Default:**no**)          |                                                                                                                   |
+| **hello-interval** (_string_;Default:)             | 路由器在指定接口上发送hello报文的时间间隔。缺省值是5s。                                                           |
+| **hold-time** (_string_;Default:)                  | 指定在接口上发现邻居后宣布为不可达的时间间隔。缺省值是15秒。                                                      |
+| **interface** (_string_;Default:)                  | LDP监听的接口名或接口列表名。                                                                                     |
+| **transport-addresses** (List of _IPs_;Default:)   | 使用的传输地址与LDP实例设置不同。                                                                                 |
 
   
 
-## Neighbors
+## 邻居
 
 **Sub-menu:** `/mpls ldp neighbor`
 
-List of discovered and statically configured LDP neighbors.
+发现和静态配置的LDP邻居列表。
 
-**Properties**
+**属性**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
-| ---------------------------------- | ------------------------------ |
-| **comments** (_string_; Default: ) | Short description of the entry |
-| **disabled** (_yes                 | no_; Default: **no**)          |
-|                                    |
-| **send-targeted** (_yes            | no_; Default: )                | Specifies whether to try to send targeted hellos, used for targeted (not directly connected) LDP sessions. |
-| **transport** (_IP_; Default: )    | Remote transport address.      |
+| 属性                                      | 说明                                             |
+| ----------------------------------------- | ------------------------------------------------ |
+| **comments** (_string_;Default:)          | 条目的简短描述                                   |
+| **disabled** (_yes \| no_;Default:**no**) |
+|                                           |
+| **send-target** (_yes \| no_;Default:)    | 是否尝试发送目标hello，用于目标(非直连)LDP会话。 |
+| **transport** (_IP_;Default:)             | 远程传输地址。                                   |
 
   
 
-**Read-only Properties**
+**只读属性**
 
-| 
-Property
+| 属性                                   | 说明                                       |
+| -------------------------------------- | ------------------------------------------ |
+| **active-connect** (_yes\| no_)        |                                            |
+| **addresses** (_list of IPs_)          | 发现的邻居地址列表                         |
+| **inactive** (_yes\| no_)              | 绑定是否激活，是否可以选择作为转发的候选。 |
+| **dynamic** (_yes\| no_)               | 条目是否被动态添加                         |
+| **local-transport** (_IP_)             | 选择的本地传输地址。                       |
+| **on-demand** (_yes\| no_)             |                                            |
+| **operational** (_yes\| no_)           | 对端是否可操作。                           |
+| **passive** (_yes\| no_)               | 对端是否处于被动状态。                     |
+| **passive-wait** (_yes\| no_)          |                                            |
+| **path-vector-limit** (_integer_)      |                                            |
+| **peer** (_IP:integer_)                | 邻居的LSR-ID和标签空间                     |
+| **sending-targeted-hello**(_yes\| no_) | 是否向邻居发送目标hello。                  |
+| **throtted** (_yes\| no_)              |                                            |
+| **Used - AFI** (_yes\| no_)            | 用于传输的AFI                              |
+| **vpls** (_yes\| no_)                  | 邻居是否被vpls隧道使用                     |
 
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                   |
-| --------------------------------- | -------------------------------------------- |
-| **active-connect** (_yes          | no_)                                         |
-|                                   |
-| **addresses** (_list of IPs_)     | List of discovered addresses on the neighbor |
-| **inactive** (_yes                | no_)                                         | Whether binding is active and can be selected as a candidate for forwarding. |
-| **dynamic** (_yes                 | no_)                                         | Whether entry was dynamically added                                          |
-| **local-transport** (_IP_)        | Selected local transport address.            |
-| **on-demand** (_yes               | no_)                                         |
-|                                   |
-| **operational** (_yes             | no_)                                         | Indicates whether the peer is operational.                                   |
-| **passive** (_yes                 | no_)                                         | Indicates whether the peer is in a passive role.                             |
-| **passive-wait** (_yes            | no_)                                         |
-|                                   |
-| **path-vector-limit** (_integer_) |
-|                                   |
-| **peer** (_IP:integer_)           | LSR-ID and label space of the neighbor       |
-| **sending-targeted-hello**(_yes   | no_)                                         | Whether targeted hellos are being sent to the neighbor.                      |
-| **throttled** (_yes               | no_)                                         |
-|                                   |
-| **used-afi** (_yes                | no_)                                         | Used transport AFI                                                           |
-| **vpls** (_yes                    | no_)                                         | Whether neighbor is used by VPLS tunnel                                      |
-
-## Accept Filter
+## 接受滤波器
 
 **Sub-menu:** `/mpls ldp accept-filter`
 
-List of label bindings that should be accepted from LDP neighbors.
+LDP邻居应该接受的标签绑定列表。
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
-| ---------------------------------- | -------------------------------------- |
-| **accept** (_yes                   | no_; Default: )                        | Whether to accept label bindings from the neighbors for the specified prefix. |
-| **comments** (_string_; Default: ) | Short description of the entry         |
-| **disabled** (_yes                 | no_; Default: **no**)                  |
-|                                    |
-| **neighbor**(_string_; Default: )  | Neighbor to which this filter applies. |
-| **prefix** (_IP/mask_; Default: )  | Prefix to match.                       |
-| **vrf** (name; Default: )          |
-|                                    |
+| 属性                                     | 说明                               |
+| ---------------------------------------- | ---------------------------------- |
+| **accept** (_yes\| no_;Default:)         | 是否接受邻居对指定前缀的标签绑定。 |
+| **comments** (_string_;Default:)         | 条目的简短描述                     |
+| **disabled** (_yes\| no_;Default:**no**) |                                    |
+| **neighbor** (_string_;Default:)         | 该过滤器应用的邻居。               |
+| **prefix** (_IP/mask_;Default:)          | 匹配的前缀。                       |
+| **vrf** (name; Default: )                |                                    |  |
 
   
 
-## Advertise Filter
+## 广告过滤器
 
 **Sub-menu:** `/mpls ldp advertise-filter`
 
-List of label bindings that should be advertised to LDP neighbors.
+应该通告给LDP邻居的标签绑定列表。
 
-| 
-Property
+| 属性                                      | 说明                               |
+| ----------------------------------------- | ---------------------------------- |
+| **advertise** (_yes\| no_;Default:)       | 是否向指定前缀的邻居通告标签绑定。 |
+| **comments** (_string_;Default:)          | 条目的简短描述                     |
+| **disabled** (_yes \| no_;Default:**no**) |                                    |
+| **neighbor**(_string_;Default:)           | 该过滤器应用的邻居。               |
+| **prefix** (_IP/mask_;Default:)           | 匹配的前缀。                       |
+| **vrf** (name; Default: )                 |                                    |  |
 
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
-| ---------------------------------- | -------------------------------------- |
-| **advertise** (_yes                | no_; Default: )                        | Whether to advertise label bindings to the neighbors for the specified prefix. |
-| **comments** (_string_; Default: ) | Short description of the entry         |
-| **disabled** (_yes                 | no_; Default: **no**)                  |
-|                                    |
-| **neighbor**(_string_; Default: )  | Neighbor to which this filter applies. |
-| **prefix** (_IP/mask_; Default: )  | Prefix to match.                       |
-| **vrf** (name; Default: )          |
-|                                    |
-
-## Local Mapping
+## 本地映射
 
 **Sub-menu:** `/mpls local-mapping`
 
-This sub-menu shows labels bound to the routes locally in the router. In this menu also static mappings can be configured if there is no intention to use LDP dynamically.
+该子菜单显示与路由器本地路由绑定的标签。在这个菜单中，如果不打算动态使用LDP，也可以配置静态映射。
+
+
+**属性**
+
+| 属性                                                                                                      | 说明                     |
+| --------------------------------------------------------------------------------------------------------- | ------------------------ |
+| **comments** (_string_;Default:)                                                                          | 条目的简短描述           |
+| **disabled** (_yes\| no_;Default:**no**)                                                                  |                          |
+| **dst-address** (_IP/Mask_;Default:)                                                                      | 指定标签的目的前缀。     |
+| **label** (_integer[0..][1048576]\| alert\| expli -null \| expli -null6 \| impli -null \| none_;Default:) | 分配给目的地的标签编号。 |
+| **vrf** (_name_;Default:main)                                                                             | 该映射所属的VRF表名。    |
 
   
-**Properties**
+**只读属性**
 
-| 
-Property
+| 属性                         | 说明                                       |
+| ---------------------------- | ------------------------------------------ |
+| **adv-path** ()              |                                            |
+| **inactive** (_yes\| no_)    | 绑定是否激活，是否可以选择作为转发的候选。 |
+| **dynamic** (_yes\| no_)     | 条目是否被动态添加                         |
+| **egress** (_yes\| no_)      |
+| **gateway** (_yes\| no_)     | 是否可通过网关到达目的地。                 |
+| **local** (_yes\| no_)       | 目的地在路由器上是否可达                   |
+| **peers** (_IP:label space_) | 被发布到的对等体的IP地址和标签空间。       |
 
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                        |
-| -------------------------------------- | ---------------------------------------------- |
-| **comments** (_string_; Default: )     | Short description of the entry                 |
-| **disabled** (_yes                     | no_; Default: **no**)                          |
-|                                        |
-| **dst-address** (_IP/Mask_; Default: ) | Destination prefix the label is assigned to.   |
-| **label** (_integer\[0..1048576\]      | alert                                          | expl-null | expl-null6 | impl-null | none_; Default: ) | Label number assigned to destination. |
-| **vrf (**_name_; Default: main**)**    | Name of the VRF table this mapping belongs to. |
-
-  
-**Read-only Properties**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                               |
-| ----------------------------- | -------------------------------------------------------------------------- |
-| **adv-path** ()               |
-|                               |
-| **inactive** (_yes            | no_)                                                                       | Whether binding is active and can be selected as a candidate for forwarding. |
-| **dynamic** (_yes             | no_)                                                                       | Whether entry was dynamically added                                          |
-| **egress** (_yes              | no_)                                                                       |
-|                               |
-| **gateway** (_yes             | no_)                                                                       | Whether the destination is reachable through the gateway.                    |
-| **local** (_yes               | no_)                                                                       | Whether the destination is locally reachable on the router                   |
-| **peers** (_IP:label\_space_) | IP address and label space of the peer to which this entry was advertised. |
-
-## Remote Mapping
+## 远程映射
 
 **Sub-menu:** `/mpls remote-mapping`
 
-Sub-menu shows label bindings for routes received from other routers. Static mapping can be configured if there is no intention to use LDP dynamically. This table is used to build [Forwarding Table](https://help.mikrotik.com/docs/display/ROS/Mpls+Overview#MplsOverview-ForwardingTable)
+子菜单显示从其他路由器接收的路由的标签绑定。如果不打算动态使用LDP，可以配置静态映射。该表用于建立 [转发表](https://help.mikrotik.com/docs/display/ROS/Mpls+Overview#MplsOverview-ForwardingTable)
 
-**Properties**
+**属性**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                        |
-| -------------------------------------- | ---------------------------------------------- |
-| **comments** (_string_; Default: )     | Short description of the entry                 |
-| **disabled** (_yes                     | no_; Default: **no**)                          |
-|                                        |
-| **dst-address** (_IP/Mask_; Default: ) | Destination prefix the label is assigned to.   |
-| **label** (_integer\[0..1048576\]      | alert                                          | expl-null | expl-null6 | impl-null | none_; Default: ) | Label number assigned to destination. |
-| **nexthop (**_IP_; Default:**)**       |
-|                                        |
-| **vrf (**_name_; Default: main**)**    | Name of the VRF table this mapping belongs to. |
+| 属性                                                                                                        | 说明                     |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------ |
+| **comments** (_string_;Default:)                                                                            | 条目的简短描述           |
+| **disabled** (_yes\| no_;Default:**no**)                                                                    |                          |  |
+| **dst-address** (_IP/Mask_;Default:)                                                                        | 指定标签的目的前缀。     |
+| **label** (_integer[0..][1048576] \| alert \| expli -null \| expli -null6 \| impli -null \| none_;Default:) | 分配给目的地的标签编号。 |
+| **nexthop** (_IP_;Default:)                                                                                 |                          |
+| **vrf** (_name_;Default:main)                                                                               | 该映射所属的VRF表名。    |
 
   
 
-**Read-only Properties**
+**只读属性**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                     |
-| ------------------- | ---- |
-| **inactive** (_yes  | no_) | Whether binding is active and can be selected as a candidate for forwarding. |
-| **dynamic** (_yes   | no_) | Whether entry was dynamically added                                          |
-| **path** (_string_) |      |
+| 属性                       | 说明                                       |
+| -------------------------- | ------------------------------------------ |
+| **inactive** (_yes \| no_) | 绑定是否激活，是否可以选择作为转发的候选。 |
+| **dynamic** (_yes \| no_)  | 条目是否被动态添加                         |
+| **path** (_string_)        |                                            |
