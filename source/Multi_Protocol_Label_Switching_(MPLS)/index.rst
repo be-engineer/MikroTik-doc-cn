@@ -10,5 +10,5 @@ MPLS
 	LDP/index.rst
 	VPLS/index.rst
 	Traffic_Eng/index.rst
-	MPLS_Referencev
-	MPLS_Case_Studiesv
+	MPLS_Referencev/index.rst
+	MPLS_Case_Studiesv/index.rst

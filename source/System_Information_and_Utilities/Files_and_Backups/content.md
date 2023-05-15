@@ -1,0 +1,74 @@
+# Files
+
+File menu shows all userspace files on the router. It is possible to see and edit file content or delete file. File creation is possible starting from RouterOS 7.9beta2.  If RouterOS ".npk" package is uploaded, the file menu will also show package-specific information, for example, architecture, build date and time, etc.
+
+[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=2555971#)
+
+<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros functions">file </code><code class="ros functions">print </code><code class="ros functions">detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"routeros-mipsbe-6.45.7.npk"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"package"</code> <code class="ros value">size</code><code class="ros plain">=11.5MiB</code> <code class="ros value">creation-time</code><code class="ros plain">=oct/29/2019</code> <code class="ros plain">11:36:15</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">package-name</code><code class="ros plain">=</code><code class="ros string">"routeros-mipsbe"</code> <code class="ros value">package-version</code><code class="ros plain">=</code><code class="ros string">"6.45.7"</code> <code class="ros value">package-build-time</code><code class="ros plain">=oct/24/2019</code> <code class="ros plain">08:44:35</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">package-architecture</code><code class="ros plain">=</code><code class="ros string">"mips"</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=jan/01/1970</code> <code class="ros plain">02:00:03</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/skins"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=jan/01/1970</code> <code class="ros plain">02:00:04</code></div><div class="line number9 index8 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/rw"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=sep/06/2019</code> <code class="ros plain">14:01:16</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/rw/pckg"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=sep/06/2019</code> <code class="ros plain">14:01:16</code></div></div></td></tr></tbody></table>
+
+To create new file (command added in RouterOS 7.9beta2):
+
+[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=2555971#)
+
+<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros functions">file </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=lala</code></div></div></td></tr></tbody></table>
+
+If the device has a directory named **"flash"** in its file list, then files which you want to be kept after the system reboot/power cycle must be stored within it. As anything outside of it is kept within a RAM disk and will be lost upon reboot. This does not include .npk upgrade files as they will be applied by the upgrade process before the system discards the RAM drive content.
+
+For multi core devices with a NAND flash memory (e.g. CCR series routers, RB4011iGS), RouterOS uses a write-back that will cache file changes into RAM memory instead of writing them straight away into flash media. The file changes will be stored on the flash when it is absolutely necessary, the writing can be delayed by up to 40 seconds. This helps to reduce CPU cycles which results in better performance. However, this can cause empty or zero-length files when a device experiences a sudden power loss, because files were not fully saved on a flash.
+
+## Properties
+
+| 
+Property
+
+ | 
+
+Description
+
+|     |
+| --- |  |
+|     |
+
+Property
+
+ | 
+
+Description
+
+|                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| **contents** (_string_; Default: )  | The actual content of the file                                                   |
+| **creation-time** (_time_)          | A time when the file was created                                                 |
+| **name** (_string_)                 | Name of the file                                                                 |
+| **package-architecture** (_string_) | Architecture that package is built for. Applies only to RouterOS ".npk" files    |
+| **package-built-time** (_string_)   | A time when the package was built. Applies only to RouterOS ".npk" files         |
+| **package-name** (_string_)         | Name of the installable package that. Applies only to RouterOS ".npk" files      |
+| **package-version** (_string_)      | A version of the installable package that. Applies only to RouterOS ".npk" files |
+| **size** (_integer_)                | File size in bytes                                                               |
+| **file type** (_string_)            | Type of the file. For folders, the file type is the _directory_                  |
+
+# Backups
+
+RouterOS backup feature allows you to save the current device's configuration, which then can be re-applied on the same or a different identical model. This is very useful since it allows you to effortlessly restore the device's configurations or to re-apply the same configuration on a backup device. The system's backup file also contains the device's MAC addresses, which are also restored when the backup file is loaded. 
+
+If The Dude and user-manager are installed on the router, then the system backup will not contain configuration from these services. Therefore additional care should be taken to save a configuration from these services, for example, configuration export.
+
+System's backups contain sensitive information about your device and its configuration, always consider encrypting the backup file and keeping the backup file in a safe place. 
+
+To save a backup configure the following:
+
+[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=2555971#)
+
+<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt;&nbsp; system backup save </code><code class="ros value">name</code><code class="ros plain">=/flash/backup1</code> <code class="ros value">password</code><code class="ros plain">=StrongPass</code> <code class="ros value">encryption</code><code class="ros plain">=aes-sha256</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Saving system configuration</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Configuration backup saved</code></div></div></td></tr></tbody></table>
+
+Note that we use "/flash/ "before the actual backup name on the devices with flash memory. As stated above, backups saved outside the flash folder will be deleted after a reboot or power cycle:
+
+[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=2555971#)
+
+<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; system backup save </code><code class="ros value">name</code><code class="ros plain">=backup2</code> <code class="ros value">password</code><code class="ros plain">=StrongPass</code> <code class="ros value">encryption</code><code class="ros plain">=aes-sha256</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Saving system configuration</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Configuration backup saved</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros functions">file </code><code class="ros functions">print </code><code class="ros functions">detail</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=jan/01/1970</code> <code class="ros plain">02:00:03</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/skins"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=jan/01/1970</code> <code class="ros plain">02:00:04</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/rw"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=sep/06/2019</code> <code class="ros plain">14:01:16</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/rw/pckg"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"directory"</code> <code class="ros value">creation-time</code><code class="ros plain">=sep/06/2019</code> <code class="ros plain">14:01:16</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"backup2.backup"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"backup"</code> <code class="ros value">size</code><code class="ros plain">=22.4KiB</code> <code class="ros value">creation-time</code><code class="ros plain">=oct/29/2019</code> <code class="ros plain">11:40:33</code></div><div class="line number14 index13 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"flash/backup1.backup"</code> <code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"backup"</code> <code class="ros value">size</code><code class="ros plain">=22.4KiB</code> <code class="ros value">creation-time</code><code class="ros plain">=oct/29/2019</code> <code class="ros plain">11:40:11</code></div></div></td></tr></tbody></table>
+
+To load a backup, simply configure the following:
+
+[?](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=2555971#)
+
+<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; system backup load </code><code class="ros value">name</code><code class="ros plain">=/flash/backup1</code> <code class="ros value">password</code><code class="ros plain">=StrongPass</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Restore </code><code class="ros variable">and</code> <code class="ros plain">reboot? [y</code><code class="ros constants">/N]:</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Y</code></div></div></td></tr></tbody></table>
