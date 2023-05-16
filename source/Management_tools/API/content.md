@@ -1,3 +1,17 @@
+在RouterOS软件安装成功后(如果需要)，就可以第一次访问路由器了。连接它的方式有很多种:
+
+- [命令行界面(CLI)](https://help.mikrotik.com/docs/display/ROS/Command+Line+Interface)通过Telnet, ssh，串行电缆甚至键盘和显示器，如果路由器有VGA卡。
+- [Web界面(WebFig)](https://help.mikrotik.com/docs/display/ROS/Webfig)
+- [WinBox配置工具](https://help.mikrotik.com/docs/display/ROS/Winbox)
+- [使用移动工具(TikApp)](https://help.mikrotik.com/docs/display/ROS/MikroTik+mobile+app)
+
+通常可以使用任何telnet或SSH客户端软件(简单的文本模式telnet客户端通常称为telnet，并且几乎与任何操作系统一起分发)通过IP地址连接到路由器。
+
+如果没有可用的IP或MAC连接，一些设备允许通过串口(DB9或RJ45，具体取决于型号)连接;
+
+-[通过串行控制台访问设备](https://help.mikrotik.com/docs/display/ROS/Serial+Console)
+
+
 # 概述
 
 可编程接口（API）允许用户创建自定义的软件解决方案，与RouterOS通信，以收集信息、调整配置和管理路由器。API严格遵循命令行界面（CLI）的语法。它可以用来创建翻译或定制的配置工具，以帮助方便使用RouterOS运行和管理路由器。

@@ -1,4 +1,4 @@
-The console is used for accessing the MikroTik Router's configuration and management features using text terminals, either remotely using a serial port, telnet, SSH, 控制台屏幕在 [WinBox](https://help.mikrotik.com/docs/display/ROS/Winbox) 内，或直接使用显示器和键盘。控制台也可用于编写脚本。本手册描述了一般的控制台操作原则。关于一些高级控制台命令和如何编写脚本，请查阅《脚本手册》。
+控制台使用文本终端访问MikroTik路由器的配置和管理功能，可以远程使用串口、telnet、SSH、 [WinBox](https://help.mikrotik.com/docs/display/ROS/Winbox) 内的控制台屏幕，或者直接使用显示器和键盘。控制台也可用于编写脚本。本手册描述了一般的控制台操作原则。关于一些高级的控制台命令和如何编写脚本，请查阅《脚本手册》。
 
 # 登录选项
 
@@ -6,7 +6,7 @@ The console is used for accessing the MikroTik Router's configuration and manage
 
 额外的登录参数可以附加在登录名的 "+"号之后。
 
-```
+```shell
     login_name ::= user_name [ '+' parameters ]
     parameters ::= parameter [ parameters ]
     parameter ::= [ number ] 'a'..'z'
