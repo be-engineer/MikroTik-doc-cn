@@ -10,8 +10,8 @@
 
 | 属性                                                                   | 说明                                                                     |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **channel** (_integer [0..4294967295]_; Default: **0*)                 | 设备使用的通道。                                                         |
-| **coordinate-format** (_dd \| dms \| ddmm_; Default: **no*)            | 使用哪种坐标格式，"十进制度数"、"度数分钟秒数 "或 "NMEA格式DDDMM.MM[MM]" |
+| **channel** (_integer [0..4294967295]_; Default: **0**)                | 设备使用的通道。                                                         |
+| **coordinate-format** (_dd \| dms \| ddmm_; Default: **no**)           | 使用哪种坐标格式，"十进制度数"、"度数分钟秒数 "或 "NMEA格式DDDMM.MM[MM]" |
 | **enabled** (_yes \| no_; Default: **no**)                             | 是否启用了GPS？                                                          |
 | **gps-antenna-select** (_external \| internal_; Default: **internal**) | 取决于型号。如果设备安装了内部天线，可以选择内部天线。                   |
 | **init-channel** (_integer [0..4294967295]_; Default: )                | 用于执行init-string的通道。                                              |

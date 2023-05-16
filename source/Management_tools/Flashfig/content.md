@@ -4,7 +4,7 @@ Flashfig是一个用于大规模配置路由器的应用程序。它可以被Mik
 
 Flashfig在3秒内将MikroTik RouterOS的配置应用于任何RouterBOARD。你可以在一批路由器上执行Flashfig，唯一需要的是 **连接** RouterBOARD到一个运行Netinstall的二层网络，并给启用Flashfig的RouterBOARD供电。
 
-在Flashfig模式下运行Netinstall只能在Windows电脑上运行，Netinstall可以从[下载](http://www.mikrotik.com/download) 页面获得。
+在Flashfig模式下运行Netinstall只能在Windows电脑上运行，Netinstall可以从 [下载](http://www.mikrotik.com/download) 页面获得。
 
 所有 [RouterBOARDs](http://www.routerboard.com/) 都支持Flashfig模式。在运行Netinstall并启用Flasfig模式的Windows电脑和同一广播域中的RouterBOARD之间工作（需要直接的第二层以太网连接）。
 

@@ -1,8 +1,8 @@
 # 概述
 
-可以把GSM调制解调器连接到RouterOS设备上，用它来发送和接收短信。RouterOS将这种调制解调器列为串口，出现在 _/port print_ 列表中。GSM标准定义了发送SMS信息的AT命令，并定义了这些命令中信息的编码方式。
+可以把GSM调制解调器连接到RouterOS设备上，用它来发送和接收短信。RouterOS将这种调制解调器列为串口，出现在 /port print列表中。GSM标准定义了发送SMS信息的AT命令，并定义了这些命令中信息的编码方式。
 
-高级工具包提供了命令 _/tool sms send_，使用标准的GSM AT命令来发送短信。
+高级工具包提供了命令/tool sms send，使用标准的GSM AT命令来发送短信。
 
 # 发送
 

@@ -2,12 +2,11 @@
 
 许多RouterOS设备有 [GPS](https://help.mikrotik.com/docs/display/ROS/GPS) 支持。允许RouterOS确定其GPS接收器的精确位置。GPS坐标将显示当前位置的纬度和经度值（以及其他参数）。
 
-比如有 [LTAP](https://mikrotik.com/product/ltap)（或任何其他支持GPS的RouterOS设备），希望跟踪它的位置。想让路由器把这些数据发送到服务器上，这些数据将被储存并整合到地图上，因为这样监控起来更方便。在本指南中将展示如何做到这一点。这个方案利用MQTT协议与一个叫做 [ThingsBoard](https://thingsboard.io/) 的平台进行通信。
+比如有 [LTAP](https://mikrotik.com/product/ltap) （或任何其他支持GPS的RouterOS设备），希望跟踪它的位置。想让路由器把这些数据发送到服务器上，这些数据将被储存并整合到地图上，因为这样监控起来更方便。在本指南中将展示如何做到这一点。这个方案利用MQTT协议与一个叫做 [ThingsBoard](https://thingsboard.io/) 的平台进行通信。
 
 ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的操作系统上）。
 
-因为已经添加了 [容器](https://help.mikrotik.com/docs/display/ROS/Container) 
- 功能，因此也可以在RouterOS中运行该平台。这意味着可以建立该方案，仅在RouterOS设备上→希望跟踪的支持GPS的设备（例如，配备 [LTAP](https://mikrotik.com/product/ltap) 的汽车→作为 **MQTT publishers** 的RouterOS设备），以及在更强大的RouterOS设备内运行的ThingsBoard服务器（如 [CHR](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=18350234) 机器→作为**MQTT broker** 的RouterOS设备）。
+因为添加了 [容器](https://help.mikrotik.com/docs/display/ROS/Container) 功能，因此也可以在RouterOS中运行该平台。这意味着可以建立该方案，仅在RouterOS设备上→希望跟踪的支持GPS的设备（例如，配备 [LTAP](https://mikrotik.com/product/ltap) 的汽车→作为 **MQTT publishers** 的RouterOS设备），以及在更强大的RouterOS设备内运行的ThingsBoard服务器（如 [CHR](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=18350234) 机器作为 **MQTT broker** 的RouterOS设备）。
 
 如果想选择这个办法（容器），一定要仔细挑选打算用作 "服务器 "的设备，因为这种实现方式内存占用很大（建议设备至少有 **2 GB RAM** 或 **1 GB RAM** ，并且是 **ARM64** 或 **AMD64** 架构）。
 
@@ -15,11 +14,11 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 
 在本指南中，我们将演示如何配置一个GPS接收器（MQTT发布器）以及如何设置ThingsBoard。
 
-如果想使用容器功能来运行ThingsBoard实例（MQTT代理），请查看 [指南]（https://help.mikrotik.com/docs/pages/viewpage.action?pageId=166920348）。关于ThingsBoard和MQTT配置的一般准则可以在指南中找到 [over here](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration) 。阅读这两个指南，会有额外的有用信息。
+如果想使用容器功能来运行ThingsBoard实例（MQTT代理），请查看 [指南](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=166920348)。关于ThingsBoard和MQTT配置的一般准则可以在指南中找到 [这里](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration) 。阅读这两个指南，会有额外的有用信息。
 
 在继续进行之前，确保ThingsBoard已经启动并运行，并且能够访问管理WEB。确认MQTT端口已打开，端口转发正确。
 
-**Package requirement:** `gps, iot`
+**需要的安装包:** `gps, iot`
 
 ## ThingsBoard准备
 
