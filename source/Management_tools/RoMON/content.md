@@ -1,3 +1,11 @@
+<!--
+ * @Author: be-engineer 41234995@qq.com
+ * @Date: 2023-05-08 22:54:30
+ * @LastEditors: be-engineer 41234995@qq.com
+ * @LastEditTime: 2023-05-16 18:34:56
+ * @FilePath: /MikroTik-doc-cn/source/Management_tools/RoMON/content.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # 概述
 
 RoMON是 "路由器管理叠加网络 "的缩写。RoMON通过建立一个独立的MAC层对等体发现和数据转发网络来工作。RoMON数据包以EtherType 0x88bf和DST-MAC 01:80:c2:00:88:bf进行封装，其网络独立于L2或L3转发配置运行。当RoMON启用时，任何收到的RoMON数据包都不会被嗅探器或torch工具显示。
@@ -6,7 +14,7 @@ RoMON网络上的每个路由器都被分配了其RoMON ID。RoMON ID可以从�
 
 RoMON协议不提供加密服务。加密是在 "应用 "层面提供的，例如通过使用ssh或使用安全的Winbox。
 
-# 秘密
+# 用secrets
 
 RoMON协议的秘密用于消息认证、完整性检查和防止重放，方法是用MD5对消息内容进行散列。
 
@@ -15,9 +23,9 @@ RoMON协议的秘密用于消息认证、完整性检查和防止重放，方法
 这种设计允许在不中断RoMON服务的情况下逐步引入和/或改变网络中的秘密，并且可以通过RoMON本身发生，例如：
 
 - 最初，所有的路由器都没有秘密；
-- 将每个路由器逐一配置为secrets="", "mysecret"--这将使所有路由器仍然发送未受保护的帧，但它们都将准备接受受秘密 "mysecret "保护的帧；
-- 用secrets="mysecret",""逐一配置每个路由器 - 这将使所有路由器使用秘密 "mysecret"，但也仍然接受未受保护的帧（来自尚未被改变的路由器）；
-- 在每个路由器上配置secrets="mysecret" - 这将使所有路由器使用secrets "mysecret"，并且只接受用 "mysecret "保护的帧；
+- 将每个路由器逐一配置为secrets="", "mysecret"--这将使所有路由器仍然发送未受保护的帧，但它们都将准备接受受秘密 "mysecret"保护的帧；
+- 用secrets="mysecret",逐一配置每个路由器 - 这将使所有路由器使用秘密 "mysecret"，但也仍然接受未受保护的帧（来自尚未被改变的路由器）；
+- 在每个路由器上配置secrets="mysecret" - 这将使所有路由器使用secrets "mysecret"，并且只接受用 "mysecret"保护的帧；
 
 网络中秘密的改变应该以类似的方式进行，在一段时间内，两个秘密都在网络中使用。
 

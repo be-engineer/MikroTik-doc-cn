@@ -1,6 +1,6 @@
 # 概述
 
-点对点协议（PPP）提供了一种在点对点链接上传输多协议数据包的标准方法。RouterOS中的PPP是基于[RFC 1661标准。](https://tools.ietf.org/html/rfc1661)
+点对点协议（PPP）提供了一种在点对点链接上传输多协议数据包的标准方法。RouterOS中的PPP是基于 [RFC 1661标准](https://tools.ietf.org/html/rfc1661)
 
 # 介绍
 
