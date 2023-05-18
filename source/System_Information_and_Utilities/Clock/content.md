@@ -1,57 +1,32 @@
-# Introduction
+# 介绍
 
-RouterOS uses data from the TZ database, Most of the time zones from this database are included, and have the same names. Because local time on the router is used mostly for timestamping and time-dependent configuration, and not for historical date calculations, time zone information about past years is not included. Currently, only information starting from 2005 is included.
+RouterOS使用来自TZ数据库的数据，该数据库中的大部分时区都包含在内，并且具有相同的名称。由于路由器上的本地时间主要用于时间戳和与时间相关的配置，而不是用于历史日期计算，因此不包括过去年份的时区信息。目前只包括2005年以后的资料。
 
-Following settings are available in the **/system clock** console path and in the "Time" tab of the "System > Clock" WinBox window.
+以下设置可在/system clock控制台路径和system > clock WinBox窗口的Time选项卡中进行。
 
-Startup date and time is **jan/02/1970 00:00:00** \[+|-\]gmt-offset. 
+启动日期和时间为jan/02/1970 00:00:00 [+|-]gmt-offset。
 
 # Properties
 
-| 
-Property
+| Property                                                                      | Description                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **time** (_HH:MM:SS);_                                                        | _HH_ - 小时 00..24, _MM_ - 分钟 00..59, _SS_ - 秒 00..59                                                                                                                                                                                                                                   |
+| **date** (_mmm/DD/YYYY);_                                                     | _mmm_ - 月, 为 _jan_, _feb_, _mar_, _apr_, _may_, _jun_, _jul_, _aug_, _sep_, _oct_, _nov_, _dec_ 之一, _DD_ - 日期, 00..31, _YYYY_ - 年, 1970..2037: **date** 和 **time** 显示路由器上当前的本地时间。这些值可以用 **set** 命令进行调整。但是，本地时间不能导出，也不与其他配置一起存储。 |
+| **time-zone-name** (_manual_, or name of time zone; default value: _manual_); | 时区名称。和RouterOS中的大多数文本值一样，该值区分大小写。特殊值手动应用 [手动配置的GMT偏移](https://wiki.mikrotik.com/wiki/Manual:System/Time#Manual_time_zone_configuration)，默认值为 _00:00_，没有夏令时。                                                                             |
+| **time-zone-autodetect** (_yes_ or _no_; default: yes);                       | 从v6.27开始提供的特性。如果启用，将自动设置时区。                                                                                                                                                                                                                                          |
 
- | 
+在新安装的RouterOS和重置配置后，默认启用Time-zone-autodetect。根据路由器的公共IP地址和我们的云服务器数据库检测时区。从RouterOS v6.43开始，你的设备将使用 [cloud2.mikrotik.com](http://cloud2.mikrotik.com) 与MikroTik的云服务器进行通信。旧版本将使用 [cloud.mikrotik.com](http://cloud.mikrotik.com) 与MikroTik的云服务器进行通信。
 
-Description
+配置
 
-|     |
-| --- |  |
-|     |
+## 活动时区信息
 
-Property
+- **dst-active** (_yes_ 或 _no_>;只读属性):当当前时区的夏令时处于激活状态时，该属性的值为 _yes_。
+- **gmt-offset** ([+|-] HH: MM -小时和分钟的偏移;只读属性):这是在应用基本时区偏移量和现行夏令时偏移量之后，系统使用的GMT偏移量的当前值。
 
- | 
+## 手动配置时区
 
-Description
+这些设置可在 **/system clock manual** 控制台路径和“system > clock”WinBox窗口的“manual Time Zone”选项卡中看到。这些设置只有当 **time-zone-name**\= _manual_ 时才可用。只能手动配置单个夏令时时段。
 
-|     |
-| --- |  |
-|     |
-
-**time** (_HH:MM:SS);_
-
- | 
-
-where _HH_ \- hour 00..24, _MM_ \- minutes 00..59, _SS_ \- seconds 00..59).
-
- |
-| **date** (_mmm/DD/YYYY);_ | where _mmm_ \- month, one of _jan_, _feb_, _mar_, _apr_, _may_, _jun_, _jul_, _aug_, _sep_, _oct_, _nov_, _dec_, _DD_ \- date, 00..31, _YYYY_ \- year, 1970..2037): **date** and **time** show current local time on the router. These values can be adjusted using the **set** command. Local time cannot, however, be exported, and is not stored with the rest of the configuration. |
-| **time-zone-name** (_manual_, or name of time zone; default value: _manual_); | Name of the time zone. As most of the text values in RouterOS, this value is case sensitive. Special value _manual_ applies [manually configured GMT offset](https://wiki.mikrotik.com/wiki/Manual:System/Time#Manual_time_zone_configuration), which by default is _00:00_ with no daylight saving time. |
-| **time-zone-autodetect** (_yes_ or _no_; default: yes); | Feature available from v6.27. If enabled, the time zone will be set automatically. |
-
- Time-zone-autodetect by default is enabled on new RouterOS installation and after configuration reset. The time zone is detected depending on the router's public IP address and our Cloud servers database. Since RouterOS v6.43 your device will use [cloud2.mikrotik.com](http://cloud2.mikrotik.com) to communicate with MikroTik's Cloud server. Older versions will use [cloud.mikrotik.com](http://cloud.mikrotik.com) to communicate with the MikroTik's Cloud server.
-
-Configuration
-
-## Active time zone information
-
--   **dst-active** (_yes_ or _no_\>; read-only property): This property has the value _yes_ while daylight saving time of the current time zone is active.
--   **gmt-offset** (\[_+_|_\-_\]_HH:MM_ \- offset in hours and minutes; read-only property): This is the current value of GMT offset used by the system, after applying base time zone offset and active daylight saving time offset.
-
-## Manual time zone configuration
-
-These settings are available in **/system clock manual** console path and in the "Manual Time Zone" tab of the "System > Clock" WinBox window. These settings have an effect only when **time-zone-name**\=_manual_. It is only possible to manually configure single daylight saving time period.
-
--   **time-zone**, **dst-delta** (\[_+_|_\-_\]_HH:MM_ \- time offset in hours and minutes, leading plus sign is optional; default value: _+00:00_) : While DST is not active use GMT offset **time-zone**. While DST is active use GMT offset **time-zone** + **dst-delta**.
--   **dst-start**, **dst-end** (_mmm/DD/YYYY HH:MM: SS_ \- date and time, either date or time can be omitted in the **set** command; default value: _jan/01/1970 00:00:00_): Local time when DST starts and ends.
+- **time-zone** ， **dst-delta** ([+|-]HH:MM -以小时和分钟为单位的时间偏移量，前导加号可选;默认值:_+00:00_):当夏令时未激活时，使用GMT偏移量 **时区**。当夏令时有效时，使用GMT偏移量 **时区** + **DST-delta** 。
+- **dst-start** ， **dst-end** (_mmm/DD/YYYY HH:MM: SS_ -日期和时间，在 **set** 命令中可以省略日期或时间;默认值:_jan/01/1970 00:00:00_):夏令时开始和结束的本地时间。
