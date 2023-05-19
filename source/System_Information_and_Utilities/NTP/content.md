@@ -1,330 +1,167 @@
--   [RouterOS version 6](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-RouterOSversion6)
-    -   1.1[SNTP Client properties:](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-SNTPClientproperties:)
-    -   1.2[Client settings example:](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-Clientsettingsexample:) 
-    -   1.3[NTP Server settings:](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-NTPServersettings:)
--   2[RouterOS version 7](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-RouterOSversion7)
-    -   2.1[NTP Client properties:](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-NTPClientproperties:)
-    -   2.2[NTP Server settings:](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-NTPServersettings:.1)
--   3[Log messages](https://help.mikrotik.com/docs/display/ROS/NTP#NTP-Logmessages)
+# NTP
 
-RouterOS v6 implements the SNTP protocol defined in RFC4330, manycast mode is not supported. SNTP client is included in the _system_ package. To use an NTP server, _ntp_ package must be [installed and enabled](https://help.mikrotik.com/docs/display/ROS/Packages).
+RouterOS v6采用RFC4330定义的SNTP协议，不支持多播模式。SNTP客户端包含在system包中。使用NTP服务器时，ntp包必须 [installed and enabled](https://help.mikrotik.com/docs/display/ROS/Packages)。
 
-RouterOS v7 main package includes NTP client and server functionality, which is based on RFC5905.
+RouterOS v7主包包含NTP客户端和服务器功能，基于RFC5905。
 
-The client configuration is located in the **/system ntp client** console path, and the **_"System > SNTP Client"_** (RouterOS version 6), **_"System > NTP Client"_** (RouterOS version 7) WinBox window. This configuration is shared by the SNTP client implementation in the _system_ package and the NTP client implementation in the _ntp_ package. When _ntp_ package is installed and enabled, the SNTP client is disabled automatically.
+客户端配置在“/system ntp client”控制台路径下，在“system > SNTP client” (RouterOS版本6)”、“system > ntp client” (RouterOS版本7)”WinBox窗口中配置。此配置由system包中的SNTP客户端实现和ntp包中的NTP客户端实现共享。安装并启用“ntp package”后，会自动禁用SNTP客户端。
 
 # RouterOS version 6
 
-## SNTP Client properties:
+**SNTP客户端属性:**
 
-| 
-Property
+| 属性                                                                | 说明                                                                                                                                                                                                                                                |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **enabled** (_yes,default:no_)                                      | 启用SNTP客户端时间同步                                                                                                                                                                                                                              |
+| **mode** (_broadcast, unicast, filed is read-only_)                 | SNTP客户端操作的模式。如果未配置NTP服务器，则使用“broadcast模式”。如果使用了动态或静态NTP服务器IP地址或FQDN，则会自动切换到单播模式。                                                                                                               |
+| **primary-ntp** (_IP address default: 0.0.0.0_)                     | 用于时间同步的NTP服务器的IP地址。如果两个值都不为零，则SNTP客户端将在两个服务器地址之间交替，当对当前服务器的请求超时或接收到“KoD”数据包时切换到另一个服务器，这表明服务器不愿意响应来自该客户端的请求。<br>接受以下格式:<br>_- ipv4_  <br>_- ipv6_ |
+| **secondary-ntp** (_IP address default: 0.0.0.0_)                   | see **primary-ntp**                                                                                                                                                                                                                                 |
+| **server-dns-names** (_Comma separated domain name list default:_ ) | 使用域名方式设置NTP服务器。每次发送NTP请求时，域名都会被解析。路由器必须配置/ip dns。                                                                                                                                                               |
 
- | 
+**状态**
 
-Description
+- **active-server** (IP地址，只读属性):当前选择的NTP服务器地址。取值等于 **primary-ntp** 或 **secondary-ntp** 。
+- **poll-interval** (时间间隔，只读属性):发送到活动服务器的请求之间的当前间隔。初始值为16秒，增加一倍至15分钟。
 
-|     |
-| --- |  |
-|     |
+**最后收到的数据包信息**
 
-Property
+当SNTP客户端由于配置更改或网络错误而停止或重新启动时，将重置以下属性的值。
 
- | 
+- **last-update-from** (IP地址;只读属性):最后一次收到的处理成功的NTP服务器包的源IP地址。
+- **last-update-before** (时间间隔;只读属性):自上次成功接收服务器消息以来的时间。
+- **last-adjustment** (时间间隔;只读属性):从上次成功接收到的NTP服务器消息计算出的时钟调整量。
+- **last-bad-packet-from** (IP地址;只读属性):上次收到的未成功处理的SNTP包的源IP地址。失败的原因和收到数据包后的时间在接下来的两个属性中可用。
+- **last-bad-packet-before**(时间间隔;只读属性):距离上次接收失败的时间。
+- **last-bad-packet-reason** (Text;只读属性):描述上次接收失败原因的文本。可能的值有:
+  - bad-packet-length -报文长度不在可接受范围内。
+  - server-not-synchronized -Leap Indicator字段设置为“alarm condition”的值，表示该服务器的时钟尚未同步。
+  - zero-transmit-timestamp - Transmit时间戳字段值为0。
+  - bad- Mode - Mode字段的值既不是'server'也不是'broadcast'。
+  - kod-ABCD -收到“KoD”(死亡之吻)回应。ABCD是来自参考标识符字段的简短“kiss code”文本。
+  - broadcast -收到的广播消息，但mode=unicast。
+  - non-broadcast -收到的包是服务器的回复，但mode=broadcast。
+  - server-ip-mismatch -从非active-server地址收到的响应。
+  - originate-timestamp-mismatch - Originate服务器响应消息中的时间戳字段与上次请求中包含的时间戳字段不一致。
+  - roundtrip-too long -请求/响应往返时间超过1秒。
 
-Description
+## 客户端设置示例:
 
-|                                                     |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **enabled** (_yes, no default: no_)                 | Enable SNTP client for time synchronization                                                                                                                                                                                 |
-| **mode** (_broadcast, unicast, filed is read-only_) | Mode that the SNTP client will operate in. If no NTP servers are configured _broadcast_ mode will be used. If there is a dynamic or static NTP server IP address or FQDN used it will automatically switch to unicast mode. |
-| **primary-ntp** (_IP address default: 0.0.0.0_)     |
+在命令行中查看NTP客户端状态，使用print命令
 
-IP address of the NTP server that has to be used for time synchronization. If both values are non-zero, then the SNTP client will alternate between the two server addresses, switching to the other when the request to the current server times out or when the "KoD" packet is received, indicating that the server is not willing to respond to requests from this client.
+```shell
+[admin@ntp-example_v6] > /system ntp client print
+           enabled: no
+       primary-ntp: 0.0.0.0
+     secondary-ntp: 0.0.0.0
+  server-dns-names:
+              mode: unicast
+```
 
-The following formats are accepted:
+启用NTP客户端，设置NTP服务器的IP地址或FQDN。
 
-_\- ipv4_  
-_\- ipv6_
+```shell
+[admin@ntp-example_v6] > /system ntp client set enabled=yes
+[admin@ntp-example_v6] > /system ntp client print
+             enabled: yes
+         primary-ntp: 0.0.0.0
+       secondary-ntp: 0.0.0.0
+    server-dns-names:
+                mode: unicast
+     dynamic-servers: x.x.x.x, x.x.x.x
+       poll-interval: 15s
+       active-server: x.x.x.x
+    last-update-from: x.x.x.x
+  last-update-before: 6s570ms
+     last-adjustment: -1ms786us
+[admin@ntp-example_v6] > /system ntp client set primary-ntp=162.159.200.123
+[admin@ntp-example_v6] > /system ntp client print
+           enabled: yes
+       primary-ntp: 162.159.200.123
+     secondary-ntp: 0.0.0.0
+  server-dns-names:
+              mode: unicast
+   dynamic-servers: x.x.x.x, x.x.x.x
+     poll-interval: 16s
+     active-server: x.x.x.x
+```
 
- |
-| **secondary-ntp** (_IP address default: 0.0.0.0_) | see **primary-ntp** |
-| **server-dns-names** (_Comma separated domain name list default:_ ) | To set the NTP server using its domain name. The domain name will be resolved each time an NTP request is sent. Router has to have _/ip dns_ configured. |
+## NTP服务器设置
 
-**Status**
+服务器配置位于“/system ntp Server”目录下
 
--   **active-server** (IP address; read-only property) : Currently selected NTP server address. This value is equal to **primary-ntp** or **secondary-ntp**.
--   **poll-interval** (Time interval; read-only property) : Current interval between requests sent to the active server. The initial value is 16 seconds, and it is increased by doubling to 15 minutes.
+| 属性                                            | 说明                                                            |
+| ----------------------------------------------- | --------------------------------------------------------------- |
+| **enabled** (_yes or no_;default :_no_)         | 启用NTP服务器                                                   |
+| **broadcast** (_yes or no_;default :_no_)       | 启用某些NTP服务器模式，为了使该模式工作，您必须设置广播地址字段 |
+| **multicast** (_yesor no_;default :_no_)        | 启用某些NTP服务器模式                                           |
+| **manycast** (_yes or no_;default :_no_)        | 启用某些NTP服务器模式                                           |
+| **broadcast-addresses** (_IP address_;default:) | 设置NTP服务器广播模式使用的广播地址                             |
 
-**Last received packet information**
+**例子**
 
-Values of the following properties are reset when the SNTP client is stopped or restarted, either because of a configuration change, or because of a network error.
+设置NTP服务器，本地网络地址为192.168.88.0/24
 
--   **last-update-from** (IP address; read-only property) : Source IP address of the last received NTP server packed that was successfully processed.
--   **last-update-before** (Time interval; read-only property) : Time since the last successfully received server message.
--   **last-adjustment** (Time interval; read-only property) : Amount of clock adjustment that was calculated from the last successfully received NTP server message.
--   **last-bad-packet-from** (IP address; read-only property) : Source IP address of last received SNTP packed that was not successfully processed. Reason of the failure and time since this packet was received is available in the next two properties.
--   **last-bad-packet-before** (Time interval; read-only property) : Time since the last receive failure.
--   **last-bad-packet-reason** (Text; read-only property) : Text that describes the reason of the last receive failure. Possible values are:
-    -   _bad-packet-length_ \- Packet length is not in the acceptable range.
-    -   _server-not-synchronized_ \- Leap Indicator field is set to "alarm condition" value, which means that clock on the server has not been synchronized yet.
-    -   _zero-transmit-timestamp_ \- Transmit Timestamp field value is 0.
-    -   _bad-mode_ \- Value of the Mode field is neither 'server' nor 'broadcast'.
-    -   _kod-ABCD_ \- Received "KoD" (Kiss-o'-Death) response. _ABCD_ is the short "kiss code" text from the Reference Identifier field.
-    -   _broadcast_ \- Received proadcast message, but **mode**\=_unicast_.
-    -   _non-broadcast_ \- Received packed was server reply, but **mode**\=_broadcast_.
-    -   _server-ip-mismatch_ \- Received response from address that is not **active-server**.
-    -   _originate-timestamp-mismatch_ \- Originate Timestamp field in the server response message is not the same as the one included in the last request.
-    -   _roundtrip-too-long_ \- request/response roundtrip exceeded 1 second.
-
-## Client settings example: 
-
-To check the status of the NTP client in CLI, use the "print" command
-
-[?](https://help.mikrotik.com/docs/display/ROS/NTP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v6] &gt; </code><code class="ros constants">/system ntp client </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">primary-ntp</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">secondary-ntp</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">server-dns-names</code><code class="ros constants">:</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">mode</code><code class="ros constants">: unicast</code></div></div></td></tr></tbody></table>
-
-To enable the NTP client and set IP addresses or FQDN of the NTP servers:
-
-[?](https://help.mikrotik.com/docs/display/ROS/NTP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v6] &gt; </code><code class="ros constants">/system ntp client </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v6] &gt; </code><code class="ros constants">/system ntp client </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">primary-ntp</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">secondary-ntp</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">server-dns-names</code><code class="ros constants">:</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">mode</code><code class="ros constants">: unicast</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">dynamic-servers</code><code class="ros constants">: x.x.x.x, x.x.x.x</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">poll-interval</code><code class="ros constants">: 15s</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">active-server</code><code class="ros constants">: x.x.x.x</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">last-update-from</code><code class="ros constants">: x.x.x.x</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">last-update-before</code><code class="ros constants">: 6s570ms</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">last-adjustment</code><code class="ros constants">: -1ms786us</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v6] &gt; </code><code class="ros constants">/system ntp client </code><code class="ros functions">set </code><code class="ros value">primary-ntp</code><code class="ros plain">=162.159.200.123</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v6] &gt; </code><code class="ros constants">/system ntp client </code><code class="ros functions">print</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">enabled</code><code class="ros constants">: yes</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">primary-ntp</code><code class="ros constants">: 162.159.200.123</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">secondary-ntp</code><code class="ros constants">: 0.0.0.0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros plain">server-dns-names</code><code class="ros constants">:</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">mode</code><code class="ros constants">: unicast</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">dynamic-servers</code><code class="ros constants">: x.x.x.x, x.x.x.x</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">poll-interval</code><code class="ros constants">: 16s</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">active-server</code><code class="ros constants">: x.x.x.x</code></div></div></td></tr></tbody></table>
-
-## NTP Server settings:
-
-Server configuration is located in **/system ntp server**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-**enabled** (_yes_ or _no_; default value: _no_)
-
- | Enable  NTP server |
-| 
-
-**broadcast** (_yes_ or _no_; default value: _no_)
-
- | Enable certain NTP server mode, for this mode to work you have to set up broadcast-addresses field |
-| 
-
-**multicast** (_yes_ or _no_; default value: _no_)
-
- | Enable certain NTP server mode |
-| 
-
-**manycast** (_yes_ or _no_; default value: _no_)
-
- | Enable certain NTP server mode |
-| 
-
-**broadcast-addresses** (_IP address_; default value: )
-
- | Set broadcast address to use for NTP server broadcast mode |
-
-_**Example:**_
-
-Set up an NTP server for the local network that is 192.168.88.0/24
-
-[?](https://help.mikrotik.com/docs/display/ROS/NTP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ntp server </code><code class="ros functions">set </code><code class="ros value">broadcast</code><code class="ros plain">=yes</code> <code class="ros value">broadcast-addresses</code><code class="ros plain">=192.168.88.255</code> <code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">manycast</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+`/system ntp server set broadcast=yes broadcast-addresses=192.168.88.255 enabled=yes manycast=no`
 
 # RouterOS version 7
 
-## NTP Client properties:
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                      |
-| ---------------------------------------------------- | ------------------------------------------ |
-| **enabled** (_yes, no default: no_)                  | Enable NTP client for time synchronization |
-| **mode** (_broadcast, manycast, multicast, unicast_) | Mode that the NTP client will operate in   |
-|                                                      |
-
-**NTP servers**
-
- | 
-
-The list of NTP servers. It is possible to add static entries.
-
-The following formats are accepted:
-
-\- _FQDN ("Resolved Address" will appear in the "Servers"- window in an appropriate column if the address is resolved) or IP address can be used. If DHCP-Client property **use-peer-ntp=yes** - the dynamic entries advertised by [DHCP](https://help.mikrotik.com/docs/display/ROS/DHCP)_  
-_\- _ipv4_  
-\- _ipv4_`@`_vrf_  
-\- _ipv6_  
-\- _ipv6_`@`_vrf_  
-\- _ipv6-linklocal_`%`_interface__
-
- |
-| **vrf** (_default: main_) | Virtual Routing and Forwarding |
-| **Servers** (_Button/Section_) | 
-
-A detailed table of dynamically and statically added NTP servers (Address, Resolved address, Min Poll, Max Poll, iBurst, Auth. Key)
-
-To set the NTP server using its FQDN. The domain name will be resolved each time an NTP request is sent. Router has to have _/ip/dns_ configured.
-
- |
-| 
-
-**Peers**
-
- | 
-
-Current parameter values
-
-[?](https://help.mikrotik.com/docs/display/ROS/NTP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ntp-example_v7] &gt; </code><code class="ros constants">/system/ntp/monitor-peers</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros value">type</code><code class="ros plain">=</code><code class="ros string">"ucast-client"</code> <code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">refid</code><code class="ros plain">=</code><code class="ros string">"y.y.y.y"</code> <code class="ros value">stratum</code><code class="ros plain">=3</code> <code class="ros value">hpoll</code><code class="ros plain">=10</code> <code class="ros value">ppoll</code><code class="ros plain">=10</code> <code class="ros value">root-delay</code><code class="ros plain">=28.869</code> <code class="ros plain">ms </code><code class="ros value">root-disp</code><code class="ros plain">=50.994</code> <code class="ros plain">ms</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">offset</code><code class="ros plain">=-0.973</code> <code class="ros plain">ms </code><code class="ros value">delay</code><code class="ros plain">=0.522</code> <code class="ros plain">ms </code><code class="ros value">disp</code><code class="ros plain">=15.032</code> <code class="ros plain">ms </code><code class="ros value">jitter</code><code class="ros plain">=0.521</code> <code class="ros plain">ms</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">-- [Q quit|D dump|C-z pause]</code></div></div></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
- |
-| 
-
-**Keys**
-
- | 
-
-NTP symmetric keys, used for authentication between the NTP client and server. Key Identifier (Key ID) - an integer identifying the cryptographic key used to generate the message-authentication code.
-
-
-
- |
-
-**Status**
-
--   **synchronized, stopped, waiting, using-local-clock** \- Current status of the NTP client
--   **Frequency drift** - The fractional frequency drift per unit time.
--   **synced-server** - The IP address of the NTP Server.
--   **synced-stratum** - The accuracy of each server is defined by a number called the stratum, with the topmost level (primary servers) assigned as one and each level downwards (secondary servers) in the hierarchy assigned as one greater than the preceding level.
--   **system-offset** - This is a signed, fixed-point number indicating the offset of the NTP server's clock relative to the local clock, in seconds.
-
-## NTP Server settings:
-
-Server configuration is located in **/system ntp server**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                  |
-| ------------------------------------------------ | ----------------- |
-| **enabled** (_yes_ or _no_; default value: _no_) | Enable NTP server |
-|                                                  |
-
-**broadcast** (_yes_ or _no_; default value: _no_)
-
- | Enable certain NTP server mode, for this mode to work you have to set up broadcast-addresses field |
-| 
-
-**multicast** (_yes_ or _no_; default value: _no)_
-
- | Enable certain NTP server mode |
-| 
-
-**manycast** (_yes_ or _no_; default value: _no)_
-
- | Enable certain NTP server mode |
-| 
-
-**broadcast-addresses** (_IP address_; default value: )
-
- | Set broadcast address to use for NTP server broadcast mode |
-| 
-
-**vrf** (_default: main_)
-
- | Virtual Routing and Forwarding |
-| 
-
-**use-local-clock** (_yes_ or _no_; default value: _no_)
-
- | The server will supply its local system time as valid if others are not available. |
-| 
-
-**local-clock-stratum**
-
- | Manually set stratum if **use-local-clock=yes** |
-| 
-
-**auth-key** (default value: _none_)
-
- | NTP symmetric key, used for authentication between the NTP client and server. Key Identifier (Key ID) - an integer identifying the cryptographic key used to generate the message-authentication code. |
-
-# Log messages
-
-SNTP client can produce the following log messages. See the article "[log](https://wiki.mikrotik.com/wiki/Log "Log")" on how to set up logging and how to inspect logs.
-
--   **ntp**,**debug** gradually adjust by _OFFS_
--   **ntp**,**debug** instantly adjust by _OFFS_
--   **ntp**,**debug** Wait for _N_ seconds before sending the next message
--   **ntp**,**debug** Wait for _N_ seconds before restarting
--   **ntp**,**debug**,**packet** packet receive an error, restarting
--   **ntp**,**debug**,**packet** received _PKT_
--   **ntp**,**debug**,**packet** ignoring received _PKT_
--   **ntp**,**debug**,**packet** error sending to _IP_, restarting
--   **ntp**,**debug**,**packet** sending to _IP_ _PKT_
-
-Explanation of log message fields
-
--   _OFFS_ \- difference of two NTP timestamp values, in hexadecimal.
--   _PKT_ \- dump of NTP packet. If the packet is shorter than the minimum 48 bytes, it is dumped as a hexadecimal string. Otherwise, the packet is dumped as a list of field names and values, one per log line. Names of fields follow RFC4330.
--   _IP_ \- remote IP address.
-
-**NOTE**: the above logging rules work only with the built-in SNTP client, the separate NTP package doesn't have any logging facilities.
+**NTP客户端属性**
+
+| 属性                                                 | 说明                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **enabled** (_yes，default:no_)                      | 启用NTP客户端时间同步                                                                                                                                                                                                                                                                                                                                                                 |
+| **mode** (_broadcast, manycast, multicast, unicast_) | NTP客户端工作模式                                                                                                                                                                                                                                                                                                                                                                     |
+| **NTP servers**                                      | NTP服务器列表。 可以添加静态条目。<br>接受以下格式：<br>-FQDN（“已解决的地址”将出现在“服务器”  - 如果地址已解决的情况下，则可以在适当的列中出现）或可以使用IP地址。 如果dhcp-client属性"use-peer-ntp = yes"  -  [dhcp](https://help.mikrotik.com/docs/display/ros/ros/ros/dhcp) 通告的动态入口<br>- ipv4_  <br>- ipv4@vrf  <br>- ipv6  <br>- ipv6@vrf  <br>- ipv6-linklocal%interface |
+| **vrf** (_default: main_)                            | 虚拟路由与转发                                                                                                                                                                                                                                                                                                                                                                        |
+| **Servers** (_Button/Section_)                       | 动态和静态添加的NTP服务器(地址、解析地址、最小轮询、最大轮询、iBurst、Auth的详细表。)<br>通过FQDN设置NTP服务器。每次发送NTP请求时，域名都会被解析。路由器必须配置/ip/dns。                                                                                                                                                                                                            |
+| **Peers**                                            | 当前参数值<br><code>[admin@ntp-example_v7] > /system/ntp/monitor-peers                                                                                                                                                                                                                                                                                                                |
+ type="ucast-client" address=x.x.x.x refid="y.y.y.y" stratum=3 hpoll=10 ppoll=10 root-delay=28.869 ms root-disp=50.994 ms
+   offset=-0.973 ms delay=0.522 ms disp=15.032 ms jitter=0.521 ms
+-- [Q quit|D dump|C-z pause] </code>|
+|**Keys** |NTP对称密钥，用于NTP客户端和服务器之间的认证。密钥标识符(Key ID)——标识用于生成消息身份验证代码的加密密钥的整数。|
+
+**状态**
+
+- **已同步、已停止、等待、using-local-clock** - NTP客户端当前状态
+- **频率偏移** - 每单位时间的分数频率偏移。
+- **synchronized - Server** - NTP服务器的IP地址。
+- **synsed -stratum** - 每台服务器的准确性由一个称为层的数字来定义，最顶层(主服务器)被分配为1，每层(辅助服务器)在层次结构中被分配为比前一层大1。
+- **system-offset** - 这是一个有符号的定点数字，表示NTP服务器时钟相对于本地时钟的偏移量，以秒为单位。
+
+## NTP服务器设置
+
+服务器配置位于“/system ntp Server ”目录下
+
+| 属性                                            | 说明                                                                                                             |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **enabled** (_yes or no_;default :_no_)         | 启用NTP服务器                                                                                                    |
+| **broadcast** (_yes or no_;default :_no_)       | 启用某些NTP服务器模式，为了使该模式工作，您必须设置广播地址字段                                                  |
+| **multicast** (_yes or no_;default :_no_)       | 启用NTP服务器模式                                                                                                |
+| **manycast** (_yes or no_;default :_no_ )       | 启用NTP服务器模式                                                                                                |
+| **broadcast-addresses** (_IP地址_;default : )   | 设置NTP服务器广播模式使用的广播地址                                                                              |
+| **vrf** (_default: main_)                       | 虚拟路由转发                                                                                                     |
+| **use-local-clock** (_yes or no_;default :_no_) | 如果其他时间不可用，服务器将提供其本地系统时间作为有效时间。                                                     |
+| **local-clock-stratum**                         | 如果use-local-clock=yes则手动设置stratum                                                                         |
+| **auth-key**(default :_none_)                   | NTP对称密钥，用于NTP客户端与服务器之间的认证。密钥标识符(Key ID)——标识用于生成消息身份验证代码的加密密钥的整数。 |
+
+＃日志消息
+
+SNTP客户端可以产生以下日志消息。 有关如何设置日志记录以及如何检查日志，请参见文章[log](https://wiki.mikrotik.com/wiki/log"log")。
+
+- NTP，调试逐渐通过OFFS调整
+- NTP，调试立即通过OFFS调整
+- NTP，调试等待n秒，然后发送下一条消息
+- NTP，调试等待n秒钟，然后重新启动
+- NTP，调试，数据包数据包收到错误，重新启动
+- NTP，调试，数据包收到了PKT
+- NTP，调试，忽略收到PKT的数据包
+- NTP，调试，数据包错误发送到IP，重新启动
+- NTP，调试，数据包发送到IP PKT
+
+日志消息字段的说明
+
+ -  _OFFS_ -十六进制中两个NTP时间戳值的差异。
+ -  _PKT_ - NTP数据包的转储。 如果数据包短于最低48个字节，则将其倾倒为十六进制字符串。 否则，将数据包倾倒为字段名称和值列表，每个日志行。 字段的名称遵循RFC4330。
+ -  _IP_ -远程IP地址。
+
+**注意**：上述记录规则仅与内置SNTP客户端一起使用，单独的NTP软件包没有任何记录设施。

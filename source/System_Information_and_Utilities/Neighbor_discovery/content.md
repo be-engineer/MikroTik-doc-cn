@@ -1,131 +1,95 @@
-# Summary
+# 概述
 
-Neighbor Discovery protocols allow us to find devices compatible with MNDP (MikroTik Neighbor Discovery Protocol), CDP (Cisco Discovery Protocol), or LLDP (Link Layer Discovery Protocol) in the Layer2 broadcast domain. It can be used to map out your network.
+邻居发现协议允许我们在Layer2广播域中找到与MNDP (MikroTik邻居发现协议)，CDP (Cisco发现协议)或LLDP(链路层发现协议)兼容的设备。它可以用来规划你的网络。
 
-# Neighbor list
+# 邻居列表
 
-The neighbor list shows all discovered neighbors in the Layer2 broadcast domain. It shows to which interface neighbor is connected, its IP/MAC addresses, and other related parameters. The list is read-only, an example of a neighbor list is provided below:
+邻居列表显示二层广播域中所有已发现的邻居。它显示连接到哪个接口邻居，它的IP/MAC地址，以及其他相关参数。该列表是只读的，邻居列表的示例如下:
 
-[?](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/ip neighbor </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># INTERFACE ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MAC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IDENTITY&nbsp;&nbsp; VERSION&nbsp;&nbsp;&nbsp; BOARD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 ether13&nbsp;&nbsp; 192.168.33.2&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:0C:42:00:38:9F MikroTik&nbsp;&nbsp; 5.99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RB1100AHx2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 ether11&nbsp;&nbsp; 1.1.1.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:0C:42:40:94:25 test-host&nbsp; 5.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RB1000&nbsp;&nbsp;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">2 Local&nbsp;&nbsp;&nbsp;&nbsp; 10.0.11.203&nbsp;&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:02:B9:3E:AD:E0 c2611-r1&nbsp;&nbsp; Cisco I...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">3 Local&nbsp;&nbsp;&nbsp;&nbsp; 10.0.11.47&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:0C:42:84:25:BA 11.47-750&nbsp; 5.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RB750&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">4 Local&nbsp;&nbsp;&nbsp;&nbsp; 10.0.11.254&nbsp;&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:0C:42:70:04:83 tsys-sw1&nbsp;&nbsp; 5.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RB750G&nbsp;&nbsp;&nbsp;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">5 Local&nbsp;&nbsp;&nbsp;&nbsp; 10.0.11.202&nbsp;&nbsp;&nbsp;&nbsp; 00</code><code class="ros constants">:17:5A:90:66:08 c7200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cisco I...</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] /ip neighbor print
+ # INTERFACE ADDRESS         MAC-ADDRESS       IDENTITY   VERSION    BOARD     
+ 0 ether13   192.168.33.2    00:0C:42:00:38:9F MikroTik   5.99       RB1100AHx2
+ 1 ether11   1.1.1.4         00:0C:42:40:94:25 test-host  5.8        RB1000  
+ 2 Local     10.0.11.203     00:02:B9:3E:AD:E0 c2611-r1   Cisco I...                   
+ 3 Local     10.0.11.47      00:0C:42:84:25:BA 11.47-750  5.7        RB750 
+ 4 Local     10.0.11.254     00:0C:42:70:04:83 tsys-sw1   5.8        RB750G   
+ 5 Local     10.0.11.202     00:17:5A:90:66:08 c7200      Cisco I...
+```
 
 **Sub-menu:** `/ip neighbor`
 
-| 
-Property
+| 属性                                                                    | 说明                                                       |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **address** (_IP_)                                                      | 发现设备配置的最高IP地址                                   |
+| **address6** (_IPv6_)                                                   | 发现设备上配置的IPv6地址                                   |
+| **age** (_time_)                                                        | 距离上次发现数据包的时间间隔                               |
+| **discovered-by** (_cdp \| lldp\| mndp_)                                | 显示邻居被发现的协议列表。该属性从RouterOS 7.7版开始可用。 |
+| **board** (_string_)                                                    | RouterBoard模型。仅对安装了RouterOS的设备显示              |
+| **identity** (_string_)                                                 | 配置的系统标识                                             |
+| **interface** (_string_)                                                | 发现设备所连接的接口名                                     |
+| **Interface -name** (_string_)                                          | L2广播域连接的邻居设备的接口名称。适用于CDP。              |
+| **ipv6** (_yes\| no_)                                                   | 显示设备是否使能IPv6。                                     |
+| **Mac -address** (_MAC_)                                                | 远端设备的Mac地址。可用于与mac-telnet连接。                |
+| **platform** (_string_)                                                 | 平台名。例如“microtik”、“cisco”等                          |
+| **software- ID** (_string_)                                             | 远端设备的RouterOS软件ID。仅适用于安装了RouterOS的设备。   |
+| **System -caps** (_string_)                                             | 链路层发现协议(LLDP)报告的系统能力。                       |
+| **system-caps- Enabled** (_string_)                                     | 链路层发现协议(LLDP)报告的启用的系统能力。                 |
+| **unpack** (_none \| simple\| uncompressed-headers\| uncompressed-all_) | 显示发现报文的压缩类型。                                   |
+| **uptime** (_time_)                                                     | 远端设备的正常运行时间。仅对安装了RouterOS的设备显示。     |
+| **version** (_string_)                                                  | 远程设备上安装的软件版本号                                 |
 
- | 
+从RouterOS v6.45开始，为了避免内存耗尽，每个接口的邻居表项数量被限制为(总RAM(兆字节))*16。
 
-Description
+# 发现配置
 
-|     |
-| --- |  |
-|     |
+使用interface列表可以改变接口是否参与邻居发现。如果该接口被包含在发现接口列表中，则该接口将发送系统的基本信息，并处理接收到的在二层网络中广播的发现报文。将接口从接口列表中删除，将使该接口无法发现邻居，也无法在该接口上发现该设备本身。
 
-Property
-
- | 
-
-Description
-
-|                                    |
-| ---------------------------------- | ------------------------------------------------------------------------------------------- |
-| **address** (_IP_)                 | The highest IP address configured on a discovered device                                    |
-| **address6** (_IPv6_)              | IPv6 address configured on a discovered device                                              |
-| **age** (_time_)                   | Time interval since last discovery packet                                                   |
-| **discovered-by** (_cdp            | lldp                                                                                        | mndp_)                                     | Shows the list of protocols the neighbor has been discovered by. The property is available since RouterOS version 7.7. |
-| **board** (_string_)               | RouterBoard model. Displayed only to devices with installed RouterOS                        |
-| **identity** (_string_)            | Configured system identity                                                                  |
-| **interface** (_string_)           | Interface name to which discovered device is connected                                      |
-| **interface-name** (_string_)      | Interface name on the neighbor device connected to the L2 broadcast domain. Applies to CDP. |
-| **ipv6** (_yes                     | no_)                                                                                        | Shows whether the device has IPv6 enabled. |
-| **mac-address** (_MAC_)            | Mac address of the remote device. Can be used to connect with mac-telnet.                   |
-| **platform** (_string_)            | Name of the platform. For example "MikroTik", "cisco", etc.                                 |
-| **software-id** (_string_)         | RouterOS software ID on a remote device. Applies only to devices installed with RouterOS.   |
-| **system-caps** (_string_)         | System capabilities reported by the Link-Layer Discovery Protocol (LLDP).                   |
-| **system-caps-enabled** (_string_) | Enabled system capabilities reported by the Link-Layer Discovery Protocol (LLDP).           |
-| **unpack** (_none                  | simple                                                                                      | uncompressed-headers                       | uncompressed-all_)                                                                                                     | Shows the discovery packet compression type. |
-| **uptime** (_time_)                | Uptime of remote device. Shown only to devices installed with RouterOS.                     |
-| **version** (_string_)             | Version number of installed software on a remote device                                     |
-
-Starting from RouterOS v6.45, the number of neighbor entries are limited to (total RAM in megabytes)\*16 per interface to avoid memory exhaustion.
-
-# Discovery configuration
-
-It is possible to change whether an interface participates in neighbor discovery or not using an Interface list. If the interface is included in the discovery interface list, it will send out basic information about the system and process received discovery packets broadcasted in the Layer2 network. Removing an interface from the interface list will disable both the discovery of neighbors on this interface and also the possibility of discovering this device itself on that interface.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip neighbor&nbsp;discovery-settings</code></div></div></td></tr></tbody></table>
+`/ip neighbor discovery-settings`
 
   
 
-| 
-Property
+| 属性                                                                    | 说明                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ** find -interface-list** (_string_;Default:**static**)                 | 发现协议将在其上运行的接口列表                                                                                                                                                                                                                                                                                                                                                                |
+| **lldp-med-net-policy-vlan** (_integer 0..4094_; Default: **disabled**) | LLDP-MED网络策略TLV发布的VLAN ID。允许为支持LLDP-MED的设备(如VoIP电话)分配VLAN ID。只有发现了支持LLDP-MED的设备的接口才会添加TLV。其他TLV值是预定义的，不能修改:<br>- 应用类型—语音<br>- VLAN类型<br>- L2优先级- 0<br>- DSCP优先级- 0<br>当与网桥接口配合使用时，(R/M)STP协议应启用protocol-mode设置。<br>另外，为了避免LLDP-MED配置错误，应该使用“protocol”设置排除其他邻居发现协议(如CDP)。 |
+| **mode** (_rx-only \| tx-only \| tx-and-rx_; Default: **tx-and-rx**)    | 选择邻居发现报文的发送和接收方式。该配置从RouterOS 7.7版开始生效。                                                                                                                                                                                                                                                                                                                            |
+| **protocol** (_cdp \| lldp \| mndp_; Default: **cdp,lldp,mndp**)        | 使用的发现协议列表                                                                                                                                                                                                                                                                                                                                                                            |
 
- | 
+从RouterOS v6.44开始，邻居发现工作在单独的从接口上。当一个主接口(如bonding或bridge)被包含在发现接口列表中时，它的所有从接口将自动参与邻居发现。可能只允许对某些从接口发现邻居。为此，请在列表中包括特定的从接口，并确保不包括主接口。
 
-Description
+```shell
+/interface bonding
+add name=bond1 slaves=ether5,ether6
+/interface list
+add name=only-ether5
+/interface list member
+add interface=ether5 list=only-ether5
+/ip neighbor discovery-settings
+set discover-interface-list=only-ether5
+```
 
-|     |
-| --- |  |
-|     |
+现在，邻居列表显示了接收到发现消息的主接口和实际的从接口。
 
-Property
-
- | 
-
-Description
-
-|                                                                         |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **discover-interface-list** (_string_; Default: **static**)             | Interface list on which members the discovery protocol will run on |
-| **lldp-med-net-policy-vlan** (_integer 0..4094_; Default: **disabled**) |
-
-Advertised VLAN ID for LLDP-MED Network Policy TLV. This allows assigning a VLAN ID for LLDP-MED capable devices, such as VoIP phones. The TLV will only be added to interfaces where LLDP-MED capable devices are discovered. Other TLV values are predefined and cannot be changed:
-
--   Application Type - Voice
--   VLAN Type - Tagged
--   L2 Priority - 0
--   DSCP Priority - 0
-
-When used together with the bridge interface, the (R/M)STP protocol should be enabled with `protocol-mode` setting. 
-
-Additionally, other neighbor discovery protocols (e.g. CDP) should be excluded using `protocol` setting to avoid LLDP-MED misconfiguration.
-
- |
-| **mode** (_rx-only | tx-only | tx-and-rx_; Default: **tx-and-rx**) | 
-
-Selects the neighbor discovery packet sending and receiving mode. The setting is available since RouterOS version 7.7.
-
- |
-| **protocol** (_cdp | lldp | mndp_; Default: **cdp,lldp,mndp**) | List of used discovery protocols |
-
-Since RouterOS v6.44, neighbor discovery is working on individual slave interfaces. Whenever a master interface (e.g. bonding or bridge) is included in the discovery interface list, all its slave interfaces will automatically participate in neighbor discovery. It is possible to allow neighbor discovery only to some slave interfaces. To do that, include the particular slave interface in the list and make sure that the master interface is not included.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bonding</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bond1</code> <code class="ros value">slaves</code><code class="ros plain">=ether5,ether6</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface list</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=only-ether5</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface list member</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether5</code> <code class="ros value">list</code><code class="ros plain">=only-ether5</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/ip neighbor discovery-settings</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">discover-interface-list</code><code class="ros plain">=only-ether5</code></div></div></td></tr></tbody></table>
-
-Now the neighbor list shows a master interface and actual slave interface on which a discovery message was received.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Neighbor+discovery#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R2] &gt; ip neighbor print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># INTERFACE ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MAC-ADDRESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IDENTITY&nbsp;&nbsp; VERSION&nbsp;&nbsp;&nbsp; BOARD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 ether5&nbsp;&nbsp;&nbsp; 192.168.88.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CC</code><code class="ros constants">:2D:E0:11:22:33 R1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.45.4 ... CCR1036-8G-2S+</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">bond1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@R2] > ip neighbor print
+ # INTERFACE ADDRESS                                           MAC-ADDRESS       IDENTITY   VERSION    BOARD        
+ 0 ether5    192.168.88.1                                      CC:2D:E0:11:22:33 R1         6.45.4 ... CCR1036-8G-2S+
+   bond1
+```
 
 # LLDP
 
-Depending on RouterOS configuration, different type-length-value (TLV) can be sent in the LLDP message, this includes:
+根据RouterOS的配置，可以在LLDP报文中发送不同的TLV (type-length-value)，包括:
 
--   Chassis subtype (MAC address)
--   Port subtype (interface name)
--   Time To Live
--   System name (system identity)
--   System description (platform - MikroTik, software version - RouterOS version,  hardware name - RouterBoard name)
--   Management address (all IP addresses configured on the port)
--   System capabilities (enabled system capabilities, e.g. bridge or router)
--   LLDP-MED Media Capabilities (list of MED capabilities)
--   LLDP-MED Network Policy (assigned VLAN ID for voice traffic)
--   Port Extension (Port Extender and Controller Bridge advertisement)
--   End of LLDPDU
+- 机箱子类型(MAC地址)
+- 端口子类型(接口名称)
+- 生存时间
+- 系统名称(系统标识)
+- 系统描述(平台—MikroTik、软件版本—RouterOS版本、硬件名称—RouterBoard名称)
+- 管理地址(端口上配置的所有IP地址)
+- 系统功能(启用的系统功能，例如网桥或路由器)
+- LLDP-MED媒体功能(MED功能列表)
+- LLDP-MED网络策略(为语音流量分配VLAN ID)
+- 端口扩展(端口扩展器和控制器桥广告)
+- LLDPDU结束

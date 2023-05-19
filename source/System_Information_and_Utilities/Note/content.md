@@ -1,41 +1,23 @@
-## Summary
+## 概述
 
-[?](https://help.mikrotik.com/docs/display/ROS/Note#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system note</code></div></div></td></tr></tbody></table>
+`/system note`
 
   
-The system note feature allows you to assign arbitrary text notes or messages that will be displayed on each login right after the banner. For example, you may distribute warnings between system administrators this way, or describe what does that particular router actually do. To configure system note, you may upload a plain text file named **sys-note.txt** on the router's FTP server, or, additionally, edit the settings in this menu
+系统说明功能允许分配任意文本说明或消息，显示在每次登录后的横幅。例如，可以通过这种方式在系统管理员之间分发警告，或者描述特定路由器的实际功能。 要配置系统记录，可以在路由器的FTP服务器上上传一个名为 
+ **sys-note.txt** 的纯文本文件，或者，另外，在此菜单中编辑设置
 
-## Properties
+## 属性
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                |
-| ------------------------------ | ---------------------------- |
-| **note** (_string_; Default: ) | Note that will be displayed. |
-| **show-at-login** (_yes        | no_; Default: **yes**)       | whether to show system note on each login |
+| 属性                                            | 说明                         |
+| ----------------------------------------------- | ---------------------------- |
+| **note** (_string_;Default:)                    | 将被显示的说明               |
+| **show-at-login** (_yes \| no_;Default:**yes**) | 是否在每次登录时显示系统提示 |
 
   
 
-## Example
+## 例子
 
-It is possible to add multi-line notes using an embedded text editor ( _/system note edit note_), for example, add ASCII art to your home router:
+可以使用嵌入式文本编辑器(_/system note edit note_)添加多行注释，例如，将ASCII艺术添加到家用路由器:
 
   
 
@@ -43,6 +25,22 @@ It is possible to add multi-line notes using an embedded text editor ( _/system
 system/note/set note=
 ```
 
-```
-                                       .&                                                                            @&   @&                                                                         @@   @#                                                                           @@&                                                                      ,      @@@      .                                                               @@@@@@@@@@@@@@@@@                                                                      @@@                                                                             @@@                                                                             @@@                                                                ,@           @@@           &                                                   @@@@          @@@          @@@@                                                  @@           @@@           @(                                                    &@@         @@@         @@@                                                       @@@@@     @@@     &@@@&                                                            &@@@@@@@@@@@@@@@&                                                                     @@@@@             
+```shell
+
+                                       .&                                         
+                                     @&   @&                                      
+                                     @@   @#                                      
+                                       @@&                                        
+                                ,      @@@      .                                 
+                                @@@@@@@@@@@@@@@@@                                 
+                                       @@@                                        
+                                       @@@                                        
+                                       @@@                                        
+                          ,@           @@@           &                            
+                         @@@@          @@@          @@@@                          
+                          @@           @@@           @(                           
+                           &@@         @@@         @@@                            
+                             @@@@@     @@@     &@@@&                              
+                                &@@@@@@@@@@@@@@@&                                 
+                                      @@@@@
 ```
