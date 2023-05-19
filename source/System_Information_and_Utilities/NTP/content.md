@@ -146,7 +146,7 @@ RouterOS v7主包包含NTP客户端和服务器功能，基于RFC5905。
 
 ＃日志消息
 
-SNTP客户端可以产生以下日志消息。 有关如何设置日志记录以及如何检查日志，请参见文章[log](https://wiki.mikrotik.com/wiki/log"log")。
+SNTP客户端可以产生以下日志消息。 有关如何设置日志记录以及如何检查日志，请参见文章 [日志](https://wiki.mikrotik.com/wiki/log"log")。
 
 - NTP，调试逐渐通过OFFS调整
 - NTP，调试立即通过OFFS调整
