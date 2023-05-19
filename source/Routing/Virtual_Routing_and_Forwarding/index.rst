@@ -1,4 +1,4 @@
-Virtual_Routing_and_Forwarding_(VRF)
+Virtual_Routing_and_Forwarding
 ===============================
 
 .. toctree::
