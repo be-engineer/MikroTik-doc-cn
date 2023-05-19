@@ -419,8 +419,8 @@ R3会丢弃接收到的IP数据包，因为它收到了一个以自己的地址�
 
 有两种类型的标签绑定过滤器:
 
--在“/mpls LDP advertise-filter”菜单中配置向LDP邻居通告哪些标签绑定
--从LDP邻居接收哪些标签绑定，在/mpls LDP accept-filter菜单中配置
+- 在“/mpls LDP advertise-filter”菜单中配置向LDP邻居通告哪些标签绑定
+- 从LDP邻居接收哪些标签绑定，在/mpls LDP accept-filter菜单中配置
 
 过滤器在有序列表中组织，指定的前缀必须包含针对过滤器和邻居(或通配符)进行测试的前缀。
 
@@ -519,12 +519,12 @@ add interface=ether3 afi=ipv6
 
 综上所述，假设preferred-afi=ipv6，以下afi和双栈元素(ds6)的组合是可能的:
 
-1.  ipv4 -等待X秒，如果没有变化，则使用ipv4 LDP会话并分发ipv4标签
-2.  ipv4+ds6 - wait for IPv6 hello，双栈元素表示应该有IPv6
-3.ipv6 -等待X秒，如果没有变化，则使用ipv6 LDP会话并分发ipv6标签
-4.  ipv6+ds6 -使用ipv6 LDP会话，分发ipv6标签
-5.  ipv4、ipv6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
-6.  ipv4、ipv6+ds6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
+1. ipv4 -等待X秒，如果没有变化，则使用ipv4 LDP会话并分发ipv4标签
+2. ipv4+ds6 - wait for IPv6 hello，双栈元素表示应该有IPv6
+3. ipv6 -等待X秒，如果没有变化，则使用ipv6 LDP会话并分发ipv6标签
+4. ipv6+ds6 -使用ipv6 LDP会话，分发ipv6标签
+5. ipv4、ipv6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
+6. ipv4、ipv6+ds6 -使用ipv6 LDP会话，分配ipv4和ipv6标签
 
 # 属性参考
 

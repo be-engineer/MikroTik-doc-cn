@@ -43,7 +43,7 @@ SMIPS设备(hAP lite、hAP lite TC和hAP mini)不支持该特性。
     -  TE隧道的OSPF扩展
     - CSPF路径选择
     -  te隧道上VPL和MPLS IP VPN流量的转发
-    - 入口TE隧道速率限制和自动保留带宽调整，[TE隧道带宽控制]（https://wiki.mikrotik.com/wiki/wiki/wiki/te_tunnel_auto_auto_bandwidth“ te Tunnel auto auto auto bando bando bando bando bando bando bando bandwidth”）
+    - 入口TE隧道速率限制和自动保留带宽调整，[TE隧道带宽控制](https://wiki.mikrotik.com/wiki/TE_tunnel_auto_bandwidth)
     - 所有隧道带宽设置均已指定并以每秒位显示
  - 基于MP-BGP的MPLS IP VPN
  - 基于MP-BGP的MPLS VPN

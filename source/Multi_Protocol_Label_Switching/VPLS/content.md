@@ -24,7 +24,7 @@ microtik RouterOS实现了以下VPLS特性:
 
 在继续之前，请先熟悉 [LDP的先决条件](https://help.mikrotik.com/docs/display/ROS/LDP#LDP-PrerequisitesforMPLS) 和RSVP-TE的先决条件。
 
-在这种情况下，如果要使用BGP作为VPLS发现和信令协议，骨干网应该运行iBGP，最好带路由反射器/s。
+在这种情况下，如果 BGP 应该用作 VPLS 发现和信令协议，则骨干网应该最好运行带有路由反射器的 iBGP。
 
   
 
@@ -100,7 +100,7 @@ imposed-labels: 800000
 
 可用的只读属性:
 
-| Property                            | Description                                            |
+| 属性                                | 说明                                                   |
 | ----------------------------------- | ------------------------------------------------------ |
 | **imposed-label** (_integer_)       | VPLS强制标签                                           |
 | **Local -label** (_integer_)        | 本地VPLS标签                                           |
@@ -109,3 +109,31 @@ imposed-labels: 800000
 | **remote-status** (_integer_)       |                                                        |
 | **transport-nexthop** (_IP prefix_) | 显示使用的传输地址(通常是Loopback地址)。               |
 | **transport** (_string_)            | 传输接口的名称。如果VPLS运行在流量工程隧道上，请设置。 |
+
+# VPLS控制字概述
+
+VPLS允许远程站点通过分组交换网络(PSN)上的伪线(PW)隧道连接站点来共享以太网广播域。由于VPLS封装增加了额外的开销，所以LSP中的每个接口都应该能够传输足够大的报文。
+
+每个以太网芯片组都对其可以传输的最大数据包大小有硬件限制。即使现在也有只支持一个Vlan标签的以太网，这意味着没有以太网报头和校验和(L2MTU)的最大数据包大小是1504字节。显然，转发VPLS封装的以太网帧而不分片是不够的(至少需要1524 L2MTU支持)。routerboard支持的最大l2mtu请参见 [RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)。
+
+由于并不是所有的routerboard都支持足够的L2MTU来传输VPLS封装的无分片报文，所以RouterOS根据RFC 4623使用4字节控制字(CW)增加了伪线分片和重组(PWE3)支持。
+
+# 控制词使用
+
+在RouterOS中，控制字用于VPLS隧道内的报文分片和重组，通过可选的控制字(CW)实现。CW被添加到PW标签(解复用)和数据包负载之间，并增加了额外的4字节开销。
+
+未实现重新排序的OOO数据包，将丢弃订单片段
+
+CW用法由VPLS配置中的“用法控制”参数控制。
+
+![](https://help.mikrotik.com/docs/download/attachments/128974851/VPLS_CW.png?version=1&modificationDate=1653634938423&api=v2)
+
+正如所看到的，控制字分为5个字段:
+
+- 0000 - 4位标识数据包是PW(不是IP)
+- 标志- 4位
+- fragg - 2bits值，表示有效载荷分片。
+- Len - 6bits
+- Seq - 16位序号，用于检测丢包或错序。
+
+根据RFC生成和处理序列号是可选的。
