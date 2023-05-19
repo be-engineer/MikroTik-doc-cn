@@ -1,162 +1,96 @@
+# E-mail
+
 -   [Properties](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Properties)
 -   2[Sending Email](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-SendingEmail)
 -   3[Basic examples](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Basicexamples)
 
-An E-mail tool is a utility that allows sending e-mails from the router. The tool can be used to send regular configuration backups and exports to a network administrator.
+电子邮件工具是允许从路由器发送电子邮件的实用程序。该工具可用于向网络管理员发送常规配置备份和导出。
 
-Email tool uses only plain authentication and TLS encryption. Other methods are not supported.
+Email工具只使用明文认证和TLS加密。不支持其他方法。
 
-___
+# 属性
 
-# Properties
+`/tool e-mail`
 
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
+该子菜单允许设置要用的SMTP服务器
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail</code></div></div></td></tr></tbody></table>
-
-This submenu allows setting SMTP server that will be used.
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                       |
-| ----------------------------------------------------- |  |
-| **address** (_IP/IPv6 address_; Default: **0.0.0.0**) |
-
-SMTP server's IP address.
-
- |
-| **from** (_string_; Default: **<>**) | Name or email address that will be shown as a receiver. |
-| **password** (_string_; Default: **""**) | Password used for authenticating to an SMTP server. |
-| **port** (_integer\[0..65535\]_; Default: **25**) | SMTP server's port. |
-| **tls** (_no|yes|starttls_; Default: **no**) | Whether to use TLS encryption:
-
--   yes - sends STARTTLS and drops the session if TLS is not available on the server
--   no \- do not send STARTTLS
--   starttls \- sends STARTTLS and continue without TLS if a server responds that TLS is not available
-
- |
-| **user** (_string_; Default: **""**) | The username used for authenticating to an SMTP server. |
-| 
-
-**vrf** (_VRF name_; default value: **main**)
-
- | Set VRF on which service is creating outgoing connections. |
+| 属性                                                  | 说明                                                                                                                                                                      |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **address** (_IP/IPv6 address_; Default: **0.0.0.0**) | SMTP服务器IP地址                                                                                                                                                          |
+| **from** (_string_; Default: **<>**)                  | 将显示为收件人的姓名或电子邮件地址。                                                                                                                                      |
+| **password** (_string_; Default: **""**)              | 验证SMTP服务器身份时使用的密码。                                                                                                                                          |
+| **port** (_integer[0..65535]_; Default: **25**)       | SMTP服务器端口                                                                                                                                                            |
+| **tls** (_no \| yes\| starttls_; Default: **no**)     | 是否使用TLS加密:<br>- yes - 发送STARTTLS，如果服务器上没有TLS，则丢弃会话<br>- no - 不发送STARTTLS<br>- starttls - 发送starttls，如果服务器响应TLS不可用，则继续不使用TLS |
+| **user** (_string_; Default: **""**)                  | 用于SMTP服务器认证的用户名                                                                                                                                                |
+| **vrf** (_VRF name_; default value: **main**)         | 设置服务创建出站连接的VRF。                                                                                                                                               |
 
   
 
-**Note:** All server's configurations (if specified) can be overridden by send command.
+**注意:** 所有服务器的配置(如果指定)可以被send命令覆盖。
 
-___
+# 发送电子邮件
 
-# Sending Email
+`/tool e-mail send`
 
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
+Send命令接受以下参数:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail </code><code class="ros functions">send</code></div></div></td></tr></tbody></table>
+| 属性                                              | 说明                                                                                                                                                                      |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **body** (_string_; Default: )                    | 电子邮件消息的实际正文                                                                                                                                                    |
+| **cc** (_string_;Default:)                        | 向列出的收件人发送副本。允许多个地址，使用“，”分隔                                                                                                                        |
+| **file** (_File[, file]_;Default:)                | 将附加到邮件的文件名列表，以逗号分隔。                                                                                                                                    |
+| **from** (_string_;Default:)                      | 姓名或电子邮件地址将显示为发件人。如果使用了服务器配置中未指定的值。                                                                                                      |
+| **password** (_string_;Default:)                  | 验证SMTP服务器的密码。如果使用了服务器配置中未指定的值。                                                                                                                  |
+| **port** (_integer[0..65535]_;Default:)           | SMTP服务器端口号。如果未指定，则使用服务器配置中的值。                                                                                                                    |
+| **server** (_IP/IPv6地址_;Default:)               | SMTP服务器的Ip地址或IPv6地址。如果未指定，则使用服务器配置中的值。                                                                                                        |
+| **tls** (_yes\| no \| starttls_; Default: **no**) | 是否使用TLS加密:<br>- yes - 发送STARTTLS，如果服务器上没有TLS，则丢弃会话<br>- no - 不发送STARTTLS<br>- starttls - 发送starttls，如果服务器响应TLS不可用，则继续不使用TLS |
+| **subject** (_string_; Default: )                 | 消息的主题。                                                                                                                                                              |
+| **to** (_string_;Default:)                        | 目的邮箱地址。允许单一地址。                                                                                                                                              |
+| **user** (_string_;Default:)                      | 验证SMTP服务器的用户名。如果未指定，则使用服务器配置的值。                                                                                                                |
 
-Send command takes the following parameters:
+# 基本例子
 
-| 
-Property
+**本示例介绍如何每24小时发送一次配置导出邮件**
 
- | 
+1. 配置SMTP服务器
 
-Description
+`[admin@MikroTik] /tool e-mail> set server=10.1.1.1 port=25 from="router@mydomain.com"`
 
-|     |
-| --- |  |
-|     |
+2. 添加一个名为export-send的新脚本:
 
-Property
+```shell
+/export file=export
+/tool e-mail send to="config@mydomain.com" subject="$[/system identity get name] export" \
+body="$[/system clock get date] configuration file" file=export.rsc
+```
 
- | 
+3. 添加计划运行我们的脚本:
 
-Description
-
-|                                             |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **body** (_string_; Default: )              | The actual body of the email message                                                                                     |
-| **cc** (_string_; Default: )                | Send a copy to listed recipients. Multiple addresses allowed, use "," to separate entries                                |
-| **file** (_File\[,File\]_; Default: )       | List of the file names that will be attached to the mail separated by a comma.                                           |
-| **from** (_string_; Default: )              | Name or email address which will appear as the sender. If a not specified value from the server's configuration is used. |
-| **password** (_string_; Default: )          | Password used to authenticate to an SMTP server. If a not specified value from the server's configuration is used.       |
-| **port** (_integer\[0..65535\]_; Default: ) | Port of SMTP server. If not specified, a value from the server's configuration is used.                                  |
-| **server** (_IP/IPv6 address_; Default: )   | Ip or IPv6 address of SMTP server. If not specified, a value from the server's configuration is used.                    |
-| **tls** (_yes                               | no                                                                                                                       | starttls_; Default: **no**) | Whether to use TLS encryption: |
-
--   yes - sends STARTTLS and drops the session if TLS is not available on the server
--   no \- do not send STARTTLS
--   starttls \- sends STARTTLS and continue without TLS if a server responds that TLS is not available
-
- |
-| **subject** (_string_; Default: ) | The subject of the message. |
-| **to** (_string_; Default: ) | Destination email address. Single address allowed. |
-| **user** (_string_; Default: ) | The username used to authenticate to an SMTP server. If not specified, a value from the server's configuration is used. |
-
-___
-
-# Basic examples
-
-**This example will show how to send an email with configuration export every 24hours.**
-
-1\. Configure SMTP server
-
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] </code><code class="ros constants">/tool e-mail&gt; </code><code class="ros functions">set </code><code class="ros value">server</code><code class="ros plain">=10.1.1.1</code> <code class="ros value">port</code><code class="ros plain">=25</code> <code class="ros value">from</code><code class="ros plain">=</code><code class="ros string">"router@mydomain.com"</code></div></div></td></tr></tbody></table>
-
-2\. Add a new script named "export-send":
-
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">export </code><code class="ros value">file</code><code class="ros plain">=export</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/tool e-mail </code><code class="ros functions">send </code><code class="ros value">to</code><code class="ros plain">=</code><code class="ros string">"config@mydomain.com"</code> <code class="ros value">subject</code><code class="ros plain">=</code><code class="ros string">"$[/system identity get name] export"</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">body</code><code class="ros plain">=</code><code class="ros string">"$[/system clock get date] configuration file"</code> <code class="ros value">file</code><code class="ros plain">=export.rsc</code></div></div></td></tr></tbody></table>
-
-3\. Add scheduler to run our script:
-
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system scheduler </code><code class="ros functions">add </code><code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"export-send"</code> <code class="ros value">start-time</code><code class="ros plain">=00:00:00</code> <code class="ros value">interval</code><code class="ros plain">=24h</code></div></div></td></tr></tbody></table>
+·/system scheduler add on-event="export-send" start-time=00:00:00 interval=24h
 
   
 
-**Send e-mail to a server using TLS/SSL encryption. For example, Google mail requires that.**
+使用TLS/SSL加密发送电子邮件到服务器。例如，谷歌邮件需要这样做
 
-After the Google mail added **a new security policy** that **does not allow 3d-party devices to authenticate** **using** your standard **Gmail** **password** → you need to generate a 16-digit passcode ("App" password) and use it instead of your Gmail password. To configure this, navigate to the "**Security>Signing in to Google**" section settings and:
+谷歌邮件添加了一个新的安全政策，不允许第三方设备认证使用你的标准Gmail密码,你需要生成一个16位的应用程序”密码，并用它代替你的Gmail密码。要进行配置，请导航到“安全>登录到谷歌”部分设置，然后:
 
--   **Enable 2-Step Verification;**
--   **Generate an App password**.
+- 启用两步验证
+- 生成App密码
 
-Use the newly generated App password in the "set password=**mypassword**" setting shown below.
+在如下所示的set password=**mypassword** 设置中使用新生成的App密码。
 
-1\. configure a client to connect to the correct server:
+1. 配置客户端连接到正确的服务器:
 
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
+```shell
+/tool e-mail
+set address=smtp.gmail.com
+set port=465
+set tls=yes
+set from=myuser@gmail.com
+set user=myuser
+set password=mypassword
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">address</code><code class="ros plain">=smtp.gmail.com</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">port</code><code class="ros plain">=465</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">tls</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">from</code><code class="ros plain">=myuser@gmail.com</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">user</code><code class="ros plain">=myuser</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">password</code><code class="ros plain">=mypassword</code></div></div></td></tr></tbody></table>
+2. 使用Send命令发送电子邮件:
 
-2\. send e-mail using send command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/E-mail#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/tool e-mail </code><code class="ros functions">send </code><code class="ros value">to</code><code class="ros plain">=myuser@anotherdomain.com</code> <code class="ros value">subject</code><code class="ros plain">=</code><code class="ros string">"email test"</code> <code class="ros value">body</code><code class="ros plain">=</code><code class="ros string">"email test"</code></div></div></td></tr></tbody></table>
-
--   无标签
-
-概览
-
-内容工具
+`/tool e-mail send to=myuser@anotherdomain.com subject="email test" body="email test"`
