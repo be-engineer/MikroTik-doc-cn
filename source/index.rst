@@ -44,3 +44,10 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
    IPv4_and_IPv6_Fundamentals/index.rst
    Management_tools/index.rst
    Mobile_Networking/index.rst
+   Network_Management/index.rst
+   Routing/index.rst
+   Multi_Protocol_Label_Switching/index.rst
+   System_Information_and_Utilities/index.rst
+   Virtual_Private_Networks/index.rst
+   Wired_Connections/index.rst
+   Wireless/index.rst
