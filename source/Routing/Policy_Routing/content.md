@@ -4,9 +4,9 @@
 
 RouterOS实现了几个可以用来完成上述任务的组件:
 
--路由表
--路由规则
--防火墙mangle标记
+- 路由表
+- 路由规则
+- 防火墙mangle标记
 
 # 路由表
 
@@ -60,8 +60,18 @@ H - hw-offloaded; + - ecmp
 
 但是上面的配置还不够，需要一种方法来强制流量使用新创建的表。RouterOS提供了两种选择:
 
--防火墙mangle-它提供了更多的控制标准，用于引导流量，例如，每个连接或每个包平衡等。有关如何使用mangle标记的更多信息，请参阅 [防火墙标记](https://help.mikrotik.com/docs/display/ROS/Firewall+Marking) 示例。
--路由规则-一组基本参数，可用于快速引导流量。这就是例子中要用到的方法。
+- 防火墙mangle-它提供了更多的控制标准，用于引导流量，例如，每个连接或每个包平衡等。有关如何使用mangle标记的更多信息，请参阅 [防火墙标记]
+
+
+
+
+
+
+
+
+
+(https://help.mikrotik.com/docs/display/ROS/Firewall+Marking) 示例。
+- 路由规则-一组基本参数，可用于快速引导流量。这就是例子中要用到的方法。
 
 不建议同时使用这两种方法，否则您应该确切地知道自己在做什么。如果确实需要在同一设置中同时使用mangle和路由规则，那么请记住，mangle具有更高的优先级，这意味着如果mangle标记的流量可以在表中被解析，那么路由规则将永远不会看到该流量。
 
@@ -87,14 +97,14 @@ H - hw-offloaded; + - ecmp
 
 路由规则可以使用的所有参数列表:
 
-|属性|说明|
-| --- | --- |
-| **action** (_drop \| lookup \| lookup-only-in-table \| unreachable_) |对匹配数据包采取的动作:<br>- drop -无声地丢弃数据包。<br>- lookup - 在路由表中进行查找。<br>- lookup-only-in-table -只在指定的路由表中查找(参见table参数)。<br>- unreachable - 生成ICMP不可达报文，并返回给源。|
-| **comment** (_string_) | |
-| **disabled** (_yes \| no_) |禁用规则未使用。|
-| **dst-address**() |要匹配的报文的目的地址。|
-| **interface** (_string_) |匹配的输入接口。|
-| **min-prefix** (_integer[0..4294967295]_) |相当于Linux IP规则' suppress_prefixlength '。例如，如果要抑制路由决策中的缺省路由，则将该值设置为0。|
-| **routing-mark** (_string_) |匹配特定的路由标记。|
-| **src-address** (_string_) |匹配报文的源地址。|
-| **table** (_name_) |要查找的路由表名。|
+| 属性                                                                 | 说明                                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **action** (_drop \| lookup \| lookup-only-in-table \| unreachable_) | 对匹配数据包采取的动作:<br>- drop -无声地丢弃数据包。<br>- lookup - 在路由表中进行查找。<br>- lookup-only-in-table -只在指定的路由表中查找(参见table参数)。<br>- unreachable - 生成ICMP不可达报文，并返回给源。 |
+| **comment** (_string_)                                               |                                                                                                                                                                                                                 |
+| **disabled** (_yes \| no_)                                           | 禁用规则未使用。                                                                                                                                                                                                |
+| **dst-address**()                                                    | 要匹配的报文的目的地址。                                                                                                                                                                                        |
+| **interface** (_string_)                                             | 匹配的输入接口。                                                                                                                                                                                                |
+| **min-prefix** (_integer[0..4294967295]_)                            | 相当于Linux IP规则' suppress_prefixlength '。例如，如果要抑制路由决策中的缺省路由，则将该值设置为0。                                                                                                            |
+| **routing-mark** (_string_)                                          | 匹配特定的路由标记。                                                                                                                                                                                            |
+| **src-address** (_string_)                                           | 匹配报文的源地址。                                                                                                                                                                                              |
+| **table** (_name_)                                                   | 要查找的路由表名。                                                                                                                                                                                              |

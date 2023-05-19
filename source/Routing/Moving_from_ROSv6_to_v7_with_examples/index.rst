@@ -1,4 +1,4 @@
-Moving_from_ROSv6_to_v7_with_examples
+从ROSv6移动到v7的例子
 ===============================
 
 .. toctree::

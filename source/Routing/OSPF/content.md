@@ -96,7 +96,7 @@ OSPF路由器是使用Dijkstra的最短路径优先（SPF）算法来计算最�
 
 ![](https://help.mikrotik.com/docs/download/attachments/9863229/image2020-2-26_11-9-11.png?version=3&modificationDate=1621333788215&api=v2)![](https://help.mikrotik.com/docs/download/attachments/9863229/image2020-2-26_11-9-32.png?version=5&modificationDate=1621333798873&api=v2)
 
-从上图可以看出，已经找到了多条通往172.16.1.0网络的最短路径，允许对通往该目的地的流量进行负载平衡，称为 [等成本多路径（ECMP）]（https://help.mikrotik.com/docs/display/ROS/How+Packets+Are+Routed#HowPacketsAreRouted-Multipath(ECMP)route）。最短路径树建立后，路由器开始建立相应的路由表。网络会根据树上计算的成本到达。
+从上图可以看出，已经找到了多条通往172.16.1.0网络的最短路径，允许对通往该目的地的流量进行负载平衡，称为 [等成本多路径（ECMP）](https://help.mikrotik.com/docs/display/ROS/How+Packets+Are+Routed#HowPacketsAreRouted-Multipath(ECMP)route) 。最短路径树建立后，路由器开始建立相应的路由表。网络会根据树上计算的成本到达。
 
 路由表的计算看起来很简单，但是，当使用一些OSPF扩展或计算OSPF区域时，路由计算会变得更加复杂。
 
@@ -174,13 +174,13 @@ OSPF使用协议号89在IP网络层上运行。
 
 ![](https://help.mikrotik.com/docs/download/attachments/9863229/OSPF_Header.png?version=1&modificationDate=1576853835217&api=v2)
 
-| 字段 | 说明 |
-| --- | --- |
-| **Packet type** | OSPF数据包有几种类型： Hello包，数据库描述（DD）包，链路状态请求包，链路状态更新包，以及链路状态确认包。除了Hello数据包，所有这些数据包都用于链路状态数据库同步。|
-| **Router ID** | 路由器的一个IP地址，除了手动配置的。|
-| **Area ID** |允许OSPF路由器将数据包关联到适当的OSPF区域。|
-| **Checksum** | 允许接收路由器确定数据包是否在传输过程中被损坏。|
-| **Authentication fields** | 这些字段允许接收路由器验证数据包的内容没有被修改，并且数据包确实来自路由器ID出现在数据包中的OSPF路由器。|
+| 字段                      | 说明                                                                                                                                                              |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Packet type**           | OSPF数据包有几种类型： Hello包，数据库描述（DD）包，链路状态请求包，链路状态更新包，以及链路状态确认包。除了Hello数据包，所有这些数据包都用于链路状态数据库同步。 |
+| **Router ID**             | 路由器的一个IP地址，除了手动配置的。                                                                                                                              |
+| **Area ID**               | 允许OSPF路由器将数据包关联到适当的OSPF区域。                                                                                                                      |
+| **Checksum**              | 允许接收路由器确定数据包是否在传输过程中被损坏。                                                                                                                  |
+| **Authentication fields** | 这些字段允许接收路由器验证数据包的内容没有被修改，并且数据包确实来自路由器ID出现在数据包中的OSPF路由器。                                                          |
 
 有五种不同的OSPF数据包类型，用于确保在OSPF网络上正确地泛滥LSA。
 
@@ -198,16 +198,16 @@ Hello包的发送和接收也允许路由器检测邻居的故障。如果在 [d
 
 ![](https://help.mikrotik.com/docs/download/attachments/9863229/Hello_data.png?version=2&modificationDate=1576854102846&api=v2)
 
-|字段 | 说明 |
-| --- | --- |
-| **network mask** | 发端路由器的接口IP地址掩码|
-| **hello interval** | Hello数据包的间隔时间(默认为10s)|
-| **options** | OSPF邻居信息选项|
-| **router priority** |一个8位值，帮助选举DR和BDR。(不在p2p链接中设置)|
-| **router dead interval** | 必须在收到时间间隔后才会认为邻居已经死机。(默认情况下是Hello间隔的4倍)|
-| **DR** | 当前DR的路由器ID|
-| **BDR** | 当前BDR的路由器ID|
-| **Neighbor router IDs** |所有发端路由器的邻居路由器ID列表 |
+| 字段                     | 说明                                                                   |
+| ------------------------ | ---------------------------------------------------------------------- |
+| **network mask**         | 发端路由器的接口IP地址掩码                                             |
+| **hello interval**       | Hello数据包的间隔时间(默认为10s)                                       |
+| **options**              | OSPF邻居信息选项                                                       |
+| **router priority**      | 一个8位值，帮助选举DR和BDR。(不在p2p链接中设置)                        |
+| **router dead interval** | 必须在收到时间间隔后才会认为邻居已经死机。(默认情况下是Hello间隔的4倍) |
+| **DR**                   | 当前DR的路由器ID                                                       |
+| **BDR**                  | 当前BDR的路由器ID                                                      |
+| **Neighbor router IDs**  | 所有发端路由器的邻居路由器ID列表                                       |
 
 在每种类型的网段上，Hello协议的工作方式有些不同。很明显，在点对点网段上只有一个邻居是可能的，不需要额外的动作。然而，如果在网段上可以有一个以上的邻居，则要采取额外的行动，使OSPF功能更加有效。
 
@@ -453,7 +453,7 @@ add name=area1 area-id=1.1.1.1 type=stub instance=v2inst
 add networks=10.0.3.0/24 area=area1
 ```
 
-##完全存根区
+## 完全存根区
 
 完全存根区是存根区的一个延伸。一个完全存根区域阻止外部路由和汇总（区间）路由进入该区域。只有区内路由被注入到该区域。完全存根区被配置为存根区，有一个额外的 "no-summaries "标志。这个区域支持1类、2类LSA和3类LSA与缺省路由。
 
@@ -570,8 +570,8 @@ add chain=ospf_out rule="if (dst == 10.0.0.0/16) {accept} else {reject}"
 
 使用虚连接的常见场景有两种:
 
--将支离破碎的骨干区域粘合在一起
--连接没有直接连接到骨干网的远程设备
+- 将支离破碎的骨干区域粘合在一起
+- 连接没有直接连接到骨干网的远程设备
 
 ![](https://help.mikrotik.com/docs/download/attachments/9863229/Vlink-backbone.jpg?version=1&modificationDate=1652186526347&api=v2)
 
@@ -615,23 +615,23 @@ add vlink-transit-area=area2 area=backbone_v2 type=virtual-link vlink-neighbor-i
 
 **Sub-menu:** `/routing/ospf/instance`
 
-|属性|说明|
-| --- | --- |
-| **domain-id** (_Hex \| Address_) | mpls相关参数。标识实例所属的OSPF域。该值附加在作为VPNv4路由在BGP中重新分发的OSPF路由上，作为BGP扩展团体属性。当BGP VPNv4路由重新分发回OSPF时，使用该值来决定该路由是否生成区域间LSA或as -external LSA。缺省情况下，使用Null domain-id，如RFC 4577所述。|
-| **domain-tag** (_integer[0..4294967295]_) |如果设置，则用于路由重新分配(在该路由器生成的所有外部lsa中作为route-tag)和路由计算(所有具有此路由标签的外部lsa都被忽略)。需要和旧的思科系统互操作，缺省情况下不设置。|
-| **in-filter** (_string_) |用于传入前缀的 [路由过滤器](https://help.mikrotik.com/docs/display/ROS/Routing+Filters) 链的名称|
-| **MPLS -te-address** (_string_) |用于MPLS流量工程的区域。TE Opaque lsa是在该区域生成的。配置mpls-te-area的OSPF实例不能超过一个。|
-| **MPLS -te-area** (_string_) |用于MPLS流量工程的区域。TE Opaque lsa是在该区域生成的。配置mpls-te-area的OSPF实例不能超过一个。|
-| **original -default** (_always \| if-installed \| never_;Default:**never**) |指定默认路由(0.0.0.0/0)的分发方式。|
-| **out-filter-chain** (_name) |用于过滤外发前缀的 [路由过滤器](https://help.mikrotik.com/docs/display/ROS/Routing+Filters) 链名|
-| **out-filter-select** (_name) |路由过滤器选择链的名称，用于输出选择|
-| **redistribute** (_bgp，connected,copy,dhcp,fantasy,modem,ospf,rip,static,vpn_; )|启用特定路由类型的重分发。|
-| **router-id** (_IP \| name_;Default:**main**) | OSPF路由器ID。可以显式设置为IP地址，也可以设置为router-id实例的名称。|
-| **version**(_2 \| 3;_Default:**2**)|此实例将运行的OSPF版本(IPv4为v2, IPv6为v3)。|
-| **vrf**(_name of a routing table_;Default:**main**) |此OSPF实例运行的VRF表|
-| **use-dn** (_yes \| no_) |强制使用或忽略DN位。在某些CE - PE场景下，可以将区域内路由注入VRF。如果不设置参数，则根据RFC使用DN位。从v6rc12开始可用。|
+| 属性                                                                              | 说明                                                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **domain-id** (_Hex \| Address_)                                                  | mpls相关参数。标识实例所属的OSPF域。该值附加在作为VPNv4路由在BGP中重新分发的OSPF路由上，作为BGP扩展团体属性。当BGP VPNv4路由重新分发回OSPF时，使用该值来决定该路由是否生成区域间LSA或as -external LSA。缺省情况下，使用Null domain-id，如RFC 4577所述。 |
+| **domain-tag** (_integer[0..4294967295]_)                                         | 如果设置，则用于路由重新分配(在该路由器生成的所有外部lsa中作为route-tag)和路由计算(所有具有此路由标签的外部lsa都被忽略)。需要和旧的思科系统互操作，缺省情况下不设置。                                                                                   |
+| **in-filter** (_string_)                                                          | 用于传入前缀的 [路由过滤器](https://help.mikrotik.com/docs/display/ROS/Routing+Filters) 链的名称                                                                                                                                                        |
+| **MPLS -te-address** (_string_)                                                   | 用于MPLS流量工程的区域。TE Opaque lsa是在该区域生成的。配置mpls-te-area的OSPF实例不能超过一个。                                                                                                                                                         |
+| **MPLS -te-area** (_string_)                                                      | 用于MPLS流量工程的区域。TE Opaque lsa是在该区域生成的。配置mpls-te-area的OSPF实例不能超过一个。                                                                                                                                                         |
+| **original -default** (_always \| if-installed \| never_;Default:**never**)       | 指定默认路由(0.0.0.0/0)的分发方式。                                                                                                                                                                                                                     |
+| **out-filter-chain** (_name)                                                      | 用于过滤外发前缀的 [路由过滤器](https://help.mikrotik.com/docs/display/ROS/Routing+Filters) 链名                                                                                                                                                        |
+| **out-filter-select** (_name)                                                     | 路由过滤器选择链的名称，用于输出选择                                                                                                                                                                                                                    |
+| **redistribute** (_bgp，connected,copy,dhcp,fantasy,modem,ospf,rip,static,vpn_; ) | 启用特定路由类型的重分发。                                                                                                                                                                                                                              |
+| **router-id** (_IP \| name_;Default:**main**)                                     | OSPF路由器ID。可以显式设置为IP地址，也可以设置为router-id实例的名称。                                                                                                                                                                                   |
+| **version**(_2 \| 3;_Default:**2**)                                               | 此实例将运行的OSPF版本(IPv4为v2, IPv6为v3)。                                                                                                                                                                                                            |
+| **vrf**(_name of a routing table_;Default:**main**)                               | 此OSPF实例运行的VRF表                                                                                                                                                                                                                                   |
+| **use-dn** (_yes \| no_)                                                          | 强制使用或忽略DN位。在某些CE - PE场景下，可以将区域内路由注入VRF。如果不设置参数，则根据RFC使用DN位。从v6rc12开始可用。                                                                                                                                 |
 
-### 笔记
+### 注释
 
 OSPF协议支持两种类型的度量:
 
@@ -642,26 +642,26 @@ OSPF协议支持两种类型的度量:
 
 **Sub-menu:** `/routing/ospf/area`
 
-|属性|说明|
-| --- | --- |
-| **area-id** (_IP地址_;Default:**0.0.0.0**)| OSPF区域标识符。如果路由器在多个区域中有网络，则必须始终存在一个area-id=0.0.0.0(骨干)的区域。主干总是包含所有的区域边界路由器。骨干网负责在非骨干区域之间分发路由信息。骨干网必须是连续的，即不能有断开的网段。但是，区域边界路由器不需要与骨干网物理连接，可以使用虚连接来模拟与骨干网的连接。|
-| **default-cost** (_integer_;unset) |区域内注入lsa的缺省开销。如果不设置该值，则不会产生stub区域type-3缺省LSA。|
-| **instance** (_name_;mandatory)|该区域所属的OSPF实例名称。|
-| **no-summaries**() |标志参数，如果设置了该参数，则不扩散stub区域内的summary lsa。|
-| **name** (_string_) |区域名称|
-| **nssa-translate** (_yes \| no \| candidate_) |该参数表示将使用哪个ABR作为type7到type5 LSA的转换器。仅当区域类型为NSSA时适用<br>- yes，路由器会一直被用作转换器<br>- no，路由器永远不会被用作转换器<br>- candidate - OSPF选择一个候选路由器作为转换器|
-| **type** (_default \| nssa \| stub_;Default:**Default**) |区域类型。阅读更多关于OSPF案例研究中的区域类型。|
+| 属性                                                     | 说明                                                                                                                                                                                                                                                                                            |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **area-id** (_IP地址_;Default:**0.0.0.0**)               | OSPF区域标识符。如果路由器在多个区域中有网络，则必须始终存在一个area-id=0.0.0.0(骨干)的区域。主干总是包含所有的区域边界路由器。骨干网负责在非骨干区域之间分发路由信息。骨干网必须是连续的，即不能有断开的网段。但是，区域边界路由器不需要与骨干网物理连接，可以使用虚连接来模拟与骨干网的连接。 |
+| **default-cost** (_integer_;unset)                       | 区域内注入lsa的缺省开销。如果不设置该值，则不会产生stub区域type-3缺省LSA。                                                                                                                                                                                                                      |
+| **instance** (_name_;mandatory)                          | 该区域所属的OSPF实例名称。                                                                                                                                                                                                                                                                      |
+| **no-summaries**()                                       | 标志参数，如果设置了该参数，则不扩散stub区域内的summary lsa。                                                                                                                                                                                                                                   |
+| **name** (_string_)                                      | 区域名称                                                                                                                                                                                                                                                                                        |
+| **nssa-translate** (_yes \| no \| candidate_)            | 该参数表示将使用哪个ABR作为type7到type5 LSA的转换器。仅当区域类型为NSSA时适用<br>- yes，路由器会一直被用作转换器<br>- no，路由器永远不会被用作转换器<br>- candidate - OSPF选择一个候选路由器作为转换器                                                                                          |
+| **type** (_default \| nssa \| stub_;Default:**Default**) | 区域类型。阅读更多关于OSPF案例研究中的区域类型。                                                                                                                                                                                                                                                |
 
 ## 区域范围
 
 **Sub-menu:** `/routing/ospf/area/range`
 
-|属性|说明|
-| --- | --- |
-| **advertise** (_yes \| no_;Default:yes) |是否创建summary LSA并发布到邻近区域。|
-| **area** (_name_;mandatory)|与此范围关联的OSPF区域|
-| **cost** (_integer[0..4294967295]_) |此范围将创建的汇总LSA的开销<br>Default -使用开销值最大的路由(即在此范围内的路由)|
-| **prefix** (_IP prefix_; mandatory)|此范围的网络前缀|
+| 属性                                    | 说明                                                                             |
+| --------------------------------------- | -------------------------------------------------------------------------------- |
+| **advertise** (_yes \| no_;Default:yes) | 是否创建summary LSA并发布到邻近区域。                                            |
+| **area** (_name_;mandatory)             | 与此范围关联的OSPF区域                                                           |
+| **cost** (_integer[0..4294967295]_)     | 此范围将创建的汇总LSA的开销<br>Default -使用开销值最大的路由(即在此范围内的路由) |
+| **prefix** (_IP prefix_; mandatory)     | 此范围的网络前缀                                                                 |
 
 ## 接口
 
@@ -677,33 +677,33 @@ OSPF协议支持两种类型的度量:
 
 ### 匹配器
 
-|属性|说明|
-| --- | --- |
-| **interfaces** (_name_) |要匹配的接口。接受指定的接口名称或接口列表的名称。|
-| **network** (_IP prefix_) |与该区域关联的网络前缀。在此范围内至少有一个地址的所有接口都会启动OSPF。请注意，此检查使用地址的网络前缀(即不是本地地址)。对于点到点接口，这意味着远程端点的地址。|
+| 属性                      | 说明                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **interfaces** (_name_)   | 要匹配的接口。接受指定的接口名称或接口列表的名称。                                                                                                                 |
+| **network** (_IP prefix_) | 与该区域关联的网络前缀。在此范围内至少有一个地址的所有接口都会启动OSPF。请注意，此检查使用地址的网络前缀(即不是本地地址)。对于点到点接口，这意味着远程端点的地址。 |
 
 ### 指派参数
 
-|属性|说明|
-| --- | --- |
-| **area** (_name_; mandatory)|匹配接口要关联到的OSPF区域。|
-| **auth** (_simple \| md5 \| sha1 \| sha256 \| sha384 \| sha512_) |指定OSPF协议消息的认证方式。<br>- simple -明文认证<br>- md5 - keyyed消息摘要5认证<br>- sha - HMAC-SHA认证RFC5709<br>如果未设置该参数，则不使用身份验证。|
-| **auth-id** (_integer_) |密钥id用于计算消息摘要(启用MD5或SHA认证时使用)。该值应该匹配同一区域内的所有OSPF路由器。|
-| **authentication-key** (_string)_ |要使用的认证密钥，必须在网段的所有邻居上匹配。|
-| **comment**(_string)_ | |
-| **cost**(_integer[0..65535])_ |以链路状态度量表示的接口开销。|
-| **dead-interval** (_time_;Default:**40s**) |指定邻居被宣告死亡的时间间隔。该时间间隔在hello报文中发布。该值对于同一网络中的所有路由器必须相同，否则不会形成邻接关系|
-| **disabled**(_yes \| no)_ | |
-| **hello-interval** (_time_;Default:**10s**) |路由器发送该接口的HELLO报文间隔时间。该间隔越小，检测到拓扑变化的速度越快，权衡的是更多的OSPF协议流量。同一网络中的所有路由器必须设置相同的值，否则路由器之间不会形成邻接关系。|
-| **instance-id** (i_integer [0..255]_;Default:**0**)| |
-| **passive**() |如果使能，则在匹配的接口上不发送或接收OSPF流量|
-| **prefix-list** (name) |需要发布到v3接口的网络的地址列表名称。|
-| **priority** (_integer: 0..255_; Default: **128**) | 路由器的优先级。用于确定广播网络中指定的路由器。优先级高的路由器优先。优先级值为0表示路由器根本没有资格成为指定或备份指定路由器。<br>ROS v7的默认值是128(在RFC中定义)，而ROS v6的默认值是1，如果您为DR/BDR选举设置了严格的优先级，请记住这一点。|
-| **retransmit-interval** (_time_;Default:**5s**) |丢失的lsa重新发送的时间间隔。当一台路由器向它的邻居发送一条LSA (link state advertisement)时，该LSA将一直保存到收到确认为止。如果没有及时收到确认(参见transmit-delay)，路由器将尝试重传LSA。|
-| **transmit-delay** (_time_;Default:**1s**) |链路状态发送延迟是接口发送链路状态更新报文所需的估计时间。|
-| **type** (_broadcast \| nbma \| ptp \| ptmp \| ptp-unnumbered \| virtual-link_; Default: **broadcast**) | 接口上的OSPF网络类型。注意，如果没有接口配置，则PtP接口的默认网络类型为“点对点”，其他所有接口的默认网络类型为“广播”。<br>- broadcast -网络类型适用于以太网和其他多播能力的链路层。选择指定路由器<br>- nbma -非广播多路接入。协议报文被发送到每个邻居的单播地址。需要手工配置邻居。选择指定路由器<br>- ptp -适用于只有两个节点的网络。不选择指定路由器<br>- ptmp -点到多点。比NBMA更容易配置，因为它不需要手动配置邻居。不要选择指定的路由器。这是最强大的网络类型，因此适用于无线网络，如果“广播”模式不能很好地为他们工作<br>- ptp-unnumbered -作用与ptp相同，只是远端邻居没有与特定ptp接口关联的IP地址。例如，在Cisco设备上使用未编号的IP。<br>- virtual-link用于建立虚连接。|
-| **vlink-neighbor-id** (_IP_) |虚连接邻居的 **router-id**。|
-| **vlink-transit-area** (_name) |两台路由器共有的非骨干区域，虚连接将建立在该区域上。stub区域不能建立虚连接。|
+| 属性                                                                                                    | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **area** (_name_; mandatory)                                                                            | 匹配接口要关联到的OSPF区域。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **auth** (_simple \| md5 \| sha1 \| sha256 \| sha384 \| sha512_)                                        | 指定OSPF协议消息的认证方式。<br>- simple -明文认证<br>- md5 - keyyed消息摘要5认证<br>- sha - HMAC-SHA认证RFC5709<br>如果未设置该参数，则不使用身份验证。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **auth-id** (_integer_)                                                                                 | 密钥id用于计算消息摘要(启用MD5或SHA认证时使用)。该值应该匹配同一区域内的所有OSPF路由器。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **authentication-key** (_string)_                                                                       | 要使用的认证密钥，必须在网段的所有邻居上匹配。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **comment**(_string)_                                                                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **cost**(_integer[0..65535])_                                                                           | 以链路状态度量表示的接口开销。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **dead-interval** (_time_;Default:**40s**)                                                              | 指定邻居被宣告死亡的时间间隔。该时间间隔在hello报文中发布。该值对于同一网络中的所有路由器必须相同，否则不会形成邻接关系                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **disabled**(_yes \| no)_                                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **hello-interval** (_time_;Default:**10s**)                                                             | 路由器发送该接口的HELLO报文间隔时间。该间隔越小，检测到拓扑变化的速度越快，权衡的是更多的OSPF协议流量。同一网络中的所有路由器必须设置相同的值，否则路由器之间不会形成邻接关系。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **instance-id** (i_integer [0..255]_;Default:**0**)                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **passive**()                                                                                           | 如果使能，则在匹配的接口上不发送或接收OSPF流量                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **prefix-list** (name)                                                                                  | 需要发布到v3接口的网络的地址列表名称。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **priority** (_integer: 0..255_; Default: **128**)                                                      | 路由器的优先级。用于确定广播网络中指定的路由器。优先级高的路由器优先。优先级值为0表示路由器根本没有资格成为指定或备份指定路由器。<br>ROS v7的默认值是128(在RFC中定义)，而ROS v6的默认值是1，如果您为DR/BDR选举设置了严格的优先级，请记住这一点。                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **retransmit-interval** (_time_;Default:**5s**)                                                         | 丢失的lsa重新发送的时间间隔。当一台路由器向它的邻居发送一条LSA (link state advertisement)时，该LSA将一直保存到收到确认为止。如果没有及时收到确认(参见transmit-delay)，路由器将尝试重传LSA。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **transmit-delay** (_time_;Default:**1s**)                                                              | 链路状态发送延迟是接口发送链路状态更新报文所需的估计时间。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **type** (_broadcast \| nbma \| ptp \| ptmp \| ptp-unnumbered \| virtual-link_; Default: **broadcast**) | 接口上的OSPF网络类型。注意，如果没有接口配置，则PtP接口的默认网络类型为“点对点”，其他所有接口的默认网络类型为“广播”。<br>- broadcast -网络类型适用于以太网和其他多播能力的链路层。选择指定路由器<br>- nbma -非广播多路接入。协议报文被发送到每个邻居的单播地址。需要手工配置邻居。选择指定路由器<br>- ptp -适用于只有两个节点的网络。不选择指定路由器<br>- ptmp -点到多点。比NBMA更容易配置，因为它不需要手动配置邻居。不要选择指定的路由器。这是最强大的网络类型，因此适用于无线网络，如果“广播”模式不能很好地为他们工作<br>- ptp-unnumbered -作用与ptp相同，只是远端邻居没有与特定ptp接口关联的IP地址。例如，在Cisco设备上使用未编号的IP。<br>- virtual-link用于建立虚连接。 |
+| **vlink-neighbor-id** (_IP_)                                                                            | 虚连接邻居的 **router-id**。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **vlink-transit-area** (_name)                                                                          | 两台路由器共有的非骨干区域，虚连接将建立在该区域上。stub区域不能建立虚连接。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ## Lsa
 
@@ -711,23 +711,23 @@ OSPF协议支持两种类型的度量:
 
 当前在LSA数据库中的所有LSA的只读列表。
 
-|属性|说明|
-| --- | --- |
-| **age** (_integer_) |上次更新发生的时间(以秒为单位)|
-| **area** (_string_) |该LSA所属的区域。|
-| **body** (_string_) | |
-| **checksum** (_string_) | LSA校验和|
-| **dynamic** (_yes \| no_) | |
-| **flushing** (_yes \| no_) | |
-| **id** (_IP_) | LSA记录id |
-| **instance** (_string_) | LSA所属的实例名。|
-| **link** (_string_) | |
-| **link-instance-id** (_IP_) | |
-| **originator** (_IP_) | LSA记录的发起者。|
-| **self-originated** (_yes \| no_) | LSA是否来自路由器自身。|
-| **sequence** (_string_) |一条链路的LSA更新次数。|
-| **type** (_string_) |  |
-| **wraparound** (_string_) | |
+| 属性                              | 说明                           |
+| --------------------------------- | ------------------------------ |
+| **age** (_integer_)               | 上次更新发生的时间(以秒为单位) |
+| **area** (_string_)               | 该LSA所属的区域。              |
+| **body** (_string_)               |                                |
+| **checksum** (_string_)           | LSA校验和                      |
+| **dynamic** (_yes \| no_)         |                                |
+| **flushing** (_yes \| no_)        |                                |
+| **id** (_IP_)                     | LSA记录id                      |
+| **instance** (_string_)           | LSA所属的实例名。              |
+| **link** (_string_)               |                                |
+| **link-instance-id** (_IP_)       |                                |
+| **originator** (_IP_)             | LSA记录的发起者。              |
+| **self-originated** (_yes \| no_) | LSA是否来自路由器自身。        |
+| **sequence** (_string_)           | 一条链路的LSA更新次数。        |
+| **type** (_string_)               |                                |
+| **wraparound** (_string_)         |                                |
 
 ## 邻居
 
@@ -735,24 +735,24 @@ OSPF协议支持两种类型的度量:
 
 当前激活的OSPF邻居的只读列表。
 
-|属性|说明|
-| --- | --- |
-| **address** (_IP_) | OSPF邻居路由器的IP地址
-| **adjacency** (_time_) |自邻接关系形成以来经过的时间|
-| **area** (_string_) | |
-| **bdr** (_string_) |备份指定路由器的IP地址|
-| **comment** (_string_) | |
-| **db-summaries** (_integer_) | |
-| **dr** (_IP_) |指定路由器的IP地址
-| **dynamic** (_yes \| no_) | |
-| **inactive** (_yes \| no_) |  |
-| **instance** (_string_) |  |
-| **ls-requests** (_integer_) |  |
-| **ls-retransmits** (_integer_) | |
-| **priority** (_integer_) |邻居配置的优先级|
-| **router-id** (_IP_) |邻居路由器的RouterID|
-| **state** (_down \| attempt \| init \| 2-way \| ExStart \| Exchange \| Loading \| full_) |- **Down** -没有收到邻居的Hello报文。<br>- **Attempt** -仅适用于NBMA云。表示最近没有收到邻居的信息。<br>- **Init** -收到邻居的Hello报文，但没有建立双向通信(RouterID不在Hello报文中列出)。<br>- **2-way** -双向通信已经建立。在此状态下进行DR和BDR选举，路由器根据路由器是DR还是BDR建立邻接关系，链路是点对点还是虚连接。<br>- **ExStart** -路由器尝试建立用于报文信息交换的初始序列号。ID较高的路由器成为主路由器并开始交换。<br>- **Exchange** -路由器交换DD (database description)报文。<br>- **Loading** -在此状态下交换实际的链路状态信息。Link State Request报文发送给邻居，请求在Exchange状态下发现新的lsa。<br>- **Full** -邻接状态完全，邻居路由器完全相邻。相邻路由器之间同步LSA信息。路由器只有在自己的DR和BDR中才能达到full状态，P2P链路除外。|
-| **state-changes** (_integer_) | OSPF自邻居识别以来状态变化的总数 |
+| 属性                                                                                     | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **address** (_IP_)                                                                       | OSPF邻居路由器的IP地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **adjacency** (_time_)                                                                   | 自邻接关系形成以来经过的时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **area** (_string_)                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **bdr** (_string_)                                                                       | 备份指定路由器的IP地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **comment** (_string_)                                                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **db-summaries** (_integer_)                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **dr** (_IP_)                                                                            | 指定路由器的IP地址                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **dynamic** (_yes \| no_)                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **inactive** (_yes \| no_)                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **instance** (_string_)                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **ls-requests** (_integer_)                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **ls-retransmits** (_integer_)                                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **priority** (_integer_)                                                                 | 邻居配置的优先级                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **router-id** (_IP_)                                                                     | 邻居路由器的RouterID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **state** (_down \| attempt \| init \| 2-way \| ExStart \| Exchange \| Loading \| full_) | - **Down** -没有收到邻居的Hello报文。<br>- **Attempt** -仅适用于NBMA云。表示最近没有收到邻居的信息。<br>- **Init** -收到邻居的Hello报文，但没有建立双向通信(RouterID不在Hello报文中列出)。<br>- **2-way** -双向通信已经建立。在此状态下进行DR和BDR选举，路由器根据路由器是DR还是BDR建立邻接关系，链路是点对点还是虚连接。<br>- **ExStart** -路由器尝试建立用于报文信息交换的初始序列号。ID较高的路由器成为主路由器并开始交换。<br>- **Exchange** -路由器交换DD (database description)报文。<br>- **Loading** -在此状态下交换实际的链路状态信息。Link State Request报文发送给邻居，请求在Exchange状态下发现新的lsa。<br>- **Full** -邻接状态完全，邻居路由器完全相邻。相邻路由器之间同步LSA信息。路由器只有在自己的DR和BDR中才能达到full状态，P2P链路除外。 |
+| **state-changes** (_integer_)                                                            | OSPF自邻居识别以来状态变化的总数                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## 静态邻居配置
 
@@ -760,11 +760,11 @@ OSPF协议支持两种类型的度量:
 
 OSPF邻居的静态配置。适用于非广播多址网络。
 
-|属性|说明|
-| --- | --- |
-| **address** (_IP%iface_;mandatory )|单播IP地址和接口，用来到达邻居的IP地址。例如，“address=1.2.3.4%ether1”表示在_ether1_接口上有IP地址为 _1.2.3.4_ 的邻居可达。|
-| **area** (_name_;mandatory )|邻居所属区域名称。|
-| **comment** (_string)_ | |
-| **disabled** (_yes \| no)_ | |
-| **instance-id** (_integer [0..255]_;Default:0)| |
-| **poll-interval** (_time_;Default:**2m**) |向处于“down”状态(即没有流量)的邻居发送hello消息的频率|
+| 属性                                           | 说明                                                                                                                        |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **address** (_IP%iface_;mandatory )            | 单播IP地址和接口，用来到达邻居的IP地址。例如，“address=1.2.3.4%ether1”表示在_ether1_接口上有IP地址为 _1.2.3.4_ 的邻居可达。 |
+| **area** (_name_;mandatory )                   | 邻居所属区域名称。                                                                                                          |
+| **comment** (_string)_                         |                                                                                                                             |
+| **disabled** (_yes \| no)_                     |                                                                                                                             |
+| **instance-id** (_integer [0..255]_;Default:0) |                                                                                                                             |
+| **poll-interval** (_time_;Default:**2m**)      | 向处于“down”状态(即没有流量)的邻居发送hello消息的频率                                                                       |
