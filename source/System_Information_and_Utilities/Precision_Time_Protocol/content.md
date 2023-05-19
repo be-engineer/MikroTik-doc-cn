@@ -1,150 +1,124 @@
-# Summary
+# 概述
 
-Precision Time Protocol is used to synchronize clocks throughout the network. On a local area network, it achieves clock accuracy in the sub-microsecond range, making it suitable for measurement and control systems. RouterOS supports IEEE 1588-2008, PTPv2. Support is hardware dependant, please see the supported device list below.
+精确时间协议用于同步整个网络的时钟。在局域网中，它的时钟精度达到亚微秒范围，适用于测量和控制系统。RouterOS支持IEEE 1588-2008、PTPv2。支持取决于硬件，请参阅下面的支持设备列表。
 
-Supported features:
+支持功能:
 
--   Boundary/Ordinary clock
--   E2E delay mode
--   PTP delay mode
--   UDP over IPv4 multicast transport mode
--   L2 transport mode
--   priority1 can be configured to decide master/slave
--   PTP clock IS NOT synced with the system clock
+- 边界/普通时钟
+- 端到端延迟模式
+- PTP延迟模式
+- UDP over IPv4组播传输模式
+- L2传输模式
+- 可以配置priity1来决定主备关系
+- PTP时钟不与系统时钟同步
 
-# General properties
+# 通用属性
 
 **Sub-menu:** `/system ptp`
 
-  
+| 属性                                                            | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **port**                                                        | 用于添加、删除或查看指定端口的子菜单                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **status**                                                      | 显示PTP端口状态和从端口延迟的子菜单                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **comment** (_string_;Default:)                                 | PTP配置文件的简短描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **name** (_string_;Default:)                                    | PTP配置文件名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **delay-mode** (_auto \| e2e \| ptp_; Default: **auto**)        | 配置PTP配置文件的延迟模式<br>-  _auto_ -自动选择延迟模式<br>- _e2e_ -使用延迟请求-响应机制<br>- _ptp_ -使用对等体延迟机制                                                                                                                                                                                                                                                                                                                                                                                          |
+| **priority1** (_integer [0..255]_; auto; Default: **auto**)     | 影响特级大师选择的优先级值                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **profile** (_802.1as; default; g8275.1;_ Default: **default**) | IEEE 1588-2008包含了一个定义PTP操作参数和选项的_profile概念。<br>IEEE 802.1AS是PTP的一个改编版本，用于音视频桥接和时间敏感网络。使用delay-mode=p2p, transport-mode=l2;建议使用priity1 =auto。<br>g8275.1配置文件用于完全感知ptp的网络中的频率和相位同步。只允许priority1=auto (128)， priority2=128, domain=24, delay-mode=e2e, transport=l2。<br>默认配置文件，PTPv2默认配置，允许比其他配置文件更多的配置选项，但是自动设置的默认值对应于:priority =128。Priority2 =128, domain=0,transport=ipv4, delay-mode=e2e |
+| **transport** (_auto; ipv4;  l2;_ Default: **auto**)            | 传输协议:IPv4或layer2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
-| 
-Property
+有关精确时间协议的更多详细信息，请参见以下标准IEEE 1588和IEEE 802.1as。
 
- | 
+我们强烈建议保留默认/自动值，因为配置文件之间有不同的需求。手动分配它们可能会导致配置错误。
 
-Description
+# 配置
 
-|     |
-| --- |  |
-|     |
+要配置设备参与PTP，首先需要创建PTP配置文件:
 
-Property
+```shell
+/system ptp add name=ptp1
+#to view the created profile use
+/system ptp print
+Flags: I - inactive, X - disabled
+0 name="ptp1" priority1=auto delay-mode=auto transport=auto profile=default
+```
 
- | 
+请注意
 
-Description
+每台设备只支持1个PTP配置文件
 
-|                                   |
-| --------------------------------- | -------------------------------------------------------------------- |
-| **port**                          | Sub-menu used for adding, removing, or viewing assigned ports        |
-| **status**                        | Sub-menu that shows PTP ports, their state, and delay on slave ports |
-| **comment** (_string_; Default: ) |
 
-Short description of the PTP profile
+创建PTP配置文件后，您需要为其分配端口:
 
- |
-| **name** (_string_; Default: ) | Name of the PTP profile |
-| **delay-mode** (_auto | e2e | ptp_; Default: **auto**) | Configures delay mode for PTP profile
+```shell
+/system ptp port add interface=ether1 ptp=ptp1
+#to view assigned ports use
+/system ptp port print
+Flags: I - inactive
+0 ptp=ptp1 interface=ether8
+ 
+1 ptp=ptp1 interface=ether22
+```
 
--   -   _auto_ \- selects delay mode automatically
-    -   _e2e_ \- use the delay request-response mechanism
-    -   _ptp_ \- use the peer delay mechanism
+需要监控PTP配置文件，使用monitor命令:
 
- |
-| **priority1** (_integer \[0..255\]_; auto; Default: **auto**) | the priority value for influencing grandmaster election |
-| **profile** (_802.1as; default; g8275.1;_ Default: **default**) | 
+```shell
+#on grandmaster device
+[admin@grandmaster] > system ptp monitor numbers=0
+name: test
+clock-id: 64:D1:54:FF:FE:EB:AE:C3
+priority1: 30
+priority2: 128
+i-am-gm: yes
+ 
+#on non-grandmaster device
+[admin@328] /system ptp monitor 0
+name: ptp1
+clock-id: 64:D1:54:FF:FE:EB:AD:C7
+priority1: 128
+priority2: 128
+i-am-gm: no
+gm-clock-id: 64:D1:54:FF:FE:EB:AE:C3
+gm-priority1: 30
+gm-priority2: 128
+master-clock-id: 64:D1:54:FF:FE:EB:AE:C3
+slave-port: ether8
+freq-drift: 2147483647 ppb
+offset: 1396202830 ns
+hw-offset: 1306201921 ns
+slave-port-delay: 2075668440 ns
+```
 
-IEEE 1588-2008 includes a _profile_ concept defining PTP operating parameters and options. 
+## 监控属性
 
-IEEE 802.1AS is an adaptation of PTP for use with Audio Video Bridging and Time-Sensitive Networking. Uses delay-mode=p2p, transport-mode=l2; recommends using priority1=auto.
+| 属性                   | 说明                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| **clock- ID:**         | 本地时钟ID                                                                                    |
+| **priority1:**         | priority1值，取决于所选择的PTP配置文件，用于影响宗师选举的可调值。                            |
+| **priority2:**         | priority2的值，在RouterOS中不可调整                                                           |
+| **i-am-gm:** yes \| no | 显示设备是否是特级大师时钟                                                                    |
+| **gm-clock-id:**       | grandmaster时钟ID -在一个域中，一个时钟是使用协议进行时钟同步的最终时间源。                   |
+| **gm-priority1:**      | 大师优先级1                                                                                   |
+| **gm-priority2:**      | 大师优先级2                                                                                   |
+| **master-clock-id:**   | 主时钟ID -在单个精确时间协议(PTP)通信路径的上下文中，是该路径上所有其他时钟同步的时间源时钟。 |
+| **slave-port:**        | 显示哪个端口指向主时钟或宗师时钟                                                              |
+| **freq-drift:**        | 频率漂移:PPB(十亿分之一)频率漂移-如果没有同步，每秒相对于主时钟丢失的时间。                   |
+| **offset:**            | 时钟值之间的差异                                                                              |
+| **hw-offset:**         | 与硬件时钟的偏移量                                                                            |
+| **slave-port-delay:**  | 数据包送到直连设备所花费的时间                                                                |
 
-g8275.1 profile is for frequency and phase synchronization in a fully PTP-aware network. Only allows priority1=auto (128), priority2=128, domain=24, delay-mode=e2e, transport=l2.
+# 设备支持
 
-default profile, PTPv2 default configuration, allows for more configuration options than other profiles, but default values with auto settings correspond to: priority1=128. priority2=128, domain=0,transport=ipv4, delay-mode=e2e
+## 支持设备
 
- |
-| **transport** (_auto; ipv4;  l2;_ Default: **auto**) | transport protocol to be used: IPv4 or layer2 |
+- CRS326-24G-2S+仅支持千兆以太网接口
+- CRS328-24P-4S+仅支持千兆以太网接口
+- CRS317-1G-16S+所有端口支持
+- SFP+和QSFP+接口支持CRS326-24S+2Q+
+- CRS312-4C+8XG所有端口支持
+- CRS318-16P-2S+仅支持千兆以太网接口
 
-  
-
-For more details regarding Precision Time Protocol please see the following standards IEEE 1588 and IEEE 802.1as.
-
-We strongly recommend keeping default/auto values, as there are different requirements between profiles. And assigning them manually can result in misconfiguration.
-
-# Configuration
-
-To configure the device to participate in PTP you first need to create a PTP profile:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Precision+Time+Protocol#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ptp </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ptp1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros comments">#to view the created profile use</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system ptp </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - inactive, X - disab</code><code class="ros plain">led</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"ptp1"</code> <code class="ros value">priority1</code><code class="ros plain">=auto</code> <code class="ros value">delay-mode</code><code class="ros plain">=auto</code> <code class="ros value">transport</code><code class="ros plain">=auto</code> <code class="ros value">profile</code><code class="ros plain">=default</code></div></div></td></tr></tbody></table>
-
-Note
-
-Only 1 PTP profile is supported per device
-
-  
-
-After creating a PTP profile, you need to assign ports to it:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Precision+Time+Protocol#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system ptp port </code><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">ptp</code><code class="ros plain">=ptp1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros comments">#to view assigned ports use</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system ptp port </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - inactive</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">ptp</code><code class="ros plain">=ptp1</code> <code class="ros value">interface</code><code class="ros plain">=ether8</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">1 </code><code class="ros value">ptp</code><code class="ros plain">=ptp1</code> <code class="ros value">interface</code><code class="ros plain">=ether22</code></div></div></td></tr></tbody></table>
-
-To monitor the PTP profile, use the monitor command:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Precision+Time+Protocol#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments">#on grandmaster device</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@grandmaster] &gt; system ptp </code><code class="ros functions">monitor </code><code class="ros value">numbers</code><code class="ros plain">=0</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: test</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">clock-id</code><code class="ros constants">: 64:D1:54:FF:FE:EB:AE:C3</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">priority1</code><code class="ros constants">: 30</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">priority2</code><code class="ros constants">: 128</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">i-am-gm</code><code class="ros constants">: yes</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros comments">#on non-grandmaster device</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">[admin@328] </code><code class="ros constants">/system ptp </code><code class="ros functions">monitor </code><code class="ros plain">0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: ptp1</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">clock-id</code><code class="ros constants">: 64:D1:54:FF:FE:EB:AD:C7</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">priority1</code><code class="ros constants">: 128</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">priority2</code><code class="ros constants">: 128</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">i-am-gm</code><code class="ros constants">: no</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">gm-clock-id</code><code class="ros constants">: 64:D1:54:FF:FE:EB:AE:C3</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">gm-priority1</code><code class="ros constants">: 30</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">gm-priority2</code><code class="ros constants">: 128</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">master-clock-id</code><code class="ros constants">: 64:D1:54:FF:FE:EB:AE:C3</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">slave-port</code><code class="ros constants">: ether8</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">freq-drift</code><code class="ros constants">: 2147483647 ppb</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">offset</code><code class="ros constants">: 1396202830 ns</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">hw-offset</code><code class="ros constants">: 1306201921 ns</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros plain">slave-port-delay</code><code class="ros constants">: 2075668440 ns</code></div></div></td></tr></tbody></table>
-
-## Monitor properties
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                       |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **clock-id:**         | local clock ID                                                                                                                                                                        |
-| **priority1:**        | priority1 value, depending on the PTP profile selected, an adjustable value used to influence the grandmaster election.                                                               |
-| **priority2:**        | priority2 value, non-adjustable in RouterOS                                                                                                                                           |
-| **i-am-gm:** yes      | no                                                                                                                                                                                    | shows if the device is a grandmaster clock |
-| **gm-clock-id:**      | grandmaster clock ID - Within a domain, a clock that is the ultimate source of time for clock synchronization using the protocol.                                                     |
-| **gm-priority1:**     | grandmaster priority1                                                                                                                                                                 |
-| **gm-priority2:**     | grandmaster priority2                                                                                                                                                                 |
-| **master-clock-id:**  | master clock ID - In the context of a single Precision Time Protocol (PTP) communication path, a clock that is the source of time to which all other clocks on that path synchronize. |
-| **slave-port:**       | shows which port is going towards the master or grandmaster clock                                                                                                                     |
-| **freq-drift:**       | frequency drift in PPB (parts per billion) - time that would be lost every second in relation to the master clock, IF there was no synchronization.                                   |
-| **offset:**           | difference between clock values                                                                                                                                                       |
-| **hw-offset:**        | offset difference from the hardware clock                                                                                                                                             |
-| **slave-port-delay:** | the time it takes for a packet to be delivered to a directly connected device                                                                                                         |
-
-# Device support
-
-### Supported on:
-
--   CRS326-24G-2S+ supported only on Gigabit Ethernet ports
--   CRS328-24P-4S+ supported only on Gigabit Ethernet ports
--   CRS317-1G-16S+ supported on all ports
--   CRS326-24S+2Q+ supported on SFP+ and QSFP+ interfaces
--   CRS312-4C+8XG supported on all ports
--   CRS318-16P-2S+ supported only on Gigabit Ethernet ports
-
-### Not supported on:
+## 不支持设备
 
 -   CRS305-1G-4S+
 -   CRS309-1G-8S+

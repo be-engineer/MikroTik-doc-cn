@@ -1,65 +1,137 @@
-## Summary
+## 概述
 
-The scheduler can trigger script execution at a particular time moment, after a specified time interval, or both.
+调度程序可以在指定的时间间隔或两者兼而有之的特定时间时刻触发脚本执行。
 
-## Properties
+## 特性
 
--   **interval** _(time; default: 0s)_ \- interval between two script executions, if time interval is set to zero, the script is only executed at its start time, otherwise it is executed repeatedly at the time interval is specified
--   **name** _name)_ \- name of the task
--   **on-event** _(name)_ \- name of the script to execute. It must be presented at /system script
--   **run-count** _(read-only: integer)_ \- to monitor script usage, this counter is incremented each time the script is executed
--   **start-date** _(date)_ \- date of the first script execution
--   **start-time** _(time)_ \- time of the first script execution
--   **startup** \- execute the script 3 seconds after the system startup.
+ -  **Interval** （时间;默认值：0s）-两个脚本执行之间的间隔，如果将时间间隔设置为零，则仅在开始时间执行脚本，否则在时间间隔内重复执行它 指定的
+ -  **名称** （名称）-任务名称
+ -  **on-event** （名称）-执行脚本的名称。 必须在 /系统脚本上显示
+ -  **run-count** （仅读取：integer）-要监视脚本用法，每次执行脚本时，此计数器都会增加
+ -  **开始日期** （日期）-第一个脚本执行的日期
+ -  **开始时间** （时间）-第一个脚本执行时间的时间
+ -  **启动**  - 系统启动后3秒执行脚本。
 
-## Notes
+## 说明
 
-Rebooting the router will reset the run-count counter.
+重启路由器将重置运行计数计数器。
 
-If more than one script has to be executed simultaneously, they are executed in the order they appear in the scheduler configuration. This can be important if one scheduled script is used to disable another one.
+如果必须同时执行多个脚本，则按照它们在调度器配置中出现的顺序执行。如果使用一个调度脚本禁用另一个调度脚本，这一点可能很重要。
 
-If a more complex execution pattern is needed, it can usually be done by scheduling several scripts, and making them enable and disable each other.
+如果需要更复杂的执行模式，通常可以通过调度多个脚本，并使它们相互启用和禁用来完成。
 
-**Note:** if scheduler item has start-time set to startup, it behaves as if start-time and start-date were set to time 3 seconds after console starts up. It means that all scripts having `start-time is startup` and `interval is 0` will be executed once each time router boots. If the interval is set to value other than 0 scheduler will **not** run at startup
-
-  
-
-## Examples
-
-We will add a task that executes the script log-test every hour:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Scheduler#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=log-test</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros string">":log info message=test"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - invalid</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"log-test"</code> <code class="ros value">owner</code><code class="ros plain">=</code><code class="ros string">"admin"</code> <code class="ros value">policy</code><code class="ros plain">=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon</code> <code class="ros value">dont-require-permissions</code><code class="ros plain">=no</code> <code class="ros value">run-count</code><code class="ros plain">=0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros value">source</code><code class="ros plain">=:log</code> <code class="ros functions">info </code><code class="ros value">message</code><code class="ros plain">=test</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; .. scheduler</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=run-1h</code> <code class="ros value">interval</code><code class="ros plain">=1h</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros value">on-event</code><code class="ros plain">=log-test</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">print</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">0 run-1h log-test mar</code><code class="ros constants">/30/2004 06:11:35 1h 0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt;</code></div></div></td></tr></tbody></table>
+**注意:** 如果调度器项的启动时间设置为startup，它的行为就好像启动时间和开始日期设置为控制台启动后3秒的时间。这意味着所有具有' start-time is startup'和'interval is 0'的脚本将在每次路由器启动时执行一次。如果间隔设置为0以外的值，调度器将不在启动时运行
 
   
 
-In another example, there will be two scripts added that will change the bandwidth setting of a queue rule "Cust0". Every day at 9AM the queue will be set to 64Kb/s and at 5PM the queue will be set to 128Kb/s. The queue rule, the scripts, and the scheduler tasks are below:
+## 例子
 
-[?](https://help.mikrotik.com/docs/display/ROS/Scheduler#)
+添加一个任务，每小时执行一次log-test脚本:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] queue simple&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=Cust0</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros plain">\</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">\... </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.0.0/24</code> <code class="ros value">limit-at</code><code class="ros plain">=64000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">[admin@MikroTik] queue simple&gt; print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, I - invalid 0 name="Cust0" target-address=0.0.0.0/0 dst-address=192.168.0.0/24</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">limit-at</code><code class="ros plain">=64000</code> <code class="ros value">queue</code><code class="ros plain">=default</code> <code class="ros value">priority</code><code class="ros plain">=8</code> <code class="ros value">bounded</code><code class="ros plain">=yes</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] queue simple&gt; </code><code class="ros constants">/system script</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=start_limit</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">/queue simple </code><code class="ros functions">set </code><code class="ros plain">\</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">\... Cust0 </code><code class="ros value">limit-at</code><code class="ros plain">=64000}</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=stop_limit</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">/queue simple </code><code class="ros functions">set </code><code class="ros plain">\</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">\... Cust0 </code><code class="ros value">limit-at</code><code class="ros plain">=128000}</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">print</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"start_limit"</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros string">"/queue simple set Cust0 limit-at=64000"</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros value">owner</code><code class="ros plain">=admin</code> <code class="ros value">run-count</code><code class="ros plain">=0</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">1 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"stop_limit"</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros string">"/queue simple set Cust0 limit-at=128000"</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros value">owner</code><code class="ros plain">=admin</code> <code class="ros value">run-count</code><code class="ros plain">=0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; .. scheduler</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">interval</code><code class="ros plain">=24h</code> <code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"set-64k"</code> <code class="ros plain">\</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">\... </code><code class="ros value">start-time</code><code class="ros plain">=9:00:00</code> <code class="ros value">on-event</code><code class="ros plain">=start_limit</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">interval</code><code class="ros plain">=24h</code> <code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"set-128k"</code> <code class="ros plain">\</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">\... </code><code class="ros value">start-time</code><code class="ros plain">=17:00:00</code> <code class="ros value">on-event</code><code class="ros plain">=stop_limit</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; print</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros comments"># NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 set-64k start... oct</code><code class="ros constants">/30/2008 09:00:00 1d 0</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros plain">1 set-128k stop_... oct</code><code class="ros constants">/30/2008 17:00:00 1d 0</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt;</code></div></div></td></tr></tbody></table>
-
-  
-
-The following example schedules a script that sends each week a backup of router configuration by e-mail.
-
-[?](https://help.mikrotik.com/docs/display/ROS/Scheduler#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=e-backup</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">/system backup</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">{... save </code><code class="ros value">name</code><code class="ros plain">=email</code><code class="ros plain">; </code><code class="ros constants">/tool e-mail </code><code class="ros functions">send </code><code class="ros value">to</code><code class="ros plain">=</code><code class="ros string">"root@host.com"</code> <code class="ros value">subject</code><code class="ros plain">=([/system</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">{... identity </code><code class="ros functions">get </code><code class="ros plain">name] . </code><code class="ros string">" Backup"</code><code class="ros plain">) </code><code class="ros value">file</code><code class="ros plain">=email.backup}</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">print</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"e-backup"</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">"</code><code class="ros constants">/system backup save name=ema... owner=admin run-count=0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; .. scheduler</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">interval</code><code class="ros plain">=7d</code> <code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"email-backup"</code> <code class="ros plain">\</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">\... </code><code class="ros value">on-event</code><code class="ros plain">=e-backup</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; print</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">0 email-... e-backup oct</code><code class="ros constants">/30/2008 15:19:28 7d 1</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt;</code></div></div></td></tr></tbody></table>
-
-  
-
-Do not forget to set the e-mail settings, i.e., the SMTP server and From: address under /tool e-mail. For example:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Scheduler#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] tool e-mail&gt; </code><code class="ros functions">set </code><code class="ros value">server</code><code class="ros plain">=159.148.147.198</code> <code class="ros value">from</code><code class="ros plain">=SysAdmin@host.com</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] tool e-mail&gt; print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">server</code><code class="ros constants">: 159.148.147.198</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">from</code><code class="ros constants">: SysAdmin@host.com</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] tool e-mail&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] system script> add name=log-test source=":log info message=test"
+[admin@MikroTik] system script> print
+Flags: I - invalid
+0 name="log-test" owner="admin" policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon dont-require-permissions=no run-count=0
+source=:log info message=test
+[admin@MikroTik] system script> .. scheduler
+[admin@MikroTik] system scheduler> add name=run-1h interval=1h
+on-event=log-test
+[admin@MikroTik] system scheduler> print
+Flags: X - disabled
+# NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT
+0 run-1h log-test mar/30/2004 06:11:35 1h 0
+[admin@MikroTik] system scheduler>
+```
 
   
 
-Example below will put 'x' in logs each hour from midnight till noon:
+在另一个示例中，将添加两个脚本，它们将更改队列规则“Cust0”的带宽设置。每天上午9点，队列将设置为64Kb/s，下午5点，队列将设置为128Kb/s。队列规则、脚本和调度器任务如下:
 
-[?](https://help.mikrotik.com/docs/display/ROS/Scheduler#)
+```shell
+[admin@MikroTik] queue simple> add name=Cust0 interface=ether1 \
+\... dst-address=192.168.0.0/24 limit-at=64000
+ [admin@MikroTik] queue simple> print
+ Flags: X - disabled, I - invalid 0 name="Cust0" target-address=0.0.0.0/0 dst-address=192.168.0.0/24
+ interface=ether1 limit-at=64000 queue=default priority=8 bounded=yes
+[admin@MikroTik] queue simple> /system script
+[admin@MikroTik] system script> add name=start_limit source={/queue simple set \
+ \... Cust0 limit-at=64000}
+[admin@MikroTik] system script> add name=stop_limit source={/queue simple set \
+\... Cust0 limit-at=128000}
+[admin@MikroTik] system script> print
+0 name="start_limit" source="/queue simple set Cust0 limit-at=64000"
+owner=admin run-count=0
+1 name="stop_limit" source="/queue simple set Cust0 limit-at=128000"
+owner=admin run-count=0
+[admin@MikroTik] system script> .. scheduler
+[admin@MikroTik] system scheduler> add interval=24h name="set-64k" \
+\... start-time=9:00:00 on-event=start_limit
+[admin@MikroTik] system scheduler> add interval=24h name="set-128k" \
+ \... start-time=17:00:00 on-event=stop_limit
+[admin@MikroTik] system scheduler> print
+ Flags: X - disabled
+# NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT
+ 0 set-64k start... oct/30/2008 09:00:00 1d 0
+1 set-128k stop_... oct/30/2008 17:00:00 1d 0
+[admin@MikroTik] system scheduler>
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=enable-x</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">/system scheduler</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">{... </code><code class="ros functions">enable </code><code class="ros plain">x}</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=disable-x</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">/system scheduler</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">{... </code><code class="ros functions">disable </code><code class="ros plain">x}</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=log-x</code> <code class="ros value">source</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">:</code><code class="ros functions">log </code><code class="ros functions">info </code><code class="ros value">message</code><code class="ros plain">=x}</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system script&gt; .. scheduler</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=x-up</code> <code class="ros value">start-time</code><code class="ros plain">=00:00:00</code> <code class="ros plain">\</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">\... </code><code class="ros value">interval</code><code class="ros plain">=24h</code> <code class="ros value">on-event</code><code class="ros plain">=enable-x</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=x-down</code> <code class="ros value">start-time</code><code class="ros plain">=12:00:00</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">\... </code><code class="ros value">interval</code><code class="ros plain">=24h</code> <code class="ros value">on-event</code><code class="ros plain">=disable-x</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=x</code> <code class="ros value">start-time</code><code class="ros plain">=00:00:00</code> <code class="ros value">interval</code><code class="ros plain">=1h</code> <code class="ros plain">\</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">\... </code><code class="ros value">on-event</code><code class="ros plain">=log-x</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt; </code><code class="ros functions">print</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros comments"># NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">0 x-up enable-x oct</code><code class="ros constants">/30/2008 00:00:00 1d 0</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">1 x-down disab... oct</code><code class="ros constants">/30/2008 12:00:00 1d 0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">2 x log-x oct</code><code class="ros constants">/30/2008 00:00:00 1h 0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system scheduler&gt;</code></div></div></td></tr></tbody></table>
+  
+
+下面的示例调度一个脚本，该脚本每周通过电子邮件发送路由器配置的备份。
+
+```shell
+[admin@MikroTik] system script> add name=e-backup source={/system backup
+{... save name=email; /tool e-mail send to="root@host.com" subject=([/system
+{... identity get name] . " Backup") file=email.backup}
+[admin@MikroTik] system script> print
+0 name="e-backup" source="/system backup save name=ema... owner=admin run-count=0
+ 
+[admin@MikroTik] system script> .. scheduler
+[admin@MikroTik] system scheduler> add interval=7d name="email-backup" \
+ \... on-event=e-backup
+[admin@MikroTik] system scheduler> print
+ Flags: X - disabled
+ # NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT
+0 email-... e-backup oct/30/2008 15:19:28 7d 1
+[admin@MikroTik] system scheduler>
+```
+
+  
+
+不要忘记设置电子邮件，即/tool e-mail下的SMTP服务器和From地址。例如:
+
+```shell
+[admin@MikroTik] tool e-mail> set server=159.148.147.198 from=SysAdmin@host.com
+[admin@MikroTik] tool e-mail> print
+ server: 159.148.147.198
+from: SysAdmin@host.com
+[admin@MikroTik] tool e-mail>
+```
+
+  
+
+下面的例子每个小时把'x'从午夜到中午放入日志中:
+
+```shell
+[admin@MikroTik] system script> add name=enable-x source={/system scheduler
+{... enable x}
+[admin@MikroTik] system script> add name=disable-x source={/system scheduler
+{... disable x}
+[admin@MikroTik] system script> add name=log-x source={:log info message=x}
+[admin@MikroTik] system script> .. scheduler
+[admin@MikroTik] system scheduler> add name=x-up start-time=00:00:00 \
+\... interval=24h on-event=enable-x
+[admin@MikroTik] system scheduler> add name=x-down start-time=12:00:00
+ \... interval=24h on-event=disable-x
+[admin@MikroTik] system scheduler> add name=x start-time=00:00:00 interval=1h \
+\... on-event=log-x
+[admin@MikroTik] system scheduler> print
+Flags: X - disabled
+ # NAME ON-EVENT START-DATE START-TIME INTERVAL RUN-COUNT
+0 x-up enable-x oct/30/2008 00:00:00 1d 0
+1 x-down disab... oct/30/2008 12:00:00 1d 0
+2 x log-x oct/30/2008 00:00:00 1h 0
+[admin@MikroTik] system scheduler>
+```

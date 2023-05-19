@@ -114,11 +114,8 @@ RouterOS v7主包包含NTP客户端和服务器功能，基于RFC5905。
 | **NTP servers**                                      | NTP服务器列表。 可以添加静态条目。<br>接受以下格式：<br>-FQDN（“已解决的地址”将出现在“服务器”  - 如果地址已解决的情况下，则可以在适当的列中出现）或可以使用IP地址。 如果dhcp-client属性"use-peer-ntp = yes"  -  [dhcp](https://help.mikrotik.com/docs/display/ros/ros/ros/dhcp) 通告的动态入口<br>- ipv4_  <br>- ipv4@vrf  <br>- ipv6  <br>- ipv6@vrf  <br>- ipv6-linklocal%interface |
 | **vrf** (_default: main_)                            | 虚拟路由与转发                                                                                                                                                                                                                                                                                                                                                                        |
 | **Servers** (_Button/Section_)                       | 动态和静态添加的NTP服务器(地址、解析地址、最小轮询、最大轮询、iBurst、Auth的详细表。)<br>通过FQDN设置NTP服务器。每次发送NTP请求时，域名都会被解析。路由器必须配置/ip/dns。                                                                                                                                                                                                            |
-| **Peers**                                            | 当前参数值<br><code>[admin@ntp-example_v7] > /system/ntp/monitor-peers                                                                                                                                                                                                                                                                                                                |
- type="ucast-client" address=x.x.x.x refid="y.y.y.y" stratum=3 hpoll=10 ppoll=10 root-delay=28.869 ms root-disp=50.994 ms
-   offset=-0.973 ms delay=0.522 ms disp=15.032 ms jitter=0.521 ms
--- [Q quit|D dump|C-z pause] </code>|
-|**Keys** |NTP对称密钥，用于NTP客户端和服务器之间的认证。密钥标识符(Key ID)——标识用于生成消息身份验证代码的加密密钥的整数。|
+| **Peers**                                            | 当前参数值<br><code>[admin@ntp-example_v7] > /system/ntp/monitor-peers<br> type="ucast-client" address=x.x.x.x refid="y.y.y.y" stratum=3 hpoll=10 ppoll=10 root-delay=28.869 ms root-disp=50.994 ms<br>   offset=-0.973 ms delay=0.522 ms disp=15.032 ms jitter=0.521 ms<br>-- [Q quit\|D dump\|C-z pause] </code>                                                                    |
+| **Keys**                                             | NTP对称密钥，用于NTP客户端和服务器之间的认证。密钥标识符(Key ID)——标识用于生成消息身份验证代码的加密密钥的整数。                                                                                                                                                                                                                                                                      |
 
 **状态**
 
@@ -144,7 +141,7 @@ RouterOS v7主包包含NTP客户端和服务器功能，基于RFC5905。
 | **local-clock-stratum**                         | 如果use-local-clock=yes则手动设置stratum                                                                         |
 | **auth-key**(default :_none_)                   | NTP对称密钥，用于NTP客户端与服务器之间的认证。密钥标识符(Key ID)——标识用于生成消息身份验证代码的加密密钥的整数。 |
 
-＃日志消息
+# 日志消息
 
 SNTP客户端可以产生以下日志消息。 有关如何设置日志记录以及如何检查日志，请参见文章 [日志](https://wiki.mikrotik.com/wiki/log"log")。
 
@@ -160,8 +157,8 @@ SNTP客户端可以产生以下日志消息。 有关如何设置日志记录以
 
 日志消息字段的说明
 
- -  _OFFS_ -十六进制中两个NTP时间戳值的差异。
+ -  _OFFS_ - 十六进制中两个NTP时间戳值的差异。
  -  _PKT_ - NTP数据包的转储。 如果数据包短于最低48个字节，则将其倾倒为十六进制字符串。 否则，将数据包倾倒为字段名称和值列表，每个日志行。 字段的名称遵循RFC4330。
- -  _IP_ -远程IP地址。
+ -  _IP_ - 远程IP地址。
 
 **注意**：上述记录规则仅与内置SNTP客户端一起使用，单独的NTP软件包没有任何记录设施。

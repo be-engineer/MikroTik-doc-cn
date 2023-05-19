@@ -1,103 +1,50 @@
-# Summary
+# 概述
 
-Partitioning is supported on ARM, ARM64, MIPS, TILE, and PowerPC RouterBOARD type devices.
+在ARM、ARM64、MIPS、TILE和PowerPC RouterBOARD类型的设备上支持分区。
 
-It is possible to partition NAND flash, allowing to install own OS on each partition and specify primary and fallback partitions.
+可以对NAND闪存进行分区，允许在每个分区上安装自己的操作系统，并指定主分区和备用分区。
 
-If a partition should fail for some reason (failed upgrade, problematic configuration introduced, software problem), the next partition will boot instead. This can be used as an interactive backup where you keep a verified working installation and upgrade only some secondary partition. If you upgrade your configuration, and it proves to be good, you can use the "save config" button to copy it over to other partitions. 
+如果一个分区由于某种原因(升级失败、引入了有问题的配置、软件问题)而失败，则会引导下一个分区。这可以用作交互式备份，在其中保留经过验证的工作安装，并仅升级某些辅助分区。如果您升级了配置，并且它被证明是好的，您可以使用“保存配置”按钮将其复制到其他分区。
 
- Repartitioning of the NAND requires the latest bootloader version
+NAND的重新分区需要最新的引导加载程序版本
 
-Minimum partition sizes:
+最小分区大小:
 
--   32MB on MIPS
--   40MB on PowerPC
--   48MB on TILE
+- 在MIPS上为32MB
+- PowerPC上为40MB
+- TILE上为48MB
 
-The maximum number of allowed partitions is 8.
+允许的最大分区数是8。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Partitions#)
+```shell
+[admin@1009up] > /partitions/print
+Flags: A - ACTIVE; R - RUNNING
+Columns: NAME, FALLBACK-TO, VERSION, SIZE
+# NAME FALL VERSION SIZE
+0 AR part0 next RouterOS v7.1beta4 Dec/15/2020 15:55:11 128MiB
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@1009up] &gt; </code><code class="ros constants">/partitions/</code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: A - ACTIVE; R - RUNNING</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: NAME, FALLBACK-TO, VERSION, SIZE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># NAME FALL VERSION SIZE</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 AR part0 next RouterOS v7.1beta4 Dec</code><code class="ros constants">/15/2020 15:55:11 128MiB</code></div></div></td></tr></tbody></table>
+# 命令
 
-# Commands
+| 属性                                      | 说明                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| **repartition** (_integer_)               | 将重启路由器并重新格式化NAND，只留下活动分区。                   |
+| **copy-to** (_\<partition\>_)             | 将运行的操作系统克隆到指定分区。以前存储在分区上的数据将被擦除。 |
+| **save-config-to** (_\<partition\>_)      | 在指定分区上克隆 **running-config** 。其他的不动。               |
+| **restore-config-from** (_\<partition\>_) | 从指定分区复制配置到运行的分区                                   |
 
-| 
-Property
+# 属性
 
- | 
+| 属性                                                                              | 属性                                                                                                              |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **name** (_string_; Default: )                                                    | 分区名称                                                                                                          |
+| **fallback-to** (_etherboot    \| next \| \<partition-name\>_; Default: **next**) | 如果活动分区启动失败怎么办:<br>- **etherboot** -切换到etherboot<br>- **next** -尝试下一个分区<br>- 回退到指定分区 |
 
-Description
+**只读属性**
 
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                         |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **repartition** (_integer_)             | Will reboot the router and reformat the NAND, leaving only active partition.                                         |
-| **copy-to** (_<partition>_)             | Clone **running** OS with the config to specified partition. Previously stored data on the partition will be erased. |
-| **save-config-to** (_<partition>_)      | Clone **running-config** on a specified partition. Everything else is untouched.                                     |
-| **restore-config-from** (_<partition>_) | Copy config from specified partition to **running** partition                                                        |
-
-# Properties
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                |
-| ------------------------------ | --------------------- |
-| **name** (_string_; Default: ) | Name of the partition |
-| **fallback-to** (_etherboot    | next                  | <partition-name>_; Default: **next**) | What to do if an active partition fails to boot: |
-
--   **etherboot** - switch to etherboot
--   **next'** - try next partition
--   fallback to the specified partition
-
- |
-
-## Read-only
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                             |
-| --------------------------- | --------------------------------------------------- |
-| **active** (_yes            | no_)                                                | Partition is active         |
-| **running** (_yes           | no_)                                                | Currently running partition |
-| **size** (_integer\[MiB\]_) | Partition size                                      |
-| **version** (_string_)      | Current RouterOS version installed on the partition |
+| 属性                      | 说明                         |
+| ------------------------- | ---------------------------- |
+| **active** (_yes \| no_)  | 分区激活                     |
+| **running** (_yes\| no_)  | 当前正在运行的分区           |
+| **size** (_integer[MiB]_) | 分区大小                     |
+| **version** (_string_)    | 分区上安装的当前RouterOS版本 |
