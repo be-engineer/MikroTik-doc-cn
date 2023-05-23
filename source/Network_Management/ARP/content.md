@@ -24,7 +24,7 @@
 | **dynamic** (_yes \| no_) | 该条目是否是动态创建的      |
 | **invalid** (_yes \| no_) | 该条目是否无效              |
 
-默认的ARP条目的最大数量取决于安装的RAM数量。可以用"/ip settings set max-neighbor-entries=x "命令来调整，更多细节见 [IPv4 Settings]（https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings）。
+默认的ARP条目的最大数量取决于安装的RAM数量。可以用"/ip settings set max-neighbor-entries=x "命令来调整，更多细节见 [IPv4 Settings](https://help.mikrotik.com/docs/display/ROS/IP+Settings#IPSettings-IPv4Settings)。
 
 # ARP模式
 

@@ -52,13 +52,13 @@ MPLS MTU的选择有以下几个步骤:
 
 在MPLS入接口路径上，MTU用min(MPLS MTU - tagsize, l3mtu)来选择。这意味着在不支持L2MTU和默认L3 MTU设置为1500的接口上，最大路径MTU将是1500 -标签大小(接口将无法通过完整的IP帧而不分片)。在这种情况下，L3MTU必须增加到最大观察到的标签大小。
 
-在 [RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)文章中阅读更多关于MTU的信息。
+在 [RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS) 文章中阅读更多关于MTU的信息。
 
   
 
 ## 转发表
 
-' /mpls forwarding-table '菜单中的表项显示用于mpls标签交换的特定路由的标签绑定。此菜单中的属性是只读的。
+'/mpls forwarding-table'菜单中的表项显示用于mpls标签交换的特定路由的标签绑定。此菜单中的属性是只读的。
 
 ```shell
 [admin@rack1_b35_CCR1036] /mpls/forwarding-table> print

@@ -1,3 +1,11 @@
+<!--
+ * @Author: be-engineer 41234995@qq.com
+ * @Date: 2023-05-16 17:31:38
+ * @LastEditors: be-engineer 41234995@qq.com
+ * @LastEditTime: 2023-05-19 23:04:43
+ * @FilePath: /MikroTik-doc-cn/source/Routing/RPKI/content.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # 概述
 
 RouterOS实现了 [RFC8210](https://tools.ietf.org/html/rfc8210) 中定义的到路由器协议的RPKI (Resource Public Key Infrastructure)。RTR是一种非常轻量级的低内存占用协议，用于从RPKI验证器可靠地获取前缀验证数据。
@@ -11,7 +19,7 @@ RouterOS实现了 [RFC8210](https://tools.ietf.org/html/rfc8210) 中定义的到
 `/routing/bgp/rpki
 add group=myRpkiGroup address=192.168.1.1 port=8282 refresh-interval=20`
 
-If the connection is established and a database from the validator is received, we can check prefix validity:
+如果连接建立，并且从验证器接收到数据库，我们可以检查前缀的有效性:
 
 ```shell
 [admin@rack1_b33_CCR1036] /routing> rpki-check group=myRpkiGroup prfx=70.132.18.0/24 origin-as=16509

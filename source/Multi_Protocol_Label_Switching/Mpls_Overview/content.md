@@ -11,12 +11,12 @@ MPLS即多协议标签交换。它在某种程度上取代了IP路由——数�
 考虑到MPLS的复杂性、引入的新协议和应用，以及MPLS在路由/桥接网络中增加的概念差异，建议在生产网络中实现MPLS之前，先深入了解MPLS的概念。一些建议的阅读材料:
 
 - 多协议标签交换 [http://en.wikipedia.org/wiki/Multiprotocol_Label_Switching](http://en.wikipedia.org/wiki/Multiprotocol_Label_Switching)
-RFC3031多协议标签交换架构[http://www.ietf.org/rfc/rfc3031.txt](http://www.ietf.org/rfc/rfc3031.txt)
+- RFC3031多协议标签交换架构 [http://www.ietf.org/rfc/rfc3031.txt](http://www.ietf.org/rfc/rfc3031.txt)
 - Luc De Ghein的MPLS基础知识 [http://www.amazon.com/MPLS-Fundamentals-Luc-Ghein/dp/1587051974](http://www.amazon.com/MPLS-Fundamentals-Luc-Ghein/dp/1587051974)
 
 SMIPS设备(hAP lite、hAP lite TC和hAP mini)不支持该特性。
 
-＃支持的功能
+# 支持的功能
 
 目前，Routeros支持以下MPLS相关功能：
 
@@ -43,7 +43,7 @@ SMIPS设备(hAP lite、hAP lite TC和hAP mini)不支持该特性。
     -  TE隧道的OSPF扩展
     - CSPF路径选择
     -  te隧道上VPL和MPLS IP VPN流量的转发
-    - 入口TE隧道速率限制和自动保留带宽调整，请参见[TE隧道带宽控制]（https://wiki.mikrotik.com/wiki/wiki/wiki/te_tunnel_auto_auto_bandwidth“ te Tunnel auto auto auto bando bando bando bando bando bando bando bandwidth”）
+    - 入口TE隧道速率限制和自动保留带宽调整，[TE隧道带宽控制](https://wiki.mikrotik.com/wiki/TE_tunnel_auto_bandwidth)
     - 所有隧道带宽设置均已指定并以每秒位显示
  - 基于MP-BGP的MPLS IP VPN
  - 基于MP-BGP的MPLS VPN

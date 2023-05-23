@@ -179,7 +179,7 @@ add dst-address=5.5.5.0/24 gateway=ptp-link-1 routing-table=main
 ```
 
 
-可以看到，有两种可能的变化—将网关指定为 _ip_address%interface_ 或简单地指定一个 _interface_。在大多数情况下，前者应该用于广播接口。第二种应该用于点到点接口，如果路由是某个VRF中的连通路由，也可以用于广播接口。例如，如果你在接口 _ether2_ 上有一个地址' 1.2.3.4/24 '，它被放在一个VRF中，那么在这个VRF的路由表中就会有一条到' 1.2.3.0/24 '的连接路由。在不同的路由表中添加静态路由' 1.2.3.0/24 '是可以接受的，即使_ether2_是一个广播接口:
+可以看到，有两种可能的变化—将网关指定为 _ip_address%interface_ 或简单地指定一个 _interface_。在大多数情况下，前者应该用于广播接口。第二种应该用于点到点接口，如果路由是某个VRF中的连通路由，也可以用于广播接口。例如，如果你在接口 _ether2_ 上有一个地址' 1.2.3.4/24 '，它被放在一个VRF中，那么在这个VRF的路由表中就会有一条到' 1.2.3.0/24 '的连接路由。在不同的路由表中添加静态路由' 1.2.3.0/24 '是可以接受的，即使 _ether2_ 是一个广播接口:
 
 `add dst-address=1.2.3.0/24 gateway=ether2 routing-table=main`
 
@@ -189,7 +189,7 @@ add dst-address=5.5.5.0/24 gateway=ptp-link-1 routing-table=main
 
 在本例中，创建并配置一个基本的MPLS骨干网(由两个PE路由器PE1和PE2组成)，用于转发属于 _customer -one_  VPN的CE路由器CE1和CE2之间的流量。
 
-CE1路由器
+**CE1路由器**
 
 ```shell
 /ip address add address=10.1.1.1/24 interface=ether1
@@ -199,7 +199,7 @@ CE1路由器
 
   
 
-### CE2路由器
+**CE2路由器**
 
 ```shell
 /ip address add address=10.3.3.4/24 interface=ether1
@@ -208,7 +208,7 @@ CE1路由器
 
   
 
-### PE1路由器
+**PE1路由器**
 
 ```shell
 /interface bridge add name=lobridge
@@ -236,7 +236,7 @@ add template=default remote.address=10.5.5.3 address-families=vpnv4 local.addres
 ```
 
 
-### PE2路由器(Cisco)
+**PE2路由器(Cisco)**
  
 
 ```shell
@@ -274,7 +274,7 @@ exit-address-family
 ip route 10.5.5.2 255.255.255.255 10.2.2.2
 ```
 
-结果
+**结果**
 
 检查VPNv4路由重新分配是否正常工作:
   
@@ -400,16 +400,16 @@ round-trip min/avg/max = 13/14.5/18 ms
 
 注意，这可能不是最典型的设置，因为路由通常不会在不同的客户之间交换。相反，默认情况下，不可能从一个VRF站点访问另一个VPN中的另一个VRF站点。(这是vpn的“私有”方面。)分离路由是提供隐私的一种方式，也是解决IP网络前缀重叠问题所必需的。路由交换与这两个需求直接冲突，但有时可能需要(例如，当两个客户迁移到单个网络基础设施时，临时解决方案)。
 
-### CE1路由器，客户1
+**CE1路由器，客户1**
 
 `/ip route add dst-address=10.4.4.0/24 gateway=10.1.1.2`
 
-### CE2路由器，客户1
+**CE2路由器，客户1**
 
 
 `/ip route add dst-address=10.4.4.0/24 gateway=10.3.3.3`
 
-### CE1路由器，客户2
+**CE1路由器，客户2**
 
 ```shell
 /ip address add address=10.4.4.5 interface=ether1
@@ -417,7 +417,7 @@ round-trip min/avg/max = 13/14.5/18 ms
 /ip route add dst-address=10.3.3.0/24 gateway=10.3.3.3
 ```
 
-### PE1路由器
+**PE1路由器**
 
 ```shell
 # replace the old BGP VPN with this:
@@ -429,7 +429,7 @@ add vrf=cust-one \
   export.route-targets=1.1.1.1:111
 ```
 
-### PE2路由器(Cisco)
+**PE2路由器(Cisco)**
 
 ```shell
 ip vrf cust-one

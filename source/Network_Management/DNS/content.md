@@ -6,12 +6,12 @@
 
 当静态和动态服务器都被设置时，静态服务器条目会被优先考虑，然而，这并不表明静态服务器会一直被使用（例如，之前收到来自动态服务器的查询，但后来添加了静态服务器，那么动态条目会被优先考虑）。
 
-当DNS服务器_allow-remote-requests_被使用时，确保限制通过TCP和UDP协议端口53访问服务器，只针对已知的主机。
+当DNS服务器 _allow-remote-requests_ 被使用时，确保限制通过TCP和UDP协议端口53访问服务器，只针对已知的主机。
 
 关于如何管理局域网上的DNS功能，有几种选择--使用公共DNS，使用路由器作为缓存，或者不干涉DNS配置。让我们以下面的设置为例： 互联网服务提供商（ISP）→网关（GW）→局域网（LAN）。网关是基于RouterOS的设备，具有默认配置：
 
 - 不在 "GW "的DHCP服务器网络配置上配置任何DNS服务器-设备将把从 "ISP "收到的DNS服务器IP地址配置转发给 "LAN "设备；
-- 在 "GW "DHCP服务器网络配置上配置DNS服务器--设备将把配置的DNS服务器给"LAN "设备（还必须启用"/ip dns set allow-remote-requests=yes_" ）；
+- 在 "GW "DHCP服务器网络配置上配置DNS服务器--设备将把配置的DNS服务器给"LAN "设备（还必须启用"/ip dns set allow-remote-requests=yes" ）；
 - 在 "GW "DHCP服务器网络配置下配置的 "dns-none"-设备不会将任何 **动态** 的DNS服务器转发给"LAN "设备；
 
 ## DNS配置
@@ -69,7 +69,7 @@ DNS设施用于为路由器本身以及连接到它的客户提供域名解析�
 
 可以用命令清空DNS缓存： "/ip dns cache flush"。
 
-## DNS静态
+## 静态DNS
 
 MikroTik RouterOS的DNS缓存有一个额外的嵌入式DNS服务器功能，允许配置多种类型的DNS条目，可以被使用路由器作为DNS服务器的DNS客户使用。这个功能也可以用来向网络客户提供虚假的DNS信息。例如，将某一组域（或整个互联网）的任何DNS请求解析到自己的页面。
 
@@ -109,7 +109,7 @@ Columns: NAME, REGEXP, ADDRESS, TTL
 | **disabled** (_yes_ \| _no_; Default: yes)                                                                  | 域名记录是否激活。                                                             |
 | **match-subdomain** (_yes_ \| _no_; Default: no)                                                            | 该记录是否会匹配子域的请求。                                                   |
 | **mx-preference** (_integer_; Default: 0)                                                                   | 特定MX记录的偏好。                                                             |
-| ***ns** (_string_)                                                                                          | 特定记录的权威域名服务器的名称。                                               |
+| **ns** (_string_)                                                                                           | 特定记录的权威域名服务器的名称。                                               |
 | **regexp** (POSIX regex)                                                                                    | 正则表达式，应根据它来验证域名。                                               |
 | **srv-priority** (_integer_; Default: 0)                                                                    | 特定SRV记录的优先级。                                                          |
 | **src-weight** (_integer_; Default: 0)                                                                      | 特定SRC记录的重量。                                                            |

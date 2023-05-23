@@ -505,6 +505,7 @@ text-transform:none;font-style:normal;font-size:12.0000pt;
 mso-font-kerning:0.0000pt;" ><font face="Helvetica" >模板名称列表，用于继承参数。对动态</font>BGP对等体很有用。</span><span style="font-family:Helvetica;color:rgb(51,51,51);letter-spacing:0.0000pt;
 text-transform:none;font-style:normal;font-size:12.0000pt;
 mso-font-kerning:1.0000pt;" ><o:p></o:p></span></p></td></tr></table>
+
 ## 会话菜单
 
 要查看具有选定模板参数和协商能力的实际活动会话，请参考BGP会话菜单：
