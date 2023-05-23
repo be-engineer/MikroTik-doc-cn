@@ -1,89 +1,64 @@
-# Introduction
+# 介绍
 
 **Sub-menu:** `/interface gre`  
 **Standards:** [RFC1701](https://tools.ietf.org/html/rfc1701)
 
-GRE (Generic Routing Encapsulation) is a tunneling protocol that was originally developed by Cisco. It can encapsulate a wide variety of protocols creating a virtual point-to-point link.
+GRE (Generic Routing Encapsulation)是一种隧道协议，最初由Cisco公司开发。它可以封装各种各样的协议，创建虚拟的点对点链路。
 
-GRE is the same as IPIP and EoIP which were originally developed as stateless tunnels. This means that if the remote end of the tunnel goes down, all traffic that was routed over the tunnels will get blackholed. To solve this problem, RouterOS has added a 'keepalive' feature for GRE tunnels.
+GRE和IPIP、EoIP一样，最初都是作为无状态隧道发展起来的。这意味着，如果隧道的远端出现故障，所有通过隧道路由的流量都将陷入黑洞。为了解决这个问题，RouterOS为GRE隧道增加了keepalive功能。
 
-GRE tunnel adds a 24 byte overhead (4-byte gre header + 20-byte IP header). GRE tunnel can forward only IP and IPv6 packets (ethernet type 800 and 86dd). Do not use the "Check gateway" option "arp" when a GRE tunnel is used as a route gateway.
+GRE隧道增加了24字节的开销(4字节的GRE头+ 20字节的IP头)。GRE隧道只能转发IP和IPv6报文(以太网类型为800和86dd)。当GRE隧道作为路由网关时，不建议使用“检查网关”选项“arp”。
 
-# Properties
+# 属性
 
-| 
-Property
+| 属性                                                                       | 说明                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **allow-fast-path** (_yes \| no_; Default: **yes**)                        | 是否允许FastPath处理。使用IPsec隧道时必须关闭。                                                                                                                                                                                                                               |
+| **clamp-tcp-mss**(_yes \| no_;Default:**yes**)                             | 控制是否更改接收到的TCP SYN报文的MSS大小。启用后，如果当前MSS大小超过tunnel接口MTU(考虑TCP/IP开销)，路由器将改变接收到的TCP SYN报文的MSS大小。接收到的封装报文仍然包含原始的MSS，只有在解封装之后，MSS才会改变。                                                              |
+| **comment** (_string_;Default:)                                            | 隧道的简短描述。                                                                                                                                                                                                                                                              |
+| **disabled** (_yes \| no_;Default:**no**)                                  | 开启/关闭隧道。                                                                                                                                                                                                                                                               |
+| **dont-fragment** (_inherit \| no_; Default: **no**)                       | 相关报文中是否包含DF位:<br>_no_ - fragment如果需要，_inherit_ -使用原始数据包的不分段标志。<br>(不带don Fragment: inherit - packet可能被分片)。                                                                                                                               |
+| **dscp** (_inherit \| integer [0-63]_; Default: )                          | 设置Gre报头中的dscp值为固定值或继承隧道流量中的dscp值                                                                                                                                                                                                                         |
+| **ipsec-secret** (_string_;Default:)                                       | 当指定secret时，路由器使用预共享密钥和策略为remote-address添加动态IPsec peer (phase2默认使用sha1/aes128cbc)。                                                                                                                                                                 |
+| **keepalive** (_integer[/time]，integer 0..4294967295_;Default:**10s,10**) | 隧道保持存活参数设置即使隧道对端发生故障，隧道运行标志保持的时间间隔。如果配置时间，重试失败，则取消接口运行标志。参数的格式如下:' KeepaliveInterval,KeepaliveRetries '，其中KeepaliveInterval是时间间隔，KeepaliveRetries是重试次数。缺省情况下，keepalive为10秒，重试10次。 |
+| **l2mtu** (_integer [0..65536]_;Default:**65535**)                         | Layer2最大传输单元。                                                                                                                                                                                                                                                          |
+| **local-address** (_IP_;Default:**0.0.0.0**)                               | 隧道本端使用的IP地址。如果设置为0.0.0.0，则使用出接口的IP地址。                                                                                                                                                                                                               |
+| **mtu** (_integer [0..65536]_;Default:**1476**)                            | Layer3最大传输单元。                                                                                                                                                                                                                                                          |
+| **name** (_string_;Default:)                                               | 隧道名称。                                                                                                                                                                                                                                                                    |
+| **remote-address** (_IP_;Default:)                                         | 隧道远端IP地址。                                                                                                                                                                                                                                                              |
 
- | 
+# 设置示例
 
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                   |
-| --------------------------------- | -------------------------------- |
-| **allow-fast-path** (_yes         | no_; Default: **yes**)           | Whether to allow FastPath processing. Must be disabled if IPsec tunneling is used.                                                                                                                                                                                                                                                                                        |
-| **clamp-tcp-mss** (_yes           | no_; Default: **yes**)           | Controls whether to change MSS size for received TCP SYN packets. When enabled, a router will change the MSS size for received TCP SYN packets if the current MSS size exceeds the tunnel interface MTU (taking into account the TCP/IP overhead). The received encapsulated packet will still contain the original MSS, and only after decapsulation the MSS is changed. |
-| **comment** (_string_; Default: ) | Short description of the tunnel. |
-| **disabled** (_yes                | no_; Default: **no**)            | Enables/disables tunnel.                                                                                                                                                                                                                                                                                                                                                  |
-| **dont-fragment** (_inherit       | no_; Default: **no**)            | Whether to include DF bit in related packets:                                                                                                                                                                                                                                                                                                                             |
-
-_no_ - fragment if needed, _inherit_ - use Dont Fragment flag of original packet.
-
-(Without Dont Fragment: inherit - packet may be fragmented).
-
- |
-| **dscp** (_inherit | integer \[0-63\]_; Default: ) | Set dscp value in Gre header to a fixed value or inherit from dscp value taken from tunnelled traffic |
-| **ipsec-secret** (_string_; Default: ) | When secret is specified, router adds dynamic IPsec peer to remote-address with pre-shared key and policy (by default phase2 uses sha1/aes128cbc). |
-| **keepalive** (_integer\[/time\],integer 0..4294967295_; Default: **10s,10**) | Tunnel keepalive parameter sets the time interval in which the tunnel running flag will remain even if the remote end of tunnel goes down. If configured time,retries fail, interface running flag is removed. Parameters are written in following format: `KeepaliveInterval,KeepaliveRetries` where KeepaliveInterval is time interval and KeepaliveRetries - number of retry attempts. By default keepalive is set to 10 seconds and 10 retries. |
-| **l2mtu** (_integer \[0..65536\]_; Default: **65535**) | Layer2 Maximum transmission unit. |
-| **local-address** (_IP_; Default: **0.0.0.0**) | IP address that will be used for local tunnel end. If set to 0.0.0.0 then IP address of outgoing interface will be used. |
-| **mtu** (_integer \[0..65536\]_; Default: **1476**) | Layer3 Maximum transmission unit. |
-| **name** (_string_; Default: ) | Name of the tunnel. |
-| **remote-address** (_IP_; Default: ) | IP address of remote tunnel end. |
-
-# Setup example
-
-The goal of this example is to get Layer 3 connectivity between two remote sites over the internet
+这个示例的目标是通过internet在两个远程站点之间获得第3层连接
 
 ![](https://help.mikrotik.com/docs/download/attachments/24805531/Site-to-site-gre-example.jpg?version=1&modificationDate=1612794055516&api=v2)
 
-We have two sites, **Site1** with local network range 10.1.101.0/24 and **Site2** with local network range 10.1.202.0/24.
+有两个站点，**Site1** ，本地网络范围为10.1.101.0/24，**Site2** ，本地网络范围为10.1.202.0/24。
 
-The first step is to create GRE tunnels. A router on site 1:
+第一步是创建GRE隧道。站点1的路由器:
 
-[?](https://help.mikrotik.com/docs/display/ROS/GRE#)
+`/interface gre add name=myGre remote-address=192.168.90.1 local-address=192.168.80.1`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface gre </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=myGre</code> <code class="ros value">remote-address</code><code class="ros plain">=192.168.90.1</code> <code class="ros value">local-address</code><code class="ros plain">=192.168.80.1</code></div></div></td></tr></tbody></table>
+site2的路由器:
 
-A router on site 2:
+`/interface gre add name=myGre remote-address=192.168.80.1 local-address=192.168.90.1`
 
-[?](https://help.mikrotik.com/docs/display/ROS/GRE#)
+正如您所看到的，隧道配置非常简单。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface gre </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=myGre</code> <code class="ros value">remote-address</code><code class="ros plain">=192.168.80.1</code> <code class="ros value">local-address</code><code class="ros plain">=192.168.90.1</code></div></div></td></tr></tbody></table>
+在本例中，由于没有配置keepalive，所以即使远端隧道不可达，tunnel接口也会有一个 **running** 标志
 
-As you can see tunnel configuration is quite simple.
+现在我们只需要设置隧道地址和正确的路由。站点1的路由器:
 
-In this example, a keepalive is not configured, so tunnel interface will have a **running** flag even if remote tunnel end is not reachable
+```shell
+/ip address add address=172.16.1.1/30 interface=myGre
+/ip route add dst-address=10.1.202.0/24 gateway=172.16.1.2
+```
 
-Now we just need to set up tunnel addresses and proper routing. A router on site 1:
+site2的路由器:
 
-[?](https://help.mikrotik.com/docs/display/ROS/GRE#)
+```shell
+/ip address add address=172.16.1.2/30 interface=myGre
+/ip route add dst-address=10.1.101.0/24 gateway=172.16.1.1
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.1.1/30</code> <code class="ros value">interface</code><code class="ros plain">=myGre</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.1.202.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.2</code></div></div></td></tr></tbody></table>
-
-A router on site 2:
-
-[?](https://help.mikrotik.com/docs/display/ROS/GRE#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=172.16.1.2/30</code> <code class="ros value">interface</code><code class="ros plain">=myGre</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip route </code><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.1.101.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=172.16.1.1</code></div></div></td></tr></tbody></table>
-
-At this point, both sites have Layer 3 connectivity over the GRE tunnel.
+此时，两个站点都通过GRE隧道实现了三层连接。

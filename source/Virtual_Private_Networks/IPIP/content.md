@@ -1,71 +1,76 @@
-# Summary
+# 概述
 
 **Sub-menu:** `/interface ipip   **Standards:** [RFC2003](https://tools.ietf.org/html/rfc2003)`
 
-The IPIP tunneling implementation on the MikroTik RouterOS is RFC 2003 compliant. IPIP tunnel is a simple protocol that encapsulates IP packets in IP to make a tunnel between two routers. The IPIP tunnel interface appears as an interface under the interface list. Many routers, including Cisco and Linux, support this protocol. This protocol makes multiple network schemes possible.  
-  
-IP tunneling protocol adds the following possibilities to a network setup:
+在microtik RouterOS上实现的IPIP隧道符合RFC 2003标准。IPIP隧道是一种简单的协议，它将IP报文封装在IP中，在两台路由器之间形成一条隧道。IPIP隧道接口显示为接口列表下的接口。包括Cisco和Linux在内的许多路由器都支持该协议。该协议使多种网络方案成为可能。
 
--   to tunnel Intranets over the Internet
+IP隧道协议为网络设置增加了以下可能性:
 
--   to use it instead of source routing
+- 通过Internet对内部网进行隧道
 
-# Properties
+- 使用它代替源路由
 
-| 
-Property
+# 属性
 
- | 
+| 属性                                                                       | 说明                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **clamp-tcp-mss** (_yes \| no_; Default: **yes**)                          | 控制是否修改接收到的TCP SYN报文的MSS大小。启用后，如果当前MSS大小超过tunnel接口MTU(考虑TCP/IP开销)，路由器将改变接收到的TCP SYN报文的MSS大小。接收到的封装报文仍然包含原始的MSS，只有在解封装之后，MSS才会改变。                                                              |
+| **not -fragment** (_inherit \| no_;Default:**no**)                         |                                                                                                                                                                                                                                                                               |
+| **dscp** (_inherit \| integer [0-63]_;Default:)                            | 设置IPIP报头中的dscp值为固定值或继承隧道流量中的dscp值                                                                                                                                                                                                                        |
+| **ipsec-secret** (_string_;Default:)                                       | 当指定secret时，路由器使用默认值的预共享密钥和策略为remote-address添加动态ipsec peer (phase2默认使用sha1/aes128cbc)。                                                                                                                                                         |
+| **local-address** (_IP_; Default: )                                        | 路由器上被IPIP隧道使用的IP地址                                                                                                                                                                                                                                                |
+| **mtu** (_integer_;Default:**1500**)                                       | Layer3最大传输单元                                                                                                                                                                                                                                                            |
+| **keepalive** (_integer[/time]，integer 0..4294967295_;Default:**10s,10**) | 隧道保持存活参数设置即使隧道对端发生故障，隧道运行标志保持的时间间隔。如果配置时间，重试失败，则取消接口运行标志。参数的格式如下:' KeepaliveInterval,KeepaliveRetries '，其中KeepaliveInterval是时间间隔，KeepaliveRetries是重试次数。缺省情况下，keepalive为10秒，重试10次。 |
+| **name** (_string_;Default:)                                               | 接口名称                                                                                                                                                                                                                                                                      |
+| **remote-address** (_IP_;Default:)                                         | IPIP隧道对端IP地址                                                                                                                                                                                                                                                            |
 
-Description
+此接口没有身份验证或“状态”。可以使用接口菜单中的监视器功能监视接口的带宽使用情况。
 
-|     |
-| --- |  |
-|     |
+# 例子
 
-Property
-
- | 
-
-Description
-
-|                                                                               |
-| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **clamp-tcp-mss** (_yes                                                       | no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                                              | Controls whether to change MSS size for received TCP SYN packets. When enabled, a router will change the MSS size for received TCP SYN packets if the current MSS size exceeds the tunnel interface MTU (taking into account the TCP/IP overhead).The received encapsulated packet will still contain the original MSS, and only after decapsulation the MSS is changed. |
-| **dont-fragment** (_inherit                                                   | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                               |
-|                                                                               |
-| **dscp** (_inherit                                                            | integer \[0-63\]_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                       | Set dscp value in IPIP header to a fixed value or inherit from dscp value taken from tunnelled traffic                                                                                                                                                                                                                                                                   |
-| **ipsec-secret** (_string_; Default: )                                        | When secret is specified, router adds dynamic ipsec peer to remote-address with pre-shared key and policy with default values (by default phase2 uses sha1/aes128cbc).                                                                                                                                                                                                                                                                              |
-| **local-address** (_IP_; Default: )                                           | IP address on a router that will be used by IPIP tunnel                                                                                                                                                                                                                                                                                                                                                                                             |
-| **mtu** (_integer_; Default: **1500**)                                        | Layer3 Maximum transmission unit                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| **keepalive** (_integer\[/time\],integer 0..4294967295_; Default: **10s,10**) | Tunnel keepalive parameter sets the time interval in which the tunnel running flag will remain even if the remote end of tunnel goes down. If configured time,retries fail, interface running flag is removed. Parameters are written in following format: `KeepaliveInterval,KeepaliveRetries` where KeepaliveInterval is time interval and KeepaliveRetries - number of retry attempts. By default keepalive is set to 10 seconds and 10 retries. |
-| **name** (_string_; Default: )                                                | Interface name                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **remote-address** (_IP_; Default: )                                          | IP address of remote end of IPIP tunnel                                                                                                                                                                                                                                                                                                                                                                                                             |
-
-There is no authentication or 'state' for this interface. The bandwidth usage of the interface may be monitored with the monitor feature from the interface menu.
-
-# Example
-
- Suppose we want to add an IPIP tunnel between routers R1 and R2: 
+假设想在路由器R1和R2之间添加一条IPIP隧道:
 
 ![](https://help.mikrotik.com/docs/download/attachments/47579173/Ipip-sample.jpg?version=1&modificationDate=1612793622487&api=v2)
 
-At first, we need to configure IPIP interfaces and then add IP addresses to them.  
-  
-The configuration for router **R1** is as follows:
+首先需要配置IPIP接口，然后为其添加IP地址。
 
-[?](https://help.mikrotik.com/docs/display/ROS/IPIP#)
+路由器 **R1** 的配置如下:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; add</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">local-address</code><code class="ros constants">: 10.0.0.1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">remote-address</code><code class="ros constants">: 22.63.11.6</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; print</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros comments"># NAME MTU LOCAL-ADDRESS REMOTE-ADDRESS</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">0 X ipip1 1480 10.0.0.1 22.63.11.6</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; en 0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; </code><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=1.1.1.1/24</code> <code class="ros value">interface</code><code class="ros plain">=ipip1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] interface ipip> add
+local-address: 10.0.0.1
+remote-address: 22.63.11.6
+[admin@MikroTik] interface ipip> print
+Flags: X - disabled, R - running
+# NAME MTU LOCAL-ADDRESS REMOTE-ADDRESS
+0 X ipip1 1480 10.0.0.1 22.63.11.6
+ 
+[admin@MikroTik] interface ipip> en 0
+[admin@MikroTik] interface ipip> /ip address add address=1.1.1.1/24 interface=ipip1
+```
 
-The configuration of the **R2** is shown below:
+**R2** 的配置:
 
-[?](https://help.mikrotik.com/docs/display/ROS/IPIP#)
+```shell
+[admin@MikroTik] interface ipip> add local-address=22.63.11.6 remote-address=10.
+0.0.1
+[admin@MikroTik] interface ipip> print
+Flags: X - disabled, R - running
+# NAME MTU LOCAL-ADDRESS REMOTE-ADDRESS
+0 X ipip1 1480 22.63.11.6 10.0.0.1
+ 
+[admin@MikroTik] interface ipip> enable 0
+[admin@MikroTik] interface ipip> /ip address add address=1.1.1.2/24 interface=ipip1
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; </code><code class="ros functions">add </code><code class="ros value">local-address</code><code class="ros plain">=22.63.11.6</code> <code class="ros value">remote-address</code><code class="ros plain">=10.</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">0.0.1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># NAME MTU LOCAL-ADDRESS REMOTE-ADDRESS</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">0 X ipip1 1480 22.63.11.6 10.0.0.1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; </code><code class="ros functions">enable </code><code class="ros plain">0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; </code><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=1.1.1.2/24</code> <code class="ros value">interface</code><code class="ros plain">=ipip1</code></div></div></td></tr></tbody></table>
+现在两个路由器可以相互ping通了: 
 
-Now both routers can ping each other: 
-
-[?](https://help.mikrotik.com/docs/display/ROS/IPIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt; </code><code class="ros constants">/</code><code class="ros functions">ping </code><code class="ros plain">1.1.1.2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">1.1.1.2 64 byte ping</code><code class="ros constants">: ttl=64 time=24 ms</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">1.1.1.2 64 byte ping</code><code class="ros constants">: ttl=64 time=19 ms</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">1.1.1.2 64 byte ping</code><code class="ros constants">: ttl=64 time=20 ms</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">3 packets transmitted, 3 packets received, 0% packet loss</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">round-trip min</code><code class="ros constants">/avg/max = 19/21.0/24 ms</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] interface ipip&gt;</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] interface ipip> /ping 1.1.1.2
+1.1.1.2 64 byte ping: ttl=64 time=24 ms
+1.1.1.2 64 byte ping: ttl=64 time=19 ms
+1.1.1.2 64 byte ping: ttl=64 time=20 ms
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 19/21.0/24 ms
+[admin@MikroTik] interface ipip>
+```

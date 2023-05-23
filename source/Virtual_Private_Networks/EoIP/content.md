@@ -1,136 +1,128 @@
-# Introduction
+# 介绍
 
 **Sub-menu:** `/interface eoip`
 
-Ethernet over IP (EoIP) Tunneling is a MikroTik RouterOS protocol based on **[GRE RFC 1701](https://tools.ietf.org/html/rfc1701)** that creates an Ethernet tunnel between two routers on top of an IP connection. The EoIP tunnel may run over IPIP tunnel, PPTP tunnel, or any other connection capable of transporting IP.  
-When the bridging function of the router is enabled, all Ethernet traffic (all Ethernet protocols) will be bridged just as if there where a physical Ethernet interface and cable between the two routers (with bridging enabled). This protocol makes multiple network schemes possible.
+EoIP (Ethernet over IP)隧道是一种基于 [GRE RFC 1701] (https://tools.ietf.org/html/rfc1701) 的microtik RouterOS协议，它在IP连接的基础上在两台路由器之间创建以太网隧道。EoIP隧道可以在IPIP隧道、PPTP隧道或任何其他能够传输IP的连接上运行。
+当路由器的桥接功能开启时，所有以太网流量(所有以太网协议)将被桥接，就像两台路由器之间有物理以太网接口和电缆一样(桥接功能开启)。该协议使多种网络方案成为可能。
 
-Network setups with EoIP interfaces:
+带有EoIP接口的网络设置:
 
--   Possibility to bridge LANs over the Internet
--   Possibility to bridge LANs over encrypted tunnels
--   Possibility to bridge LANs over 802.11b 'ad-hoc' wireless networks
+- 通过互联网桥接局域网的可能性
+- 通过加密隧道桥接局域网的可能性
+- 通过802.11b“特设”无线网络桥接局域网的可能性
 
-The EoIP protocol encapsulates Ethernet frames in GRE (IP protocol number 47) packets (just like PPTP) and sends them to the remote side of the EoIP tunnel.
+EoIP协议将以太网帧封装在GRE (IP协议号47)报文中(就像PPTP一样)，并将其发送到EoIP隧道的远端。
 
-# Property Description
+# 属性说明
 
-| 
-Property
+| 属性                                                                           | 说明                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **allow-fast-path** (_yes \| no_; Default: **yes**)                            | 是否允许FastPath处理。使用IPsec隧道时必须关闭。                                                                                                                                                                                                                                                      |
+| **arp (**_disabled \| enabled\| proxy-arp\| reply-only_; Default: **enabled)** | 地址解析协议模式。<br>- disabled表示接口不使用ARP<br>- enabled接口使用ARP<br>- proxy- ARP指定接口使用ARP代理特性<br>- reply-only表示接口只响应在/ IP arp表中以静态表项形式输入的匹配的IP /MAC地址组合发起的请求。“/ip arp”表中不会自动存储动态表项。因此，要使通信成功，必须已经存在有效的静态条目。 |
+| **arp-timeout** (_integer[/time]_; Default: **auto**)                          | ARP表项超时的时间间隔。                                                                                                                                                                                                                                                                              |
+| **clamp-tcp-mss** (_yes                                                        | no_;Default:**yes**)                                                                                                                                                                                                                                                                                 | 控制是否更改接收到的TCP SYN报文的MSS大小。启用后，如果当前MSS大小超过tunnel接口MTU(考虑TCP/IP开销)，路由器将改变接收到的TCP SYN报文的MSS大小。接收到的封装报文仍然包含原始的MSS，只有在解封装之后，MSS才会改变。 |
+| **comment** (_string_;Default:)                                                | 接口的简短描述。                                                                                                                                                                                                                                                                                     |
+| **disabled** (_yes                                                             | no_;Default:**no**)                                                                                                                                                                                                                                                                                  | 是否禁用某项。                                                                                                                                                                                                   |
+| ** not -fragment** (_inherit                                                   | no_;Default:**no**)                                                                                                                                                                                                                                                                                  | 是否在相关报文中包含DF位。                                                                                                                                                                                       |
+| **dscp** (_integer: 0-63_;Default:**inherited**)                               | 报文的DSCP值。“Inherited”选项表示从将要封装的数据包继承dscp值。                                                                                                                                                                                                                                      |
+| **ipsec-secret** (_string_;Default:)                                           | 当指定secret时，路由器使用预共享密钥和策略为remote-address添加动态IPsec peer (phase2默认使用sha1/aes128cbc)。                                                                                                                                                                                        |
+| **keepalive** (_integer[/time],integer 0..4294967295_; Default: **10s,10**)    | Tunnel keepalive参数设置隧道对端发生故障时，隧道运行标志保持的时间间隔。如果配置时间，重试失败，则取消接口运行标志。参数以以下格式写入: KeepaliveInterval,KeepaliveRetries 其中KeepaliveInterval是时间间隔，KeepaliveRetries是重试尝试的次数。缺省情况下，keepalive为10秒，重试10次。                |
+| **l2mtu** (_integer;read-only_)                                                | Layer2最大传输单元。不能配置为EoIP。[RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)                                                                                                                                                                                    |
+| **local-address** (_IP_;Default:)                                              | 隧道报文的源地址，路由器上的local。                                                                                                                                                                                                                                                                  |
+| **loop-protect**                                                               |                                                                                                                                                                                                                                                                                                      |
+| **loop-protect-disable-time**                                                  |                                                                                                                                                                                                                                                                                                      |
+| **loop-protect-send-interval**                                                 |                                                                                                                                                                                                                                                                                                      |
+| **mac-address** (_MAC_; Default: )                                             | 接口的媒体访问控制号。地址编号机构IANA允许使用**00:00:5E:80:00:00 - 00:00:5E:FF:FF:FF** free                                                                                                                                                                                                         | 范围内的MAC地址                                                                                                                                                                                                  |
+| **mtu** (_integer_;Default:**auto**)                                           | Layer3最大传输单元                                                                                                                                                                                                                                                                                   |
+| **name** (_string_;Default:)                                                   | 接口名称                                                                                                                                                                                                                                                                                             |
+| **remote-address** (_IP_;Default:)                                             | EoIP隧道对端IP地址                                                                                                                                                                                                                                                                                   |
+| **tunnel-id** (_integer: 65536_;Default:)                                      | 唯一的隧道标识符，必须与隧道的另一端匹配                                                                                                                                                                                                                                                             |
 
- | 
+# 配置举例
 
-Description
+参数tunnel-id是隧道的标识方法。对于每个EoIP隧道，必须是唯一的。
 
-|     |
-| --- |  |
-|     |
+EoIP隧道至少增加42字节的开销(8字节GRE + 14字节以太网+ 20字节IP)。MTU应该设置为1500，以消除隧道内的数据包碎片(这允许类似以太网的网络透明桥接，以便有可能在隧道上传输全尺寸的以太网帧)。
 
-Property
+在桥接EoIP隧道时，建议为每条隧道配置唯一的MAC地址，以保证桥接算法正常工作。 对于EoIP接口，可以使用的MAC地址范围为 
+ **00:00:5E:80:00:00 ~ 00:00:5E:FF:FF:FF**，这是IANA为这种情况预留的。或者可以设置第一个字节的第二位，将自动分配的地址修改为由网络管理员分配的“本地管理地址”，从而使用任何MAC地址，只需要确保它们在连接到一个网桥的主机之间是唯一的。
 
- | 
+**例子**
 
-Description
+假设我们想要桥接两个网络:“Station”和“AP”。通过使用EoIP设置，可以使站和AP局域网处于同一第二层广播域中。
 
-|                           |
-| ------------------------- | ---------------------- |
-| **allow-fast-path** (_yes | no_; Default: **yes**) | Whether to allow FastPath processing. Must be disabled if IPsec tunneling is used. |
-| **arp (**_disabled        | enabled                | proxy-arp                                                                          | reply-only_; Default: **enabled)** | Address Resolution Protocol mode. |
+考虑以下设置:
 
--   disabled - the interface will not use ARP
--   enabled - the interface will use ARP
--   proxy-arp - the interface will use the ARP proxy feature
--   reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the "/ip arp" table. No dynamic entries will be automatically stored in the "/ip arp" table. Therefore for communications to be successful, a valid static entry must already exist.
+! [] (https://help.mikrotik.com/docs/download/attachments/24805521/Eoip-example.jpg?version=1&modificationDate=1612793527009&api=v2)
 
- |
-| **arp-timeout** (_integer\[/time\]_; Default: **auto**) | Time interval in which ARP entries should time out. |
-| **clamp-tcp-mss** (_yes | no_; Default: **yes**) | Controls whether to change MSS size for received TCP SYN packets. When enabled, a router will change the MSS size for received TCP SYN packets if the current MSS size exceeds the tunnel interface MTU (taking into account the TCP/IP overhead).The received encapsulated packet will still contain the original MSS, and only after decapsulation the MSS is changed. |
-| **comment** (_string_; Default: ) | Short description of the interface. |
-| **disabled** (_yes | no_; Default: **no**) | Whether an item is disabled. |
-| **dont-fragment** (_inherit | no_; Default: **no**) | Whether to include DF bit in related packets. |
-| **dscp** (_integer: 0-63_; Default: **inherited**) | DSCP value of packet. Inherited option means that dscp value will be inherited from packet which is going to be encapsulated. |
-| **ipsec-secret** (_string_; Default: ) | When secret is specified, router adds dynamic IPsec peer to remote-address with pre-shared key and policy (by default phase2 uses sha1/aes128cbc). |
-| **keepalive** (_integer\[/time\],integer 0..4294967295_; Default: **10s,10**) | Tunnel keepalive parameter sets the time interval in which the tunnel running flag will remain even if the remote end of tunnel goes down. If configured time,retries fail, interface running flag is removed. Parameters are written in following format: `KeepaliveInterval,KeepaliveRetries` where `KeepaliveInterval` is time interval and `KeepaliveRetries` - number of retry attempts. By default keepalive is set to 10 seconds and 10 retries. |
-| **l2mtu** (_integer; read-only_) | Layer2 Maximum transmission unit. Not configurable for EoIP. [MTU in RouterOS](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS) |
-| **local-address** (_IP_; Default: ) | Source address of the tunnel packets, local on the router. |
-| **loop-protect** |   
- |
-| **loop-protect-disable-time** |   
- |
-| **loop-protect-send-interval** |   
- |
-| **mac-address** (_MAC_; Default: ) | Media Access Control number of an interface. The address numeration authority IANA allows the use of MAC addresses in the range from **00:00:5E:80:00:00 - 00:00:5E:FF:FF:FF** freely |
-| **mtu** (_integer_; Default: **auto**) | Layer3 Maximum transmission unit |
-| **name** (_string_; Default: ) | Interface name |
-| **remote-address** (_IP_; Default: ) | IP address of remote end of EoIP tunnel |
-| **tunnel-id** (_integer: 65536_; Default: ) | Unique tunnel identifier, which must match other side of the tunnel |
+正如您所知，无线站不能桥接，为了克服这个限制(不涉及WDS)，我们将在无线链路上创建EoIP隧道，并将其与连接到本地网络的接口桥接。
 
-# Configuration Examples
+在本例中我们将不讨论无线配置，让我们假设无线链路已经建立。
 
-Parameter tunnel-id is a method of identifying a tunnel. It must be unique for each EoIP tunnel.
+首先在AP上创建一个EoIP隧道:
 
-EoIP tunnel adds at least 42 byte overhead (8byte GRE + 14 byte Ethernet + 20 byte IP). MTU should be set to 1500 to eliminate packet fragmentation inside the tunnel (that allows transparent bridging of Ethernet-like networks so that it would be possible to transport full-sized Ethernet frame over the tunnel).
+`/interface eoip add name="eoip-remote" tunnel-id=0 remote-address=10.0.0.2 disabled=no`
 
-When bridging EoIP tunnels, it is highly recommended to set unique MAC addresses for each tunnel for the bridge algorithms to work correctly. For EoIP interfaces you can use MAC addresses that are in the range from **00:00:5E:80:00:00 - 00:00:5E:FF:FF:FF** , which IANA has reserved for such cases. Alternatively, you can set the second bit of the first byte to modify the auto-assigned address into a 'locally administered address', assigned by the network administrator, and thus use any MAC address, you just need to ensure they are unique between the hosts connected to one bridge.
+验证接口已创建:
 
-## Example
+```shell
+[admin@AP] > /interface eoip print
+Flags: X - disabled; R - running
+ 0  R name="eoip-remote" mtu=auto actual-mtu=1458 l2mtu=65535 mac-address=FE:A5:6C:3F:26:C5 arp=enabled
+      arp-timeout=auto loop-protect=default loop-protect-status=off loop-protect-send-interval=5s
+      loop-protect-disable-time=5m local-address=0.0.0.0 remote-address=10.0.0.2 tunnel-id=0
+      keepalive=10s,10 dscp=inherit clamp-tcp-mss=yes dont-fragment=no allow-fast-path=yes
+```
 
-Let us assume we want to bridge two networks: 'Station' and 'AP'. By using EoIP setup can be made so that Station and AP LANs are in the same Layer2 broadcast domain.
+站路由器:
 
-Consider the following setup:
+`/interface eoip add name="eoip-main" tunnel-id=0 remote-address=10.0.0.1 disabled=no`
 
-![](https://help.mikrotik.com/docs/download/attachments/24805521/Eoip-example.jpg?version=1&modificationDate=1612793527009&api=v2)
+验证接口已创建:
 
-As you know wireless stations cannot be bridged, to overcome this limitation (not involving WDS) we will create an EoIP tunnel over the wireless link and bridge it with interfaces connected to local networks.
+```shell
+[admin@Station] >  /interface eoip print
+Flags: X - disabled; R - running
+ 0  R name="eoip-main" mtu=auto actual-mtu=1458 l2mtu=65535 mac-address=FE:4B:71:05:EA:8B arp=enabled
+      arp-timeout=auto loop-protect=default loop-protect-status=off loop-protect-send-interval=5s
+      loop-protect-disable-time=5m local-address=0.0.0.0 remote-address=10.0.0.1 tunnel-id=0
+      keepalive=10s,10 dscp=inherit clamp-tcp-mss=yes dont-fragment=no allow-fast-path=yes
+```
 
-We will not cover wireless configuration in this example, let's assume that the wireless link is already established.
+接下来将在AP上用EoIP隧道桥接本地接口。如果已经有了本地桥接接口，只需添加EoIP接口即可:
 
-At first, we create an EoIP tunnel on our AP:
+`/interface bridge port add bridge=bridge1 interface=eoip-remote`
 
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
+网桥端口列表应列出所有本地局域网接口和EoIP接口:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface eoip </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"eoip-remote"</code> <code class="ros value">tunnel-id</code><code class="ros plain">=0</code> <code class="ros value">remote-address</code><code class="ros plain">=10.0.0.2</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
+```shell
+[admin@AP] > /interface bridge port print
+Flags: I - INACTIVE; H - HW-OFFLOAD
+Columns: INTERFACE, BRIDGE, HW, PVID, PRIORITY, PATH-COST, INTERNAL-PATH-COST, HORIZON
+#    INTERFACE       BRIDGE   HW   PVID  PRIORITY  PATH-COST  INTERNAL-PATH-COST  HORIZON
+0  H ether2          bridge1  yes     1  0x80             10                  10  none  
+1  H ether3          bridge1  yes     1  0x80             10                  10  none   
+2    eoip-remote     bridge1  yes     1  0x80             10                  10  none
+```
 
-Verify the interface is created:
+在站点路由器上，如果没有本地网桥接口，创建一个新的网桥，并将EoIP和本地LAN接口添加到其中:
 
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
+```shell
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@AP] &gt; </code><code class="ros constants">/interface eoip </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled; R - running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; R </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"eoip-remote"</code> <code class="ros value">mtu</code><code class="ros plain">=auto</code> <code class="ros value">actual-mtu</code><code class="ros plain">=1458</code> <code class="ros value">l2mtu</code><code class="ros plain">=65535</code> <code class="ros value">mac-address</code><code class="ros plain">=FE:A5:6C:3F:26:C5</code> <code class="ros value">arp</code><code class="ros plain">=enabled</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">arp-timeout</code><code class="ros plain">=auto</code> <code class="ros value">loop-protect</code><code class="ros plain">=default</code> <code class="ros value">loop-protect-status</code><code class="ros plain">=off</code> <code class="ros value">loop-protect-send-interval</code><code class="ros plain">=5s</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">loop-protect-disable-time</code><code class="ros plain">=5m</code> <code class="ros value">local-address</code><code class="ros plain">=0.0.0.0</code> <code class="ros value">remote-address</code><code class="ros plain">=10.0.0.2</code> <code class="ros value">tunnel-id</code><code class="ros plain">=0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">keepalive</code><code class="ros plain">=10s,10</code> <code class="ros value">dscp</code><code class="ros plain">=inherit</code> <code class="ros value">clamp-tcp-mss</code><code class="ros plain">=yes</code> <code class="ros value">dont-fragment</code><code class="ros plain">=no</code> <code class="ros value">allow-fast-path</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+/interface bridge add name=bridge1
+/interface bridge port add bridge=bridge1 interface=ether2
+/interface bridge port add bridge=bridge1 interface=eoip-main
+```
 
-Station router:
+验证桥接端口部分:
 
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
+```shell
+[admin@Station] > /interface bridge port print
+Flags: I - INACTIVE; H - HW-OFFLOAD
+Columns: INTERFACE, BRIDGE, HW, PVID, PRIORITY, PATH-COST, INTERNAL-PATH-COST, HORIZON
+#    INTERFACE     BRIDGE   HW   PVID  PRIORITY  PATH-COST  INTERNAL-PATH-COST  HORIZON
+0  H ether2        bridge1  yes     1  0x80             10                  10  none   
+2    eoip-main     bridge1  yes     1  0x80             10                  10  none
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface eoip </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"eoip-main"</code> <code class="ros value">tunnel-id</code><code class="ros plain">=0</code> <code class="ros value">remote-address</code><code class="ros plain">=10.0.0.1</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
-
-Verify the interface is created:
-
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Station] &gt;&nbsp; </code><code class="ros constants">/interface eoip </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled; R - running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp; R </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"eoip-main"</code> <code class="ros value">mtu</code><code class="ros plain">=auto</code> <code class="ros value">actual-mtu</code><code class="ros plain">=1458</code> <code class="ros value">l2mtu</code><code class="ros plain">=65535</code> <code class="ros value">mac-address</code><code class="ros plain">=FE:4B:71:05:EA:8B</code> <code class="ros value">arp</code><code class="ros plain">=enabled</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">arp-timeout</code><code class="ros plain">=auto</code> <code class="ros value">loop-protect</code><code class="ros plain">=default</code> <code class="ros value">loop-protect-status</code><code class="ros plain">=off</code> <code class="ros value">loop-protect-send-interval</code><code class="ros plain">=5s</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">loop-protect-disable-time</code><code class="ros plain">=5m</code> <code class="ros value">local-address</code><code class="ros plain">=0.0.0.0</code> <code class="ros value">remote-address</code><code class="ros plain">=10.0.0.1</code> <code class="ros value">tunnel-id</code><code class="ros plain">=0</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">keepalive</code><code class="ros plain">=10s,10</code> <code class="ros value">dscp</code><code class="ros plain">=inherit</code> <code class="ros value">clamp-tcp-mss</code><code class="ros plain">=yes</code> <code class="ros value">dont-fragment</code><code class="ros plain">=no</code> <code class="ros value">allow-fast-path</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
-
-Next, we will bridge local interfaces with EoIP tunnel on our AP. If you already have a local bridge interface, simply add EoIP interface to it:  
-
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=eoip-remote</code></div></div></td></tr></tbody></table>
-
-The bridge port list should list all local LAN interfaces and the EoIP interface:
-
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@AP] &gt; </code><code class="ros constants">/interface bridge port </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - INACTIVE; H - HW-OFFLOAD</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: INTERFACE, BRIDGE, HW, PVID, PRIORITY, PATH-COST, INTERNAL-PATH-COST, HORIZON</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp; INTERFACE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BRIDGE&nbsp;&nbsp; HW&nbsp;&nbsp; PVID&nbsp; PRIORITY&nbsp; PATH-COST&nbsp; INTERNAL-PATH-COST&nbsp; HORIZON</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0&nbsp; H ether2 &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 0x80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; none&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">1&nbsp; H ether3 &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bridge1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 0x80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; none &nbsp;&nbsp;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">2 &nbsp; &nbsp;eoip-remote &nbsp; &nbsp; bridge1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 0x80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; none</code></div></div></td></tr></tbody></table>
-
-On Station router, if you do not have a local bridge interface, create a new bridge and add both EoIP and local LAN interfaces to it:  
-
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=bridge1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port </code><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=eoip-main</code></div></div></td></tr></tbody></table>
-
-Verify the bridge port section:
-
-[?](https://help.mikrotik.com/docs/display/ROS/EoIP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@Station] &gt; </code><code class="ros constants">/interface bridge port </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: I - INACTIVE; H - HW-OFFLOAD</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Columns</code><code class="ros constants">: INTERFACE, BRIDGE, HW, PVID, PRIORITY, PATH-COST, INTERNAL-PATH-COST, HORIZON</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp; INTERFACE &nbsp;&nbsp;&nbsp; BRIDGE&nbsp;&nbsp; HW&nbsp;&nbsp; PVID&nbsp; PRIORITY&nbsp; PATH-COST&nbsp; INTERNAL-PATH-COST&nbsp; HORIZON</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0&nbsp; H ether2 &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; bridge1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 0x80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; none&nbsp;&nbsp;&nbsp;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2 &nbsp; &nbsp;eoip-main &nbsp; &nbsp; bridge1&nbsp; yes&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 0x80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10&nbsp; none</code></div></div></td></tr></tbody></table>
-
-Now both sites are in the same Layer2 broadcast domain. You can set up IP addresses from the same network on both sites.
+现在两个站点都在同一个二层广播域中。可以在两个站点上设置来自同一网络的IP地址。
