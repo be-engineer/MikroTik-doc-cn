@@ -4,7 +4,7 @@ ___
 
 This example shows how to configure automatic fail-over (bonding) 5Ghz link in combination with 60Ghz devices in CLI.  
 When a connection between 60Ghz wireless is lost, it will automatically use the bonded interface.  
-Example is done from empty configuration state with \[[WinBox](https://mikrotik.com/download)\] utility
+Example is done from empty configuration state with [[WinBox](https://mikrotik.com/download) utility
 
 ## Connect to the device step by step
 

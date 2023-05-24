@@ -19,7 +19,6 @@ Requirements
 -   32 Virtual interfaces per master radio interface maximum
 -   Not possible to use Nv2 and NStreme proprietary protocols
 
-___
 
 # Simple setup of a CAPsMAN system
 
@@ -47,7 +46,7 @@ So, for example, connect the CAP device to one of the CAPsMAN device LAN ports w
 
 The device will now show up in the CAPsMAN "Remote CAP" menu and will be "provisioned" with the configuration template, as per the provisioning settings. For more details on how to manually adjust all settings, keep reading this document.
 
-## **CAP to CAPsMAN Connection**
+## CAP to CAPsMAN Connection
 
 For the CAPsMAN system to function and provide wireless connectivity, a CAP must establish management connection with CAPsMAN. A management connection can be established using MAC or IP layer protocols and is secured using 'DTLS'.
 
@@ -84,7 +83,7 @@ After DTLS connection is established, CAP can optionally check CommonName field 
 
 If the CAPsMAN or CAP gets disconnected from the network, the loss of connection between CAP and CAPsMAN will be detected in approximately 10-20 seconds.
 
-### **CAP Auto Locking to CAPsMAN**
+### CAP Auto Locking to CAPsMAN
 
 CAP can be configured to automatically lock to a particular CAPsMAN server. Locking is implemented by recording certificate CommonName of CAPsMAN that CAP is locked to and checking this CommonName for all subsequent connections. As this feature is implemented using certificate CommonName, use of certificates is mandatory for locking to work.
 
@@ -108,7 +107,7 @@ From now on CAP will only connect to CAPsMAN with this CommonName, until locking
 
 Note that CAP can be manually "locked" to CAPsMAN by setting **caps-man-certificate-common-names**.
 
-### **Auto Certificates**
+### Auto Certificates
 
 To simplify CAPsMAN and CAP configuration when certificates are required (e.g. for automatic locking feature), CAPsMAN can be configured to generate necessary certificates automatically and CAP can be configured to request certificate from CAPsMAN.
 
@@ -180,9 +179,9 @@ A - authority, I - issued, R - revoked, E - expired, T - trusted
 
 On subsequent connections to CAPsMAN, CAP will use generated certificate.
 
-___
 
-# **CAP Configuration**
+
+# CAP Configuration
 
 When an AP is configured to be controlled by CAPsMAN, configuration of the managed wireless interfaces on the AP is ignored _(exceptions: antenna-gain,antenna-mode)_. Instead, AP accepts configuration for the managed interfaces from CAPsMAN.
 
@@ -227,28 +226,11 @@ There are 2 types of interfaces on CAPsMAN - "master" and "slave". The master in
 
 Interfaces on CAPsMAN can be static or dynamic. Static interfaces are stored in RouterOS configuration and will persist across reboots. Dynamic interfaces exist only while a particular CAP is connected to CAPsMAN.
 
-## **CAPsMAN Global Configuration**
+## CAPsMAN Global Configuration
 
 Settings to enable CAPsMAN functionality are found in **/caps-man manager** menu:
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
+| Property                           | Description           |
 | ---------------------------------- | --------------------- |
 | **enabled** (_yes                  | no_; Default: **no**) | Disable or enable CAPsMAN functionality                                                                                                                                                                                                                                                   |
 | **certificate** (_auto             | certificate name      | none_; Default: **none**)                                                                                                                                                                                                                                                                 | Device certificate     |
@@ -263,7 +245,7 @@ Description
 
  |
 
-## **Radio Provisioning**
+## Radio Provisioning
 
 CAPsMAN distinguishes between CAPs based on an identifier. The identifier is generated based on the following rules:
 
@@ -296,24 +278,7 @@ If no matching master interface for radio is found, CAPsMAN executes 'provisioni
   
 Provisioning rules for matching radios are configured in **/caps-man provisioning** menu:
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                              |
+| Property                     | Description    |
 | ---------------------------- | -------------- |
 | **action** (_create-disabled | create-enabled | create-dynamic-enabled | none_; Default: **none**) | Action to take if rule matches are specified by the following settings: |
 
@@ -367,7 +332,7 @@ and
 
 ```
 
-## **Interface Configuration**
+## Interface Configuration
 
 CAPsMAN interfaces are managed in **/caps-man interface** menu:
 
@@ -380,31 +345,14 @@ Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - runni
 
 ```
 
-## **Master Configuration Profiles**
+## Master Configuration Profiles
 
 Configuration profiles permit pre-defined 'top level' master settings to be applied to CAP radios being provisioned.
 
   
 Configuration Profiles are configured in **/caps-man configuration** menu:
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                                          |
+| Property                                                                                 | Description                                                                                                                                                                                                                       |
 | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **channel** (_list_; Default: )                                                          | User defined list taken from Channel names (**/caps-man channels**)                                                                                                                                                               |
 | **channel.band** (_2ghz-b                                                                | 2ghz-b/g                                                                                                                                                                                                                          | 2ghz-b/g/n                                                                                                                                                                                                           | 2ghz-onlyg        | 2ghz-onlyn                          | 5ghz-a | 5ghz-a/n | 5ghz-onlyn | 5ghz-a/n/ac           | 5ghz-only-ac_; Default: )                                                                                                                | Defines set of used channels. |
@@ -418,11 +366,11 @@ Description
 | **channel.tx-power** (_integer \[-30..40\]_; Default: )                                  | TX Power for CAP interface (for the whole interface not for individual chains) in dBm. It is not possible to set higher than allowed by country regulations or interface. By default max allowed by country or interface is used. |
 | **channel.width** (; Default: )                                                          | Sets Channel Width in MHz.                                                                                                                                                                                                        |
 | **comment** (_string_; Default: )                                                        | Short description of the Configuration profile                                                                                                                                                                                    |
-| **country** (_name of the country                                                        | no\_country\_set_; Default: **no\_country\_set**)                                                                                                                                                                                 | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no\_country\_set_ is an FCC compliant set of channels.                      |
+| **country** (_name of the country                                                        | no_country_set_; Default: **no_country_set**)                                                                                                                                                                                     | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no_country_set_ is an FCC compliant set of channels.                        |
 | **datapath** (_list_; Default: )                                                         | User defined list taken from Datapath names (**/caps-man datapath**)                                                                                                                                                              |
 | **datapath.bridge** (_list_; Default: )                                                  | Bridge to which particular interface should be automatically added as port                                                                                                                                                        |
-| **datapath.bridge-cost** (_integer \[0..4294967295\]_; Default: )                        | bridge port cost to use when adding as bridge port                                                                                                                                                                                |
-| **datapath.bridge-horizon** (_integer \[0..4294967295\]_; Default: )                     | bridge horizon to use when adding as bridge port                                                                                                                                                                                  |
+| **datapath.bridge-cost** (_integer [0..4294967295]_; Default: )                          | bridge port cost to use when adding as bridge port                                                                                                                                                                                |
+| **datapath.bridge-horizon** (_integer [0..4294967295]_; Default: )                       | bridge horizon to use when adding as bridge port                                                                                                                                                                                  |
 | **datapath.client-to-client-forwarding** (_yes                                           | no_; Default: **no**)                                                                                                                                                                                                             | controls if client-to-client forwarding between wireless clients connected to interface should be allowed, in local forwarding mode this function is performed by CAP, otherwise it is performed by CAPsMAN          |
 | **datapath.interface-list** (; Default: )                                                |
 |                                                                                          |
@@ -430,7 +378,7 @@ Description
 | **datapath.local-forwarding** (_yes                                                      | no_; Default: **no**)                                                                                                                                                                                                             | controls forwarding mode                                                                                                                                                                                             |
 | **datapath.mtu** (; Default: )                                                           | set MTU size                                                                                                                                                                                                                      |
 | **datapath.openflow-switch** (; Default: )                                               | OpenFlow switch port (when enabled) to add interface to                                                                                                                                                                           |
-| **datapath.vlan-id** (_integer \[1..4095\]_; Default: )                                  | VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging                                                                                                                                                           |
+| **datapath.vlan-id** (_integer [1..4095]_; Default: )                                    | VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging                                                                                                                                                           |
 | **datapath.vlan-mode** (_use-service-tag                                                 | use-tag_; Default: )                                                                                                                                                                                                              | Enables and specifies the type of VLAN tag to be assigned to the interface (causes all received data to get tagged with VLAN tag and allows the interface to only send out data tagged with given tag)               |
 | **disconnect-timeout** (; Default: )                                                     |
 |                                                                                          |
@@ -469,8 +417,8 @@ This property has effect only in AP mode. Setting it to _yes_ can remove this ne
  |
 | **rates.supported** (_1Mbps | 2Mbps | 5.5Mbps | 6Mbps | 11Mbps | 11Mbps | 12Mbps | 18Mbps | 24Mbps | 36Mbps | 48Mbps | 54Mbps_; Default: ) |   
  |
-| **[rates.ht](https://rates.ht)\-basic-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7**) | [Modulation and Coding Schemes](https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that every connecting client must support. Refer to 802.11n for MCS specification. |
-| **[rates.ht](https://rates.ht)\-supported-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7; mcs-8; mcs-9; mcs-10; mcs-11; mcs-12; mcs-13; mcs-14; mcs-15; mcs-16; mcs-17; mcs-18; mcs-19; mcs-20; mcs-21; mcs-22; mcs-23**) | [Modulation and Coding Schemes](https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that this device advertises as supported. Refer to 802.11n for MCS specification. |
+| **[rates.ht](https://rates.ht)-basic-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7**) | [Modulation and Coding Schemes](https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that every connecting client must support. Refer to 802.11n for MCS specification. |
+| **[rates.ht](https://rates.ht)-supported-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7; mcs-8; mcs-9; mcs-10; mcs-11; mcs-12; mcs-13; mcs-14; mcs-15; mcs-16; mcs-17; mcs-18; mcs-19; mcs-20; mcs-21; mcs-22; mcs-23**) | [Modulation and Coding Schemes](https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that this device advertises as supported. Refer to 802.11n for MCS specification. |
 | **rates.vht-basic-mcs** (_none | MCS 0-7 | MCS 0-8 | MCS 0-9_; Default: **none**) | [Modulation and Coding Schemes](https://en.wikipedia.org/wiki/IEEE_802.11ac#Data_rates_and_speed) that every connecting client must support. Refer to 802.11ac for MCS specification.
 
 You can set MCS interval for each of Spatial Stream
@@ -491,7 +439,7 @@ You can set MCS interval for each of Spatial Stream
 -   _MCS 0-9_ - devices will advertise as supported MCS-0 to MCS-9
 
  |
-| **rx-chains** (_list of integer \[0..2\]_; Default: **0**) | Which antennas to use for receive. |
+| **rx-chains** (_list of integer [0..2]_; Default: **0**) | Which antennas to use for receive. |
 | **security** (_string_; Default: **none**) | Name of security configuration from **/caps-man security** |
 | **security.authentication-types** (_list of string_; Default: **none**) | Specify the type of Authentication from **wpa-psk**, **wpa2-psk**, **wpa-eap** or **wpa2-eap** |
 | **security.disable-pmkid** (; Default: ) |   
@@ -522,7 +470,7 @@ You can set MCS interval for each of Spatial Stream
 
  |
 | **ssid** (_string (0..32 chars)_; Default: ) | SSID (service set identifier) is a name broadcast in the beacons that identifies wireless network. |
-| **tx-chains** (_list of integer \[0..2\]_; Default: **0**) | Which antennas to use for transmit. |
+| **tx-chains** (_list of integer [0..2]_; Default: **0**) | Which antennas to use for transmit. |
 
 ## **Channel Groups**
 
@@ -530,35 +478,18 @@ Channel group settings allows for the configuration of lists of radio channel re
 
 Channel group settings are configured in the Channels profile menu **/caps-man channels**
 
-| 
-Property
+| Property                                             | Description                                                                                                                                                                                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **band** (_2ghz-b                                    | 2ghz-b/g                                                                                                                                                                                                                          | 2ghz-b/g/n | 2ghz-onlyg | 2ghz-onlyn | 5ghz-a | 5ghz-a/n              | 5ghz-onlyn_; Default: )                                                                                                                  | Define operational radio frequency band and mode taken from hardware capability of wireless card |
+| **comment** (_string_; Default: )                    | Short description of the Channel Group profile                                                                                                                                                                                    |
+| **extension-channel** (_Ce                           | Ceee                                                                                                                                                                                                                              | eC         | eCee       | eeCe       | eeeC   | disabled_; Default: ) | Extension channel configuration. (E.g. Ce = extension channel is above Control channel, eC = extension channel is below Control channel) |
+| **frequency** (_integer [0..4294967295]_; Default: ) | Channel frequency value in MHz on which AP will operate.                                                                                                                                                                          |
+| **name** (_string_; Default: )                       | Descriptive name for the Channel Group Profile                                                                                                                                                                                    |
+| **tx-power** (_integer [-30..40]_; Default: )        | TX Power for CAP interface (for the whole interface not for individual chains) in dBm. It is not possible to set higher than allowed by country regulations or interface. By default max allowed by country or interface is used. |
+| **width** (; Default: )                              | Sets Channel Width in MHz. (E.g. 20, 40)                                                                                                                                                                                          |
+| **save-selected** (; Default: **yes**)               | Saves selected channel for the CAP Radio - will select this channel after the CAP reconnects to CAPsMAN and use it till the channel Re-optimize is done for this CAP.                                                             |
 
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                        |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **band** (_2ghz-b                                      | 2ghz-b/g                                                                                                                                                                                                                          | 2ghz-b/g/n | 2ghz-onlyg | 2ghz-onlyn | 5ghz-a | 5ghz-a/n              | 5ghz-onlyn_; Default: )                                                                                                                  | Define operational radio frequency band and mode taken from hardware capability of wireless card |
-| **comment** (_string_; Default: )                      | Short description of the Channel Group profile                                                                                                                                                                                    |
-| **extension-channel** (_Ce                             | Ceee                                                                                                                                                                                                                              | eC         | eCee       | eeCe       | eeeC   | disabled_; Default: ) | Extension channel configuration. (E.g. Ce = extension channel is above Control channel, eC = extension channel is below Control channel) |
-| **frequency** (_integer \[0..4294967295\]_; Default: ) | Channel frequency value in MHz on which AP will operate.                                                                                                                                                                          |
-| **name** (_string_; Default: )                         | Descriptive name for the Channel Group Profile                                                                                                                                                                                    |
-| **tx-power** (_integer \[-30..40\]_; Default: )        | TX Power for CAP interface (for the whole interface not for individual chains) in dBm. It is not possible to set higher than allowed by country regulations or interface. By default max allowed by country or interface is used. |
-| **width** (; Default: )                                | Sets Channel Width in MHz. (E.g. 20, 40)                                                                                                                                                                                          |
-| **save-selected** (; Default: **yes**)                 | Saves selected channel for the CAP Radio - will select this channel after the CAP reconnects to CAPsMAN and use it till the channel Re-optimize is done for this CAP.                                                             |
-
-## **Datapath Configuration**
+## Datapath Configuration
 
 Datapath settings control data forwarding related aspects. On CAPsMAN datapath settings are configured in datapath profile menu **/caps-man datapath** or directly in a configuration profile or interface menu as settings with **datapath.** prefix.
 
@@ -582,7 +513,7 @@ There are the following datapath settings:
 -   vlan-id -- VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging
 -   vlan-mode -- VLAN tagging mode specifies if VLAN tag should be assigned to interface (causes all received data to get tagged with VLAN tag and allows interface to only send out data tagged with given tag)
 
-## **Local Forwarding Mode**
+## Local Forwarding Mode
 
 In this mode wireless interface on CAP behaves as a normal interface and takes part in normal data forwarding. Wireless interface will accept/pass data to networking stack on CAP. CAPsMAN will not participate in data forwarding and will not process any of data frames, it will only control interface configuration and client association process.
 
@@ -630,7 +561,7 @@ To overcome this it is possible to use the static-virtual setting on the CAP whi
 
 To facilitate data forwarding configuration, CAP can be configured with bridge to which interfaces are automatically added as ports when interfaces are enabled by CAPsMAN. This can be done in **/interface wireless cap** menu.
 
-## **Manager Forwarding Mode**
+## Manager Forwarding Mode
 
 In this mode CAP sends all data received over wireless to CAPsMAN and only sends out over wireless, data received from CAPsMAN. CAPsMAN has full control over data forwarding including client-to-client forwarding. Wireless interface on CAP is disabled and does not participate in networking:
 
@@ -684,9 +615,9 @@ Registration table contains a list of clients that are connected to radios contr
 
 ```
 
-# **Examples**
+**Examples**
 
-## **Basic configuration with master and slave interface**
+## Basic configuration with master and slave interface
 
 Create security profile for WPA2 PSK, without specifying passphrase:
 
@@ -772,7 +703,7 @@ Configuring DHCP Server Option 138 for setting the CAPsMAN address on the CAP bo
 
 DHCP client this CAPsMAN IP will see in "/ip dhcp-client print detail"
 
-## **Configuration with certificates**
+## Configuration with certificates
 
 You would want to configure certificates in your CAPsMAN to use options as _Require Peer Certificate_ and _Lock To Caps Man_. These options increase security and in some cases stability of your CAPsMAN network. CAPs won't connect to CAPsMAN without a specific certificate and vice versa.
 

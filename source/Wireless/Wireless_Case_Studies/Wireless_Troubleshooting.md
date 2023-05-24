@@ -4,21 +4,15 @@ Debugging wireless problems using Logs.
 
 By default RouterOS wireless log shows that client connects and disconnects as simple entries:
 
-[?](https://help.mikrotik.com/docs/display/ROS/Wireless+Troubleshooting#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">22</code><code class="ros constants">:32:18 wireless,</code><code class="ros functions">info </code><code class="ros plain">00</code><code class="ros constants">:80:48:41:AF:2A@wlan1: connected</code></div></div></td></tr></tbody></table>
 
 It is enough for regular users to know that the wireless client with MAC address "00:80:48:41:AF:2A" is connected to wireless interface "wlan1". But actually there are more log entries available than are shown in standard logging. They are called 'debug' logs which give more detailed information. In the following Debug Log example you will see the same client connecting to the AP in more detail than found in typical logging:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Wireless+Troubleshooting#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">22</code><code class="ros constants">:33:20 wireless,debug wlan1: 00:80:48:41:AF:2A attempts to connect</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">22</code><code class="ros constants">:33:20 wireless,debug wlan1: 00:80:48:41:AF:2A not in </code><code class="ros functions">local </code><code class="ros plain">ACL, by default accept</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">22</code><code class="ros constants">:33:20 wireless,</code><code class="ros functions">info </code><code class="ros plain">00</code><code class="ros constants">:80:48:41:AF:2A@wlan1: connected</code></div></div></td></tr></tbody></table>
 
 Debug Logs will give you more specific information on each step of the Client wireless connection and disconnection. The first line shows that the wireless client tried to connect to the AP. On the second line the AP checked to see if that client is allowed to connect to the AP and the resulting action. And only on the third line do you see that the client is connected. This is merely one example of the debug log messages. The description of all debug entries is written below.
 
 To enable the wireless debug logs you should execute such commands:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Wireless+Troubleshooting#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/system logging&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] system logging&gt; </code><code class="ros functions">add </code><code class="ros value">topics</code><code class="ros plain">=wireless,debug</code> <code class="ros value">action</code><code class="ros plain">=memory</code></div></div></td></tr></tbody></table>
 

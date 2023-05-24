@@ -1,14 +1,14 @@
 ## Summary
 
-___
+
 
 This example shows how to configure transparent wireless bridge in GUI from one W60G device to another.
 
-Example is done from empty configuration state with \[[WinBox](https://mikrotik.com/download)\] utility
+Example is done from empty configuration state with [[WinBox](https://mikrotik.com/download) utility
 
 ## Connect to the device
 
-___
+
 
 After configuration reset - only mac-telnet is possible. In main WinBox screen press on Neighbours, choose your devices MAC address and press Connect:
 
@@ -39,7 +39,7 @@ Add interface members (ether1 and wlan60-1) to newly created bridge.
 
 ## Set up wireless connection
 
-___
+
 
 All previously explained steps are identical to **bridge** and **station** devices. Different modes needs to be used when configuring wireless interfaces.
 
@@ -68,7 +68,7 @@ Configure **station** device as follows:
 
 ## Additional configuration
 
-___
+
 
 Interfaces when enabled from greyed out will become active.
 

@@ -21,8 +21,6 @@ Before we move on let's familiarise ourselves with terms important for understan
 
 **Basic password-protected AP**
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">wifi1 </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">configuration.country</code><code class="ros plain">=Latvia</code> <code class="ros value">configuration.ssid</code><code class="ros plain">=MikroTik</code> <code class="ros value">security.authentication-types</code><code class="ros plain">=wpa2-psk,wpa3-psk</code> <code class="ros value">security.passphrase</code><code class="ros plain">=8-63_characters</code></div></div></td></tr></tbody></table>
 
   
@@ -35,8 +33,6 @@ However, since a network cannot be simultaneously encrypted and unencrypted, 2 s
 
 This configuration is referred to as OWE transition mode.
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">master-interface</code><code class="ros plain">=wifi1</code> <code class="ros value">name</code><code class="ros plain">=wifi1_owe</code> <code class="ros value">configuration.ssid</code><code class="ros plain">=MikroTik_OWE</code> <code class="ros value">security.authentication-types</code><code class="ros plain">=owe</code> <code class="ros value">security.owe-transition-interface</code><code class="ros plain">=wifi1</code> <code class="ros value">configuration.hide-ssid</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">wifi1 </code><code class="ros value">configuration.country</code><code class="ros plain">=Latvia</code> <code class="ros value">configuration.ssid</code><code class="ros plain">=MikroTik</code> <code class="ros value">security.authentication-types</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">security.owe-transition-interface</code><code class="ros plain">=wifi1_owe</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">enable </code><code class="ros plain">wifi1,wifi1_owe</code></div></div></td></tr></tbody></table>
 
 Client devices that support OWE will prefer the OWE interface. If you don't see any devices in your registration table that are associating with the regular open AP, you may want to move on from running a transition mode setup to a single OWE-encrypted interface.
@@ -44,8 +40,6 @@ Client devices that support OWE will prefer the OWE interface. If you don't see 
 **Resetting configuration**
 
 WifiWave2 interface configurations can be reset by using the 'reset' command.
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2 </code><code class="ros functions">reset </code><code class="ros plain">wifi1</code></div></div></td></tr></tbody></table>
 
@@ -65,8 +59,6 @@ The following priority determines, which value is used:
 If you are at any point unsure of which parameter value will be used for an interface, consult the **actual-configuration** menu. For an example of configuration profile usage, see the following example.
 
 **Example for dual-band home AP**
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Creating a security profile, which will be common for both interfaces</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 security</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=common-auth</code> <code class="ros value">authentication-types</code><code class="ros plain">=wpa2-psk,wpa3-psk</code> <code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">"diceware makes good passwords"</code> <code class="ros value">wps</code><code class="ros plain">=disable</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># Creating a common configuration profile and linking the security profile to it</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 configuration</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=common-conf</code> <code class="ros value">ssid</code><code class="ros plain">=MikroTik</code> <code class="ros value">country</code><code class="ros plain">=Latvia</code> <code class="ros value">security</code><code class="ros plain">=common-auth</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros comments"># Creating separate channel configurations for each band</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 channel</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ch-2ghz</code> <code class="ros value">frequency</code><code class="ros plain">=2412,2432,2472</code> <code class="ros value">width</code><code class="ros plain">=20mhz</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ch-5ghz</code> <code class="ros value">frequency</code><code class="ros plain">=5180,5260,5500</code> <code class="ros value">width</code><code class="ros plain">=20/40/80mhz</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># Assigning to each interface the common profile as well as band-specific channel profile</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">wifi1 </code><code class="ros value">channel</code><code class="ros plain">=ch-2ghz</code> <code class="ros value">configuration</code><code class="ros plain">=common-conf</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">wifi2 </code><code class="ros value">channel</code><code class="ros plain">=ch-5ghz</code> <code class="ros value">configuration</code><code class="ros plain">=common-conf</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/actual-configuration </code><code class="ros plain">print</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"wifi1"</code> <code class="ros value">mac-address</code><code class="ros plain">=74:4D:28:94:22:9A</code> <code class="ros value">arp-timeout</code><code class="ros plain">=auto</code> <code class="ros value">radio-mac</code><code class="ros plain">=74:4D:28:94:22:9A</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">configuration.ssid</code><code class="ros plain">=</code><code class="ros string">"MikroTik"</code> <code class="ros plain">.</code><code class="ros value">country</code><code class="ros plain">=Latvia</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">security.authentication-types</code><code class="ros plain">=wpa2-psk,wpa3-psk</code> <code class="ros plain">.</code><code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">"diceware makes good passwords"</code> <code class="ros plain">.</code><code class="ros value">wps</code><code class="ros plain">=disable</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">channel.frequency</code><code class="ros plain">=2412,2432,2472</code> <code class="ros plain">.</code><code class="ros value">width</code><code class="ros plain">=20mhz</code></div><div class="line number21 index20 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1 </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"wifi2"</code> <code class="ros value">mac-address</code><code class="ros plain">=74:4D:28:94:22:9B</code> <code class="ros value">arp-timeout</code><code class="ros plain">=auto</code> <code class="ros value">radio-mac</code><code class="ros plain">=74:4D:28:94:22:9B</code>&nbsp;&nbsp;</div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">configuration.ssid</code><code class="ros plain">=</code><code class="ros string">"MikroTik"</code> <code class="ros plain">.</code><code class="ros value">country</code><code class="ros plain">=Latvia</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">security.authentication-types</code><code class="ros plain">=wpa2-psk,wpa3-psk</code> <code class="ros plain">.</code><code class="ros value">passphrase</code><code class="ros plain">=</code><code class="ros string">"diceware makes good passwords"</code> <code class="ros plain">.</code><code class="ros value">wps</code><code class="ros plain">=disable</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">channel.frequency</code><code class="ros plain">=5180,5260,5500</code> <code class="ros plain">.</code><code class="ros value">width</code><code class="ros plain">=20/40/80mhz</code></div></div></td></tr></tbody></table>
 
@@ -94,19 +86,13 @@ When a client device tries to associate with an AP, which is configured to perfo
 
 Only accept connections to guest network from nearby devices during business hours
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/access-list/</code><code class="ros functions">print </code><code class="ros plain">detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">signal-range</code><code class="ros plain">=-60..0</code> <code class="ros value">allow-signal-out-of-range</code><code class="ros plain">=5m</code> <code class="ros value">ssid-regexp</code><code class="ros plain">=</code><code class="ros string">"MikroTik Guest"</code> <code class="ros value">time</code><code class="ros plain">=7h-19h,mon,tue,wed,thu,fri</code> <code class="ros value">action</code><code class="ros plain">=accept</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">1&nbsp;&nbsp; </code><code class="ros value">ssid-regexp</code><code class="ros plain">=</code><code class="ros string">"MikroTik Guest"</code> <code class="ros value">action</code><code class="ros plain">=reject</code></div></div></td></tr></tbody></table>
 
 Reject connections from locally-administered ('anonymous'/'randomized') MAC addresses
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/access-list/</code><code class="ros functions">print </code><code class="ros plain">detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">mac-address</code><code class="ros plain">=02:00:00:00:00:00</code> <code class="ros value">mac-address-mask</code><code class="ros plain">=02:00:00:00:00:00</code> <code class="ros value">action</code><code class="ros plain">=reject</code></div></div></td></tr></tbody></table>
 
 Assigning a different passphrase for a specific client can be useful, if you need to provide wireless access to a client, but don't want to share your wireless password, or don't want to create a separate SSID. When the matching client will connect to this network, instead of using the password defined in the interface configuration, the access list will make that client use a different password. Just make that the specific client doesn't get matched by a more generic access list rule first.
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 access-list</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">mac-address</code><code class="ros plain">=22:F9:70:E5:D2:8E</code> <code class="ros value">interface</code><code class="ros plain">=wifi1</code> <code class="ros value">passphrase</code><code class="ros plain">=StrongPassword</code></div></div></td></tr></tbody></table>
 
@@ -141,23 +127,17 @@ The sniffer will operate on whichever channel is configured for the chosen inter
 
 The wps-client command enables obtaining authentication information from a WPS-enabled AP.
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/</code><code class="ros functions">wps-client </code><code class="ros plain">wifi1</code></div></div></td></tr></tbody></table>
 
 ## WPS server
 
 An AP can be made to accept WPS authentication by a client device for 2 minutes by running the following command.
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2 </code><code class="ros functions">wps-push-button </code><code class="ros plain">wifi1</code></div></div></td></tr></tbody></table>
 
 # Radios
 
 Information about the capabilities of each radio can be gained by running the \`/interface/wifiwave2/radio print detail\` command.  It can be useful to see what bands are supported by the interface and what channels can be selected. The country profile that is applied to the interface will influence the results.
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">interface</code><code class="ros constants">/wifiwave2/radio/</code><code class="ros functions">print </code><code class="ros functions">detail</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: L - </code><code class="ros functions">local</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0 L </code><code class="ros value">radio-mac</code><code class="ros plain">=48:A9:8A:0B:F7:4A</code> <code class="ros value">phy-id</code><code class="ros plain">=0</code> <code class="ros value">tx-chains</code><code class="ros plain">=0,1</code> <code class="ros value">rx-chains</code><code class="ros plain">=0,1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">bands</code><code class="ros plain">=5ghz-a:20mhz,5ghz-n:20mhz,20/40mhz,5ghz-ac:20mhz,20/40mhz,20/40/80mhz,5ghz-ax:20mhz,</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">20</code><code class="ros constants">/40mhz,20/40/80mhz</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">ciphers</code><code class="ros plain">=tkip,ccmp,gcmp,ccmp-256,gcmp-256,cmac,gmac,cmac-256,gmac-256</code> <code class="ros value">countries</code><code class="ros plain">=all</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">5g-channels</code><code class="ros plain">=5180,5200,5220,5240,5260,5280,5300,5320,5500,5520,5540,5560,5580,5600,5620,5640,5660,</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">5680,5700,5720,5745,5765,5785,5805,5825</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">max-vlans</code><code class="ros plain">=128</code> <code class="ros value">max-interfaces</code><code class="ros plain">=16</code> <code class="ros value">max-station-interfaces</code><code class="ros plain">=3</code> <code class="ros value">max-peers</code><code class="ros plain">=120</code> <code class="ros value">hw-type</code><code class="ros plain">=</code><code class="ros string">"QCA6018"</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">hw-caps</code><code class="ros plain">=sniffer</code> <code class="ros value">interface</code><code class="ros plain">=wifi1</code> <code class="ros value">current-country</code><code class="ros plain">=Latvia</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">current-channels</code><code class="ros plain">=5180/a,5180/n,5180/n/Ce,5180/ac,5180/ac/Ce,5180/ac/Ceee,5180/ax,5180/ax/Ce,</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">5180</code><code class="ros constants">/ax/Ceee,5200/a,5200/n,5200/n/eC,5200/ac,5200/ac/eC,5200/ac/eCee,5200/ax...</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">...5680</code><code class="ros constants">/n/eC,5680/ac,5680/ac/eC,5680/ax,5680/ax/eC,5700/a,5700/n,5700/ac,5700/ax</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">current-gopclasses</code><code class="ros plain">=115,116,128,117,118,119,120,121,122,123</code> <code class="ros value">current-max-reg-power</code><code class="ros plain">=30</code></div></div></td></tr></tbody></table>
 
@@ -174,8 +154,6 @@ If we take hAP ax<sup>2</sup>, as an example, we can see that number of chains i
 ## De-authentication
 
 Wireless peers can be manually de-authenticated (forcing re-association) by removing them from the registration table.
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/registration-table </code><code class="ros functions">remove </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">mac-address</code><code class="ros plain">=02:01:02:03:04:05]</code></div></div></td></tr></tbody></table>
 
@@ -203,13 +181,9 @@ You can configure sub configuration menus, directly under "/interface/wifiwave2/
 
 CAPsMAN:
 
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
-
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments">#create a security profile</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 security</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">authentication-types</code><code class="ros plain">=wpa3-psk</code> <code class="ros value">name</code><code class="ros plain">=sec1</code> <code class="ros value">passphrase</code><code class="ros plain">=HaveAg00dDay</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments">#create configuraiton profiles to use for provisioning</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 configuration</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">country</code><code class="ros plain">=Latvia</code> <code class="ros value">name</code><code class="ros plain">=5ghz</code> <code class="ros value">security</code><code class="ros plain">=sec1</code> <code class="ros value">ssid</code><code class="ros plain">=CAPsMAN_5</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=2ghz</code> <code class="ros value">security</code><code class="ros plain">=sec1</code> <code class="ros value">ssid</code><code class="ros plain">=CAPsMAN2</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">country</code><code class="ros plain">=Latvia</code> <code class="ros value">name</code><code class="ros plain">=5ghz_v</code> <code class="ros value">security</code><code class="ros plain">=sec1</code> <code class="ros value">ssid</code><code class="ros plain">=CAPsMAN5_v</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments">#configure provisioning rules, configure band matching as needed</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 provisioning</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=create-dynamic-enabled</code> <code class="ros value">master-configuration</code><code class="ros plain">=5ghz</code> <code class="ros value">slave-configurations</code><code class="ros plain">=5ghz_v</code> <code class="ros value">supported-bands</code><code class="ros plain">=\</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">5ghz-n</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=create-enabled</code> <code class="ros value">master-configuration</code><code class="ros plain">=2ghz</code> <code class="ros value">supported-bands</code><code class="ros plain">=2ghz-n</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros comments">#enable CAPsMAN service</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">/interface wifiwave2 capsman</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">ca-certificate</code><code class="ros plain">=auto</code> <code class="ros value">enabled</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
 
 CAP:
-
-[?](https://help.mikrotik.com/docs/display/ROS/WifiWave2#)
 
 <table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments">#enable CAP service, in this case CAPsMAN is on same LAN, but you can also specify "caps-man-addresses=x.x.x.x" here</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/cap </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#set configuration.manager= on the WifiWave2 interface that should act as CAP</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2/</code><code class="ros functions">set </code><code class="ros plain">wifi1,wifi2 </code><code class="ros value">configuration.manager</code><code class="ros plain">=capsman-or-local</code></div></div></td></tr></tbody></table>
 
@@ -273,7 +247,7 @@ Character
 Interpretation
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Character
@@ -303,7 +277,7 @@ Description
 
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -314,8 +288,8 @@ Description
 
 
 
-|                                     |
-| ----------------------------------- |  |
+|     |
+| --- ||
 | **called-format** (_format-string_) |
 
 Format for the value of the Called-Station-Id RADIUS attribute, in AP's messages to RADIUS servers. Default: II-II-II-II-II-II:S
@@ -360,7 +334,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -434,7 +408,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -444,7 +418,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 **antenna-gain** (_integer 0..30_)
@@ -572,7 +546,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -811,7 +785,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -905,7 +879,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -914,8 +888,8 @@ Property
 
 Description
 
-|                           |
-| ------------------------- |  |
+|     |
+| --- ||
 | **bound** (_boolean_) (B) |
 
 Always true for _master_ interfaces (configurations linked to radio hardware).
@@ -1103,7 +1077,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1141,7 +1115,7 @@ Parameter
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Parameter
@@ -1178,7 +1152,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1237,7 +1211,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1285,24 +1259,7 @@ Specifies if the provision rule is disabled.
 
 Menu: /interface/wifiwave2/cap
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                     |
+| Property                                                            | Description                                                                                                    |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **caps-man-addresses** _(list of IP addresses; Default: **empty**)_ | List of Manager IP addresses that CAP will attempt to contact during discovery                                 |
 | **caps-man-names** ()                                               | An ordered list of CAPs Manager names that the CAP will connect to, if empty - CAP does not check Manager name |

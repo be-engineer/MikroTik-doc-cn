@@ -1,14 +1,14 @@
 ## Summary
 
-___
+
 
 This example shows how to configure automatic fail-over (bonding) 5Ghz link in combination with 60Ghz devices in GUI.  
 When a connection between 60Ghz wireless is lost, it will automatically use the bonded interface.  
-Example is done from empty configuration state with \[[WinBox](https://mikrotik.com/download)\] utility
+Example is done from empty configuration state with [[WinBox](https://mikrotik.com/download) utility
 
 ## Connect to the device
 
-___
+
 
 After configuration reset - only mac-telnet is possible. In main WinBox screen press on Neighbours, choose your devices MAC address and press Connect:
 
@@ -20,7 +20,7 @@ After configuration reset - only mac-telnet is possible. In main WinBox screen p
 
 ## Configure bridge  
 
-___
+
 
 Add new bridge.
 
@@ -34,7 +34,7 @@ _Later in the instructions it requires to assign bridge members to it. This will
 
 ## Set up 60Ghz wireless connection
 
-___
+
 
 All previously explained steps are identical to **bridge** and **station** devices. Different modes needs to be used when configuring wireless interfaces.
 
@@ -137,7 +137,7 @@ _**For station device -**_
 
 ## Configure bridge  
 
-___
+
 
 _Configuring bridge settings including the bonding interface is mandatory for the active-backup to work on used devices ( In this case bridge and station devices settings are the same ).  
 _
@@ -158,7 +158,6 @@ _![](https://help.mikrotik.com/docs/download/attachments/43843592/bonding_ports2
 
 ## Additional configuration
 
-___
 
 Interfaces when enabled from greyed out will become active.
 

@@ -1,14 +1,13 @@
 ## Summary
 
-___
 
 This example shows how to configure automatic fail-over (bonding) 5Ghz link in combination with 60Ghz devices in CLI.  
 When a connection between 60Ghz wireless is lost, it will automatically use the bonded interface.  
-Example is done from empty configuration state with \[[WinBox](https://mikrotik.com/download)\] utility
+Example is done from empty configuration state with [[WinBox](https://mikrotik.com/download) utility
 
 ## Connect to the device step by step
 
-___
+
 
 1.  After configuration reset - only mac-telnet is possible.  
     Connect to device by connecting to it's MAC address or use WinBox New terminal to find device MAC address of the W60G device by issuing command:

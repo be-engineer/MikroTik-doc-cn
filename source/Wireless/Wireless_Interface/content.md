@@ -11,32 +11,15 @@ Wireless can operate in several modes: client (station), access point, wireless 
 
 **Sub-menu:** `/interface wireless`
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                   |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **adaptive-noise-immunity** (_ap-and-client-mode                  | client-mode                                                                                                                                                                                                                                                                                                                                          | none_; Default: **none**)                                                                                                                                                                                   | This property is only effective for cards based on Atheros chipset. |
-| **allow-sharedkey** (_yes                                         | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                | Allow WEP Shared Key clients to connect. Note that no authentication is done for these clients (WEP Shared keys are not compared to anything) - they are just accepted at once (if access list allows that) |
-| **ampdu-priorities** (_list of integer \[0..7\]_; Default: **0**) | Frame priorities for which AMPDU sending (aggregating frames and sending using block acknowledgment) should get negotiated and used. Using AMPDUs will increase throughput, but may increase latency, therefore, may not be desirable for real-time traffic (voice, video). Due to this, by default AMPDUs are enabled only for best-effort traffic. |
-| **amsdu-limit** (_integer \[0..8192\]_; Default: **8192**)        | Max AMSDU that device is allowed to prepare when negotiated. AMSDU aggregation may significantly increase throughput especially for small frames, but may increase latency in case of packet loss due to retransmission of aggregated frame. Sending and receiving AMSDUs will also increase CPU usage.                                              |
-| **amsdu-threshold** (_integer \[0..8192\]_; Default: **8192**)    | Max frame size to allow including in AMSDU.                                                                                                                                                                                                                                                                                                          |
-| **antenna-gain** (_integer \[0..4294967295\]_; Default: **0**)    | Antenna gain in dBi, used to calculate maximum transmit power according to **country** regulations.                                                                                                                                                                                                                                                  |
-| **antenna-mode** (_ant-a                                          | ant-b                                                                                                                                                                                                                                                                                                                                                | rxa-txb                                                                                                                                                                                                     | txa-rxb_; Default: )                                                | Select antenna to use for transmitting and for receiving |
+| Property                                                        | Description                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **adaptive-noise-immunity** (_ap-and-client-mode                | client-mode                                                                                                                                                                                                                                                                                                                                          | none_; Default: **none**)                                                                                                                                                                                   | This property is only effective for cards based on Atheros chipset. |
+| **allow-sharedkey** (_yes                                       | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                | Allow WEP Shared Key clients to connect. Note that no authentication is done for these clients (WEP Shared keys are not compared to anything) - they are just accepted at once (if access list allows that) |
+| **ampdu-priorities** (_list of integer [0..7]_; Default: **0**) | Frame priorities for which AMPDU sending (aggregating frames and sending using block acknowledgment) should get negotiated and used. Using AMPDUs will increase throughput, but may increase latency, therefore, may not be desirable for real-time traffic (voice, video). Due to this, by default AMPDUs are enabled only for best-effort traffic. |
+| **amsdu-limit** (_integer [0..8192]_; Default: **8192**)        | Max AMSDU that device is allowed to prepare when negotiated. AMSDU aggregation may significantly increase throughput especially for small frames, but may increase latency in case of packet loss due to retransmission of aggregated frame. Sending and receiving AMSDUs will also increase CPU usage.                                              |
+| **amsdu-threshold** (_integer [0..8192]_; Default: **8192**)    | Max frame size to allow including in AMSDU.                                                                                                                                                                                                                                                                                                          |
+| **antenna-gain** (_integer [0..4294967295]_; Default: **0**)    | Antenna gain in dBi, used to calculate maximum transmit power according to **country** regulations.                                                                                                                                                                                                                                                  |
+| **antenna-mode** (_ant-a                                        | ant-b                                                                                                                                                                                                                                                                                                                                                | rxa-txb                                                                                                                                                                                                     | txa-rxb_; Default: )                                                | Select antenna to use for transmitting and for receiving |
 
 -   _ant-a_ - use only 'a' antenna
 -   _ant-b_ - use only 'b' antenna
@@ -60,13 +43,13 @@ This property has effect only in AP modes, and when value of **rate-set** is con
 | **comment** (_string_; Default: ) | Short description of the interface |
 | **compression** (_yes | no_; Default: **no**) | Setting this property to _yes_ will allow the use of the hardware compression. Wireless interface must have support for hardware compression. Connections with devices that do not use compression will still work. |
 | **country** (_name of the country | no\_country\_set_; Default: **etsi**) | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no\_country\_set_ is an FCC compliant set of channels. |
-| **default-ap-tx-limit** (_integer \[0..4294967295\]_; Default: **0**) | This is the value of **ap-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit. |
+| **default-ap-tx-limit** (_integer [0..4294967295]_; Default: **0**) | This is the value of **ap-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit. |
 | **default-authentication** (_yes | no_; Default: **yes**) | For AP mode, this is the value of **authentication** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). For station mode, this is the value of **connect** for APs that do not match any entry in the [connect-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-ConnectList) |
-| **default-client-tx-limit** (_integer \[0..4294967295\]_; Default: **0**) | This is the value of **client-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit |
+| **default-client-tx-limit** (_integer [0..4294967295]_; Default: **0**) | This is the value of **client-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit |
 | **default-forwarding** (_yes | no_; Default: **yes**) | This is the value of **forwarding** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList) |
 | **disable-running-check** (_yes | no_; Default: **no**) | When set to **yes** interface will always have running flag. If value is set to **no'**, the router determines whether the card is up and running - for AP one or more clients have to be registered to it, for station, it should be connected to an AP. |
 | **disabled** (_yes | no_; Default: **yes**) | Whether interface is disabled |
-| **disconnect-timeout** (_time \[0s..15s\]_; Default: **3s**) | This interval is measured from third sending failure on the lowest data rate. At this point 3 \* (**hw-retries** + 1) frame transmits on the lowest data rate had failed. During **disconnect-timeout** packet transmission will be retried with **on-fail-retry-time** interval. If no frame can be transmitted successfully during **disconnect-timeout**, the connection is closed, and this event is logged as "extensive data loss". Successful frame transmission resets this timer. |
+| **disconnect-timeout** (_time [0s..15s]_; Default: **3s**) | This interval is measured from third sending failure on the lowest data rate. At this point 3 \* (**hw-retries** + 1) frame transmits on the lowest data rate had failed. During **disconnect-timeout** packet transmission will be retried with **on-fail-retry-time** interval. If no frame can be transmitted successfully during **disconnect-timeout**, the connection is closed, and this event is logged as "extensive data loss". Successful frame transmission resets this timer. |
 | **distance** (_integer | dynamic | indoors_; Default: **dynamic**) | How long to wait for confirmation of unicast frames (**ACKs**) before considering transmission unsuccessful, or in short **ACK-Timeout**. Distance value has these behaviors:
 
 -   _Dynamic_ - causes AP to detect and use the smallest timeout that works with all connected clients.
@@ -74,20 +57,20 @@ This property has effect only in AP modes, and when value of **rate-set** is con
 -   _Number_ - uses the input value in formula: ACK-timeout = ((**distance** \* 1000) + 299) / 300 us;
 
 Acknowledgments are not used in Nstreme/NV2 protocols. |
-| **frame-lifetime** (_integer \[0..4294967295\]_; Default: **0**) | Discard frames that have been queued for sending longer than **frame-lifetime**. By default, when value of this property is _0_, frames are discarded only after connection is closed. |
-| **frequency** (_integer \[0..4294967295\]_; Default: ) | Channel frequency value in MHz on which AP will operate.
+| **frame-lifetime** (_integer [0..4294967295]_; Default: **0**) | Discard frames that have been queued for sending longer than **frame-lifetime**. By default, when value of this property is _0_, frames are discarded only after connection is closed. |
+| **frequency** (_integer [0..4294967295]_; Default: ) | Channel frequency value in MHz on which AP will operate.
 
 Allowed values depend on the selected band, and are restricted by **country** setting and wireless card capabilities. This setting has **no effect** if interface is in any of **station** modes, or in _wds-slave_ mode, or if DFS is active.
 
 _Note_: If using mode "superchannel", any frequency supported by the card will be accepted, but on the RouterOS client, any non-standard frequency must be configured in the [scan-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-scan-list), otherwise it will not be scanning in non-standard range. In Winbox, scanlist frequencies are in _bold_, any other frequency means the clients will need scan-list configured. |
-| **frequency-mode** (_manual-txpower | regulatory-domain | superchannel_; Default: **regulatory\_domain**) | Three frequency modes are available:
+| **frequency-mode** (_manual-txpower | regulatory-domain | superchannel_; Default: **regulatory_domain**) | Three frequency modes are available:
 
 -   _regulatory-domain_ - Limit available channels and maximum transmit power for each channel according to the value of **country**
 -   _manual-txpower_ - Same as above, but do not limit maximum transmit power.
 -   _superchannel_ - Conformance Testing Mode. Allow all channels supported by the card.
 
 List of available channels for each band can be seen in **/interface wireless info allowed-channels**. This mode allows you to test wireless channels outside the default scan-list and/or regulatory domain. This mode should only be used in controlled environments, or if you have special permission to use it in your region. Before v4.3 this was called Custom Frequency Upgrade, or Superchannel. Since RouterOS v4.3 this mode is available without special key upgrades to all installations. |
-| **frequency-offset** (_integer \[-2147483648..2147483647\]_; Default: **0**) | Allows to specify offset if the used wireless card operates at a different frequency than is shown in RouterOS, in case a frequency converter is used in the card. So if your card works at 4000MHz but RouterOS shows 5000MHz, set offset to 1000MHz and it will be displayed correctly. The value is in MHz and can be positive or negative. |
+| **frequency-offset** (_integer [-2147483648..2147483647]_; Default: **0**) | Allows to specify offset if the used wireless card operates at a different frequency than is shown in RouterOS, in case a frequency converter is used in the card. So if your card works at 4000MHz but RouterOS shows 5000MHz, set offset to 1000MHz and it will be displayed correctly. The value is in MHz and can be positive or negative. |
 | **guard-interval** (_any | long_; Default: **any**) | Whether to allow use of short guard interval (refer to 802.11n MCS specification to see how this may affect throughput). "any" will use either short or long, depending on data rate, "long" will use long. |
 | **hide-ssid** (_yes | no_; Default: **no**) | 
 
@@ -97,21 +80,21 @@ List of available channels for each band can be seen in **/interface wireless in
 This property has an effect only in AP mode. Setting it to _yes_ can remove this network from the list of wireless networks that are shown by some client software. Changing this setting does not improve the security of the wireless network, because SSID is included in other frames sent by the AP. |
 | **ht-basic-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that every connecting client must support. Refer to 802.11n for MCS specification. |
 | **ht-supported-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7; mcs-8; mcs-9; mcs-10; mcs-11; mcs-12; mcs-13; mcs-14; mcs-15; mcs-16; mcs-17; mcs-18; mcs-19; mcs-20; mcs-21; mcs-22; mcs-23**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that this device advertises as supported. Refer to 802.11n for MCS specification. |
-| **hw-fragmentation-threshold** (_integer\[256..3000\] | disabled_; Default: **0**) | Specifies maximum fragment size in bytes when transmitted over the wireless medium. 802.11 standard packet (MSDU in 802.11 terminologies) fragmentation allows packets to be fragmented before transmitting over a wireless medium to increase the probability of successful transmission (only fragments that did not transmit correctly are retransmitted). Note that transmission of a fragmented packet is less efficient than transmitting unfragmented packet because of protocol overhead and increased resource usage at both - transmitting and receiving party. |
+| **hw-fragmentation-threshold** (_integer[256..3000] | disabled_; Default: **0**) | Specifies maximum fragment size in bytes when transmitted over the wireless medium. 802.11 standard packet (MSDU in 802.11 terminologies) fragmentation allows packets to be fragmented before transmitting over a wireless medium to increase the probability of successful transmission (only fragments that did not transmit correctly are retransmitted). Note that transmission of a fragmented packet is less efficient than transmitting unfragmented packet because of protocol overhead and increased resource usage at both - transmitting and receiving party. |
 | **hw-protection-mode** (_cts-to-self | none | rts-cts_; Default: **none**) | Frame protection support property [`read more >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#Frame_protection_support_.28RTS.2FCTS.29) |
-| **hw-protection-threshold** (_integer \[0..65535\]_; Default: **0**) | Frame protection support property [`read more >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#Frame_protection_support_.28RTS.2FCTS.29) |
-| **hw-retries** (_integer \[0..15\]_; Default: **7**) | Number of times sending frame is retried without considering it a transmission failure. Data-rate is decreased upon failure and the frame is sent again. Three sequential failures on the lowest supported rate suspend transmission to this destination for the duration of **on-fail-retry-time**. After that, the frame is sent again. The frame is being retransmitted until transmission success, or until the client is disconnected after **disconnect-timeout**. The frame can be discarded during this time if **frame-lifetime** is exceeded. |
+| **hw-protection-threshold** (_integer [0..65535]_; Default: **0**) | Frame protection support property [`read more >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#Frame_protection_support_.28RTS.2FCTS.29) |
+| **hw-retries** (_integer [0..15]_; Default: **7**) | Number of times sending frame is retried without considering it a transmission failure. Data-rate is decreased upon failure and the frame is sent again. Three sequential failures on the lowest supported rate suspend transmission to this destination for the duration of **on-fail-retry-time**. After that, the frame is sent again. The frame is being retransmitted until transmission success, or until the client is disconnected after **disconnect-timeout**. The frame can be discarded during this time if **frame-lifetime** is exceeded. |
 | **installation** (_any | indoor | outdoor_; Default: **any**) | Adjusts scan-list to use indoor, outdoor or all frequencies for the country that is set. |
 | **interworking-profile** (_enabled | disabled_; Default: **disabled**) |   
  |
 | **keepalive-frames** (_enabled | disabled_; Default: **enabled**) | Applies only if wireless interface is in mode=**ap-bridge**. If a client has not communicated for around 20 seconds, AP sends a "keepalive-frame".  
 **Note**, disabling the feature can lead to "ghost" clients in registration-table. |
-| **l2mtu** (_integer \[0..65536\]_; Default: **1600**) |   
+| **l2mtu** (_integer [0..65536]_; Default: **1600**) |   
  |
 | **mac-address** (_MAC_; Default: ) |   
  |
 | **master-interface** (_string_; Default: ) | Name of wireless interface that has _virtual-ap_ capability. Virtual AP interface will only work if master interface is in _ap-bridge_, _bridge_, _station_ or _wds-slave_ mode. This property is only for virtual AP interfaces. |
-| **max-station-count** (_integer \[1..2007\]_; Default: **2007**) | Maximum number of associated clients. WDS links also count toward this limit. |
+| **max-station-count** (_integer [1..2007]_; Default: **2007**) | Maximum number of associated clients. WDS links also count toward this limit. |
 | **mode** (_station | station-wds | ap-bridge | bridge | alignment-only | nstreme-dual-slave | wds-slave | station-pseudobridge | station-pseudobridge-clone | station-bridge_; Default: **station**) | Selection between different station and access point (AP) modes.
 
 [Station modes](https://wiki.mikrotik.com/wiki/Manual:Wireless_Station_Modes "Manual:Wireless Station Modes"):
@@ -136,7 +119,7 @@ Special modes:
 MAC address translation in pseudobridge modes works by inspecting packets and building a table of corresponding IP and MAC addresses. All packets are sent to AP with the MAC address used by pseudobridge, and MAC addresses of received packets are restored from the address translation table. There is a single entry in the address translation table for all non-IP packets, hence more than one host in the bridged network cannot reliably use non-IP protocols. Note: Currently IPv6 doesn't work over Pseudobridge
 
  |
-| **mtu** (_integer \[0..65536\]_; Default: **1500**) |   
+| **mtu** (_integer [0..65536]_; Default: **1500**) |   
  |
 | **multicast-buffering** (_disabled | enabled_; Default: **enabled**) | For a client that has power saving, buffer multicast packets until next beacon time. A client should wake up to receive a beacon, by receiving beacon it sees that there are multicast packets pending, and it should wait for multicast packets to be sent. |
 | **multicast-helper** (_default | disabled | full_; Default: **default**) | When set to **full**, multicast packets will be sent with a unicast destination MAC address, resolving [multicast problem](https://wiki.mikrotik.com/wiki/Manual:Multicast_detailed_example#Multicast_and_Wireless "Manual:Multicast detailed example") on the wireless link. This option should be enabled only on the access point, clients should be configured in **station-bridge** mode. Available starting from v5.15.
@@ -148,14 +131,14 @@ MAC address translation in pseudobridge modes works by inspecting packets and bu
 
  |
 | **name** (_string_; Default: ) | name of the interface |
-| **noise-floor-threshold** (_default | integer \[-128..127\]_; Default: **default**) | For advanced use only, as it can badly affect the performance of the interface. It is possible to manually set noise floor threshold value. By default, it is dynamically calculated. This property also affects received signal strength. This property is only effective on non-AC chips. |
-| **nv2-cell-radius** (_integer \[10..200\]_; Default: **30**) | Setting affects the size of contention time slot that AP allocates for clients to initiate connection and also size of time slots used for estimating distance to client. When setting is too small, clients that are farther away may have trouble connecting and/or disconnect with "ranging timeout" error. Although during normal operation the effect of this setting should be negligible, in order to maintain maximum performance, it is advised to not increase this setting if not necessary, so AP is not reserving time that is actually never used, but instead allocates it for actual data transfer.
+| **noise-floor-threshold** (_default | integer [-128..127]_; Default: **default**) | For advanced use only, as it can badly affect the performance of the interface. It is possible to manually set noise floor threshold value. By default, it is dynamically calculated. This property also affects received signal strength. This property is only effective on non-AC chips. |
+| **nv2-cell-radius** (_integer [10..200]_; Default: **30**) | Setting affects the size of contention time slot that AP allocates for clients to initiate connection and also size of time slots used for estimating distance to client. When setting is too small, clients that are farther away may have trouble connecting and/or disconnect with "ranging timeout" error. Although during normal operation the effect of this setting should be negligible, in order to maintain maximum performance, it is advised to not increase this setting if not necessary, so AP is not reserving time that is actually never used, but instead allocates it for actual data transfer.
 
 -   on AP: distance to farthest client in km
 -   on station: no effect
 
  |
-| **nv2-noise-floor-offset** (_default | integer \[0..20\]_; Default: **default**) |   
+| **nv2-noise-floor-offset** (_default | integer [0..20]_; Default: **default**) |   
  |
 | **nv2-preshared-key** (_string_; Default: ) |   
  |
@@ -165,13 +148,13 @@ MAC address translation in pseudobridge modes works by inspecting packets and bu
 -   **default** - default setting where small packets receive priority for best latency
 
  |
-| **nv2-queue-count** (_integer \[2..8\]_; Default: **2**) |   
+| **nv2-queue-count** (_integer [2..8]_; Default: **2**) |   
  |
 | **nv2-security** (_disabled | enabled_; Default: **disabled**) |   
  |
-| **on-fail-retry-time** (_time \[100ms..1s\]_; Default: **100ms**) | After third sending failure on the lowest data rate, wait for specified time interval before retrying. |
+| **on-fail-retry-time** (_time [100ms..1s]_; Default: **100ms**) | After third sending failure on the lowest data rate, wait for specified time interval before retrying. |
 | **periodic-calibration** (_default | disabled | enabled_; Default: **default**) | Setting _default_ enables periodic calibration if [info](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-Info) **default-periodic-calibration** property is _enabled_. Value of that property depends on the type of wireless card. This property is only effective for cards based on Atheros chipset. |
-| **periodic-calibration-interval** (_integer \[1..10000\]_; Default: **60**) | This property is only effective for cards based on Atheros chipset. |
+| **periodic-calibration-interval** (_integer [1..10000]_; Default: **60**) | This property is only effective for cards based on Atheros chipset. |
 | **preamble-mode** (_both | long | short_; Default: **both**) | Short preamble mode is an option of 802.11b standard that reduces per-frame overhead.
 
 -   On AP:
@@ -199,7 +182,7 @@ MAC address translation in pseudobridge modes works by inspecting packets and bu
 -   _configured_ - use values from **basic-rates**, **supported-rates**, **basic-mcs**, **mcs**. [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#Basic_and_MCS_Rate_table).
 
  |
-| **rx-chains** (_list of integer \[0..3\]_; Default: **0**) | Which antennas to use for receive. In current MikroTik routers, both RX and TX chain must be enabled, for the chain to be enabled. |
+| **rx-chains** (_list of integer [0..3]_; Default: **0**) | Which antennas to use for receive. In current MikroTik routers, both RX and TX chain must be enabled, for the chain to be enabled. |
 | 
 
 scan-list
@@ -219,11 +202,11 @@ Use this MAC address when connection to AP. If this value is _00:00:00:00:00:00_
 
 As soon as packet with MAC address of another device needs to be transmitted, station will reconnect to AP using that address. |
 | **station-roaming** (_disabled | enabled_; Default: **disabled**) | Station Roaming feature is available only for 802.11 wireless protocol and only for station modes. [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#Station-Roaming) |
-| **supported-rates-a/g** (_list of rates \[12Mbps | 18Mbps | 24Mbps | 36Mbps | 48Mbps | 54Mbps | 6Mbps | 9Mbps\]_; Default: **6Mbps; 9Mbps; 12Mbps; 18Mbps; 24Mbps; 36Mbps; 48Mbps; 54Mbps**) | List of supported rates, used for all bands except _2ghz-b_. |
-| **supported-rates-b** (_list of rates \[11Mbps | 1Mbps | 2Mbps | 5.5Mbps\]_; Default: **1Mbps; 2Mbps; 5.5Mbps; 11Mbps**) | List of supported rates, used for _2ghz-b_, _2ghz-b/g_ and _2ghz-b/g/n_ bands. Two devices will communicate only using rates that are supported by both devices. This property has effect only when value of **rate-set** is _configured_. |
-| **tdma-period-size** (_integer \[1..10\]_; Default: **2**) | Specifies TDMA period in milliseconds. It could help on the longer distance links, it could slightly increase bandwidth, while latency is increased too. |
-| **tx-chains** (_list of integer \[0..3\]_; Default: **0**) | Which antennas to use for transmitting. In current MikroTik routers, both RX and TX chain must be enabled, for the chain to be enabled. |
-| **tx-power** (_integer \[-30..40\]_; Default: ) | For 802.11ac wireless interface it's total power but for 802.11a/b/g/n it's power per chain. |
+| **supported-rates-a/g** (_list of rates [12Mbps | 18Mbps | 24Mbps | 36Mbps | 48Mbps | 54Mbps | 6Mbps | 9Mbps]_; Default: **6Mbps; 9Mbps; 12Mbps; 18Mbps; 24Mbps; 36Mbps; 48Mbps; 54Mbps**) | List of supported rates, used for all bands except _2ghz-b_. |
+| **supported-rates-b** (_list of rates [11Mbps | 1Mbps | 2Mbps | 5.5Mbps]_; Default: **1Mbps; 2Mbps; 5.5Mbps; 11Mbps**) | List of supported rates, used for _2ghz-b_, _2ghz-b/g_ and _2ghz-b/g/n_ bands. Two devices will communicate only using rates that are supported by both devices. This property has effect only when value of **rate-set** is _configured_. |
+| **tdma-period-size** (_integer [1..10]_; Default: **2**) | Specifies TDMA period in milliseconds. It could help on the longer distance links, it could slightly increase bandwidth, while latency is increased too. |
+| **tx-chains** (_list of integer [0..3]_; Default: **0**) | Which antennas to use for transmitting. In current MikroTik routers, both RX and TX chain must be enabled, for the chain to be enabled. |
+| **tx-power** (_integer [-30..40]_; Default: ) | For 802.11ac wireless interface it's total power but for 802.11a/b/g/n it's power per chain. |
 | **tx-power-mode** (_default, card-rates, all-rates-fixed, manual-table_; Default: **default**) | sets up tx-power mode for wireless card
 
 -   default - use values stored in the card
@@ -257,13 +240,13 @@ You can set MCS interval for each of Spatial Stream
 -   _MCS 0-9_ - devices will advertise as supported MCS-0 to MCS-9
 
  |
-| **wds-cost-range** (_start \[-end\] integer\[0..4294967295\]_; Default: **50-150**) | Bridge port cost of WDS links are automatically adjusted, depending on measured link throughput. Port cost is recalculated and adjusted every 5 seconds if it has changed by more than 10%, or if more than 20 seconds have passed since the last adjustment.
+| **wds-cost-range** (_start [-end] integer[0..4294967295]_; Default: **50-150**) | Bridge port cost of WDS links are automatically adjusted, depending on measured link throughput. Port cost is recalculated and adjusted every 5 seconds if it has changed by more than 10%, or if more than 20 seconds have passed since the last adjustment.
 
 Setting this property to _0_ disables automatic cost adjustment.
 
 Automatic adjustment does not work for WDS links that are manually configured as a bridge port. |
 | **wds-default-bridge** (_string | none_; Default: **none**) | When WDS link is established and status of the wds interface becomes _running_, it will be added as a bridge port to the bridge interface specified by this property. When WDS link is lost, wds interface is removed from the bridge. If wds interface is already included in a bridge setup when WDS link becomes active, it will not be added to bridge specified by , and will (needs editing) |
-| **wds-default-cost** (_integer \[0..4294967295\]_; Default: **100**) | Initial bridge port cost of the WDS links. |
+| **wds-default-cost** (_integer [0..4294967295]_; Default: **100**) | Initial bridge port cost of the WDS links. |
 | **wds-ignore-ssid** (_yes | no_; Default: **no**) | By default, WDS link between two APs can be created only when they work on the same frequency and have the same SSID value. If this property is set to _yes_, then SSID of the remote AP will not be checked. This property has no effect on connections from clients in _station-wds_ mode. It also does not work if **wds-mode** is _static-mesh_ or _dynamic-mesh_. |
 | **wds-mode** (_disabled | dynamic | dynamic-mesh | static | static-mesh_; Default: **disabled**) | Controls how WDS links with other devices (APs and clients in _station-wds_ mode) are established.
 
@@ -309,7 +292,7 @@ Power per Chain
 Total Power
 
 |     |
-| --- |  |  |  |
+| --- ||  |  |
 |     |
 
 Wireless chipset
@@ -368,7 +351,7 @@ HT-mcs
 supported rates
 
 |     |
-| --- |  |  |  |  |  |  |
+| --- ||  |  |  |  |  |
 |     |
 
 band
@@ -424,7 +407,7 @@ band
 used settings
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 band
@@ -577,7 +560,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -586,16 +569,16 @@ Property
 
 Description
 
-|                                                               |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **ap-tx-limit** (_integer \[0..4294967295\]_; Default: **0**) | Limit rate of data transmission to this client. Value _0_ means no limit. Value is in bits per second. |
-| **authentication** (_yes                                      | no_; Default: **yes**)                                                                                 |
+|                                                             |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **ap-tx-limit** (_integer [0..4294967295]_; Default: **0**) | Limit rate of data transmission to this client. Value _0_ means no limit. Value is in bits per second. |
+| **authentication** (_yes                                    | no_; Default: **yes**)                                                                                 |
 
 -   _no_ \- Client association will always fail.
 -   _yes_ \- Use authentication procedure that is specified in the [**security-profile**](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-SecurityProfiles) of the interface.
 
  |
-| **client-tx-limit** (_integer \[0..4294967295\]_; Default: **0**) | Ask client to limit rate of data transmission. Value _0_ means no limit.
+| **client-tx-limit** (_integer [0..4294967295]_; Default: **0**) | Ask client to limit rate of data transmission. Value _0_ means no limit.
 
 This is a proprietary extension that is supported by RouterOS clients.
 
@@ -641,7 +624,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -650,17 +633,17 @@ Property
 
 Description
 
-|                                                                           |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **active-mode** (_yes                                                     | no_; Default: **yes**)                                         | If in active mode, will send out frames for align.                                    |
-| **audio-max** (_integer \[-2147483648..2147483647\]_; Default: **\-20**)  | Maxumum signal strength for beeper                             |
-| **audio-min** (_integer \[-2147483648..2147483647\]_; Default: **\-100**) | Minimum signal strength for beeper                             |
-| **audio-monitor** (_MAC_; Default: **00:00:00:00:00:00**)                 | Which MAC address to use for audio monitoring                  |
-| **filter-mac** (_MAC_; Default: **00:00:00:00:00:00**)                    | Filtered out MAC address that will be shown in monitor screen. |
-| **frame-size** (_integer \[200..1500\]_; Default: **300**)                | Size of the frames used by monitor.                            |
-| **frames-per-second** (_integer \[1..100\]_; Default: **25**)             | Frame transmit interval                                        |
-| **receive-all** (_yes                                                     | no_; Default: **no**)                                          | If set to "yes", monitor will find all available devices.                             |
-| **ssid-all** (_yes                                                        | no_; Default: **no**)                                          | Whether to show all SSIDs in the monitor or only one configured in wireless settings. |
+|                                                                         |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **active-mode** (_yes                                                   | no_; Default: **yes**)                                         | If in active mode, will send out frames for align.                                    |
+| **audio-max** (_integer [-2147483648..2147483647]_; Default: **\-20**)  | Maxumum signal strength for beeper                             |
+| **audio-min** (_integer [-2147483648..2147483647]_; Default: **\-100**) | Minimum signal strength for beeper                             |
+| **audio-monitor** (_MAC_; Default: **00:00:00:00:00:00**)               | Which MAC address to use for audio monitoring                  |
+| **filter-mac** (_MAC_; Default: **00:00:00:00:00:00**)                  | Filtered out MAC address that will be shown in monitor screen. |
+| **frame-size** (_integer [200..1500]_; Default: **300**)                | Size of the frames used by monitor.                            |
+| **frames-per-second** (_integer [1..100]_; Default: **25**)             | Frame transmit interval                                        |
+| **receive-all** (_yes                                                   | no_; Default: **no**)                                          | If set to "yes", monitor will find all available devices.                             |
+| **ssid-all** (_yes                                                      | no_; Default: **no**)                                          | Whether to show all SSIDs in the monitor or only one configured in wireless settings. |
 
 ### Menu Specific Commands
 
@@ -672,7 +655,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -681,10 +664,10 @@ Property
 
 Description
 
-|                                                        |
-| ------------------------------------------------------ | ---------------------- |
-| **monitor** (_interface name_)                         | Start align monitoring |
-| **test-audio** (_integer \[-2147483648..2147483647\]_) | Test the beeper        |
+|                                                      |
+| ---------------------------------------------------- | ---------------------- |
+| **monitor** (_interface name_)                       | Start align monitoring |
+| **test-audio** (_integer [-2147483648..2147483647]_) | Test the beeper        |
 
 ## Connect List
 
@@ -718,7 +701,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -797,7 +780,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -865,7 +848,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -874,14 +857,14 @@ Property
 
 Description
 
-|                                                   |
-| ------------------------------------------------- | ----------------------------- |
-| **comment** (_string_; Default: )                 | Short description of an entry |
-| **manual-tx-powers** (_list of \[Rate:TxPower\];_ |
+|                                                 |
+| ----------------------------------------------- | ----------------------------- |
+| **comment** (_string_; Default: )               | Short description of an entry |
+| **manual-tx-powers** (_list of [Rate:TxPower];_ |
 
 Rate ::= 11Mbps | 12Mbps | 18Mbps | 1Mbps | 24Mbps | ...
 
-_TxPower ::= integer \[-30..30\]_; Default: ) |   
+_TxPower ::= integer [-30..30]_; Default: ) |   
  |
 | **name** (_string_) | Name of the wireless interface to which tx powers will be applied. |
 
@@ -906,14 +889,14 @@ Wireless interfaces
 
  | 
 
-Frequency range \[MHz\]
+Frequency range [MHz]
 
  | 
 
-Supported channel widths \[Mhz\]
+Supported channel widths [Mhz]
 
 |     |
-| --- |  |  |  |
+| --- ||  |  |
 |     |
 
 Board name
@@ -924,11 +907,11 @@ Wireless interfaces
 
  | 
 
-Frequency range \[MHz\]
+Frequency range [MHz]
 
  | 
 
-Supported channel widths \[Mhz\]
+Supported channel widths [Mhz]
 
 |                          |
 | ------------------------ | --- | ------------------- | ---------------------------------------------------------------------------- |
@@ -1097,7 +1080,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1106,14 +1089,14 @@ Property
 
 Description
 
-|                                                               |
-| ------------------------------------------------------------- | ----------------------------- |
-| **comment** (_string_; Default: )                             | Short description of an entry |
-| **disable-csma** (_yes                                        | no_; Default: **no**)         | Disable CSMA/CA when polling is used (better performance) |
-| **enable-nstreme** (_yes                                      | no_; Default: **no**)         | Whether to switch the card into the nstreme mode          |
-| **enable-polling** (_yes                                      | no_; Default: **yes**)        | Whether to use polling for clients                        |
-| **framer-limit** (_integer \[100..4000\]_; Default: **3200**) | Maximal frame size            |
-| **framer-policy** (_best-fit                                  | dynamic-size                  | exact-size                                                | none_; Default: **none**) | The method how to combine frames. A number of frames may be combined into a bigger one to reduce the amount of protocol overhead (and thus increase speed). The card is not waiting for frames, but in case a number of packets are queued for transmitting, they can be combined. There are several methods of framing: |
+|                                                             |
+| ----------------------------------------------------------- | ----------------------------- |
+| **comment** (_string_; Default: )                           | Short description of an entry |
+| **disable-csma** (_yes                                      | no_; Default: **no**)         | Disable CSMA/CA when polling is used (better performance) |
+| **enable-nstreme** (_yes                                    | no_; Default: **no**)         | Whether to switch the card into the nstreme mode          |
+| **enable-polling** (_yes                                    | no_; Default: **yes**)        | Whether to use polling for clients                        |
+| **framer-limit** (_integer [100..4000]_; Default: **3200**) | Maximal frame size            |
+| **framer-policy** (_best-fit                                | dynamic-size                  | exact-size                                                | none_; Default: **none**) | The method how to combine frames. A number of frames may be combined into a bigger one to reduce the amount of protocol overhead (and thus increase speed). The card is not waiting for frames, but in case a number of packets are queued for transmitting, they can be combined. There are several methods of framing: |
 
 -   **none** \- do nothing special, do not combine packets (framing is disabled)
 -   **best-fit** \- put as many packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
@@ -1154,7 +1137,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1163,16 +1146,16 @@ Property
 
 Description
 
-|                                                              |
-| ------------------------------------------------------------ | ----------------------------- |
-| **arp** (_disabled                                           | enabled                       | proxy-arp                                                                                                 | reply-only_; Default: **enabled**)                                                                                                                                                                                                                                                                                      | [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:IP/ARP#ARP_Modes "Manual:IP/ARP") |
-| **comment** (_string_; Default: )                            | Short description of an entry |
-| **disable-csma** (_yes                                       | no_; Default: **no**)         | Disable CSMA/CA (better performance)                                                                      |
-| **disable-running-check** (_yes                              | no_; Default: **no**)         | Whether the interface should always be treated as running even if there is no connection to a remote peer |
-| **disabled** (_yes                                           | no_; Default: **yes**)        |
-|                                                              |
-| **framer-limit** (_integer \[64..4000\]_; Default: **2560**) | Maximal frame size            |
-| **framer-policy** (_best-fit                                 | exact-size                    | none_; Default: **none**)                                                                                 | The method how to combine frames. A number of frames may be combined into one bigger one to reduce the amout of protocol overhead (and thus increase speed). The card are not waiting for frames, but in case a number packets are queued for transmitting, they can be combined. There are several methods of framing: |
+|                                                            |
+| ---------------------------------------------------------- | ----------------------------- |
+| **arp** (_disabled                                         | enabled                       | proxy-arp                                                                                                 | reply-only_; Default: **enabled**)                                                                                                                                                                                                                                                                                      | [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:IP/ARP#ARP_Modes "Manual:IP/ARP") |
+| **comment** (_string_; Default: )                          | Short description of an entry |
+| **disable-csma** (_yes                                     | no_; Default: **no**)         | Disable CSMA/CA (better performance)                                                                      |
+| **disable-running-check** (_yes                            | no_; Default: **no**)         | Whether the interface should always be treated as running even if there is no connection to a remote peer |
+| **disabled** (_yes                                         | no_; Default: **yes**)        |
+|                                                            |
+| **framer-limit** (_integer [64..4000]_; Default: **2560**) | Maximal frame size            |
+| **framer-policy** (_best-fit                               | exact-size                    | none_; Default: **none**)                                                                                 | The method how to combine frames. A number of frames may be combined into one bigger one to reduce the amout of protocol overhead (and thus increase speed). The card are not waiting for frames, but in case a number packets are queued for transmitting, they can be combined. There are several methods of framing: |
 
 -   **none** \- do nothing special, do not combine packets
 -   **best-fit** \- put as much packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
@@ -1183,27 +1166,27 @@ Description
  |
 | **ht-guard-interval** (_both | long | short_; Default: **long**) |   
  |
-| **ht-rates** (_list of rates \[1,2,3,4,5,6,7,8\]_; Default: **1,2,3,4,5,6,7,8**) |   
+| **ht-rates** (_list of rates [1,2,3,4,5,6,7,8]_; Default: **1,2,3,4,5,6,7,8**) |   
  |
 | **ht-streams** (_both | double | single_; Default: **single**) |   
  |
-| **l2mtu** (_integer \[0..65536\]_; Default: ) |   
+| **l2mtu** (_integer [0..65536]_; Default: ) |   
  |
-| **mtu** (_integer \[0..65536\]_; Default: **1500**) |   
+| **mtu** (_integer [0..65536]_; Default: **1500**) |   
  |
 | **name** (_string_; Default: ) | Name of an entry |
-| **rates-a/g** (_list of rates \[6Mbps,9Mbps, 12Mbps, 18Mbps, 24Mbps, 36Mbps, 48Mbps, 54Mbps\]_; Default: **6Mbps,9Mbps,12Mbps, 18Mbps, 24Mbps, 36Mbps, 48Mbps, 54Mbps**) | Rates to be supported in 802.11a or 802.11g standard |
-| **rates-b** (_list of rates \[1Mbps, 2Mbps, 5.5Mbps, 11Mbps\]_; Default: **1Mbps, 2Mbps, 5.5Mbps, 11Mbps**) | Rates to be supported in 802.11b standard |
+| **rates-a/g** (_list of rates [6Mbps,9Mbps, 12Mbps, 18Mbps, 24Mbps, 36Mbps, 48Mbps, 54Mbps]_; Default: **6Mbps,9Mbps,12Mbps, 18Mbps, 24Mbps, 36Mbps, 48Mbps, 54Mbps**) | Rates to be supported in 802.11a or 802.11g standard |
+| **rates-b** (_list of rates [1Mbps, 2Mbps, 5.5Mbps, 11Mbps]_; Default: **1Mbps, 2Mbps, 5.5Mbps, 11Mbps**) | Rates to be supported in 802.11b standard |
 | **remote-mac** (_MAC_; Default: **00:00:00:00:00:00**) | Which MAC address to connect to (this would be the remote receiver card's MAC address) |
 | **rx-band** (_2ghz-b | 2ghz-g | 2ghz-n | 5ghz-a | 5ghz-n_; Default: ) | Operating band of the receiving radio |
 | **rx-channel-width** (_10mhz_; Default: **20mhz**) |   
  |
-| **rx-frequency** (_integer \[0..4294967295\]_; Default: ) | RX card operation frequency in Mhz. |
+| **rx-frequency** (_integer [0..4294967295]_; Default: ) | RX card operation frequency in Mhz. |
 | **rx-radio** (_string_; Default: ) | Name of the interface used for receive. |
 | **tx-band** (_2ghz-b | 2ghz-g | 2ghz-n | 5ghz-a | 5ghz-n_; Default: ) | Operating band of the transmitting radio |
 | **tx-channel-width** (_10mhz_; Default: **20mhz**) |   
  |
-| **tx-frequency** (_integer \[0..4294967295\]_; Default: ) | TX card operation frequency in Mhz. |
+| **tx-frequency** (_integer [0..4294967295]_; Default: ) | TX card operation frequency in Mhz. |
 | **tx-radio** (_string_; Default: ) | Name of the interface used for transmit. |
 
   
@@ -1237,7 +1220,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1349,7 +1332,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1384,7 +1367,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1429,7 +1412,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1483,7 +1466,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1523,7 +1506,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1630,10 +1613,10 @@ Access point uses following RADIUS attributes from the Access-Accept server resp
 
 Different algorithms require different length of keys:
 
--   _40bit-wep_ \- 10 hexadecimal digits (40 bits). If key is longer, only first 40 bits are used.
--   _104bit-wep_ \- 26 hexadecimal digits (104 bits). If key is longer, only first 104 bits are used.
--   _tkip_ \- At least 64 hexadecimal digits (256 bits).
--   _aes-ccm_ \- At least 32 hexadecimal digits (128 bits).
+-   _40bit-wep_ - 10 hexadecimal digits (40 bits). If key is longer, only first 40 bits are used.
+-   _104bit-wep_ - 26 hexadecimal digits (104 bits). If key is longer, only first 104 bits are used.
+-   _tkip_ - At least 64 hexadecimal digits (256 bits).
+-   _aes-ccm_ - At least 32 hexadecimal digits (128 bits).
 
 Key must contain even number of hexadecimal digits.
 
@@ -1707,7 +1690,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1719,15 +1702,15 @@ Description
 |                                                                                                         |
 | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **channel-time** (; Default: **200ms**)                                                                 | How long to sniff each channel. Used only if **multiple-channels=yes**                                            |
-| **file-limit** (_integer \[10..4294967295\]_; Default: **10**)                                          | Allocated file size in bytes which will be used to store captured data. Applicable if **file-name** is specified. |
+| **file-limit** (_integer [10..4294967295]_; Default: **10**)                                            | Allocated file size in bytes which will be used to store captured data. Applicable if **file-name** is specified. |
 | **file-name** (_string_; Default: )                                                                     | Name of the file where to store captured data.                                                                    |
-| **memory-limit** (_integer \[10..4294967295\]_; Default: **10**)                                        | Allocated memory buffer in kilobytes used to store captured data.                                                 |
+| **memory-limit** (_integer [10..4294967295]_; Default: **10**)                                          | Allocated memory buffer in kilobytes used to store captured data.                                                 |
 | **multiple-channels** (_yes                                                                             | no_; Default: **no**)                                                                                             | Whether to sniff multiple channels or a single channel. **No** means that all channel settings will be taken from **/interface wireless**, |
 | **Yes** means that all channel settings will be taken from **scan-list** under **/interface wireless**. |
 | **only-headers** (_yes                                                                                  | no_; Default: **no**)                                                                                             | If set to yes, then sniffer will capture only information stored in frame headers.                                                         |
 | **receive-errors** (_yes                                                                                | no_; Default: **no**)                                                                                             | Whether to process packets which have been received with errors judging by their FCS.                                                      |
 | **streaming-enabled** (_yes                                                                             | no_; Default: **no**)                                                                                             | Whether to stream captured data to the specified streaming server                                                                          |
-| **streaming-max-rate** (_integer \[0..4294967295\]_; Default: **0**)                                    | Maximum packets per second allowed. **0** equals unlimited                                                        |
+| **streaming-max-rate** (_integer [0..4294967295]_; Default: **0**)                                      | Maximum packets per second allowed. **0** equals unlimited                                                        |
 | **streaming-server** (_IPv4_; Default: **0.0.0.0**)                                                     | IP address of the streaming server.                                                                               |
 
 Use the command **/interface wireless info scan-list** to verify your **scan-list** defined under **/interface wireless channels** when using **multiple-channels=yes**
@@ -1809,7 +1792,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1828,11 +1811,11 @@ Description
 |                                                         |
 | **disabled** (_yes                                      | no_; Default: **yes**) |
 |                                                         |
-| **l2mtu** (_integer \[0..65536\]_; Default: )           |
+| **l2mtu** (_integer [0..65536]_; Default: )             |
 |                                                         |
 | **master-interface** (_string_; Default: )              |
 |                                                         |
-| **mtu** (_integer \[0..65536\]_; Default: **1500**)     |
+| **mtu** (_integer [0..65536]_; Default: **1500**)       |
 |                                                         |
 | **name** (_string_; Default: )                          |
 |                                                         |
@@ -1850,7 +1833,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1979,7 +1962,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -1997,7 +1980,7 @@ Description
 -   _use-tag_ \- VLAN ID use 802.1q tag type
 
  |
-| **vlan-id** (_integer \[1..4095\]_; Default: **1**) | VLAN identification number |
+| **vlan-id** (_integer [1..4095]_; Default: **1**) | VLAN identification number |
 
 ### Vlan tag override
 

@@ -1,486 +1,341 @@
 # CAPsMAN AAA
 
-Settings to configure CAPsMAN AAA functionality are found in the **/caps-man aaa** menu:
+在/caps-man AAA菜单中可以找到配置CAPsMAN AAA功能的设置:
 
-| 
-Property
+| 属性                                                                  | 说明描述                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **mac-format** (_string_;Default:**XX:XX:XX:XX:XX**)                  | 控制MAC认证和MAC计费RADIUS请求的User-Name属性中接入点如何对客户端的MAC地址进行编码。                                                                                                                                                                                  |
+| **mac-mode** (_as-username                                            | as-username-and-password_;Default:**as username**)                                                                                                                                                                                                                    | 在MAC认证期间发送Access- request时，默认接入点使用空密码。当此属性设置为用户名和密码时，接入点将对用户密码属性使用与用户名属性相同的值。 |
+| **mac-caching** (_disabled \| time-interval_; Default: **disabled**)  | 如果设置为时间间隔，则在指定的时间内缓存RADIUS MAC认证响应，如果匹配的缓存表项已经存在，则不与RADIUS服务器联系。取值disabled将禁用缓存，接入点将始终与RADIUS服务器联系。                                                                                              |
+| **interim-update** (_disabled \| time-interval_;Default:**disabled**) | 使用RADIUS计费时，接入点定期向RADIUS服务器发送更新的计费信息。此属性指定RADIUS服务器可以使用 [account - interval - interval](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#RADIUS_MAC_authentication "Manual:Interface/Wireless") 属性覆盖的默认更新间隔。 |
+| **called-format** (_mac \| mac:ssid\| ssid_; Default: **mac:ssid**)   | 如何将“called-id”标识符传递给RADIUS的格式。在配置radius服务器客户端时，可以指定“called-id”来分隔多个实体。                                                                                                                                                            |
 
- | 
+## [rates.ht](http://rates.ht)-basic-mcsExample
 
-Description
+假设已经配置了其余的设置，只剩下“Security”部分。
 
-|     |
-| --- |  |
-|     |
+单服务器Radius认证
 
-Property
+1. 创建CAPsMAN安全配置
 
- | 
+2. 配置Radius服务器客户端
 
-Description
-
-|                                                           |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **mac-format** (_string_; Default: **XX:XX:XX:XX:XX:XX**) | Controls how the MAC address of the client is encoded by Access Point in the User-Name attribute of the MAC authentication and MAC accounting RADIUS requests. |
-| **mac-mode** (_as-username                                | as-username-and-password_; Default: **as username**)                                                                                                           | By default Access Point uses an empty password, when sending Access-Request during MAC authentication. When this property is set to as-username-and-password, Access Point will use the same value for the User-Password attribute as for the User-Name attribute.                                                                                                                |
-| **mac-caching** (_disabled                                | time-interval_; Default: **disabled**)                                                                                                                         | If this value is set to a time interval, the Access Point will cache RADIUS MAC authentication responses for a specified time, and will not contact the RADIUS server if matching cache entry already exists. The value disabled will disable the cache, Access Point will always contact the RADIUS server.                                                                      |
-| **interim-update** (_disabled                             | time-interval_; Default: **disabled**)                                                                                                                         | When RADIUS accounting is used, Access Point periodically sends accounting information updates to the RADIUS server. This property specifies the default update interval that can be overridden by the RADIUS server using the [Acct-Interim-Interval](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#RADIUS_MAC_authentication "Manual:Interface/Wireless") attribute. |
-| **called-format** (_mac                                   | mac:ssid                                                                                                                                                       | ssid_; Default: **mac:ssid**)                                                                                                                                                                                                                                                                                                                                                     | Format of how the "called-id" identifier will be passed to RADIUS. When configuring radius server clients, you can specify "called-id" in order to separate multiple entires. |
-
-## [rates.ht](http://rates.ht)\-basic-mcsExample
-
-Assuming that rest of the settings are already configured and only the "Security" part has been left.
-
-### **Radius authentication with one server**
-
-1\. Create CAPsMAN security configuration
-
-2\. Configure Radius server client
-
-3\. Assign the configuration to your master profile (or directly to CAP itself)
-
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man security </code><code class="ros functions">add </code><code class="ros value">authentication-types</code><code class="ros plain">=wpa2-eap</code> <code class="ros value">eap-methods</code><code class="ros plain">=passthrough</code> <code class="ros value">encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">group-encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">name</code><code class="ros plain">=radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man configuration </code><code class="ros functions">set </code><code class="ros value">security</code><code class="ros plain">=radius</code></div></div></td></tr></tbody></table>
-
-### **Radius authentication with different radius servers for each SSID**
-
-1\. Create CAPsMAN security configuration
-
-2\. Configure AAA settings
-
-3\. Configure Radius server clients
-
-4\. Assign the configuration to your master profile (or directly to CAP itself)
-
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man security </code><code class="ros functions">add </code><code class="ros value">authentication-types</code><code class="ros plain">=wpa2-eap</code> <code class="ros value">eap-methods</code><code class="ros plain">=passthrough</code> <code class="ros value">encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">group-encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">name</code><code class="ros plain">=radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/caps-man aaa </code><code class="ros functions">set </code><code class="ros value">called-format</code><code class="ros plain">=ssid</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">called-id</code><code class="ros plain">=SSID1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=y.y.y.y</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">called-id</code><code class="ros plain">=SSID2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man configuration </code><code class="ros functions">set </code><code class="ros value">security</code><code class="ros plain">=radius</code></div></div></td></tr></tbody></table>
-
-  
-
-Now everyone connecting to CAP's with ssid=**SSID1** will have their radius authentication requests sent to **x.x.x.x** and everyone connecting to CAP's with ssid=**SSID2** will have their radius authentication requests sent to **y.y.y.y**
-
-# CAPsMAN Access-list
-
-Access list on CAPsMAN is an ordered list of rules that is used to allow/deny clients to connect to any CAP under CAPsMAN control. When a client attempts to connect to a CAP that is controlled by CAPsMAN, CAP forwards that request to CAPsMAN. As a part of the registration process, CAPsMAN consults an access list to determine if a client should be allowed to connect. The default behavior of the access list is to allow a connection.
-
-Access list rules are processed one by one until a matching rule is found. Then the action in the matching rule is executed. If action specifies that the client should be accepted, the client is accepted, potentially overriding its default connection parameters with ones specified in access-list rule.
-
-An access list is configured in the **/caps-man access-list** menu. There are the following parameters for access-list rules:
-
--   client matching parameters:
-    -   address - MAC address of the client
-    -   mask - MAC address mask to apply when comparing client address
-    -   interface - optional interface to compare with an interface to which client actually connects to
-    -   time - a time of day and days when rule matches
-    -   signal-range - range in which client signal must fit for a rule to match
-    -   allow-signal-out-of-range - an option that permits the client's signal to be out of the range always or for some time interval
--   action parameter - specifies an action to take when client matches:
-    -   accept - accept client
-    -   reject - reject client
-    -   query-radius - query RADIUS server if a particular client is allowed to connect
--   connection parameters:
-    -   ap-tx-limit - tx speed limit in direction to client
-    -   client-tx-limit - tx speed limit in direction to AP (applies to RouterOS clients only)
-    -   client-to-client-forwarding - specifies whether to allow forwarding data received from this client to other clients connected to the same interface
-    -   private-passphrase - PSK passphrase to use for this client if some PSK authentication algorithm is used
-    -   radius-accounting - specifies if RADIUS traffic accounting should be used if RADIUS authentication gets done for this client
-    -   vlan-mode - VLAN tagging mode specifies if traffic coming from a client should get tagged (and untagged when going to a client).
-    -   vlan-id - VLAN ID to use if doing VLAN tagging.
-
-# CAPsMAN channel
-
-Channel group settings allow for the configuration of lists of radio channel related settings, such as radio band, frequency, Tx Power extension channel, and width.
-
-Channel group settings are configured in the Channels profile menu **/caps-man channels**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                        |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **band** (_2ghz-b                                      | 2ghz-b/g                                                                                                                                                                                                                          | 2ghz-b/g/n | 2ghz-onlyg | 2ghz-onlyn | 5ghz-a | 5ghz-a/n              | 5ghz-onlyn_; Default: )                                                                                                                  | Define operational radio frequency band and mode taken from hardware capability of wireless card |
-| **comment** (_string_; Default: )                      | Short description of the Channel Group profile                                                                                                                                                                                    |
-| **extension-channel** (_Ce                             | Ceee                                                                                                                                                                                                                              | eC         | eCee       | eeCe       | eeeC   | disabled_; Default: ) | Extension channel configuration. (E.g. Ce = extension channel is above Control channel, eC = extension channel is below Control channel) |
-| **frequency** (_integer \[0..4294967295\]_; Default: ) | Channel frequency value in MHz on which AP will operate.                                                                                                                                                                          |
-| **name** (_string_; Default: )                         | A descriptive name for the Channel Group Profile                                                                                                                                                                                  |
-| **tx-power** (_integer \[-30..40\]_; Default: )        | TX Power for CAP interface (for the whole interface not for individual chains) in dBm. It is not possible to set higher than allowed by country regulations or interface. By default max allowed by country or interface is used. |
-| **width** (; Default: )                                | Sets Channel Width in MHz. (E.g. 20, 40)                                                                                                                                                                                          |
-| **save-selected** (; Default: **yes**)                 | Saves selected channel for the CAP Radio - will select this channel after the CAP reconnects to CAPsMAN and use it till the channel Re-optimize is done for this CAP.                                                             |
-
-# CAPsMAN configuration
-
-Configuration profiles permit pre-defined 'top-level' master settings to be applied to CAP radios being provisioned.
-
-  
-Configuration Profiles are configured in **/caps-man configuration** menu:
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                                                                                                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **channel** (_list_; Default: )                                                                                                                                         | User defined list taken from Channel names (**/caps-man channels**)                                                                                                                                                               |
-| **channel.band** (_2ghz-b                                                                                                                                               | 2ghz-b/g                                                                                                                                                                                                                          | 2ghz-b/g/n                                                                                                                                                                                                           | 2ghz-onlyg        | 2ghz-onlyn                          | 5ghz-a | 5ghz-a/n | 5ghz-onlyn | 5ghz-a/n/ac           | 5ghz-only-ac_; Default: )                                                                                                                | Defines set of used channels. |
-| **channel.control-channel-width** (_40mhz-turbo                                                                                                                         | 20mhz                                                                                                                                                                                                                             | 10mhz                                                                                                                                                                                                                | 5mhz_; Default: ) | Defines set of used channel widths. |
-| **channel.extension-channel** (_Ce                                                                                                                                      | Ceee                                                                                                                                                                                                                              | eC                                                                                                                                                                                                                   | eCee              | eeCe                                | eeeC   | xx       | xxxx       | disabled_; Default: ) | Extension channel configuration. (E.g. Ce = extension channel is above Control channel, eC = extension channel is below Control channel) |
-| **channel.frequency** (_integer \[0..4294967295\]_; Default: )                                                                                                          | Channel frequency value in MHz on which AP will operate. If left blank, CAPsMAN will automatically determine the best frequency that is least occupied.                                                                           |
-| **channel.reselect-interval** (_time \[00:00:00\]; \[00:00:00..00:00:00\]_; Default: )                                                                                  | The interval after which the least occupied frequency is chosen, can be defined as a random interval, ex. as "30m..60m". Works only if **channel.frequency** is left blank.                                                       |
-| **channel.save-selected** (_yes                                                                                                                                         | no_; Default: **no**)                                                                                                                                                                                                             | If channel frequency is chosen automatically and **channel.reselect-interval** is used, then saves the last picked frequency.                                                                                        |
-| **channel.secondary-frequency** (_integer \[0..4294967295\]_; Default: **auto**)                                                                                        | Specifies the second frequency that will be used for 80+80MHz configuration. Set it to **Disabled** in order to disable 80+80MHz capability.                                                                                      |
-| **channel.skip-dfs-channels** (_yes                                                                                                                                     | no_; Default: **no**)                                                                                                                                                                                                             | If **channel.frequency** is left blank, the selection will skip DFS channels                                                                                                                                         |
-| **channel.tx-power** (_integer \[-30..40\]_; Default: )                                                                                                                 | TX Power for CAP interface (for the whole interface not for individual chains) in dBm. It is not possible to set higher than allowed by country regulations or interface. By default max allowed by country or interface is used. |
-| **channel.width** (; Default: )                                                                                                                                         | Sets Channel Width in MHz.                                                                                                                                                                                                        |
-| **comment** (_string_; Default: )                                                                                                                                       | Short description of the Configuration profile                                                                                                                                                                                    |
-| **country** (_name of the country                                                                                                                                       | no\_country\_set_; Default: **no\_country\_set**)                                                                                                                                                                                 | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no\_country\_set_ is an FCC compliant set of channels.                      |
-| **datapath** (_list_; Default: )                                                                                                                                        | User defined list taken from Datapath names (**/caps-man datapath**)                                                                                                                                                              |
-| **datapath.bridge** (_list_; Default: )                                                                                                                                 | Bridge to which particular interface should be automatically added as port. Required only when local-forwarding is not used.                                                                                                      |
-| **datapath.bridge-cost** (_integer \[0..4294967295\]_; Default: )                                                                                                       | bridge port cost to use when adding as bridge port                                                                                                                                                                                |
-| **datapath.bridge-horizon** (_integer \[0..4294967295\]_; Default: )                                                                                                    | bridge horizon to use when adding as bridge port                                                                                                                                                                                  |
-| **datapath.client-to-client-forwarding** (_yes                                                                                                                          | no_; Default: **no**)                                                                                                                                                                                                             | controls if client-to-client forwarding between wireless clients connected to interface should be allowed, in local forwarding mode this function is performed by CAP, otherwise it is performed by CAPsMAN          |
-| **datapath.interface-list** (; Default: )                                                                                                                               |
-|                                                                                                                                                                         |
-| **datapath.l2mtu** (; Default: )                                                                                                                                        | set Layer2 MTU size                                                                                                                                                                                                               |
-| **datapath.local-forwarding** (_yes                                                                                                                                     | no_; Default: **no**)                                                                                                                                                                                                             | Controls forwarding mode. If disabled, all L2 and L3 data will be forwarded to CAPsMAN, and further forwarding decisions will be made only then.                                                                     |
-| **Note**, if disabled, make sure that each CAP interface MAC Address that participates in the same broadcast domain is unique (including local MAC's, like Bridge-MAC). |
-| **datapath.mtu** (; Default: )                                                                                                                                          | set MTU size                                                                                                                                                                                                                      |
-| **datapath.openflow-switch** (; Default: )                                                                                                                              | OpenFlow switch port (when enabled) to add interface to                                                                                                                                                                           |
-| **datapath.vlan-id** (_integer \[1..4095\]_; Default: )                                                                                                                 | VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging                                                                                                                                                           |
-| **datapath.vlan-mode** (_use-service-tag                                                                                                                                | use-tag_; Default: )                                                                                                                                                                                                              | Enables and specifies the type of VLAN tag to be assigned to the interface (causes all received data to get tagged with VLAN tag and allows the interface to only send out data tagged with given tag)               |
-| **disconnect-timeout** (; Default: )                                                                                                                                    |
-|                                                                                                                                                                         |
-| **distance** (; Default: )                                                                                                                                              |
-|                                                                                                                                                                         |
-| **frame-lifetime** (; Default: )                                                                                                                                        |
-|                                                                                                                                                                         |
-| **guard-interval** (_any                                                                                                                                                | long_; Default: **any**)                                                                                                                                                                                                          | Whether to allow the use of short guard interval (refer to 802.11n MCS specification to see how this may affect throughput). "any" will use either short or long, depending on data rate, "long" will use long only. |
-| **hide-ssid** (_yes                                                                                                                                                     | no_; Default: )                                                                                                                                                                                                                   |
-
--   _yes_ \- AP does not include SSID in the beacon frames and does not reply to probe requests that have broadcast SSID.
--   _no_ \- AP includes SSID in the beacon frames and replies to probe requests that have broadcast SSID.
-
-This property has effect only in AP mode. Setting it to _yes_ can remove this network from the list of wireless networks that are shown by some client software. Changing this setting does not improve the security of the wireless network, because SSID is included in other frames sent by the AP. |
-| **hw-protection-mode** (; Default: ) |   
- |
-| **hw-retries** (; Default: ) |   
- |
-| **installation** (_any | indoor | outdoor_; Default: **any**) |   
- |
-| **keepalive-frames** (_enabled | disabled_; Default: **enabled**) |   
- |
-| **load-balancing-group** (_string_; Default: ) | Tags the interface to the load balancing group. For a client to connect to interface in this group, the interface should have the same number of already connected clients as all other interfaces in the group or smaller. Useful in setups where ranges of CAPs mostly overlap. |
-| **max-sta-count** (_integer \[1..2007\]_; Default: ) | Maximum number of associated clients. |
-| **mode** (; Default: **ap**) | Set operational mode. Only ap currently supported. |
-| **multicast-helper** (_default | disabled | full_; Default: **default**) | When set to full multicast packets will be sent with unicast destination MAC address, resolving [multicast problem](https://wiki.mikrotik.com/wiki/Manual:Multicast_detailed_example#Multicast_and_Wireless "Manual:Multicast detailed example") on a wireless link. This option should be enabled only on the access point, clients should be configured in **station-bridge** mode. Available starting from v5.15.
-
--   disabled - disables the helper and sends multicast packets with multicast destination MAC addresses
--   full - all multicast packet mac address are changed to unicast mac addresses prior sending them out
--   default - default choice that currently is set to _disabled_. Value can be changed in future releases.
-
- |
-| **name** (_string_; Default: ) | Descriptive name for the Configuration Profile |
-| **rates** (; Default: ) | User defined list taken from Rates names (**/caps-man rates**) |
-| **rates.basic** (_1Mbps | 2Mbps | 5.5Mbps | 6Mbps | 11Mbps | 11Mbps | 12Mbps | 18Mbps | 24Mbps | 36Mbps | 48Mbps | 54Mbps_; Default: ) |   
- |
-| **rates.supported** (_1Mbps | 2Mbps | 5.5Mbps | 6Mbps | 11Mbps | 11Mbps | 12Mbps | 18Mbps | 24Mbps | 36Mbps | 48Mbps | 54Mbps_; Default: ) |   
- |
-| **rates.ht-basic-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that every connecting client must support. Refer to 802.11n for MCS specification. |
-| **rates.ht-supported-mcs** (_list of (mcs-0 | mcs-1 | mcs-2 | mcs-3 | mcs-4 | mcs-5 | mcs-6 | mcs-7 | mcs-8 | mcs-9 | mcs-10 | mcs-11 | mcs-12 | mcs-13 | mcs-14 | mcs-15 | mcs-16 | mcs-17 | mcs-18 | mcs-19 | mcs-20 | mcs-21 | mcs-22 | mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7; mcs-8; mcs-9; mcs-10; mcs-11; mcs-12; mcs-13; mcs-14; mcs-15; mcs-16; mcs-17; mcs-18; mcs-19; mcs-20; mcs-21; mcs-22; mcs-23**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates) that this device advertises as supported. Refer to 802.11n for MCS specification. |
-| **rates.vht-basic-mcs** (_none | MCS 0-7 | MCS 0-8 | MCS 0-9_; Default: **none**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11ac#Data_rates_and_speed) that every connecting client must support. Refer to 802.11ac for MCS specification.
-
-You can set MCS interval for each of Spatial Stream
-
--   _none_ \- will not use selected Spatial Stream
--   _MCS 0-7_ \- client must support MCS-0 to MCS-7
--   _MCS 0-8_ \- client must support MCS-0 to MCS-8
--   _MCS 0-9_ \- client must support MCS-0 to MCS-9
-
- |
-| **rates.vht-supported-mcs** (_none | MCS 0-7 | MCS 0-8 | MCS 0-9_; Default: **none**) | [Modulation and Coding Schemes](http://en.wikipedia.org/wiki/IEEE_802.11ac#Data_rates_and_speed) that this device advertises as supported. Refer to 802.11ac for MCS specification.
-
-You can set MCS interval for each of Spatial Stream
-
--   _none_ \- will not use selected Spatial Stream
--   _MCS 0-7_ \- devices will advertise as supported MCS-0 to MCS-7
--   _MCS 0-8_ \- devices will advertise as supported MCS-0 to MCS-8
--   _MCS 0-9_ \- devices will advertise as supported MCS-0 to MCS-9
-
- |
-| **rx-chains** (_list of integer \[0..3\]_; Default: **0**) | Which antennas to use for receive. |
-| **security** (_string_; Default: **none**) | Name of security configuration from **/caps-man security** |
-| **security.authentication-types** (_list of string_; Default: **none**) | Specify the type of Authentication from **wpa-psk**, **wpa2-psk**, **wpa-eap** or **wpa2-eap** |
-| **security.disable-pmkid** (; Default: ) |   
- |
-| **security.eap-methods** (_eap-tls | passthrough_; Default: **none**) | 
-
--   eap-tls - Use built-in EAP TLS authentication.
--   passthrough - Access point will relay authentication process to the RADIUS server.
-
- |
-| **security.eap-radius-accounting** (; Default: ) | specifies if RADIUS traffic accounting should be used if RADIUS authentication gets done for this client |
-| **security.encryption** (_aes-ccm | tkip_; Default: ) | Set type of unicast encryption algorithm used |
-| **security.group-encryption** (_aes-ccm | tkip_; Default: **aes-ccm**) | Access Point advertises one of these ciphers, multiple values can be selected. Access Point uses it to encrypt all broadcast and multicast frames. Client attempts connection only to Access Points that use one of the specified group ciphers.
-
--   tkip \- Temporal Key Integrity Protocol - encryption protocol, compatible with legacy WEP equipment, but enhanced to correct some of the WEP flaws.
--   aes-ccm \- more secure WPA encryption protocol, based on the reliable AES (Advanced Encryption Standard). Networks free of WEP legacy should use only this cipher.
-
- |
-| **security.group-key-update** (_time: 30s..1h_; Default: **5m**) | Controls how often Access Point updates the group key. This key is used to encrypt all broadcast and multicast frames. property only has effect for Access Points. |
-| **security.passphrase** (_string_; Default: ) | WPA or WPA2 pre-shared key |
-| **security.tls-certificate** (_none | name_; Default: ) | Access Point always needs a certificate when **security.tls-mode** is set to value other than **no-certificates**. |
-| **security.tls-mode** (_verify-certificate | dont-verify-certificate | no-certificates | verify-certificate-with-crl_; Default: ) | This property has effect only when **security.eap-methods** contains _eap-tls_.
-
--   verify-certificate \- Require remote device to have valid certificate. Check that it is signed by known certificate authority. No additional identity verification is done. Certificate may include information about time period during which it is valid. If router has incorrect time and date, it may reject valid certificate because router's clock is outside that period. See also the [Certificates](https://wiki.mikrotik.com/wiki/Manual:System/Certificates "Manual:System/Certificates") configuration.
--   dont-verify-certificate \- Do not check certificate of the remote device. Access Point will not require client to provide certificate.
--   no-certificates \- Do not use certificates. TLS session is established using 2048 bit anonymous Diffie-Hellman key exchange.
--   verify-certificate-with-crl \- Same as verify-certificate but also checks if the certificate is valid by checking the Certificate Revocation List.
-
- |
-| **ssid** (_string (0..32 chars)_; Default: ) | SSID (service set identifier) is a name broadcast in the beacons that identifies wireless network. |
-| **tx-chains** (_list of integer \[0..3\]_; Default: **0**) | Which antennas to use for transmit. |
+3. 将配置分配给主概要文件(或直接分配给CAP本身)
+
+```shell
+/caps-man security add authentication-types=wpa2-eap eap-methods=passthrough encryption=aes-ccm group-encryption=aes-ccm name=radius
+/radius add address=x.x.x.x secret=SecretUserPass service=wireless
+/caps-man configuration set security=radius
+```
+
+### 每个SSID使用不同的Radius服务器进行Radius认证
+
+1. 创建CAPsMAN安全配置
+
+2. 配置AAA设置
+
+3.配置Radius服务器客户端
+
+4. 将配置分配给主概要文件(或直接分配给CAP本身)
+
+```shell
+/caps-man security add authentication-types=wpa2-eap eap-methods=passthrough encryption=aes-ccm group-encryption=aes-ccm name=radius
+/caps-man aaa set called-format=ssid
+/radius add address=x.x.x.x secret=SecretUserPass service=wireless called-id=SSID1
+/radius add address=y.y.y.y secret=SecretUserPass service=wireless called-id=SSID2
+/caps-man configuration set security=radius
+```
+
+
+现在每个连接到CAP的ssid=**SSID1** 将他们的radius请求发送到 **x.x.x.x** 和每个连接到CAP的ssid=**SSID2** 将他们的radius请求发送到 **y.y.y.y**
+
+# CAPsMAN访问列表
+
+CAPsMAN上的访问列表是一个有序的规则列表，用于允许/拒绝客户端连接到CAPsMAN控制下的任何CAP。当客户端试图连接到由CAPsMAN控制的CAP时，CAP将该请求转发给CAPsMAN。作为注册过程的一部分，CAPsMAN查询访问列表以确定是否应该允许客户端连接。访问列表的默认行为是允许连接。
+
+逐个处理访问列表规则，直到找到匹配的规则。然后执行匹配规则中的操作。如果action指定应该接受客户端，则客户端被接受，可能会用access-list规则中指定的参数重写其默认连接参数。
+
+访问列表在/caps-man access-list菜单中配置。access-list规则有以下参数:
+
+- 客户端匹配参数:
+   - address -客户端的MAC地址
+   - mask比较客户端地址时使用的MAC地址掩码
+   - interface -可选接口，用于与客户端实际连接的接口进行比较
+   - time -规则匹配的时间
+   - signal-range -客户端信号的匹配范围
+   - allow-signal-out- range -允许客户端信号始终或一段时间间隔超出范围的选项
+- action参数-指定客户端匹配时采取的操作:
+  - accept -接受客户端
+  - reject拒绝客户端
+  - query- RADIUS在允许特定客户端连接时查询RADIUS服务器
+- 连接参数:
+  - ap-tx-limit发送到客户端的速率限制
+  - client-tx-limit -到AP方向的tx限速(仅适用于RouterOS客户端)
+  -client- to-client-forwarding表示是否允许将从该客户端接收到的数据转发给连接在同一接口上的其他客户端
+  - private-passphrase -当使用PSK认证算法时，该客户端使用的PSK密码
+  - RADIUS -accounting -指定如果对该客户端进行RADIUS认证，是否使用RADIUS流量计费
+  - VLAN -mode - VLAN标记模式指定来自客户端的流量是否被标记(去往客户端的流量是否被标记)。
+  - VLAN - ID配置VLAN标签时使用的VLAN ID。
+
+# CAPsMAN频道
+
+信道组设置允许配置无线电信道相关设置的列表，例如无线电频带、频率、Tx功率扩展信道和宽度。
+
+频道组设置在频道配置文件菜单/caps-man频道中配置
+
+| 属性                                                                                                                    | 说明                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **band** (_2ghz-b \| 2ghz-b/g \| 2ghz-b/g/n \| 2ghz-onlyg \| 2ghz-onlyn \| 5ghz-a \| 5ghz-a/n\| 5ghz-onlyn_; Default: ) | 根据无线网卡的硬件性能，定义可操作的无线电频带和模式                                                                                   |
+| **comment** (_string_;Default:)                                                                                         | 通道组配置文件的简短描述                                                                                                               |
+| **extension-channel** (_Ce \| eeee \| eC\| eCee\| eeCe \| eeeC \| disabled_;Default:)                                   | 扩展通道配置。(如Ce =扩展通道在控制通道上方，eC =扩展通道在控制通道下方)                                                               |
+| **frequency** (_integer [0..4294967295]_;Default:)                                                                      | 以MHz为单位的信道频率值，AP将在其上工作。                                                                                              |
+| **name** (_string_;Default:)                                                                                            | 通道组配置文件的描述性名称                                                                                                             |
+| **tx-power** (_integer [-30..40]_; Default: )                                                                           | CAP接口的TX功率(用于整个接口而不是单个链)，以dBm为单位。不可能设置高于国家法规或接口允许的值。缺省情况下，使用国家或接口允许的最大值。 |
+| **width** (;Default:)                                                                                                   | 以MHz为单位设置通道宽度。(例20、40)                                                                                                    |
+| **save-selected** (;Default:**yes**)                                                                                    | 为CAP电台保存选定的频道-将在CAP重新连接到CAPsMAN后选择此频道并使用它，直到为此CAP完成频道重新优化                                      |
+
+# CAPsMAN配置
+
+配置文件允许将预定义的“顶级”主设置应用于所提供的CAP无线电。
+
+
+配置文件在/caps-man Configuration菜单中配置:
+
+| 属性                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **channel** (_list_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                               | 用户自定义列表取自频道名称(**/caps-man频道**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **channel.band** (2ghz-b \| 2ghz-b/g \| 2ghz-b/g/n\| 2ghz-only \| 2ghz-onlyn \| 5ghz-a \| 5ghz-a/n \| 5ghz-onlyn \| 5ghz-a/n/ac \| 5ghz-only-ac_;Default:)                                                                                                                                                                                                                                                                                                                    | 定义一组使用的通道。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **channel. control-channel-width** (_40mhz-turbo \| 20mhz \| 10mhz\| 5 mhz_;Default:)                                                                                                                                                                                                                                                                                                                                                                                         | 定义一组使用的通道宽度。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **channel. extension-channel** (_Ce \| Ceee \| eC\| eee \| eeCe \| eeeC \| xx \| xxxx \| disabled_;Default:)                                                                                                                                                                                                                                                                                                                                                                  | 扩展通道配置。(如Ce =扩展通道在控制通道上方，eC =扩展通道在控制通道下方)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **channel.frequency** (_integer [0..4294967295]_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                    | 以MHz为单位的信道频率值，AP将在其上工作。如果留空，CAPsMAN将自动确定占用最少的最佳频率。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **channel.reselect-interval** (_time [00:00:00]; [00:00:00..00:00:00]_; Default: )                                                                                                                                                                                                                                                                                                                                                                                            | 选择占用频率最小的间隔可以定义为一个随机间隔，例如“30m..60m”。仅当channel.frequency为空时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **channel.save-selected** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                      | 如果自动选择通道频率和通道。使用Reselect-interval ，然后保存最后选择的频率。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **channel.secondary-frequency** (_integer [0..4294967295]_; Default: **auto**)                                                                                                                                                                                                                                                                                                                                                                                                | 指定将用于80+80MHz配置的第二个频率。将其设置为Disabled以禁用80+80MHz能力。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **channel.skip-dfs-channels** (_yes \| no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                  | 如果channel.frequency为空，选择将跳过DFS通道                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **channel. tx-power** (_integer [-30..40]_;CAP接口的TX功率(用于整个接口，而不是单个链)，以dBm为单位。不可能设置高于国家法规或接口允许的值。缺省情况下，使用国家或接口允许的最大值。                                                                                                                                                                                                                                                                                           |
+| **channel.width**;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 以MHz为单位设置通道宽度。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **comment** (_string_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                               | 配置文件的简短描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **country** (_name of the country \| no_country_set_; Default: **no_country_set**)                                                                                                                                                                                                                                                                                                                                                                                            | 限制每个频率的可用频带、频率和最大发射功率。还指定scan-list的默认值。值no_country_set是FCC兼容的通道集合。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **datapath** (_list_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                              | 用户自定义列表，取自数据路径名称(/caps-man Datapath)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **datapath.bridge** (_list_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                         | 桥接，特定的接口应自动添加为端口。仅当不使用local-forwarding时需要配置。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **datapath.bridge-cost** (_integer [0..4294967295]_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                 | 添加为桥接端口时使用的桥接端口成本                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **datapath.bridge-horizon** (_integer [0..4294967295]_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                            | 添加作为桥端口                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 时使用的桥地平线 |
+| **datapath.client-to-client-forwarding** (_yes \| no_;Default:**no**)                                                                                                                                                                                                                                                                                                                                                                                                         | 控制连接到接口的无线客户端之间是否允许客户端到客户端转发，在本地转发模式下，此功能由CAP执行，否则由CAPsMAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 执行             |
+| **datapath.interface-list** (;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **datapath.l2mtu** (;v:)                                                                                                                                                                                                                                                                                                                                                                                                                                                      | set Layer2 MTU大小                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **datapath.Local-forwarding** (_yes\| no_;Default:**no**)                                                                                                                                                                                                                                                                                                                                                                                                                     | 控制转发模式。如果禁用，所有L2和L3数据将转发给CAPsMAN，然后才会做出进一步的转发决定。<br>**注**，如果禁用，请确保参与同一广播域的每个CAP接口MAC地址是唯一的(包括本地MAC，如Bridge-MAC)。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **datapath.mtu** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                | 设置MTU大小                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **datapath.openflow-switch** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                    | OpenFlow交换机端口(启用时)用于将接口添加到                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **datapath.vlan-id ** (_integer [1..4095]_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                          | 如果VLAN模式允许使用VLAN标记，则分配给接口的VLAN ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **datapath.vlan-mode** (_use-service-tag \| use-tag_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                | 启用并指定要分配给接口的VLAN标签类型(使所有接收到的数据都带有VLAN标签，并允许接口只发送带有给定标签的数据)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **disconnect-timeout** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **distance** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **frame-lifetime** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **guard-interval** (_any\| long_; Default: **any**)                                                                                                                                                                                                                                                                                                                                                                                                                           | 是否允许使用短保护间隔(请参阅802.11n MCS规范，以了解这可能如何影响吞吐量)。“any”将根据数据速率使用short或long，“long”将仅使用long。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **hide-ssid** (_yes \| no_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                        | <br>- yes - AP在信标帧中不包含SSID，并且对广播SSID的探测请求不予回应。<br>- no - AP在信标帧中包含SSID，对广播SSID的探测请求进行应答。<br>此属性仅在AP模式下有效。将其设置为yes可以将该网络从某些客户端软件显示的无线网络列表中删除。更改此设置不会提高无线网络的安全性，因为SSID包含在AP发送的其他帧中。                                                                                                                                                                                                                                                                                                                                                                         |
+| **hw-protection-mode** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **hw-retries** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **installation** (_any \| indoor \| outdoor_; Default: **any**)                                                                                                                                                                                                                                                                                                                                                                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **keepalive-frames** (_enabled \| disabled_; Default: **enabled**)                                                                                                                                                                                                                                                                                                                                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **load-balancing-group** (_string_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                | 将接口加入负载分担组。要使客户端连接到该组中的接口，该接口应具有与组中所有其他接口相同或更少的已连接客户端数量。在cap范围大多重叠的设置中非常有用。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **max- stat -count** (_integer [1..2007]_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                           | 最大关联客户端数。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **mode** (;Default:**ap**)                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 设置操作模式。目前仅支持ap。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **multicast-helper** (_default \| disabled \| full_; Default: **default**)                                                                                                                                                                                                                                                                                                                                                                                                    | 当设置为full时，组播数据包将以单播目的MAC地址发送，解决了无线链路上的 [组播问题](https://wiki.mikrotik.com/wiki/Manual:Multicast_detailed_example#Multicast_and_Wireless "Manual:Multicast detailed example") 。此选项应仅在接入点上启用，客户端应配置为**站-网桥**模式。从v5.15开始可用。<br>- disabled关闭helper功能，发送带组播目的MAC地址的组播报文<br>- full - all组播包的MAC地址在发送之前更改为单播MAC地址<br>- default -当前设置为_disabled_的默认选项。值可以在以后的版本中更改。                                                                                                                                                                                       |
+| **name** (_string_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                | 配置文件的描述性名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **rate** (;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                                          | 用户自定义列表，取自费率名称(/caps-man Rates)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **rates.basic** (_1Mbps \| 2Mbps \| 5.5Mbps \| 6Mbps \| 11Mbps \| 11Mbps \| 12Mbps \| 18Mbps \| 24Mbps \| 36Mbps \| 48Mbps \| 54Mbps_; Default: )                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **rates.supported** (_1Mbps \| 2Mbps \| 5.5Mbps \| 6Mbps \| 11Mbps \| 11Mbps \| 12Mbps \| 18Mbps \| 24Mbps \| 36Mbps \| 48Mbps \| 54Mbps_; Default: )                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **rates.ht-basic-mcs** (_list of (mcs-0 \| mcs-1 \| mcs-2 \| mcs-3 \| mcs-4 \| mcs-5 \| mcs-6 \| mcs-7 \| mcs-8 \| mcs-9 \| mcs-10 \| mcs-11 \| mcs-12 \| mcs-13 \| mcs-14 \| mcs-15 \| mcs-16 \| mcs-17 \| mcs-18 \| mcs-19 \| mcs-20 \| mcs-21 \| mcs-22 \| mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7**)                                                                                                                                  | [调制和编码方案](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates)，每个连接的客户端必须支持。MCS规范请参考802.11n。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **rates.ht-supported-mcs** (_list of (mcs-0\| mcs-1 \| mcs-2 \| mcs-3 \| mcs-4 \| mcs-5 \| mcs-6 \| mcs-7 \| mcs-8 \| mcs-9 \| mcs-10 \| mcs-11 \| mcs-12 \| mcs-13 \| mcs-14 \| mcs-15 \| mcs-16 \| mcs-17 \| mcs-18 \| mcs-19 \| mcs-20 \| mcs-21 \| mcs-22 \| mcs-23)_; Default: **mcs-0; mcs-1; mcs-2; mcs-3; mcs-4; mcs-5; mcs-6; mcs-7; mcs-8; mcs-9; mcs-10; mcs-11; mcs-12; mcs-13; mcs-14; mcs-15; mcs-16; mcs-17; mcs-18; mcs-19; mcs-20; mcs-21; mcs-22; mcs-23**) | [调制和编码方案](http://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates)，该设备宣布支持。MCS规范请参考802.11n。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **rates.vht-basic-mcs** (_none \| MCS 0-7 \| MCS 0-8 \| MCS 0-9_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                          | [调制和编码方案](http://en.wikipedia.org/wiki/IEEE_802.11ac#Data_rates_and_speed)，每个连接的客户端必须支持。MCS规范请参考802.11ac。<br>您可以设置每个空间流的MCS间隔<br>- _none_ -将不使用选定的空间流<br>- _MCS 0-7_ - client必须支持MCS-0到MCS-7<br>- _MCS 0-8_ - client必须支持MCS-0到MCS-8<br>- _MCS 0-9_ - client必须支持MCS-0到MCS-9                                                                                                                                                                                                                                                                                                                                      |
+| **rates.vht-supported-mcs** (_none \| MCS 0-7 \| MCS 0-8 \| MCS 0-9_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                      | [调制和编码方案](http://en.wikipedia.org/wiki/IEEE_802.11ac#Data_rates_and_speed)，该设备宣布支持。MCS规范请参考802.11ac。<br>可以设置每个空间流的MCS间隔<br>- _none_ -将不使用选定的空间流<br>- _MCS 0-7_ -设备将作为支持的MCS-0通告到MCS-7<br>- _MCS 0-8_ -设备将通告为支持的MCS-0到MCS-8<br>- _MCS 0-9_ -设备将作为支持的MCS-0通告到MCS-9                                                                                                                                                                                                                                                                                                                                     |
+| **rx-chains** (_list of integer [0..3]_; Default: **0**)                                                                                                                                                                                                                                                                                                                                                                                                                      | 用哪根天线接收。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **security** (_string_;Default:**none**)                                                                                                                                                                                                                                                                                                                                                                                                                                      | 来自/caps-man security的安全配置名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **security.authentication-types** (_list of string_;Default:**none**)                                                                                                                                                                                                                                                                                                                                                                                                         | 指定身份验证的类型从wpa-psk , wpa2-psk, wpa-eap或wpa2-eap                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **security.disable-pmkid** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **security.eap-methods** (_eap-tls \| passthrough_; Default: **none**)                                                                                                                                                                                                                                                                                                                                                                                                        | <br>- EAP - TLS -使用内置的EAP TLS认证。<br>- passthrough -接入点将认证过程中继到RADIUS服务器。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **security.eap-radius-accounting** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                              | 指定如果对该客户端进行RADIUS认证，是否应该使用RADIUS流量计费                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **security.encryption** (_aes-ccm \| tkip_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                          | 设置使用的单播加密算法类型                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **security.group-encryption** (_aes-ccm \| tkip_;Default:**aes-ccm**)                                                                                                                                                                                                                                                                                                                                                                                                         | 接入点发布这些密码中的一个，可以选择多个值。接入点使用它来加密所有广播和组播帧。客户端只尝试连接到使用指定组密码之一的接入点。<br>- tkip -临时密钥完整性协议-加密协议，与传统的WEP设备兼容，但增强以纠正一些WEP缺陷。<br>- AES -ccm -更安全的WPA加密协议，基于可靠的AES (Advanced encryption Standard)。没有WEP遗留的网络应该只使用这个密码。                                                                                                                                                                                                                                                                                                                                    |
+| **security.group-key-update** (_time: 30s..1h_; Default: **5m**)                                                                                                                                                                                                                                                                                                                                                                                                              | 控制访问点更新组密钥的频率。该密钥用于加密所有广播和组播帧。属性仅对接入点有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **security. passphrase** (_string_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                  | WPA或WPA2预共享密钥                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **security. tls-certificate** (_none \| name_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                       | 接入点总是需要一个证书。当Tls-mode设置为no-certificates以外的值时。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **security.tls-mode** (_verify-certificate \| dont-verify-certificate \| no-certificates \| verify-certificate-with-crl_; Default: )                                                                                                                                                                                                                                                                                                                                          | 此属性仅在安全时有效。eap-methods包含eap-tls。<br>- verify-certificate -要求远端设备拥有有效的证书。检查它是否由已知的证书颁发机构签名。没有额外的身份验证。证书可能包括有关其有效期间的信息。如果路由器的时间和日期不正确，它可能会因为路由器的时钟超出了时间和日期而拒绝有效的证书。另请参见 [证书](https://wiki.mikrotik.com/wiki/Manual:System/Certificates "Manual:System/Certificates") 配置。<br>- don -verify-certificate -不检查远端设备的证书。接入点不需要客户端提供证书。<br>- no-certificates -不使用证书。TLS会话采用2048位匿名Diffie-Hellman密钥交换建立。<br>- verify-certificate-with-crl -与verify-certificate相同，但通过查看证书吊销列表来检查证书是否有效。 |
+| **ssid** (_string (0..32 chars)_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                  | SSID(服务集标识符)是在信标中广播的标识无线网络的名称。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **tx-chains** (_list of integer [0..3]_;Default:**0**)                                                                                                                                                                                                                                                                                                                                                                                                                        | 使用哪些天线进行传输。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 # CAPsMAN datapath
 
-Datapath settings control data forwarding related aspects. On CAPsMAN datapath settings are configured in the datapath profile menu **/caps-man datapath** or directly in a configuration profile or interface menu as settings with **datapath.** prefix.
+数据路径设置控制数据转发的相关方面。在CAPsMAN中，数据路径设置在数据路径配置文件菜单/caps-man数据路径中配置，或者直接在配置配置文件或接口菜单中配置 **datapath** 前缀。
 
-There are 2 major forwarding modes:
+主要有两种转发方式:
 
--   local forwarding mode, where CAP is locally forwarding data to and from wireless interface
--   manager forwarding mode, where CAP sends to CAPsMAN all data received over wireless and only sends out the wireless data received from CAPsMAN. In this mode, even client-to-client forwarding is controlled and performed by CAPsMAN.
+- 本地转发模式，CAP在本地向无线接口转发数据
+- 管理者转发模式，CAP将所有通过无线方式接收到的数据发送给CAPsMAN，只发送从CAPsMAN接收到的无线数据。在这种模式下，甚至客户机到客户机的转发也由CAPsMAN控制和执行。
 
-Forwarding mode is configured on a per-interface basis - so if one CAP provides 2 radio interfaces, one can be configured to operate in local forwarding mode and the other in manager forwarding mode. The same applies to Virtual-AP interfaces - each can have different forwarding mode from master interface or other Virtual-AP interfaces.
+转发模式是在每个接口的基础上配置的，所以如果一个CAP提供2个无线电接口，一个可以配置为本地转发模式，另一个可以配置为管理转发模式。Virtual-AP接口也是如此，每个接口可以与主接口或其他Virtual-AP接口具有不同的转发模式。
 
-Most of the datapath settings are used only when in manager forwarding mode, because in local forwarding mode CAPsMAN does not have control over data forwarding.
+大多数数据路径设置仅在管理员转发模式下使用，因为在本地转发模式下，CAPsMAN无法控制数据转发。
 
-There are the following datapath settings:
+数据路径设置如下:
 
--   bridge -- bridge interface to add interface to, as a bridge port, when enabled
--   bridge-cost -- bridge port cost to use when adding as bridge port
--   bridge-horizon -- bridge horizon to use when adding as bridge port
--   client-to-client-forwarding -- controls if client-to-client forwarding between wireless clients connected to interface should be allowed, in local forwarding mode this function is performed by CAP, otherwise it is performed by CAPsMAN.
--   local-forwarding -- controls forwarding mode
--   openflow-switch -- OpenFlow switch to add interface to, as port when enabled
--   vlan-id -- VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging
--   vlan-mode -- VLAN tagging mode specifies if VLAN tag should be assigned to interface (causes all received data to get tagged with VLAN tag and allows interface to only send out data tagged with given tag)
+- bridge -在启用时，将接口添加为桥接端口
+- bridge-cost -添加为桥接端口时使用的桥接端口成本
+- bridge-horizon -添加为桥接端口时使用的桥接地平线
+- client-to-client-forwarding——控制连接到接口的无线客户端之间是否允许client-to-client转发，在本地转发模式下，此功能由CAP执行，否则由CAPsMAN执行。
+- local-forwarding - 控制转发方式
+- OpenFlow -switch -OpenFlow开关，当打开时，将接口添加到端口
+- VLAN - ID -当VLAN -mode使能VLAN标记时，指定给接口的VLAN ID
+- VLAN -mode -VLAN标签模式指定是否给接口分配VLAN标签(使所有接收到的数据都带有VLAN标签，并允许接口只发送带有给定标签的数据)
 
-# CAPsMAN interface
+# CAPsMAN接口
 
-CAPsMAN interfaces are managed in **/caps-man interface** menu:
+CAPsMAN接口在/caps-man接口菜单中管理:
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] &gt; </code><code class="ros constants">/caps-man interface </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># NAME RADIO-MAC MASTER-INTERFACE</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 M BR cap2 00</code><code class="ros constants">:0C:42:1B:4E:F5 none</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1 B cap3 00</code><code class="ros constants">:00:00:00:00:00 cap2</code></div></div></td></tr></tbody></table>
-
-  
-
-# CAPsMAN manager
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
-| ---------------------------------- | --------------------- |
-| **enabled** (_yes                  | no_; Default: **no**) | Disable or enable CAPsMAN functionality                                                                                                                                                                                                                                                   |
-| **certificate** (_auto             | certificate name      | none_; Default: **none**)                                                                                                                                                                                                                                                                 | Device certificate     |
-| **ca-certificate** (_auto          | certificate name      | none_; Default: **none**)                                                                                                                                                                                                                                                                 | Device CA certificate  |
-| **require-peer-certificate** (_yes | no_; Default: **no**) | Require all connecting CAPs to have a valid certificate                                                                                                                                                                                                                                   |
-| **package-path** (_string          | _; Default: )         | Folder location for the RouterOS packages. For example, use "/upgrade" to specify the upgrade folder from the files section. If empty string is set, CAPsMAN can use built-in RouterOS packages, note that in this case only CAPs with the same architecture as CAPsMAN will be upgraded. |
-| **upgrade-policy** (_none          | require-same-version  | suggest-same-upgrade_; Default: **none**)                                                                                                                                                                                                                                                 | Upgrade policy options |
-
--   none - do not perform upgrade
--   require-same-version - CAPsMAN suggest to upgrade the CAP RouterOS version and if it fails it will not provision the CAP. (Manual provision is still possible)
--   suggest-same-version - CAPsMAN suggests to upgrade the CAP RouterOS version and if it fails it will still be provisioned
-
- |
-
-# CAPsMAN provisioning
-
-CAPsMAN distinguishes between CAPs based on a common-name identifier. The identifier is generated based on the following rules:
-
--   if CAP provided a certificate, the identifier is set to the Common Name field in the certificate
--   otherwise, an identifier is based on Base-MAC provided by CAP in the form: '\[XX:XX:XX:XX:XX:XX\]'.
-
-When the DTLS connection with CAP is successfully established (which means that CAP identifier is known and valid), CAPsMAN makes sure there is no stale connection with CAP using the same identifier. Currently connected CAPs are listed in **/caps-man remote-cap** menu:
-
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] </code><code class="ros constants">/caps-man&gt; remote-cap </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros comments"># ADDRESS IDENT STATE RADIOS 0 00:0C:42:00:C0:32/27044 MT-000C4200C032 Run 1</code></div></div></td></tr></tbody></table>
+```shell
+[admin@CM] > /caps-man interface print
+Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - running
+# NAME RADIO-MAC MASTER-INTERFACE
+0 M BR cap2 00:0C:42:1B:4E:F5 none
+1 B cap3 00:00:00:00:00:00 cap2
+```
 
   
 
-CAPsMAN distinguishes between actual wireless interfaces (radios) based on their built-in MAC address (radio-mac). This implies that it is impossible to manage two radios with the same MAC address on one CAPsMAN. Radios currently managed by CAPsMAN (provided by connected CAPs) are listed in **/caps-man radio** menu:
+# CAPsMAN管理者
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
+| 属性                                                                                         | 说明                                                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **enabled** (_yes\| no_;Default:**no**)                                                      | 禁用或启用CAPsMAN功能                                                                                                                                                                                                                      |
+| **证书** (_auto\|certificate name\| none_;Default:**none**)                                  | 设备证书                                                                                                                                                                                                                                   |
+| **ca-certificate** (_auto \|certificate name\| none_;Default:**none**)                       | 设备CA证书                                                                                                                                                                                                                                 |
+| **require-peer-certificate** (_yes \| no_;Default:**no**)                                    | 要求所有连接的CAPs具有有效的证书                                                                                                                                                                                                           |
+| **package-path** (_string \|_;Default:)                                                      | RouterOS包的文件夹位置。例如，使用"/upgrade"从files部分指定升级文件夹。如果设置为空字符串，则CAPsMAN可以使用内置的RouterOS包，注意在这种情况下，只有与CAPsMAN架构相同的cap才会升级。                                                       |
+| **upgrade-policy** (_none \| require-same-version \| suggest-same-upgrade_;Default:**none**) | 升级策略选项<br>- none -不升级<br>- require-same-version - CAPsMAN建议升级CAP的RouterOS版本，如果升级失败，则不会再发放CAP(手动发放仍然是可能的)。<br>- suggest-same-version - CAPsMAN建议升级CAP RouterOS版本，如果升级失败，仍会继续发放 |
+|                                                                                              |
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] </code><code class="ros constants">/caps-man&gt; radio </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: L - local, P - provisioned</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># RADIO-MAC INTERFACE REMOTE-AP-IDENT</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">0 P 00</code><code class="ros constants">:03:7F:48:CC:07 cap1 MT-000C4200C032</code></div></div></td></tr></tbody></table>
+# CAPsMAN配置
 
-  
+CAPsMAN根据通用名称标识符来区分cap。该标识符的生成规则如下:
 
-When CAP connects, CAPsMAN at first tries to bind each CAP radio to CAPsMAN master interface based on radio-mac. If an appropriate interface is found, radio gets set up using master interface configuration and configuration of slave interfaces that refer to a particular master interface. At this moment interfaces (both master and slaves) are considered bound to radio and radio is considered provisioned.
+- 如果CAP提供了证书，则标识符设置为证书中的Common Name字段
+- 否则，标识符基于CAP提供的Base-MAC，格式为:'[XX:XX:XX:XX:XX]'。
 
-If no matching master interface for radio is found, CAPsMAN executes 'provisioning rules'. Provisioning rules is an ordered list of rules that contain settings that specify which radio to match and settings that specify what action to take if a radio matches.
+当与CAP的DTLS连接成功建立时(这意味着CAP标识符是已知且有效的)，CAPsMAN确保使用相同标识符的与CAP的连接没有失效。当前连接的CAPs列在/ CAPs -man remote-cap菜单中:
 
-  
-Provisioning rules for matching radios are configured in **/caps-man provisioning** menu:
+```shell
+[admin@CM] /caps-man> remote-cap print
+# ADDRESS IDENT STATE RADIOS 0 00:0C:42:00:C0:32/27044 MT-000C4200C032 Run 1
+```
 
-| 
-Property
+CAPsMAN根据内置的MAC地址(radio-mac)来区分实际的无线接口(无线电)。这意味着在一个CAPsMAN上管理两个具有相同MAC地址的无线电是不可能的。目前由CAPsMAN管理的无线电(由连接的CAPs提供)列在/ CAPs -man radio菜单中:
 
- | 
+```shell
+[admin@CM] /caps-man> radio print
+Flags: L - local, P - provisioned
+# RADIO-MAC INTERFACE REMOTE-AP-IDENT
+0 P 00:03:7F:48:CC:07 cap1 MT-000C4200C032
+```
 
-Description
 
-|     |
-| --- |  |
-|     |
+当CAP连接时，CAPsMAN首先尝试将每个CAP无线电绑定到基于无线电mac的CAPsMAN主接口上。如果找到合适的接口，则使用主接口配置和引用特定主接口的从接口配置来设置无线电。此时，接口(包括主接口和从接口)被认为绑定到无线电，无线电被认为是供应的。
 
-Property
+如果没有找到匹配的无线电主接口，CAPsMAN执行“供应规则”。供应规则是一个有序的规则列表，其中包含指定要匹配哪个无线电的设置，以及指定如果无线电匹配要采取什么操作的设置。
 
- | 
 
-Description
+匹配无线电的发放规则在/caps-man Provisioning 菜单中配置:
 
-|                              |
-| ---------------------------- | -------------- |
-| **action** (_create-disabled | create-enabled | create-dynamic-enabled | none_; Default: **none**) | Action to take if rule matches are specified by the following settings: |
+| 属性                                                                                               | 说明                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **action** (_create-disabled \| create-enabled \| create-dynamic-enabled \| none;Default:**none**) | 如果规则匹配由以下设置指定，则采取的操作:<br>- **create-disabled** -创建禁用的无线静态接口。即，接口将被绑定到无线电，但无线电将不会运行，直到手动启用接口;<br>- **create-enabled** -创建已启用的静态接口。也就是说，接口将被绑定到无线电，无线电将是可操作的;<br>- **create-dynamic-enabled** -创建启用的动态接口。也就是说，接口将被绑定到无线电，无线电将是可操作的;<br>- **none** -什么都不做，使无线电处于未提供状态; |
+| **comment** (_string_; Default: )                                                                  | 发放规则的简要说明                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **common-name-regexp** (_string_;Default:)                                                         | 通过通用名称匹配无线电的正则表达式。每个CAP的通用名称标识符可以在“/caps-man radio”下找到，值为“REMOTE-CAP-NAME”                                                                                                                                                                                                                                                                                                            |
+| **hw-supported-modes** (_a\|a-turbo\|ac\|an\|b\|g\|g-turbo\|gn_;Default: )                         | 按支持的无线模式匹配无线电                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **identity-regexp** (_string_;Default:)                                                            | 根据路由器标识匹配无线电的正则表达式                                                                                                                                                                                                                                                                                                                                                                                       |
+| **ip-address-ranges** (_IpAddressRange[，IpAddressRanges] max 100x_;Default:**""**)                | 在配置的地址范围内匹配CAPs和ip。                                                                                                                                                                                                                                                                                                                                                                                           |
+| **master-configuration** (_string_;Default:)                                                       | 如果**action**指定创建接口，则将创建一个新的主接口，其配置设置为此配置文件                                                                                                                                                                                                                                                                                                                                                 |
+| **name-format** (_cap \| identity \| prefix \| prefix-identity_; Default: **cap**)                 | 指定创建CAP接口名称的语法<br>- cap -默认名称<br>- identity - CAP板的系统标识名称<br>-prefix - name从name-prefix的值中提取<br>- prefix-identity - name从name-prefix的值和CAP板的系统标识名中提取                                                                                                                                                                                                                            |
+| **name-prefix** (_string_; Default: )                                                              | 名称前缀，可以在名称格式中使用，用于创建CAP接口名称                                                                                                                                                                                                                                                                                                                                                                        |
+| **radio-mac** (_MAC地址_;Default:**00:00:00:00:00**)                                               | 要匹配的无线电MAC地址，空MAC(00:00:00:00:00)表示匹配所有MAC地址                                                                                                                                                                                                                                                                                                                                                            |
+| **slave-configurations** (_string_;Default:)                                                       | 如果action指定创建接口，则为此列表中的每个配置文件创建一个新的从接口。                                                                                                                                                                                                                                                                                                                                                     |
 
--   **create-disabled** \- create disabled static interfaces for radio. I.e., the interfaces will be bound to the radio, but the radio will not be operational until the interface is manually enabled;
--   **create-enabled** \- create enabled static interfaces. I.e., the interfaces will be bound to the radio and the radio will be operational;
--   **create-dynamic-enabled** \- create enabled dynamic interfaces. I.e., the interfaces will be bound to the radio, and the radio will be operational;
--   **none** \- do nothing, leaves radio in the non-provisioned state;
+如果没有匹配radio的规则，则隐式默认规则的操作create-enabled和不执行配置集。
 
- |
-| **comment** (_string_; Default: ) | Short description of the Provisioning rule |
-| **common-name-regexp** (_string_; Default: ) | Regular expression to match radios by common name. Each CAP's common name identifier can be found under "/caps-man radio" as value "REMOTE-CAP-NAME" |
-| **hw-supported-modes** (_a|a-turbo|ac|an|b|g|g-turbo|gn_; Default: ) | Match radios by supported wireless modes |
-| **identity-regexp** (_string_; Default: ) | Regular expression to match radios by router identity |
-| **ip-address-ranges** (_IpAddressRange\[,IpAddressRanges\] max 100x_; Default: **""**) | Match CAPs with IPs within configured address range. |
-| **master-configuration** (_string_; Default: ) | If **action** specifies to create interfaces, then a new master interface with its configuration set to this configuration profile will be created |
-| **name-format** (_cap | identity | prefix | prefix-identity_; Default: **cap**) | specify the syntax of the CAP interface name creation
+要获取活动供应匹配器:
 
--   cap - default name
--   identity - CAP boards system identity name
--   prefix - name from the name-prefix value
--   prefix-identity - name from the name-prefix value and the CAP boards system identity name
+```shell
+[admin@CM] /caps-man provisioning> print
+Flags: X - disabled
+0 radio-mac=00:00:00:00:00:00 action=create-enabled master-configuration=main-cfg
+slave-configurations=virtual-ap-cfg name-prefix=""
+```
 
- |
-| **name-prefix** (_string_; Default: ) | name prefix which can be used in the name-format for creating the CAP interface names |
-| **radio-mac** (_MAC address_; Default: **00:00:00:00:00:00**) | MAC address of radio to be matched, empty MAC (00:00:00:00:00:00) means match all MAC addresses |
-| **slave-configurations** (_string_; Default: ) | If **action** specifies to create interfaces, then a new slave interface for each configuration profile in this list is created. |
+为了方便用户，有一些命令允许对某些AP提供的某些或所有无线电重新执行供应过程:
 
-If no rule matches radio, then implicit default rule with action **create-enabled** and no configurations set is executed.
+`[admin@CM] > caps-man radio provision 0`
 
-To get the active provisioning matchers:
+和
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] </code><code class="ros constants">/caps-man provisioning&gt; </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">0 </code><code class="ros value">radio-mac</code><code class="ros plain">=00:00:00:00:00:00</code> <code class="ros value">action</code><code class="ros plain">=create-enabled</code> <code class="ros value">master-configuration</code><code class="ros plain">=main-cfg</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros value">slave-configurations</code><code class="ros plain">=virtual-ap-cfg</code> <code class="ros value">name-prefix</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
-
-For the user's convenience there are commands that allow the re-execution of the provisioning process for some radio or all radios provided by some AP:
-
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] &gt; caps-man radio </code><code class="ros functions">provision </code><code class="ros plain">0</code></div></div></td></tr></tbody></table>
-
-and
-
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] &gt; caps-man remote-cap </code><code class="ros functions">provision </code><code class="ros plain">0</code></div></div></td></tr></tbody></table>
+`[admin@CM] > caps-man remote-cap provision 0`
 
 ## CAPsMAN radio
 
-see /caps-man provisioning
+见 /caps-man provisioning
 
 ## CAPsMAN rates
 
-see /caps-man configuration
+见 /caps-man configuration
 
-## CAPsMAN registration-table
+CAPsMAN注册表
 
-Registration table contains a list of clients that are connected to radios controlled by CAPsMAN and is available in **/caps-man registration-table** menu:
+注册表包含连接到由CAPsMAN控制的无线电的客户端列表，可在/caps-man registration-table菜单中使用:
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CM] </code><code class="ros constants">/caps-man&gt; registration-table </code><code class="ros plain">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros comments"># INTERFACE MAC-ADDRESS UPTIME RX-SIGNAL</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">0 cap1 00</code><code class="ros constants">:03:7F:48:CC:0B 1h38m9s210ms -36</code></div></div></td></tr></tbody></table>
+```shell
+[admin@CM] /caps-man> registration-table print
+# INTERFACE MAC-ADDRESS UPTIME RX-SIGNAL
+0 cap1 00:03:7F:48:CC:0B 1h38m9s210ms -36
+```
 
 ## CAPsMAN remote-cap
 
-see /caps-man provisioning
+见 /caps-man provisioning
 
-## CAPsMAN security
+## CAPsMAN安全
 
-### Example
+**例子**
 
-Assuming that rest of the settings are already configured and only the "Security" part has been left.
+假设已经配置了其余的设置，只剩下“Security”部分。
 
-**Radius authentication with one server**
+**单服务器Radius认证**
 
-1\. Create CAPsMAN security configuration
+1. 创建CAPsMAN安全配置
 
-2\. Configure Radius server client
+2. 配置Radius服务器客户端
 
-3\. Assign the configuration to your master profile (or directly to CAP itself)
+3.将配置分配给主概要文件(或直接分配给CAP本身)
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
+```shell
+/caps-man security add authentication-types=wpa2-eap eap-methods=passthrough encryption=aes-ccm group-encryption=aes-ccm name=radius
+/radius add address=x.x.x.x secret=SecretUserPass service=wireless
+/caps-man configuration set security=radius
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man security </code><code class="ros functions">add </code><code class="ros value">authentication-types</code><code class="ros plain">=wpa2-eap</code> <code class="ros value">eap-methods</code><code class="ros plain">=passthrough</code> <code class="ros value">encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">group-encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">name</code><code class="ros plain">=radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man configuration </code><code class="ros functions">set </code><code class="ros value">security</code><code class="ros plain">=radius</code></div></div></td></tr></tbody></table>
+**每个SSID使用不同的Radius服务器进行Radius认证**
 
-**Radius authentication with different radius servers for each SSID**
+1. 创建CAPsMAN安全配置
 
-1\. Create CAPsMAN security configuration
+2. 配置AAA设置
 
-2\. Configure AAA settings
+3. 配置Radius服务器客户端
 
-3\. Configure Radius server clients
+4. 将配置分配给主概要文件(或直接分配给CAP本身)
 
-4\. Assign the configuration to your master profile (or directly to CAP itself)
+```shell
+/caps-man security add authentication-types=wpa2-eap eap-methods=passthrough encryption=aes-ccm group-encryption=aes-ccm name=radius
+/caps-man aaa set called-format=ssid
+/radius add address=x.x.x.x secret=SecretUserPass service=wireless called-id=SSID1
+/radius add address=y.y.y.y secret=SecretUserPass service=wireless called-id=SSID2
+/caps-man configuration set security=radius
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/CAPsMAN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man security </code><code class="ros functions">add </code><code class="ros value">authentication-types</code><code class="ros plain">=wpa2-eap</code> <code class="ros value">eap-methods</code><code class="ros plain">=passthrough</code> <code class="ros value">encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">group-encryption</code><code class="ros plain">=aes-ccm</code> <code class="ros value">name</code><code class="ros plain">=radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/caps-man aaa </code><code class="ros functions">set </code><code class="ros value">called-format</code><code class="ros plain">=ssid</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=x.x.x.x</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">called-id</code><code class="ros plain">=SSID1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/radius </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=y.y.y.y</code> <code class="ros value">secret</code><code class="ros plain">=SecretUserPass</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">called-id</code><code class="ros plain">=SSID2</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/caps-man configuration </code><code class="ros functions">set </code><code class="ros value">security</code><code class="ros plain">=radius</code></div></div></td></tr></tbody></table>
-
-Now everyone connecting to CAP's with ssid=**SSID1** will have their radius authentication requests sent to **x.x.x.x** and everyone connecting to CAP's with ssid=**SSID2** will have their radius authentication requests sent to **y.y.y.y**
+现在每个连接到CAP的ssid=**SSID1** 将他们的radius 请求发送到 **x.x.x.x** ,每个连接到CAP的ssid=**SSID2** 将他们的radius 请求发送到 **y.y.y.y**

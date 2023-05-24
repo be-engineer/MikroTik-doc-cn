@@ -19,24 +19,7 @@ This manual page describes the configuration of the regular wireless package, th
 
 Some information can be added to beacon and probe response packets with a Interworking element. Following parameters of a Interworking element can be configured:
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                       |
+| Property                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **asra** (_yes                        | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                | Additional Steps Required for Access. Set to `yes`, if a user should take additional steps to access the internet, like the walled garden. |
 | **esr** (_yes                         | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                | Emergency services reachable (ESR). Set to `yes` in order to indicate that emergency services are reachable through the access point.      |
@@ -83,7 +66,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -211,7 +194,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
@@ -275,7 +258,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property

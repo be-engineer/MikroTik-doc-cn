@@ -1,14 +1,13 @@
 ## Summary
 
-___
 
 This example shows how to configure transparent wireless bridge in CLI from one W60G device to another.
 
-Example is done from empty configuration state with \[[WinBox](https://mikrotik.com/download)\] utility
+Example is done from empty configuration state with [[WinBox](https://mikrotik.com/download) utility
 
 ## Connect to the device step by step
 
-___
+
 
 1.  After configuration reset - only mac-telnet is possible.  
     Connect to device by connecting to it's MAC address or use WinBox New terminal to find device MAC address of the W60G device by issuing command:

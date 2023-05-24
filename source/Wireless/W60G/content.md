@@ -14,24 +14,7 @@ Extend your Gigabit network over a transparent AES encrypted wireless 60GHz link
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                                                                                                            |
+| Property                                                                                                                                                   | Description                                                              |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | **arp** (_disabled                                                                                                                                         | enabled                                                                  | proxy-arp                                                                                                                                                                                     | reply-only_; Default: **enabled**)    | [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:IP/ARP#ARP_Modes "Manual:IP/ARP") |
 | **arp-timeout** (_auto                                                                                                                                     | integer_; Default: **auto**)                                             | ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value **auto** equals to the value of **arp-timeout** in **/ip settings**, default is 30s |
@@ -98,7 +81,7 @@ Property
 Description
 
 |     |
-| --- |  |
+| --- ||
 |     |
 
 Property
