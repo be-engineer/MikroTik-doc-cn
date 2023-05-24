@@ -1,127 +1,87 @@
-# Overview
+# 概述
 
-Layer Two Tunneling Protocol "L2TP" extends the PPP model by allowing the L2 and PPP endpoints to reside on different devices interconnected by a packet-switched network.  L2TP includes PPP authentication and accounting for each L2TP connection. Full authentication and accounting of each connection may be done through a RADIUS client or locally. L2TP traffic uses UDP protocol for both control and data packets. UDP port 1701 is used only for link establishment, further traffic is using any available UDP port (which may or may not be 1701). This means that L2TP can be used with most firewalls and routers (even with NAT) by enabling UDP traffic to be routed through the firewall or router.  L2TP standard is defined in [RFC 2661](https://tools.ietf.org/html/rfc2661).
+L2TP (Layer Two Tunneling Protocol)是对PPP模型的扩展，它允许L2和PPP端点驻留在由分组交换网络连接的不同设备上。L2TP包括PPP认证和对每个L2TP连接的计费。每个连接的完整身份验证和记帐可以通过RADIUS客户端或本地完成。L2TP流量的控制报文和数据报文都使用UDP协议。UDP端口1701仅用于链路建立，后续流量使用任何可用的UDP端口(可能是也可能不是1701)。这意味着L2TP可以与大多数防火墙和路由器(甚至NAT)一起使用，允许UDP流量通过防火墙或路由器路由。L2TP标准在[RFC 2661](https://tools.ietf.org/html/rfc2661)中定义。
 
-# Introduction
+# 介绍
 
-It may be useful to use L2TP just as any other tunneling protocol with or without encryption. The L2TP standard says that the most secure way to encrypt data is using L2TP over IPsec (Note that it is the default mode for Microsoft L2TP client) as all L2TP control and data packets for a particular tunnel appear as homogeneous UDP/IP data packets to the IPsec system. 
+使用L2TP就像使用任何其他带或不带加密的隧道协议一样有用。L2TP标准指出，最安全的数据加密方式是使用L2TP over IPsec(注意，这是Microsoft L2TP客户端的默认模式)，因为特定隧道的所有L2TP控制和数据包对IPsec系统来说都是同质的UDP/IP数据包。
 
-Multilink PPP (MP) is supported in order to provide MRRU (the ability to transmit full-sized 1500 and larger packets) and bridging over PPP links (using Bridge Control Protocol (BCP) that allows sending raw Ethernet frames over PPP links). This way it is possible to setup bridging without EoIP. The bridge should either have an administratively set MAC address or an Ethernet-like interface in it, as PPP links do not have MAC addresses.
+支持多链路PPP (MP)是为了提供MRRU(传输全尺寸1500或更大数据包的能力)和PPP链路桥接(使用桥接控制协议(BCP)，允许在PPP链路上发送原始以太网帧)。这样就可以在没有EoIP的情况下设置桥接。由于PPP链路没有MAC地址，网桥应该有一个管理设置的MAC地址，或者其中有一个类似以太网的接口。
 
-L2TP does not provide encryption mechanisms for tunneled traffic. IPsec can be used for additional security layers.
+L2TP对隧道流量不提供加密机制。IPsec可以用于附加的安全层。
 
 # L2TP Client
 
-## Properties
+## 属性
 
-| 
-Property
+| 属性                                                              | 说明                                                                                                                                         |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **add-default-route** (_yes                                       | no_; Default: **no**)                                                                                                                        | 是否添加L2TP对端地址作为缺省路由。 |
+| **allow** (_mschap2                                               | mschap1                                                                                                                                      | chap                               | pap_;Default:**mschap2, mschap1, chap, pap**) | 允许的认证方式。 |
+| **连接到** (_IP_;Default:)                                        | L2TP服务器对端地址(如果在VRF表中，则需要指定VRF)<br>/interface l2tp-client Add connect-to=192.168.88.1@vrf1;name=l2tp-out1;user=l2tp-client) |
+| **comment** (_string_;Default:)                                   | 隧道的简短描述。                                                                                                                             |
+| **default-route-distance** (_byte_;  Default: )                   | 自v6.2起，设置应用于自动创建的默认路由的距离值，如果add-default-route也被选中                                                                |
+| **dial-on-demand** (_yes \| no_;Default:**no**)                   | 仅在产生出站流量时连接。如果选择，则在未建立连接的情况下，将添加网关地址为10.112.112.0/24网络的路由。                                        |
+| **disabled** (_yes \| no_;Default:**yes**)                        | 开启/关闭隧道。                                                                                                                              |
+| **keepalive-timeout** (_integer [1..4294967295]_;Default:**60s**) | 从v6.0rc13开始，隧道保持连接超时以秒为单位。                                                                                                 |
+| **max-mru** (_integer_; Default: **1460**)                        | 最大接收单元。L2TP接口在不发生报文分片的情况下能够接收的最大报文大小。                                                                       |
+| **max-mtu** (_integer_;Default:**1460**)                          | 最大传输单元。L2TP接口在不发生报文分片的情况下能够发送的最大报文大小。                                                                       |
+| **mrru** (_disabled \| integer_;Default:**disabled**)             | 链路上可以接收的最大数据包大小。如果报文的大小大于隧道的MTU，则会将其分割成多个报文，允许通过隧道发送完整大小的IP或以太网报文。              |
+| **name** (_string_;Default:)                                      | 接口的描述性名称。                                                                                                                           |
+| **password** (_string_;Default:**""**)                            | 鉴权密码。                                                                                                                                   |
+| **profile** (_name_;Default:**Default -encryption**)              | 建立隧道时使用哪一种PPP配置文件。                                                                                                            |
+| **user** (_string_;Default:)                                      | 用于鉴权的用户名。                                                                                                                           |
+| **use-ipsec** (_yes \| no_;Default:**no**)                        | 启用后，会添加动态IPSec对等体配置和策略，将L2TP连接封装到IPSec隧道中。                                                                       |
+| **ipsec-secret** (_string_;Default:)                              | 启用use-ipsec时使用的预共享密钥。                                                                                                            |
 
- | 
+# L2TP服务器
 
-Description
+为每一条与给定服务器建立的隧道创建一个接口。L2TP服务器的配置中有两种类型的接口
 
-|     |
-| --- |  |
-|     |
+如果需要引用为特定用户创建的特定接口名称(在防火墙规则或其他地方)，则在管理上添加静态接口;
+-动态接口将自动添加到此列表中，每当用户连接，其用户名不匹配任何现有的静态表项(或者如果表项已经激活，因为不能有两个单独的隧道接口引用相同的名称);
 
-Property
+动态接口在用户连接时出现，一旦用户断开连接就消失，因此不可能在路由器配置(例如防火墙)中引用为该用途创建的隧道，因此如果您需要为该用户创建持久规则，请为他/她创建静态条目。否则，使用动态配置是安全的。
 
- | 
+这两种情况下都需要正确配置PPP用户，静态表项不能替代PPP配置。
 
-Description
+## 属性
 
-|                                  |
-| -------------------------------- | --------------------- |
-| **add-default-route** (_yes      | no_; Default: **no**) | Whether to add L2TP remote address as a default route. |
-| **allow** (_mschap2              | mschap1               | chap                                                   | pap_; Default: **mschap2, mschap1, chap, pap**) | Allowed authentication methods. |
-| **connect-to** (_IP_; Default: ) |
+| 属性                                                                                 | 说明                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **authentication** (_pap\| chap \| mschap1\| mschap2_; Default: **mschap1,mschap2**) | 服务器将接受的身份验证方法。                                                                                                                                                                           |
+| **default-profile** (_name;Default:** Default -encryption**)                         | 默认配置文件使用                                                                                                                                                                                       |
+| **enabled** (_yes                                                                    | no_;Default:**no**)                                                                                                                                                                                    | 设置L2TP服务器是否开启。 |
+| **max-mru** (_integer_;Default:**1450**)                                             | 最大接收单元。L2TP接口在不发生报文分片的情况下能够接收的最大报文大小。                                                                                                                                 |
+| **keepalive-timeout** (_integer_;Default:**30**)                                     | 如果在keepalive超时时间内服务器未收到任何报文，则每秒发送keepalive报文，共5次。如果服务器仍然没有收到客户端的任何响应，那么客户端将在5秒后断开连接。日志将显示5次“LCP错过回声回复”消息，然后断开连接。 |
+| **max-mtu** (_integer_;Default:**1450**)                                             | 最大传输单元。L2TP接口在不发生报文分片的情况下能够发送的最大报文大小。                                                                                                                                 |
+| **use-ipsec** (_no \| yes\| require_; Default: **no**)                               | 启用此选项后，将添加动态IPSec对等体配置，以适应大多数L2TP道路战士的设置。当选择“要求”时，服务器将只接受那些封装在IPSec隧道中的L2TP连接尝试。                                                           |
+| **ipsec-secret** (_string_;Default:)                                                 | 启用use-ipsec时使用的预共享密钥                                                                                                                                                                        |
+| **mrru** (_disabled \| integer_;Default:**disabled**)                                | 链路上可以接收的最大数据包大小。如果报文的大小大于隧道的MTU，则会将其分割成多个报文，允许通过隧道发送完整大小的IP或以太网报文。                                                                        |
 
-Remote address of L2TP server (if the address is in VRF table,  VRF should be specified)
-
-[?](https://help.mikrotik.com/docs/display/ROS/L2TP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface l2tp-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">add&nbsp;</code><code class="ros value">connect-to</code><code class="ros plain">=192.168.88.1@vrf1&nbsp;</code><code class="ros plain">;</code><code class="ros value">name</code><code class="ros plain">=l2tp-out1&nbsp;</code><code class="ros plain">;</code><code class="ros value">user</code><code class="ros plain">=l2tp-client)</code></div></div></td></tr></tbody></table>
-
-  
-
-
-
-
- |
-| **comment** (_string_; Default: ) | Short description of the tunnel. |
-| **default-route-distance** (_byte_; Default: ) | Since v6.2, sets distance value applied to auto created default route, if add-default-route is also selected |
-| **dial-on-demand** (_yes | no_; Default: **no**) | connects only when outbound traffic is generated. If selected, then route with gateway address from 10.112.112.0/24 network will be added while connection is not established. |
-| **disabled** (_yes | no_; Default: **yes**) | Enables/disables tunnel. |
-| **keepalive-timeout** (_integer \[1..4294967295\]_; Default: **60s**) | Since v6.0rc13, tunnel keepalive timeout in seconds. |
-| **max-mru** (_integer_; Default: **1460**) | Maximum Receive Unit. Max packet size that L2TP interface will be able to receive without packet fragmentation. |
-| **max-mtu** (_integer_; Default: **1460**) | Maximum Transmission Unit. Max packet size that L2TP interface will be able to send without packet fragmentation. |
-| **mrru** (_disabled | integer_; Default: **disabled**) | Maximum packet size that can be received on the link. If a packet is bigger than tunnel MTU, it will be split into multiple packets, allowing full size IP or Ethernet packets to be sent over the tunnel. |
-| **name** (_string_; Default: ) | Descriptive name of the interface. |
-| **password** (_string_; Default: **""**) | Password used for authentication. |
-| **profile** (_name_; Default: **default-encryption**) | Specifies which PPP profile configuration will be used when establishing the tunnel. |
-| **user** (_string_; Default: ) | User name used for authentication. |
-| **use-ipsec** (_yes | no_; Default: **no**) | When this option is enabled, dynamic IPSec peer configuration and policy is added to encapsulate L2TP connection into IPSec tunnel. |
-| **ipsec-secret** (_string_; Default: ) | Preshared key used when use-ipsec is enabled. |
-
-# L2TP Server
-
-An interface is created for each tunnel established to the given server. There are two types of interfaces in the L2TP server's configuration
-
--   Static interfaces are added administratively if there is a need to reference the particular interface name (in firewall rules or elsewhere) created for the particular user;
--   Dynamic interfaces are added to this list automatically whenever a user is connected and its username does not match any existing static entry (or in case the entry is active already, as there can not be two separate tunnel interfaces referenced by the same name);
-
-Dynamic interfaces appear when a user connects and disappear once the user disconnects, so it is impossible to reference the tunnel created for that use in router configuration (for example, in firewall), so if you need persistent rules for that user, create a static entry for him/her. Otherwise, it is safe to use a dynamic configuration.
-
-in both cases PPP users must be configured properly - static entries do not replace PPP configuration.
-
-## Properties
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                               |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **authentication** (_pap                                      | chap                                                                                                                                                                                                                                                                                                                              | mschap1                                                                                                                                                                                                    | mschap2_; Default: **mschap1,mschap2**)                                                                                                                                                                                                           | Authentication methods that server will accept. |
-| **default-profile** (_name_; Default: **default-encryption**) | default profile to use                                                                                                                                                                                                                                                                                                            |
-| **enabled** (_yes                                             | no_; Default: **no**)                                                                                                                                                                                                                                                                                                             | Defines whether L2TP server is enabled or not.                                                                                                                                                             |
-| **max-mru** (_integer_; Default: **1450**)                    | Maximum Receive Unit. Max packet size that L2TP interface will be able to receive without packet fragmentation.                                                                                                                                                                                                                   |
-| **keepalive-timeout** (_integer_; Default: **30**)            | If server during keepalive-timeout period does not receive any packets, it will send keepalive packets every second, five times. If the server still does not receive any response from the client, then the client will be disconnected after 5 seconds. Logs will show 5x "LCP missed echo reply" messages and then disconnect. |
-| **max-mtu** (_integer_; Default: **1450**)                    | Maximum Transmission Unit. Max packet size that L2TP interface will be able to send without packet fragmentation.                                                                                                                                                                                                                 |
-| **use-ipsec** (_no                                            | yes                                                                                                                                                                                                                                                                                                                               | require_; Default: **no**)                                                                                                                                                                                 | When this option is enabled, dynamic IPSec peer configuration is added to suite most of the L2TP road-warrior setups. When require is selected server will accept only those L2TP connection attempts that were encapsulated in the IPSec tunnel. |
-| **ipsec-secret** (_string_; Default: )                        | Preshared key used when use-ipsec is enabled                                                                                                                                                                                                                                                                                      |
-| **mrru** (_disabled                                           | integer_; Default: **disabled**)                                                                                                                                                                                                                                                                                                  | Maximum packet size that can be received on the link. If a packet is bigger than tunnel MTU, it will be split into multiple packets, allowing full size IP or Ethernet packets to be sent over the tunnel. |
-
-# Quick Example
+# 快速例子
 
 ![](https://help.mikrotik.com/docs/download/attachments/2031631/Simple-l2tp-setup.jpg?version=2&modificationDate=1571748876898&api=v2)
 
-## L2TP Server
+## L2TP服务器
 
-On the servers side we will enable L2TP-server and create a PPP profile for a particular user:
+在服务器端，我们将启用L2TP-server并为特定用户创建PPP配置文件:
 
-[?](https://help.mikrotik.com/docs/display/ROS/L2TP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface l2tp-server server </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/ppp secret </code><code class="ros functions">add </code><code class="ros value">local-address</code><code class="ros plain">=10.0.0.2</code> <code class="ros value">name</code><code class="ros plain">=MT-User</code> <code class="ros value">password</code><code class="ros plain">=StrongPass</code> <code class="ros value">profile</code><code class="ros plain">=default-encryption</code> <code class="ros value">remote-address</code><code class="ros plain">=10.0.0.1</code> <code class="ros value">service</code><code class="ros plain">=l2tp</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface l2tp-server server set enabled=yes
+[admin@MikroTik] > /ppp secret add local-address=10.0.0.2 name=MT-User password=StrongPass profile=default-encryption remote-address=10.0.0.1 service=l2tp
+```
 
 ## L2TP Client
 
-L2TP client setup in the RouterOS is very simple.  In the following example, we already have a preconfigured 3 unit setup. We will take a look more detailed on how to set up L2TP client with username "MT-User", password "StrongPass" and server 192.168.51.3:
+在RouterOS中建立L2TP客户端非常简单。在下面的示例中，我们已经有了一个预配置的3单元设置。我们将更详细地了解如何使用用户名“MT-User”，密码“StrongPass”和服务器192.168.51.3设置L2TP客户端:
 
-[?](https://help.mikrotik.com/docs/display/ROS/L2TP#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface l2tp-client \</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">connect-to</code><code class="ros plain">=192.168.51.3</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=MT-User</code> <code class="ros value">password</code><code class="ros plain">=StrongPass</code> <code class="ros value">user</code><code class="ros plain">=MT-User</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface l2tp-client </code><code class="ros functions">print</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">0 R </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"MT-User"</code> <code class="ros value">max-mtu</code><code class="ros plain">=1450</code> <code class="ros value">max-mru</code><code class="ros plain">=1450</code> <code class="ros value">mrru</code><code class="ros plain">=disabled</code> <code class="ros value">connect-to</code><code class="ros plain">=192.168.51.3</code> <code class="ros value">user</code><code class="ros plain">=</code><code class="ros string">"MT-User"</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"StrongPass"</code> <code class="ros value">profile</code><code class="ros plain">=default-encryption</code> <code class="ros value">keepalive-timeout</code><code class="ros plain">=60</code> <code class="ros value">use-ipsec</code><code class="ros plain">=no</code> <code class="ros value">ipsec-secret</code><code class="ros plain">=</code><code class="ros string">""</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros value">allow-fast-path</code><code class="ros plain">=no</code> <code class="ros value">add-default-route</code><code class="ros plain">=no</code> <code class="ros value">dial-on-demand</code><code class="ros plain">=no</code> <code class="ros value">allow</code><code class="ros plain">=pap,chap,mschap1,mschap2</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface l2tp-client \
+add connect-to=192.168.51.3 disabled=no name=MT-User password=StrongPass user=MT-User
+[admin@MikroTik] > /interface l2tp-client print
+Flags: X - disabled, R - running
+0 R name="MT-User" max-mtu=1450 max-mru=1450 mrru=disabled connect-to=192.168.51.3 user="MT-User"
+password="StrongPass" profile=default-encryption keepalive-timeout=60 use-ipsec=no ipsec-secret=""
+allow-fast-path=no add-default-route=no dial-on-demand=no allow=pap,chap,mschap1,mschap2
+```

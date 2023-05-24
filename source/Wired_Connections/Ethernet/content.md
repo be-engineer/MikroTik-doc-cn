@@ -1,235 +1,185 @@
--   [Summary](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-Summary)
--   2[Properties](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-Properties)
--   3[Menu specific commands](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-Menuspecificcommands)
--   4[Monitor](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-Monitor)
--   5[Detect Cable Problems](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-DetectCableProblems)
--   6[Stats](https://help.mikrotik.com/docs/display/ROS/Ethernet#Ethernet-Stats)
-
-  
+# 以太网
 
 **Sub-menu:** `/interface ethernet`  
 **Standards:** `[IEEE 802.3](http://grouper.ieee.org/groups/802/3/)`
 
-# Summary
+# 概述
 
-MikroTik RouterOS supports various types of Ethernet interfaces - ranging from 10Mbps to 10Gbps Ethernet over copper twisted pair, 1Gbps and 10Gbps SFP/SFP+ interfaces and 40Gbps QSFP interface. Certain RouterBoard devices are equipped with a combo interface that simultaneously contains two interface types (e.g. 1Gbps Ethernet over twisted pair and SFP interface) allowing to select the most suitable option or creating a physical link failover. Through RouterOS, it is possible to control different Ethernet related properties like link speed, auto-negotiation, duplex mode, etc, monitor a transceiver diagnostic information and see a wide range of Ethernet related statistics.
+microtik RouterOS支持多种类型的以太网接口，包括10Mbps到10Gbps的铜绞线以太网，1Gbps和10Gbps SFP/SFP+接口和40Gbps QSFP接口。某些RouterBoard设备配备了combo接口，该接口同时包含两种接口类型(例如1Gbps以太网双绞线和SFP接口)，允许选择最合适的选项或创建物理链路故障转移。通过RouterOS，可以控制不同的以太网相关属性，如链路速度、自动协商、双工模式等，监控收发器诊断信息，并查看广泛的以太网相关统计信息。
 
-# Properties
+**属性**
 
-| 
-Property
+| 属性                                                                                                                                            | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **advertise** (_10M-full \| 10M-half \| 100M-full \| 100M-half \| 1000M-full \| 1000M-half \| 2500M-full \| 5000M-full \| 10000M-full;Default:) | 双绞线以太网接口的通告速度和双工模式，仅在使能自协商时生效。广告速度高于实际接口支持的速度将没有影响，允许多个选项。                                                                                                                                                                                                                                                                                                                         |
+| **arp** (_disabled \| enabled  \| local-proxy-arp \| proxy-arp \| reply-only_; Default: **enabled**)                                            | 地址解析协议模式:<br>- disabled表示接口不使用ARP<br>- enabled接口使用ARP<br>- local-proxy-arp路由器在接口上执行代理ARP，并向同一接口发送应答<br>- proxy- ARP -在接口上执行代理ARP，对其他接口进行应答<br>- reply-only表示接口只响应在 [ARP](https://wiki.mikrotik.com/wiki/Manual:IP/ARP "Manual:IP/ARP") 表中以静态表项形式输入的匹配的IP/ MAC地址组合的请求。ARP表中不会自动存储动态表项。因此，要使通信成功，必须已经存在有效的静态条目。 |
+| **auto-negotiation** (_yes \| no_; Default: **yes**)                                                                                            | 当启用时，接口“发布”其最大功能以实现最佳连接。<br>- 注1:不能只关闭一端的自协商功能，否则可能导致以太网接口不能正常工作。<br>- 注2:禁用自协商功能时，千兆以太网和NBASE-T以太网链路不能工作。                                                                                                                                                                                                                                                  |
+| **bandwidth** (_integer/integer_; Default: **unlimited/unlimited**)                                                                             | 设置接口处理的最大rx/tx带宽(kbps)。所有Atheros [开关芯片](https://wiki.mikrotik.com/wiki/Manual:Switch_Chip_Features "Manual:Switch Chip Features") 端口都支持TX限制。RX限制仅支持在动脉粥样硬化8327/QCA8337交换芯片端口。                                                                                                                                                                                                                   |
+| **cable-setting** (_default \| short \| standard_;Default:**default**)                                                                          | 改变电缆长度设置(仅适用于NS DP83815/6卡)                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **combo-mode** (_auto \| copper \| sfp_;Default:**auto**)                                                                                       | 当选择auto模式时，首先连接的端口将建立链接。如果这个链路失败，另一个端口将尝试建立一个新的链路。如果两个端口同时连接(例如重启后)，则优先级为SFP/SFP+端口。当选择sfp模式时，接口只能通过sfp / sfp +笼工作。当选择铜模式时，接口只能通过RJ45以太网接口工作。                                                                                                                                                                                   |
+| **comment** (_string_;Default:)                                                                                                                 | 项目的描述性名称                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **disable-running-check** (_yes \| no_;Default:**yes**)                                                                                         | 关闭运行检查。如果设置为no，路由器将自动检测网卡是否与网络中的设备连接。默认值为“yes”，因为旧的网卡不支持。(仅适用于x86)                                                                                                                                                                                                                                                                                                                     |
+| **tx-flow-control** (_on \| off \| auto_; Default: **off**)                                                                                     | 设置为on时，向上游设备生成暂停帧，暂时停止报文的传输。只有当某些路由器的输出接口拥塞，报文无法继续传输时，才会产生暂停帧。**auto** 与 **on** 相同，除了当auto-negotiation=yes时，流量控制状态是通过考虑另一端的广告来解决的。                                                                                                                                                                                                                |
+| **rx-flow-control** (_on \| off \| auto_;Default:**off**)                                                                                       | 当设置为on时，端口将处理接收到的暂停帧并在需要时暂停传输。**auto** 与 **on** 相同，除了当auto-negotiation=yes时，流量控制状态是通过考虑另一端的广告来解决的。                                                                                                                                                                                                                                                                                |
+| **full-duplex** (_yes \| no_;Default:**yes**)                                                                                                   | 定义数据是否同时在两个方向上传输，仅在禁用自协商时适用。                                                                                                                                                                                                                                                                                                                                                                                     |
+| **l2mtu** (_integer [0..65536]_; Default: )                                                                                                     | Layer2最大传输单元。[阅读更多](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards "Maximum Transmission Unit on RouterBoards")                                                                                                                                                                                                                                                                                         |
+| **mac-address** (_MAC_;Default:)                                                                                                                | 接口的媒体访问控制号。                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **master-port** (_name_;Default:**none**)                                                                                                       | 过时的属性，有关此属性的更多详细信息可以在[Master-port](https://wiki.mikrotik.com/wiki/Manual:Master-port“Manual:Master-port”)页面中找到。                                                                                                                                                                                                                                                                                                   |
+| **mdix-enable** (_yes \| no_;Default:**yes**)                                                                                                   | 端口是否启用MDI/X自动交叉电缆校正功能(特定于硬件，例如RB500上的ether1可以设置为yes/no。在其他硬件上固定为“yes”)                                                                                                                                                                                                                                                                                                                              |
+| **mtu** (_integer [0..65536]_;Default:**1500**)                                                                                                 | Layer3最大传输单元                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **name** (_string_;Default:)                                                                                                                    | 接口名称                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **origin -mac-address** (_read-only: MAC_;Default:)                                                                                             | 接口的原始媒体访问控制编号。                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **poe-out** (_auto-on \| forced-on \| off_;Default:**off**)                                                                                     | Poe Out设置。[阅读更多](https://wiki.mikrotik.com/wiki/Manual:PoE-Out "Manual:PoE-Out")                                                                                                                                                                                                                                                                                                                                                      |
+| **priority** (_integer [0..99]_;Default:)                                                                                                       | Poe Out设置。[阅读更多](https://wiki.mikrotik.com/wiki/Manual:PoE-Out "Manual:PoE-Out")                                                                                                                                                                                                                                                                                                                                                      |
+| **sfp-shutdown-temperature** (_integer_;Default:**95**                                                                                          | **80**)                                                                                                                                                                                                                                                                                                                                                                                                                                      | 由于检测到的SFP模块温度过高，接口将暂时关闭的摄氏温度(v6.48引入)。SFP/SFP+/SFP28接口的缺省值是95,QSFP+/QSFP28接口的缺省值是80 (v7.6引入)。 |
+| **speed** (_10Mbps \| 10Gbps \| 100Mbps \| 1Gbps_;Default:)                                                                                     | 设置接口数据传输速度，只有关闭自协商功能后才生效。                                                                                                                                                                                                                                                                                                                                                                                           |
 
- | 
+**只读属性**
 
-Description
+| 属性                           | 说明                                                                                               |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **running** (_yes      \| no_) | 接口是否运行。请注意，有些接口没有运行检查，它们总是报告为“正在运行”                               |
+| **slave** (_yes \| no_)        | 接口是否被配置为其他接口的从接口(例如 [Bonding](https://wiki.mikrotik.com/wiki/Bonding "Bonding")) |
+| **switch** (_integer_)         | 交换芯片接口所属的ID。                                                                             |
 
-|     |
-| --- |  |
-|     |
+# 特殊菜单命令
 
-Property
-
- | 
-
-Description
-
-|                          |
-| ------------------------ | -------- |
-| **advertise** (_10M-full | 10M-half | 100M-full       | 100M-half | 1000M-full                         | 1000M-half                        | 2500M-full | 5000M-full | 10000M-full_; Default: ) | Advertised speed and duplex modes for Ethernet interfaces over twisted pair, only applies when auto-negotiation is enabled. Advertising higher speeds than the actual interface supported speed will have no effect, multiple options are allowed. |
-| **arp** (_disabled       | enabled  | local-proxy-arp | proxy-arp | reply-only_; Default: **enabled**) | Address Resolution Protocol mode: |
-
--   disabled \- the interface will not use ARP
--   enabled \- the interface will use ARP
--   local-proxy-arp \- the router performs proxy ARP on the interface and sends replies to the same interface
--   proxy-arp \- the router performs proxy ARP on the interface and sends replies to other interfaces
--   reply-only \- the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the [ARP](https://wiki.mikrotik.com/wiki/Manual:IP/ARP "Manual:IP/ARP") table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-
- |
-| **auto-negotiation** (_yes | no_; Default: **yes**) | When enabled, the interface "advertises" its maximum capabilities to achieve the best connection possible.
-
--   **Note1:** Auto-negotiation should not be disabled on one end only, otherwise Ethernet Interfaces may not work properly.
--   **Note2:** Gigabit Ethernet and NBASE-T Ethernet links cannot work with auto-negotiation disabled.
-
- |
-| **bandwidth** (_integer/integer_; Default: **unlimited/unlimited**) | Sets max rx/tx bandwidth in kbps that will be handled by an interface. TX limit is supported on all Atheros [switch-chip](https://wiki.mikrotik.com/wiki/Manual:Switch_Chip_Features "Manual:Switch Chip Features") ports. RX limit is supported only on Atheros8327/QCA8337 switch-chip ports. |
-| **cable-setting** (_default | short | standard_; Default: **default**) | Changes the cable length setting (only applicable to NS DP83815/6 cards) |
-| **combo-mode** (_auto | copper | sfp_; Default: **auto**) | When auto mode is selected, the port that was first connected will establish the link. In case this link fails, the other port will try to establish a new link. If both ports are connected at the same time (e.g. after reboot), the priority will be the SFP/SFP+ port. When sfp mode is selected, the interface will only work through SFP/SFP+ cage. When copper mode is selected, the interface will only work through RJ45 Ethernet port. |
-| **comment** (_string_; Default: ) | Descriptive name of an item |
-| **disable-running-check** (_yes | no_; Default: **yes**) | Disable running check. If this value is set to 'no', the router automatically detects whether the NIC is connected with a device in the network or not. Default value is 'yes' because older NICs do not support it. (only applicable to x86) |
-| **tx-flow-control** (_on | off | auto_; Default: **off**) | When set to on, the port will generate pause frames to the upstream device to temporarily stop the packet transmission. Pause frames are only generated when some routers output interface is congested and packets cannot be transmitted anymore. **auto** is the same as **on** except when auto-negotiation=yes flow control status is resolved by taking into account what other end advertises. |
-| **rx-flow-control** (_on | off | auto_; Default: **off**) | When set to on, the port will process received pause frames and suspend transmission if required. **auto** is the same as **on** except when auto-negotiation=yes flow control status is resolved by taking into account what other end advertises. |
-| **full-duplex** (_yes | no_; Default: **yes**) | Defines whether the transmission of data appears in two directions simultaneously, only applies when auto-negotiation is disabled. |
-| **l2mtu** (_integer \[0..65536\]_; Default: ) | Layer2 Maximum transmission unit. [Read more>>](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards "Maximum Transmission Unit on RouterBoards") |
-| **mac-address** (_MAC_; Default: ) | Media Access Control number of an interface. |
-| **master-port** (_name_; Default: **none**) | Outdated property, more details about this property can be found in the [Master-port](https://wiki.mikrotik.com/wiki/Manual:Master-port "Manual:Master-port") page. |
-| **mdix-enable** (_yes | no_; Default: **yes**) | Whether the MDI/X auto cross over cable correction feature is enabled for the port (Hardware specific, e.g. ether1 on RB500 can be set to yes/no. Fixed to 'yes' on other hardware.) |
-| **mtu** (_integer \[0..65536\]_; Default: **1500**) | Layer3 Maximum transmission unit |
-| **name** (_string_; Default: ) | Name of an interface |
-| **orig-mac-address** (_read-only: MAC_; Default: ) | Original Media Access Control number of an interface. |
-| **poe-out** (_auto-on | forced-on | off_; Default: **off**) | Poe Out settings. [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:PoE-Out "Manual:PoE-Out") |
-| **poe-priority** (_integer \[0..99\]_; Default: ) | Poe Out settings. [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:PoE-Out "Manual:PoE-Out") |
-| **sfp-shutdown-temperature** (_integer_; Default: **95** | **80**) | The temperature in Celsius at which the interface will be temporarily turned off due to too high detected SFP module temperature (introduced v6.48). The default value for SFP/SFP+/SFP28 interfaces is 95, and for QSFP+/QSFP28 interfaces 80 (introduced v7.6). |
-| **speed** (_10Mbps | 10Gbps | 100Mbps | 1Gbps_; Default: ) | Sets interface data transmission speed which takes effect only when auto-negotiation is disabled. |
-
-**Read-only properties**
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                        |
-| ---------------------- | --------------------------------------------- |
-| **running** (_yes      | no_)                                          | Whether interface is running. Note that some interface does not have running check and they are always reported as "running"              |
-| **slave** (_yes        | no_)                                          | Whether interface is configured as a slave of another interface (for example [Bonding](https://wiki.mikrotik.com/wiki/Bonding "Bonding")) |
-| **switch** (_integer_) | ID to which switch chip interface belongs to. |
-
-# Menu specific commands
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                        |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **blink** (_\[id, name\]_)             | Blink Ethernet leds                                                                                                                        |
-| **monitor** (_\[id, name\]_)           | Monitor ethernet status. [Read more>>](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Monitor)                                   |
-| **reset-counters** (_\[id, name\]_)    | Reset stats counters. [Read more>>](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Stats)                                        |
-| **reset-mac-address** (_\[id, name\]_) | Reset MAC address to manufacturers default.                                                                                                |
-| **cable-test** (_string_)              | Shows detected problems with cable pairs. [`Read More >>`](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Detect_Cable_Problems) |
+| 属性                                    | 说明                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **blink** (_[id, name]_)                | 闪烁以太网指示灯                                                                                                   |
+| **monitor** (_[id, name]_)              | 监控以太网状态。[阅读更多](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Monitor)                       |
+| **Reset -counters** (_[id, name]_)      | 重置统计计数器。[阅读更多](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Stats)                         |
+| **Reset - MAC -address** (_[id, name]_) | 重置MAC地址为厂商默认值。                                                                                          |
+| **cable-test** (_string_)               | 显示检测到的电缆对问题。[阅读更多](https://wiki.mikrotik.com/wiki/Manual:Interface/Ethernet#Detect_Cable_Problems) |
 
 # Monitor
 
 To print out a current link rate, duplex mode, and other Ethernet related properties or to see detailed diagnostics information for transceivers, use `/interface ethernet monitor` command. The provided information can differ for different interface types (e.g. Ethernet over twisted pair or SFP interface) or for different transceivers (e.g. SFP and QSFP).
 
-**Properties**
+**属性**
 
-| 
-Property
+| 属性                                                                                                                                                    | 说明                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **advertising** (_10M-full \| 10M-half \| 100M-full \| 100M-half \| 1000M-full \| 1000M-half \| 2500M-full \| 5000M-full \| 10000M-full_)               | 双绞线以太网接口的广告速度和双工模式，仅在启用自协商时有效                                                                            |
+| **auto-negotiation** (_disabled \| done     \| failed    \| incomplete_)                                                                                | 当前自动协商状态:<br>- disabled -关闭协商功能<br>- done -协商完成<br>- failed -协商失败<br>- incomplete -协商未完成                   |
+| **default-cable-settings** (_short \| standard_)                                                                                                        | 默认电缆长度设置(仅适用于NS DP83815/6卡)<br>- short -支持短电缆<br>- standard -支持标准电缆                                           |
+| **full-duplex** (_yes \| no_)                                                                                                                           | 数据是否同时在两个方向上传输                                                                                                          |
+| **Link -partner-advertising** (_10M-full \| 10M-half \| 100M-full \| 100M-half \| 1000M-full \| 1000M-half \| 2500M-full \| 5000M-full \| 10000M-full_) | 双绞线以太网接口的链路伙伴通告速度和双工模式，仅在启用自协商时有效                                                                    |
+| **rate** (_10Mbps \| 100Mbps \| 1Gbps \| 2.5Gbps \| 5Gbps \| 10Gbps \| 40Gbps \|_)                                                                      | 连接的实际数据速率。                                                                                                                  |
+| **status** (_link-ok \| no-link \| unknown_)                                                                                                            | 接口的当前链路状态<br>- link-ok表示网卡已连接到网络<br>- no-link表示网卡未连接到网络<br>- unknown -连接不被识别(如果卡不报告连接状态) |
+| **tx-flow-control** (_yes \| no_)                                                                                                                       | 是否使用TX流量控制                                                                                                                    |
+| **RX -flow-control** (_yes \| no_)                                                                                                                      | 是否使用RX流量控制                                                                                                                    |
+| **combo-state** (_copper \| sfp_)                                                                                                                       | 组合接口使用的组合模式                                                                                                                |
+| **sfp-module-present** (_yes \| no_)                                                                                                                    | 收发器是否在cage中                                                                                                                    |
+| **sfp-rx-lose** (_yes \| no_)                                                                                                                           | 接收端信号是否丢失                                                                                                                    |
+| **sfp-tx-fault** (_yes \| no_)                                                                                                                          | 收发器是否处于故障状态                                                                                                                |
+| **sfp-type** (_SFP-or-SFP+ \| DWDM-SFP                                                                                                                  | QSFP+_)                                                                                                                               | 使用的光模块类型 |
+| **sfp-connector-type** (_SC \| LC \| optical-pigtail \| copper-pigtail \| multifiber-parallel-optic-1x12 \| no-separable-connector\| RJ45_)             | 使用的收发器连接器类型                                                                                                                |
+| **sfp-link-length-9um** (_m_)                                                                                                                           | 单模9/125um光纤收发器支持的链路长度                                                                                                   |
+| **sfp-link-length-50um** (_m_)                                                                                                                          | 多模50/125um光纤(OM2)收发器支持的链路长度                                                                                             |
+| **sfp-link-length-62um** (_m_)                                                                                                                          | 多模62.5/125um光纤(OM1)收发器支持的链路长度                                                                                           |
+| **sfp-link-length-copper** (_m_)                                                                                                                        | 支持的铜收发器链路长度                                                                                                                |
+| **sfp-vendor-name** (_string_)                                                                                                                          | 收发器制造商                                                                                                                          |
+| **sfp-vendor-part-number** (_string_)                                                                                                                   | 收发器部件号                                                                                                                          |
+| **sfp-vendor-revision** (_string_)                                                                                                                      | 收发器版本号                                                                                                                          |
+| **sfp-vendor-serial** (_string_)                                                                                                                        | 收发器序列号                                                                                                                          |
+| **sfp-manufacturing-date** (_date_)                                                                                                                     | 收发器生产日期                                                                                                                        |
+| **sfp-wavelength** (_nm_)                                                                                                                               | 收发端发射器光信号波长                                                                                                                |
+| **sfp-temperature** (_C_)                                                                                                                               | 收发器温度                                                                                                                            |
+| **sfp-supply-voltage** (_V_)                                                                                                                            | 收发电源电压                                                                                                                          |
+| **sfp-tx -bias-current** (_mA_)                                                                                                                         | 收发器Tx偏置电流                                                                                                                      |
+| **sfp-tx-power** (_dBm_)                                                                                                                                | 收发器传输光功率                                                                                                                      |
+| **sfp-rx-power** (_dBm_)                                                                                                                                | 收发器接收光功率                                                                                                                      |
+| **EEPROM -checksum** (_good \| bad_)                                                                                                                    | EEPROM校验和是否正确                                                                                                                  |
+| **eeprom** (_hex dump_)                                                                                                                                 | 收发器的原始eeprom                                                                                                                    |
 
- | 
+以太网状态输出示例:
 
-Description
+```shell
+[admin@MikroTik] > /interface ethernet monitor ether1
+name: ether1
+status: link-ok
+auto-negotiation: done
+rate: 1Gbps
+full-duplex: yes
+tx-flow-control: no
+rx-flow-control: no
+advertising: 10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full
+link-partner-advertising: 10M-half,10M-full,100M-half,100M-full,1000M-full
+```
 
-|     |
-| --- |  |
-|     |
+SFP状态输出示例:
 
-Property
+```shell
+[admin@MikroTik] > /interface ethernet monitor sfp-sfpplus24
+name: sfp-sfpplus24
+status: link-ok
+auto-negotiation: done
+rate: 10Gbps
+full-duplex: yes
+tx-flow-control: no
+rx-flow-control: no
+advertising:
+link-partner-advertising:
+sfp-module-present: yes
+sfp-rx-loss: no
+sfp-tx-fault: no
+sfp-type: SFP-or-SFP+
+sfp-connector-type: LC
+sfp-link-length-50um: 80m
+sfp-link-length-62um: 30m
+sfp-vendor-name: Mikrotik
+sfp-vendor-part-number: S+85DLC03D
+sfp-vendor-revision: A
+sfp-vendor-serial: STST85S84700155
+sfp-manufacturing-date: 18-12-07
+sfp-wavelength: 850nm
+sfp-temperature: 33C
+sfp-supply-voltage: 3.251V
+sfp-tx-bias-current: 6mA
+sfp-tx-power: -2.843dBm
+sfp-rx-power: -1.203dBm
+eeprom-checksum: good
+eeprom: 0000: 03 04 07 10 00 00 00 20 40 0c c0 06 67 00 00 00 ....... @...g...
+0010: 08 03 00 1e 4d 69 6b 72 6f 74 69 6b 20 20 20 20 ....Mikr otik
+0020: 20 20 20 20 00 00 00 00 53 2b 38 35 44 4c 43 30 .... S+85DLC0
+0030: 33 44 20 20 20 20 20 20 41 20 20 20 03 52 00 45 3D A .R.E
+0040: 00 1a 00 00 53 54 53 54 38 35 53 38 34 37 30 30 ....STST 85S84700
+0050: 31 35 35 20 31 38 31 32 30 37 20 20 68 f0 05 b6 155 1812 07 h...
+0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........
+0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........
+0080: 64 00 d8 00 5f 00 dd 00 8c a0 6d 60 88 b8 71 48 d..._... ..m`..qH
+0090: 1d 4c 00 fa 17 70 01 f4 31 2d 04 ea 27 10 06 30 .L...p.. 1-..'..0
+00a0: 31 2d 01 3c 27 10 01 8e 00 00 00 00 00 00 00 00 1-.<'... ........
+00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........
+00c0: 00 00 00 00 3f 80 00 00 00 00 00 00 01 00 00 00 ....?... ........
+00d0: 01 00 00 00 01 00 00 00 01 00 00 00 00 00 00 26 ........ .......&
+00e0: 21 8a 7f 00 0c cd 14 4c 1d 9c 00 00 00 00 00 00 !......L ........
+00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........
+```
 
- | 
+# 检测电缆问题
 
-Description
+电缆测试可以检测问题或测量电缆的大致长度，如果电缆在另一端未插入，因此存在“无连接”。RouterOS将显示:
 
-|                                 |
-| ------------------------------- | -------- |
-| **advertising** (_10M-full      | 10M-half | 100M-full | 100M-half    | 1000M-full                       | 1000M-half | 2500M-full | 5000M-full | 10000M-full_) | Advertised speeds and duplex modes for Ethernet interfaces over twisted pair, only applies when auto-negotiation is enabled |
-| **auto-negotiation** (_disabled | done     | failed    | incomplete_) | Current auto negotiation status: |
+- 哪对线缆损坏
+- 到问题的距离
+- 电缆到底是怎么断的-短路还是开路
 
--   disabled \- negotiation disabled
--   done \- negotiation completed
--   failed \- negotiation failed
--   incomplete \- negotiation not completed yet
+如果另一端简单地拔掉，这也可以工作-在这种情况下，总电缆长度将显示。
 
- |
-| **default-cable-settings** (_short | standard_) | Default cable length setting (only applicable to NS DP83815/6 cards)
+下面是一个示例输出:
 
--   short \- support short cables
--   standard \- support standard cables
+```shell
+[admin@CCR] > interface ethernet cable-test ether2
+name: ether2
+status: no-link
+cable-pairs: open:4,open:4,open:4,open:4
+```
 
- |
-| **full-duplex** (_yes | no_) | Whether transmission of data occurs in two directions simultaneously |
-| **link-partner-advertising** (_10M-full | 10M-half | 100M-full | 100M-half | 1000M-full | 1000M-half | 2500M-full | 5000M-full | 10000M-full_) | Link partner advertised speeds and duplex modes for Ethernet interfaces over twisted pair, only applies when auto-negotiation is enabled |
-| **rate** (_10Mbps | 100Mbps | 1Gbps | 2.5Gbps | 5Gbps | 10Gbps | 40Gbps |_) | Actual data rate of the connection. |
-| **status** (_link-ok | no-link | unknown_) | Current link status of an interface
+在上面的例子中，电缆在4米的距离上没有短路而是“开路”，在距离交换芯片相同的距离上，所有的电缆对都是同样的故障。
 
--   link-ok \- the card is connected to the network
--   no-link \- the card is not connected to the network
--   unknown \- the connection is not recognized (if the card does not report connection status)
-
- |
-| **tx-flow-control** (_yes | no_) | Whether TX flow control is used |
-| **rx-flow-control** (_yes | no_) | Whether RX flow control is used |
-| **combo-state** (_copper | sfp_) | Used combo-mode for combo interfaces |
-| **sfp-module-present** (_yes | no_) | Whether a transceiver is in cage |
-| **sfp-rx-lose** (_yes | no_) | Whether a receiver signal is lost |
-| **sfp-tx-fault** (_yes | no_) | Whether a transceiver transmitter is in fault state |
-| **sfp-type** (_SFP-or-SFP+ | DWDM-SFP | QSFP+_) | Used transceiver type |
-| **sfp-connector-type** (_SC | LC | optical-pigtail | copper-pigtail | multifiber-parallel-optic-1x12 | no-separable-connector | RJ45_) | Used transceiver connector type |
-| **sfp-link-length-9um** (_m_) | Transceiver supported link length for single mode 9/125um fiber |
-| **sfp-link-length-50um** (_m_) | Transceiver supported link length for multi mode 50/125um fiber (OM2) |
-| **sfp-link-length-62um** (_m_) | Transceiver supported link length for multi mode 62.5/125um fiber (OM1) |
-| **sfp-link-length-copper** (_m_) | Supported link length of copper transceiver |
-| **sfp-vendor-name** (_string_) | Transceiver manufacturer |
-| **sfp-vendor-part-number** (_string_) | Transceiver part number |
-| **sfp-vendor-revision** (_string_) | Transceiver revision number |
-| **sfp-vendor-serial** (_string_) | Transceiver serial number |
-| **sfp-manufacturing-date** (_date_) | Transceiver manufacturing date |
-| **sfp-wavelength** (_nm_) | Transceiver transmitter optical signal wavelength |
-| **sfp-temperature** (_C_) | Transceiver temperature |
-| **sfp-supply-voltage** (_V_) | Transceiver supply voltage |
-| **sfp-tx-bias-current** (_mA_) | Transceiver Tx bias current |
-| **sfp-tx-power** (_dBm_) | Transceiver transmitted optical power |
-| **sfp-rx-power** (_dBm_) | Transceiver received optical power |
-| **eeprom-checksum** (_good | bad_) | Whether EEPROM checksum is correct |
-| **eeprom** (_hex dump_) | Raw EEPROM of the transceiver |
-
-Example output of an Ethernet status:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Ethernet#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface ethernet </code><code class="ros functions">monitor </code><code class="ros plain">ether1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: ether1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">status</code><code class="ros constants">: link-ok</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">auto-negotiation</code><code class="ros constants">: done</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">rate</code><code class="ros constants">: 1Gbps</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">full-duplex</code><code class="ros constants">: yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">tx-flow-control</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">rx-flow-control</code><code class="ros constants">: no</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">advertising</code><code class="ros constants">: 10M-half,10M-full,100M-half,100M-full,1000M-half,1000M-full</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">link-partner-advertising</code><code class="ros constants">: 10M-half,10M-full,100M-half,100M-full,1000M-full</code></div></div></td></tr></tbody></table>
-
-Example output of an SFP status:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Ethernet#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface ethernet </code><code class="ros functions">monitor </code><code class="ros plain">sfp-sfpplus24</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: sfp-sfpplus24</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">status</code><code class="ros constants">: link-ok</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">auto-negotiation</code><code class="ros constants">: done</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">rate</code><code class="ros constants">: 10Gbps</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">full-duplex</code><code class="ros constants">: yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">tx-flow-control</code><code class="ros constants">: no</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">rx-flow-control</code><code class="ros constants">: no</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">advertising</code><code class="ros constants">:</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">link-partner-advertising</code><code class="ros constants">:</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">sfp-module-present</code><code class="ros constants">: yes</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">sfp-rx-loss</code><code class="ros constants">: no</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">sfp-tx-fault</code><code class="ros constants">: no</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">sfp-type</code><code class="ros constants">: SFP-or-SFP+</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros plain">sfp-connector-type</code><code class="ros constants">: LC</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros plain">sfp-link-length-50um</code><code class="ros constants">: 80m</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros plain">sfp-link-length-62um</code><code class="ros constants">: 30m</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">sfp-vendor-name</code><code class="ros constants">: Mikrotik</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros plain">sfp-vendor-part-number</code><code class="ros constants">: S+85DLC03D</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">sfp-vendor-revision</code><code class="ros constants">: A</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">sfp-vendor-serial</code><code class="ros constants">: STST85S84700155</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros plain">sfp-manufacturing-date</code><code class="ros constants">: 18-12-07</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros plain">sfp-wavelength</code><code class="ros constants">: 850nm</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros plain">sfp-temperature</code><code class="ros constants">: 33C</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros plain">sfp-supply-voltage</code><code class="ros constants">: 3.251V</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros plain">sfp-tx-bias-current</code><code class="ros constants">: 6mA</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros plain">sfp-tx-power</code><code class="ros constants">: -2.843dBm</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros plain">sfp-rx-power</code><code class="ros constants">: -1.203dBm</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros plain">eeprom-checksum</code><code class="ros constants">: good</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros plain">eeprom</code><code class="ros constants">: 0000: 03 04 07 10 00 00 00 20 40 0c c0 06 67 00 00 00 ....... @...g...</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros plain">0010</code><code class="ros constants">: 08 03 00 1e 4d 69 6b 72 6f 74 69 6b 20 20 20 20 ....Mikr otik</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros plain">0020</code><code class="ros constants">: 20 20 20 20 00 00 00 00 53 2b 38 35 44 4c 43 30 .... S+85DLC0</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros plain">0030</code><code class="ros constants">: 33 44 20 20 20 20 20 20 41 20 20 20 03 52 00 45 3D A .R.E</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros plain">0040</code><code class="ros constants">: 00 1a 00 00 53 54 53 54 38 35 53 38 34 37 30 30 ....STST 85S84700</code></div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros plain">0050</code><code class="ros constants">: 31 35 35 20 31 38 31 32 30 37 20 20 68 f0 05 b6 155 1812 07 h...</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros plain">0060</code><code class="ros constants">: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........</code></div><div class="line number37 index36 alt2" data-bidi-marker="true"><code class="ros plain">0070</code><code class="ros constants">: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........</code></div><div class="line number38 index37 alt1" data-bidi-marker="true"><code class="ros plain">0080</code><code class="ros constants">: 64 00 d8 00 5f 00 dd 00 8c a0 6d 60 88 b8 71 48 d..._... ..m`..qH</code></div><div class="line number39 index38 alt2" data-bidi-marker="true"><code class="ros plain">0090</code><code class="ros constants">: 1d 4c 00 fa 17 70 01 f4 31 2d 04 ea 27 10 06 30 .L...p.. 1-..'..0</code></div><div class="line number40 index39 alt1" data-bidi-marker="true"><code class="ros plain">00a0</code><code class="ros constants">: 31 2d 01 3c 27 10 01 8e 00 00 00 00 00 00 00 00 1-.&lt;'... ........</code></div><div class="line number41 index40 alt2" data-bidi-marker="true"><code class="ros plain">00b0</code><code class="ros constants">: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........</code></div><div class="line number42 index41 alt1" data-bidi-marker="true"><code class="ros plain">00c0</code><code class="ros constants">: 00 00 00 00 3f 80 00 00 00 00 00 00 01 00 00 00 ....?... ........</code></div><div class="line number43 index42 alt2" data-bidi-marker="true"><code class="ros plain">00d0</code><code class="ros constants">: 01 00 00 00 01 00 00 00 01 00 00 00 00 00 00 26 ........ .......&amp;</code></div><div class="line number44 index43 alt1" data-bidi-marker="true"><code class="ros plain">00e0</code><code class="ros constants">: 21 8a 7f 00 0c cd 14 4c 1d 9c 00 00 00 00 00 00 !......L ........</code></div><div class="line number45 index44 alt2" data-bidi-marker="true"><code class="ros plain">00f0</code><code class="ros constants">: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ........ ........</code></div></div></td></tr></tbody></table>
-
-# Detect Cable Problems
-
-A cable test can detect problems or measure the approximate cable length if the cable is unplugged on the other end and there is, therefore, "no-link". RouterOS will show:
-
--   which cable pair is damaged
--   the distance to the problem
--   how exactly the cable is broken - short-circuited or open-circuited
-
-This also works if the other end is simply unplugged - in that case, the total cable length will be shown.
-
-Here is an example output:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Ethernet#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@CCR] &gt; interface ethernet cable-test ether2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: ether2</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">status</code><code class="ros constants">: no-link</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">cable-pairs</code><code class="ros constants">: open:4,open:4,open:4,open:4</code></div></div></td></tr></tbody></table>
-
-In the above example, the cable is not shorted but “open” at 4 meters distance, all cable pairs are equally faulty at the same distance from the switch chip.
-
-Currently `cable-test` is implemented on the following devices:
+目前在以下设备上实现了“cable-test”:
 
 -   CCR series devices
 -   CRS1xx series devices
@@ -262,109 +212,134 @@ Currently `cable-test` is implemented on the following devices:
 
   
 
-Currently `cable-test` is not supported on Combo ports.
+目前Combo端口不支持“电缆测试”。
 
-# Stats
+# 数据
 
-Using `/interface ethernet print stats` command, it is possible to see a wide range of Ethernet-related statistics. The list of statistics can differ between RouterBoard devices due to different Ethernet drivers. The list below contains all available counters across all RouterBoard devices. Most of the Ethernet statistics can be remotely monitored using [SNMP](https://wiki.mikrotik.com/wiki/Manual:SNMP "Manual:SNMP") and MIKROTIK-MIB.
+使用'/interface ethernet print stats'命令，可以看到广泛的以太网相关统计信息。由于不同的以太网驱动，不同的RouterBoard设备的统计列表可能会有所不同。下面的列表包含了所有RouterBoard设备上所有可用的计数器。大多数以太网统计数据可以通过 [SNMP](https://wiki.mikrotik.com/wiki/Manual:SNMP "Manual:SNMP") 和MIKROTIK-MIB进行远程监控。
 
   
 
-| 
-Property
+| 属性                                        | 说明                                                      |
+| ------------------------------------------- | --------------------------------------------------------- |
+| **driver-rx-byte** (_integer_)              | 设备CPU接收字节总数                                       |
+| **driver-rx-packet** (_integer_)            | 设备CPU接收报文总数                                       |
+| **driver-tx-byte** (_integer_)              | 设备CPU传输字节总数                                       |
+| **driver-tx-packet** (_integer_)            | 设备CPU传输数据包总数                                     |
+| **rx-64** (_integer_)                       | 接收到的64字节帧总数                                      |
+| **rx-65-127** (_integer_)                   | 接收到的65到127字节帧的总数                               |
+| **rx-128-255** (_integer_)                  | 接收到的128到255字节帧的总数                              |
+| **rx-256-511** (_integer_)                  | 接收到的256到511字节帧的总数                              |
+| **rx-512-1023** (_integer_)                 | 接收到的512到1023字节帧总数                               |
+| **rx-1024-1518** (_integer_)                | 接收1024到1518字节帧的总数                                |
+| **rx-1519-max** (_integer_)                 | 大于1519字节的接收帧总数                                  |
+| **rx-align-error** (_integer_)              | 接收到的对齐错误事件总数-位不沿八位边界对齐的数据包       |
+| **rx-broadcast** (_integer_)                | 接收的广播帧总数                                          |
+| **rx-bytes** (_integer_)                    | 接收字节总数                                              |
+| **rx-carrier-error** (_integer_)            | 接收到的载波感知错误帧总数                                |
+| **rx-code-error** (_integer_)               | 编码错误的接收帧总数                                      |
+| **rx-control** (_integer_)                  | 接收到的控制帧或暂停帧总数                                |
+| **rx-error-events** (_integer_)             | 带有活动错误事件的接收帧总数                              |
+| **rx-fcs-error** (_integer_)                | 校验和错误的接收帧总数                                    |
+| **rx-fragment** (_integer_)                 | 接收到的分片帧总数(与IP分片无关)                          |
+| **rx-ip-header-checksum-error** (_integer_) | IP报头校验和错误的接收帧总数                              |
+| **rx-jabber** (_integer_)                   | 接收到的戳戳报文总数-发送的数据包长度大于最大数据包长度   |
+| **rx-length-error** (_integer_)             | 接收帧长度错误的总数                                      |
+| **rx-multicast** (_integer_)                | 接收到的组播帧总数                                        |
+| **rx-overflow** (_integer_)                 | 当设备资源不足以接收某个帧时，会导致接收到的溢出帧总数    |
+| **rx-pause** (_integer_)                    | 接收到的暂停帧总数                                        |
+| **rx-runt** (_integer_)                     | 接收帧总数小于最小64字节，通常是由碰撞引起的              |
+| **rx-tcp-checksum-error** (_integer_)       | 接收到的TCP报头校验和错误帧总数                           |
+| **rx-too-long** (_integer_)                 | 超过网络设备支持的最大帧长的接收帧总数，参见max-l2mtu属性 |
+| **rx-too-short** (_integer_)                | 接收帧小于最小64字节的总数                                |
+| **rx-udp-checksum-error** (_integer_)       | 接收到的UDP报头校验和错误帧总数                           |
+| **rx-unicast** (_integer_)                  | 接收到的单播帧总数                                        |
+| **rx-unknown-op** (_integer_)               | 接收到的未知以太网协议帧总数                              |
+| **tx-64** (_integer_)                       | 传输的64字节帧总数                                        |
+| **tx-65-127** (_integer_)                   | 传输65到127字节帧的总数                                   |
+| **tx-128-255** (_integer_)                  | 传输128到255字节帧的总数                                  |
+| **tx-256-511** (_integer_)                  | 传输256到511字节帧的总数                                  |
+| **tx-512-1023** (_integer_)                 | 512到1023字节帧传输总数                                   |
+| **tx-1024-1518** (_integer_)                | 传输1024到1518字节帧的总数                                |
+| **tx-1519-max** (_integer_)                 | 大于1519字节的传输帧总数                                  |
+| **tx-align-error** (_integer_)              | 传输的对齐错误事件总数-位不沿八位边界对齐的数据包         |
+| **tx-broadcast** (_integer_)                | 传输的广播帧总数                                          |
+| **tx-bytes** (_integer_)                    | 传输字节总数                                              |
+| **tx-collision** (_integer_)                | 产生碰撞的传输帧总数                                      |
+| **tx-control** (_integer_)                  | 传输控制帧或暂停帧的总数                                  |
+| **tx-deferred** (_integer_)                 | 由于介质繁忙导致第一次传输尝试延迟的传输帧总数            |
+| **tx-drop** (_integer_)                     | 由于输出队列已满而丢弃的传输帧总数                        |
+| **tx-excess -collision** (_integer_)        | 已经发生多次碰撞但从未成功传输的帧总数                    |
+| **tx-excessive-deferred** (_integer_)       | 由于介质已经很忙而延迟了一段时间的传输帧总数              |
+| **tx-fc -error** (_integer_)                | 校验和错误的传输帧总数                                    |
+| **tx-fragment** (_integer_)                 | 传输的分片帧总数(与IP分片无关)                            |
+| **tx-carrier-sense-error** (_integer_)      | 带有载波感知错误的传输帧总数                              |
+| **tx-late-collision** (_integer_)           | 传输帧中发生碰撞的总数                                    |
+| **tx-multicast** (_integer_)                | 传输的组播帧总数                                          |
+| **tx-multiple-collision** (_integer_)       | 产生多个碰撞并随后成功传输的传输帧总数                    |
+| **tx-overflow** (_integer_)                 | 传输溢出帧总数                                            |
+| **tx-pause** (_integer_)                    | 传输暂停帧总数                                            |
+| **tx-all-queue-drop-byte** (_integer_)      | 所有输出队列丢弃的传输字节总数                            |
+| **tx-all-queue-drop-packet** (_integer_)    | 所有输出队列丢弃的传输数据包总数                          |
+| **tx-queueX-byte** (_integer_)              | 某个队列上传输的字节总数，**X** 应替换为队列号            |
+| **tx-queueX-packet** (_integer_)            | 在某个队列上传输帧的总数，**X** 应替换为队列号            |
+| **tx-runt** (_integer_)                     | 小于最小64字节的传输帧总数，通常是由碰撞引起的            |
+| **tx-too short** (_integer_)                | 小于最小64字节的传输帧总数                                |
+| **tx-rx-64** (_integer_)                    | 发送和接收的64字节帧总数                                  |
+| **tx-rx-64-127** (_integer_)                | 发送和接收64到127字节帧的总数                             |
+| **tx-rx-128-255** (_integer_)               | 发送和接收128到255字节帧的总数                            |
+| **tx-rx-256-511** (_integer_)               | 发送和接收的256到511字节帧的总数                          |
+| **tx-rx-512-1023** (_integer_)              | 发送和接收512到1023字节帧的总数                           |
+| **tx-rx-1024-max** (_integer_)              | 发送和接收大于1024字节的帧总数                            |
+| **tx-single-collision** (_integer_)         | 仅发生一次碰撞而随后传输成功的传输帧总数                  |
+| **tx-too-long** (_integer_)                 | 大于最大数据包大小的传输总数                              |
+| **tx-underrun** (_integer_)                 | 传输欠运行包总数                                          |
+| **tx-unicast** (_integer_)                  | 发送的单播帧总数                                          |
 
- | 
+以设备hAP ac2上的以太网统计信息为例:
 
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                             |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **driver-rx-byte** (_integer_)              | Total count of received bytes on device CPU                                                                                             |
-| **driver-rx-packet** (_integer_)            | Total count of received packets on device CPU                                                                                           |
-| **driver-tx-byte** (_integer_)              | Total count of transmitted bytes by device CPU                                                                                          |
-| **driver-tx-packet** (_integer_)            | Total count of transmitted packets by device CPU                                                                                        |
-| **rx-64** (_integer_)                       | Total count of received 64 byte frames                                                                                                  |
-| **rx-65-127** (_integer_)                   | Total count of received 65 to 127 byte frames                                                                                           |
-| **rx-128-255** (_integer_)                  | Total count of received 128 to 255 byte frames                                                                                          |
-| **rx-256-511** (_integer_)                  | Total count of received 256 to 511 byte frames                                                                                          |
-| **rx-512-1023** (_integer_)                 | Total count of received 512 to 1023 byte frames                                                                                         |
-| **rx-1024-1518** (_integer_)                | Total count of received 1024 to 1518 byte frames                                                                                        |
-| **rx-1519-max** (_integer_)                 | Total count of received frames larger than 1519 bytes                                                                                   |
-| **rx-align-error** (_integer_)              | Total count of received align error events - packets where bits are not aligned along octet boundaries                                  |
-| **rx-broadcast** (_integer_)                | Total count of received broadcast frames                                                                                                |
-| **rx-bytes** (_integer_)                    | Total count of received bytes                                                                                                           |
-| **rx-carrier-error** (_integer_)            | Total count of received frames with carrier sense error                                                                                 |
-| **rx-code-error** (_integer_)               | Total count of received frames with code error                                                                                          |
-| **rx-control** (_integer_)                  | Total count of received control or pause frames                                                                                         |
-| **rx-error-events** (_integer_)             | Total count of received frames with the active error event                                                                              |
-| **rx-fcs-error** (_integer_)                | Total count of received frames with incorrect checksum                                                                                  |
-| **rx-fragment** (_integer_)                 | Total count of received fragmented frames (not related to IP fragmentation)                                                             |
-| **rx-ip-header-checksum-error** (_integer_) | Total count of received frames with IP header checksum error                                                                            |
-| **rx-jabber** (_integer_)                   | Total count of received jabbed packets - a packet that is transmitted longer than the maximum packet length                             |
-| **rx-length-error** (_integer_)             | Total count of received frames with frame length error                                                                                  |
-| **rx-multicast** (_integer_)                | Total count of received multicast frames                                                                                                |
-| **rx-overflow** (_integer_)                 | Total count of received overflowed frames can be caused when device resources are insufficient to receive a certain frame               |
-| **rx-pause** (_integer_)                    | Total count of received pause frames                                                                                                    |
-| **rx-runt** (_integer_)                     | Total count of received frames shorter than the minimum 64 bytes, is usually caused by collisions                                       |
-| **rx-tcp-checksum-error** (_integer_)       | Total count of received frames with TCP header checksum error                                                                           |
-| **rx-too-long** (_integer_)                 | Total count of received frames that were larger than the maximum supported frame size by the network device, see the max-l2mtu property |
-| **rx-too-short** (_integer_)                | Total count of the received frame shorter than the minimum 64 bytes                                                                     |
-| **rx-udp-checksum-error** (_integer_)       | Total count of received frames with UDP header checksum error                                                                           |
-| **rx-unicast** (_integer_)                  | Total count of received unicast frames                                                                                                  |
-| **rx-unknown-op** (_integer_)               | Total count of received frames with unknown Ethernet protocol                                                                           |
-| **tx-64** (_integer_)                       | Total count of transmitted 64 byte frames                                                                                               |
-| **tx-65-127** (_integer_)                   | Total count of transmitted 65 to 127 byte frames                                                                                        |
-| **tx-128-255** (_integer_)                  | Total count of transmitted 128 to 255 byte frames                                                                                       |
-| **tx-256-511** (_integer_)                  | Total count of transmitted 256 to 511 byte frames                                                                                       |
-| **tx-512-1023** (_integer_)                 | Total count of transmitted 512 to 1023 byte frames                                                                                      |
-| **tx-1024-1518** (_integer_)                | Total count of transmitted 1024 to 1518 byte frames                                                                                     |
-| **tx-1519-max** (_integer_)                 | Total count of transmitted frames larger than 1519 bytes                                                                                |
-| **tx-align-error** (_integer_)              | Total count of transmitted align error events - packets where bits are not aligned along octet boundaries                               |
-| **tx-broadcast** (_integer_)                | Total count of transmitted broadcast frames                                                                                             |
-| **tx-bytes** (_integer_)                    | Total count of transmitted bytes                                                                                                        |
-| **tx-collision** (_integer_)                | Total count of transmitted frames that made collisions                                                                                  |
-| **tx-control** (_integer_)                  | Total count of transmitted control or pause frames                                                                                      |
-| **tx-deferred** (_integer_)                 | Total count of transmitted frames that were delayed on its first transmit attempt due to already busy medium                            |
-| **tx-drop** (_integer_)                     | Total count of transmitted frames that were dropped due to the already full output queue                                                |
-| **tx-excessive-collision** (_integer_)      | Total count of transmitted frames that already made multiple collisions and never got successfully transmitted                          |
-| **tx-excessive-deferred** (_integer_)       | Total count of transmitted frames that were deferred for an excessive period of time due to an already busy medium                      |
-| **tx-fcs-error** (_integer_)                | Total count of transmitted frames with incorrect checksum                                                                               |
-| **tx-fragment** (_integer_)                 | Total count of transmitted fragmented frames (not related to IP fragmentation)                                                          |
-| **tx-carrier-sense-error** (_integer_)      | Total count of transmitted frames with carrier sense error                                                                              |
-| **tx-late-collision** (_integer_)           | Total count of transmitted frames that made collision after being already halfway transmitted                                           |
-| **tx-multicast** (_integer_)                | Total count of transmitted multicast frames                                                                                             |
-| **tx-multiple-collision** (_integer_)       | Total count of transmitted frames that made more than one collision and subsequently transmitted successfully                           |
-| **tx-overflow** (_integer_)                 | Total count of transmitted overflowed frames                                                                                            |
-| **tx-pause** (_integer_)                    | Total count of transmitted pause frames                                                                                                 |
-| **tx-all-queue-drop-byte** (_integer_)      | Total count of transmitted bytes dropped by all output queues                                                                           |
-| **tx-all-queue-drop-packet** (_integer_)    | Total count of transmitted packets dropped by all output queues                                                                         |
-| **tx-queueX-byte** (_integer_)              | Total count of transmitted bytes on a certain queue, the **X** should be replaced with a queue number                                   |
-| **tx-queueX-packet** (_integer_)            | Total count of transmitted frames on a certain queue, the **X** should be replaced with a queue number                                  |
-| **tx-runt** (_integer_)                     | Total count of transmitted frames shorter than the minimum 64 bytes, is usually caused by collisions                                    |
-| **tx-too-short** (_integer_)                | Total count of transmitted frames shorter than the minimum 64 bytes                                                                     |
-| **tx-rx-64** (_integer_)                    | Total count of transmitted and received 64 byte frames                                                                                  |
-| **tx-rx-64-127** (_integer_)                | Total count of transmitted and received 64 to 127 byte frames                                                                           |
-| **tx-rx-128-255** (_integer_)               | Total count of transmitted and received 128 to 255 byte frames                                                                          |
-| **tx-rx-256-511** (_integer_)               | Total count of transmitted and received 256 to 511 byte frames                                                                          |
-| **tx-rx-512-1023** (_integer_)              | Total count of transmitted and received 512 to 1023 byte frames                                                                         |
-| **tx-rx-1024-max** (_integer_)              | Total count of transmitted and received frames larger than 1024 bytes                                                                   |
-| **tx-single-collision** (_integer_)         | Total count of transmitted frames that made only a single collision and subsequently transmitted successfully                           |
-| **tx-too-long** (_integer_)                 | Total count of transmitted packets that were larger than the maximum packet size                                                        |
-| **tx-underrun** (_integer_)                 | Total count of transmitted underrun packets                                                                                             |
-| **tx-unicast** (_integer_)                  | Total count of transmitted unicast frames                                                                                               |
-
-For example, the output of Ethernet stats on the hAP ac2 device:
-
-[?](https://help.mikrotik.com/docs/display/ROS/Ethernet#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface ethernet </code><code class="ros functions">print </code><code class="ros plain">stats</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">name</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether1 ether2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ether4 ether5</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">driver-rx-byte</code><code class="ros constants">:&nbsp; 182 334 805 898&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; 5 836 927 820&nbsp;&nbsp;&nbsp; 24 895 692&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">driver-rx-packet</code><code class="ros constants">:&nbsp;&nbsp;&nbsp; 4 449 562 546&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; 4 320 155 362&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 259 449&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">driver-tx-byte</code><code class="ros constants">:&nbsp;&nbsp; 15 881 099 971&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 70 502 669 211&nbsp;&nbsp;&nbsp; 60 498 056&nbsp;&nbsp;&nbsp;&nbsp; 53</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">driver-tx-packet</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 52 724 428&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 54 231 229&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 106 498&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-bytes</code><code class="ros constants">:&nbsp; 178 663 398 808&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; 5 983 590 739 1 358 140 795&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-too-short</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-64</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12 749 144&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 362 459&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 125 917&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-65-127</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9 612 406&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 20 366 513&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 292 189&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-128-255</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 259 883&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 672 588&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 261 013&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-256-511</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 950 578&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 211 380&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 278 147&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-512-1023</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 992 258&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 185 666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 163 241&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-1024-1518</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119 034 611&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 796 559&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 696 254&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-1519-max</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-too-long</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-broadcast</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12 025 189&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 006 377&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64 178&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-pause</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-multicast</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 687 869&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 36 188&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 220 136&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-fcs-error</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-align-error</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-fragment</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">rx-overflow</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-bytes</code><code class="ros constants">:&nbsp;&nbsp; 16 098 535 973&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 72 066 425 886&nbsp;&nbsp; 225 001 772&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-64</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 063 375&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 924 855&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 37 877&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-65-127</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 26 924 514&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 442 200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 959 209&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-128-255</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14 588 113&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 924 746&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 295 961&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-256-511</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 323 733&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 036 515&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 33 252&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-512-1023</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 287 464&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 281 554&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 625&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-1024-1518</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7 537 154&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp; 48 212 304&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64 659&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-1519-max</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-too-long</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-broadcast</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 590&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 145 800&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 823 038&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-pause</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-multicast</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 039 243&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 41 716&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-underrun</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number37 index36 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-collision</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number38 index37 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-excessive-collision</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number39 index38 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-multiple-collision</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number40 index39 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-single-collision</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number41 index40 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-excessive-deferred</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number42 index41 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-deferred</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div><div class="line number43 index42 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">tx-late-collision</code><code class="ros constants">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code></div></div></td></tr></tbody></table>
+```shell
+[admin@MikroTik] > /interface ethernet print stats
+                      name:           ether1 ether2         ether3        ether4 ether5
+            driver-rx-byte:  182 334 805 898      0  5 836 927 820    24 895 692      0
+          driver-rx-packet:    4 449 562 546      0  4 320 155 362       259 449      0
+            driver-tx-byte:   15 881 099 971      0 70 502 669 211    60 498 056     53
+          driver-tx-packet:       52 724 428      0     54 231 229       106 498      1
+                  rx-bytes:  178 663 398 808      0  5 983 590 739 1 358 140 795      0
+              rx-too-short:                0      0              0             0      0
+                     rx-64:       12 749 144      0        362 459       125 917      0
+                 rx-65-127:        9 612 406      0     20 366 513       292 189      0
+                rx-128-255:        6 259 883      0      1 672 588       261 013      0
+                rx-256-511:        2 950 578      0        211 380       278 147      0
+               rx-512-1023:        3 992 258      0        185 666       163 241      0
+              rx-1024-1518:      119 034 611      0      2 796 559       696 254      0
+               rx-1519-max:                0      0              0             0      0
+               rx-too-long:                0      0              0             0      0
+              rx-broadcast:       12 025 189      0      1 006 377        64 178      0
+                  rx-pause:                0      0              0             0      0
+              rx-multicast:        4 687 869      0         36 188       220 136      0
+              rx-fcs-error:                0      0              0             0      0
+            rx-align-error:                0      0              0             0      0
+               rx-fragment:                0      0              0             0      0
+               rx-overflow:                0      0              0             0      0
+                  tx-bytes:   16 098 535 973      0 72 066 425 886   225 001 772      0
+                     tx-64:        1 063 375      0        924 855        37 877      0
+                 tx-65-127:       26 924 514      0      2 442 200       959 209      0
+                tx-128-255:       14 588 113      0        924 746       295 961      0
+                tx-256-511:        1 323 733      0      1 036 515        33 252      0
+               tx-512-1023:        1 287 464      0      2 281 554         3 625      0
+              tx-1024-1518:        7 537 154      0     48 212 304        64 659      0
+               tx-1519-max:                0      0              0             0      0
+               tx-too-long:                0      0              0             0      0
+              tx-broadcast:              590      0        145 800       823 038      0
+                  tx-pause:                0      0              0             0      0
+              tx-multicast:                0      0      1 039 243        41 716      0
+               tx-underrun:                0      0              0             0      0
+              tx-collision:                0      0              0             0      0
+    tx-excessive-collision:                0      0              0             0      0
+     tx-multiple-collision:                0      0              0             0      0
+       tx-single-collision:                0      0              0             0      0
+     tx-excessive-deferred:                0      0              0             0      0
+               tx-deferred:                0      0              0             0      0
+         tx-late-collision:                0      0              0             0      0
+```

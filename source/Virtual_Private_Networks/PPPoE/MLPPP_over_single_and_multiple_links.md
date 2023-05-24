@@ -1,61 +1,88 @@
-# Summary
+# 概述
 
 **Standards:** `RFC 1990`
 
-Multi-Link Point to Point Protocol (MP, Multi-Link PPP, MultiPPP or MLPPP) is a method of splitting, recombining, and sequencing data across multiple logical data links.
+多链路点对点协议(Multi-Link Point to Point Protocol, MP, Multi-Link PPP, MultiPPP或MLPPP)是一种跨多个逻辑数据链路拆分、重组和排序数据的方法。
 
-In a situation where we have multiple DSL links a pair of devices, performance by “widening the pipe” between two devices can be increased by using Multi-Link PPP, without going to a newer, more expensive technology.
+在一对设备上有多个DSL链路的情况下，使用多链路PPP可以通过“拓宽两个设备之间的管道”来提高性能，而无需采用更新、更昂贵的技术。
 
-Large packets are actually split into bits and sent evenly over ALL logical data links. This is done instantaneously with NO loss of bandwidth. It is important to understand that other end of the link needs to use the same protocol to recombine your data.
+大的数据包实际上被分割成比特，并在所有逻辑数据链路上均匀发送。这是在没有带宽损失的情况下立即完成的。重要的是要理解链接的另一端需要使用相同的协议来重新组合数据。
 
-Multilink is based on an [LCP](https://wiki.mikrotik.com/index.php?title=LCP&action=edit&redlink=1 "LCP (page does not exist)") option negotiation that allows to indicate to its peer that it is capable of combining multiple physical links.
+Multilink基于 [LCP](https://wiki.mikrotik.com/index.php?title=LCP&action=edit&redlink=1 "LCP(page does not exist)") 选项协商，允许向其对等方表明它能够组合多个物理链路。
 
-# MLPPP over single link
+# MLPPP单链路
 
-Typically size of the packet sent over PPP link is reduced due to overhead. MP can be used to transmit and receive full frame over single ppp link. To make it work the Multilink Protocol uses additional LCP configuration options **Multilink Maximum Received Reconstructed Unit (MRRU)**
+通常，由于开销的原因，PPP链路上发送的数据包大小会减小。MP可用于在单个ppp链路上发送和接收全帧。为了使它工作，多链路协议使用额外的LCP配置选项 **多链路最大接收重构单元(MRRU)**
 
-To enable Multi-link PPP over single link you must specify MRRU (Maximum Receive Reconstructed Unit) option. If both sides support this feature there are no need for MSS adjustment (in firewall mangle). Study shows that MRRU is less CPU expensive that 2 mangle rules per client. MRRU allows to divide packet to multiple channels therefore increasing possible MTU and MRU (up to 65535 bytes)
+为了在单链路上启用多链路PPP，必须指定MRRU(最大接收重构单元)选项。如果双方都支持此功能，则不需要调整MSS(在防火墙管理中)。研究表明，MRRU对CPU的消耗比每个客户端2条规则要少。MRRU允许将数据包分成多个通道，从而增加可能的MTU和MRU(最多65535字节)。
 
-Under Windows it can be enabled in Networking tag, Settings button, "Negotiate multi-link for single link connections". Their MRRU is hard coded to 1614.
+在Windows下，它可以在网络标签，设置按钮，“协商多链路为单链路连接”中启用。他们的MRRU编码是1614。
 
-MTU will be reduced by 4 bytes to work properly when MPPE encryption is enabled
+当启用MPPE加密时，MTU将减少4个字节才能正常工作
 
-## Configuration Example
+## 配置示例
 
-Let's configure pppoe server compatible with Windows clients and MRRU enabled.
+配置与Windows客户端兼容的pppoe server，并使能MRRU。
 
-[?](https://help.mikrotik.com/docs/display/ROS/MLPPP+over+single+and+multiple+links#)
+```shell
+[admin@RB800] /interface pppoe-server server> add service-name=myPPP interface=ether1 mrru=1614
+[admin@RB800] /interface pppoe-server server> print
+Flags: X - disabled
+ 0   service-name="myPPP" interface=ether1 max-mtu=1480 max-mru=1480 mrru=1614
+     authentication=pap,chap,mschap1,mschap2 keepalive-timeout=10 one-session-per-host=no
+     max-sessions=0 default-profile=default
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@RB800] </code><code class="ros constants">/interface pppoe-server server&gt; </code><code class="ros functions">add </code><code class="ros value">service-name</code><code class="ros plain">=myPPP</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">mrru</code><code class="ros plain">=1614</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">[admin@RB800] </code><code class="ros constants">/interface pppoe-server server&gt; </code><code class="ros functions">print</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disab</code><code class="ros plain">led</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp; </code><code class="ros value">service-name</code><code class="ros plain">=</code><code class="ros string">"myPPP"</code> <code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">max-mtu</code><code class="ros plain">=1480</code> <code class="ros value">max-mru</code><code class="ros plain">=1480</code> <code class="ros value">mrru</code><code class="ros plain">=1614</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">authentication</code><code class="ros plain">=pap,chap,mschap1,mschap2</code> <code class="ros value">keepalive-timeout</code><code class="ros plain">=10</code> <code class="ros value">one-session-per-host</code><code class="ros plain">=no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">max-sessions</code><code class="ros plain">=0</code> <code class="ros value">default-profile</code><code class="ros plain">=default</code></div></div></td></tr></tbody></table>
+简而言之，标准PPP链路-只需在两端指定MRRU即可。
 
-In short - standard PPP link - just specify MRRU in both sides.
+# MLPPP多链路
 
-# MLPPP over multiple links
+MLPPP over multiple links允许在多个物理连接上创建一条PPP链路。所有PPP链路必须来自同一服务器(服务器必须支持MLPPP over多链路)，所有PPP链路必须具有相同的用户名和密码。
 
-MLPPP over multiple links allow to create a single PPP link over multiple physical connections. All PPP links must come from the same server (server must have MLPPP over multiple links support) and all PPP links must have same user name and password.
+要启用MLPPP，您只需要创建PPP客户端并指定多个接口而不是单个接口。RouterOS只支持MLPPP客户端。目前没有可用的MLPPP服务器支持。
 
-And to enable MLPPP you just need to create PPP client and specify multiple interfaces instead of single interface. RouterOS has MLPPP client support only. Presently there are no MLPPP server support available.
-
-## Configuration Example
+## 配置示例
 
 ![](https://help.mikrotik.com/docs/download/attachments/132350045/Mlppp.jpg?version=1&modificationDate=1657264990603&api=v2)
 
-ISP gives to its client two physical links (DSL lines) 1Mbps each. To get aggregated 2Mbps pipe we have to set up MLPPP. Consider ISP router is pre-configured to support MLPPP.
+ISP给它的客户提供两条物理链路(DSL线)，每条1Mbps。为了获得2Mbps的聚合管道，我们必须设置MLPPP。考虑ISP路由器被预配置为支持MLPPP。
 
-Configuration on router (R1) is:
+路由器R1上的配置如下:
 
-[?](https://help.mikrotik.com/docs/display/ROS/MLPPP+over+single+and+multiple+links#)
+```shell
+/interface pppoe-client
+   add service-name=ISP interface=ether1,ether2 user=xxx password=yyy disabled=no \
+   add-default-route=yes use-peer-dns=yes
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pppoe-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros functions">add </code><code class="ros value">service-name</code><code class="ros plain">=ISP</code> <code class="ros value">interface</code><code class="ros plain">=ether1,ether2</code> <code class="ros value">user</code><code class="ros plain">=xxx</code> <code class="ros value">password</code><code class="ros plain">=yyy</code> <code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">add-default-route</code><code class="ros plain">=yes</code> <code class="ros value">use-peer-dns</code><code class="ros plain">=yes</code></div></div></td></tr></tbody></table>
+```shell
+[admin@RB800] /interface pppoe-client> print
+Flags: X - disabled, R - running
+ 0    name="pppoe-out1" max-mtu=1480 max-mru=1480 mrru=disabled interface=ether1,ether2
+      user="xxx" password="yyy" profile=default service-name="ISP" ac-name="" add-default-route=yes
+      dial-on-demand=no use-peer-dns=yes allow=pap,chap,mschap1,mschap2
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/MLPPP+over+single+and+multiple+links#)
+现在，当PPPoE客户端连接时，可以设置其余的配置，本地网络地址，启用DNS请求，设置伪装和防火墙
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@RB800] </code><code class="ros constants">/interface pppoe-client&gt; </code><code class="ros functions">print</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">Flags</code><code class="ros constants">: X - disabled, R - running</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;</code><code class="ros plain">0&nbsp;&nbsp;&nbsp; </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pppoe-out1"</code> <code class="ros value">max-mtu</code><code class="ros plain">=1480</code> <code class="ros value">max-mru</code><code class="ros plain">=1480</code> <code class="ros value">mrru</code><code class="ros plain">=disabled</code> <code class="ros value">interface</code><code class="ros plain">=ether1,ether2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">user</code><code class="ros plain">=</code><code class="ros string">"xxx"</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"yyy"</code> <code class="ros value">profile</code><code class="ros plain">=default</code> <code class="ros value">service-name</code><code class="ros plain">=</code><code class="ros string">"ISP"</code> <code class="ros value">ac-name</code><code class="ros plain">=</code><code class="ros string">""</code> <code class="ros value">add-default-route</code><code class="ros plain">=yes</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">dial-on-demand</code><code class="ros plain">=no</code> <code class="ros value">use-peer-dns</code><code class="ros plain">=yes</code> <code class="ros value">allow</code><code class="ros plain">=pap,chap,mschap1,mschap2</code></div></div></td></tr></tbody></table>
+```shell
+/ip address add address=192.168.88.1/24 interface=local
+ 
+/ip dns set allow-remote-request=yes
+ 
+/ip firewall nat
+add chain=src-nat action=masquerade out-interface=pppoe-out1
+ 
+/ip firewall filter
+add chain=input connection-state=invalid action=drop \
+    comment="Drop Invalid connections" 
+add chain=input connection-state=established action=accept \
+    comment="Allow Established connections" 
+add chain=input protocol=icmp action=accept \
+    comment="Allow ICMP"
+add chain=input src-address=192.168.88.0/24 action=accept \
+    in-interface=!pppoe-out1
+add chain=input action=drop comment="Drop everything else"
+```
 
-Now when PPPoE client is connected we can set up rest of configuration, local network address, enable DNS requests, set up masquerade and firewall
-
-[?](https://help.mikrotik.com/docs/display/ROS/MLPPP+over+single+and+multiple+links#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip address </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.88.1/24</code> <code class="ros value">interface</code><code class="ros plain">=local</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip dns </code><code class="ros functions">set </code><code class="ros value">allow-remote-request</code><code class="ros plain">=yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall nat</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=src-nat</code> <code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">out-interface</code><code class="ros plain">=pppoe-out1</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall filter</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=invalid</code> <code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros plain">\</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Drop Invalid connections"</code>&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">connection-state</code><code class="ros plain">=established</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros plain">\</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Allow Established connections"</code>&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">protocol</code><code class="ros plain">=icmp</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros plain">\</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Allow ICMP"</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">src-address</code><code class="ros plain">=192.168.88.0/24</code> <code class="ros value">action</code><code class="ros plain">=accept</code> <code class="ros plain">\</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">in-interface</code><code class="ros plain">=!pppoe-out1</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=input</code> <code class="ros value">action</code><code class="ros plain">=drop</code> <code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Drop everything else"</code></div></div></td></tr></tbody></table>
-
-For more advanced router and customer protection check [firewall examples](https://help.mikrotik.com/docs/display/ROS/Filter).
+有关更高级的路由器和客户保护，请查看 [防火墙示例](https://help.mikrotik.com/docs/display/ROS/Filter) 。

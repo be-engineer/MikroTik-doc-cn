@@ -1,131 +1,102 @@
-# Summary
+# 概述
 
-The PWR-Line series devices allow Ethernet-like connectivity between supported devices over regular power lines. When plugged into the same electrical circuit, the PWR-Line devices will establish connectivity by using the HomePlug AV standard. 
+PWR-Line系列设备允许在支持的设备之间通过常规电源线进行类似以太网的连接。当插入同一电路时，PWR-Line设备将使用HomePlug AV标准建立连接。
 
-# Properties
 
-<table class="wrapped confluenceTable"><colgroup><col><col></colgroup><tbody><tr><td class="confluenceTd"><strong>arp</strong> (<em>disabled | enabled | proxy-arp | reply-only</em>; Default: <strong>enabled</strong>)</td><td class="confluenceTd">Address Resolution Protocol mode:<ul><li>disabled - the interface will not use ARP</li><li>enabled - the interface will use ARP</li><li>proxy-arp - the interface will use the ARP proxy feature</li><li>reply-only - the interface will only reply to requests originating from matching IP address/MAC address combinations which are entered as static entries in the "/ip arp" table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.</li></ul></td></tr><tr><td class="confluenceTd"><strong>bandwidth</strong> (<em>integer/integer</em>; Default: <strong>unlimited/unlimited</strong>)</td><td class="confluenceTd">Sets max rx/tx bandwidth in kbps that will be handled by an interface. TX limit is supported on all Atheros <a href="https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features" rel="nofollow">switch-chip</a> ports. RX limit is supported only on Atheros8327/QCA8337 switch-chip ports.</td></tr><tr><td class="confluenceTd"><strong>comment</strong> (<em>string</em>; Default: )</td><td class="confluenceTd">Descriptive name of an item</td></tr><tr><td class="confluenceTd"><strong>l2mtu</strong> (<em>integer [0..65536]</em>; Default: )</td><td class="confluenceTd">Layer2 Maximum transmission unit. <a href="https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS">MTU in RouterOS</a></td></tr><tr><td class="confluenceTd"><strong>mac-address</strong> (<em>MAC</em>; Default: )</td><td class="confluenceTd">Media Access Control number of an interface.</td></tr><tr><td class="confluenceTd"><strong>mtu</strong> (<em>integer [0..65536]</em>; Default: <strong>1500</strong>)</td><td class="confluenceTd">Layer3 Maximum transmission unit</td></tr><tr><td class="confluenceTd"><strong>name</strong> (<em>string</em>; Default: )</td><td class="confluenceTd">Name of an interface</td></tr><tr><td class="confluenceTd"><strong>orig-mac-address</strong> (<em>MAC</em>; Default: )</td><td class="confluenceTd"><br></td></tr><tr><td class="confluenceTd"><strong>rx-flow-control</strong> (<em>on | off | auto</em>; Default: <strong>off</strong>)</td><td class="confluenceTd">When set to on, the port will process received pause frames and suspend transmission if required. <strong>auto</strong> is the same as <strong>on</strong> except when auto-negotiation=yes flow control status is resolved by taking into account what the other end advertises. The feature is supported on AR724x, AR9xxx, and QCA9xxx CPU ports, all CCR ports, and all Atheros switch chip ports.</td></tr><tr><td class="confluenceTd"><strong>tx-flow-control</strong> (<em>on | off | auto</em>; Default: <strong>off</strong>)</td><td class="confluenceTd">When set to on, the port will send pause frames when specific buffer usage thresholds are met. <strong>auto</strong> is the same as <strong>on</strong> except when auto-negotiation=yes flow control status is resolved by taking into account what the other end advertises. The feature is supported on AR724x, AR9xxx, and QCA9xxx CPU ports, all CCR ports, and all Atheros switch chip ports.</td></tr></tbody></table>
+**属性**
 
-# Menu specific commands
+| 属性                                                                             | 说明                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **arp** (_disabled \| enabled \| proxy-arp \| reply-only_; Default: **enabled**) | 地址解析协议模式:<br>- disabled表示接口不使用ARP<br>- enabled接口使用ARP<br>- proxy- ARP指定接口使用ARP代理特性<br>- reply-only表示接口只响应在/IP arp表中以静态表项形式输入的匹配的IP /MAC地址组合发出的请求。ARP表中不会自动存储动态表项。因此，要使通信成功，必须已经存在有效的静态条目。 |
+| **bandwidth** (_integer/integer_; Default: **unlimited/unlimited**)              | 设置接口处理的最大rx/tx带宽(kbps)。所有Atheros [交换芯片](https://help.mikrotik.com/docs/display/ROS/Switch+Chip+Features) 端口都支持TX限制。RX限制仅支持在动脉粥样硬化8327/QCA8337开关芯片端口                                                                                              |
+| **comment** (_string_;Default:)                                                  | 项目的描述性名称                                                                                                                                                                                                                                                                             |
+| **l2mtu** (_integer [0..65536]_;Default:)                                        | Layer2最大传输单元。[RouterOS中的MTU](https://help.mikrotik.com/docs/display/ROS/MTU+in+RouterOS)                                                                                                                                                                                            |
+| **mac-address** (_MAC_;Default:)                                                 | 接口的媒体访问控制号                                                                                                                                                                                                                                                                         |
+| **mtu** (_integer [0..65536]_;Default:**1500**)                                  | Layer3最大传输单元                                                                                                                                                                                                                                                                           |
+| **name** (_string_;Default:)                                                     | 接口名称                                                                                                                                                                                                                                                                                     |
+| **orig-mac-address** (_MAC_;Default:)                                            |                                                                                                                                                                                                                                                                                              |
+| **rx-flow-control** (_on \| off \| auto_;Default:**off**)                        | 当设置为on时，端口将处理接收到的暂停帧并在需要时暂停传输。**auto** 与 **on** 相同，除了当auto-negotiation=yes时，流量控制状态是通过考虑另一端的广告来解决的。支持AR724x、AR9xxx、QCA9xxx CPU端口、所有CCR端口和所有Atheros交换芯片端口                                                       |
+| **tx-flow-control** (_on \| off \| auto_;Default:**off**)                        | 当设置为on时，端口将在满足特定缓冲区使用阈值时发送暂停帧。**auto** 与 **on** 相同，除了当auto-negotiation=yes时，流量控制状态是通过考虑另一端的广告来解决的。支持AR724x、AR9xxx、QCA9xxx CPU端口、所有CCR端口和所有Atheros交换芯片端口                                                       |
 
-| 
-Property
+# 菜单特定命令
 
- | 
+| 属性                   | 说明                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| **configure** ()       | 该命令用来配置附加的PWR-Line设备的network-key、network-password、plc- ccco -selection-mode。 |
+| **join**()             | 启动配对序列，该序列将查找处于配对模式的同一电路中的其他PWR-Line设备。此模式持续60秒。       |
+| **leave**()            | 启动离开序列，本质上随机化设备的网络密钥。                                                   |
+| **monitor**()          | 实时输出pwr线相关状态。                                                                      |
+| **upgrade-firmware**() | 使用指定的firmware-file和pib-file文件升级PWR-Line设备。                                      |
 
-Description
+# 配置示例
 
-|     |
-| --- |  |
-|     |
+要使两个或多个设备能够相互连接，它们必须共享相同的网络密钥值。使用monitor命令可以看到当前配置的网络密钥为plc-actual-network-key。
 
-Property
+```shell
+[admin@MikroTik] > /interface pwr-line monitor pwr-line1
+name: pwr-line1
+connection-to-plc: ok
+tx-flow-control: no
+rx-flow-control: no
+plc-actual-network-key: c973947c200e1540b0f84b571d92bebe
+plc-hw-platform: QCA7420
+plc-sw-platform: MAC
+plc-fw-version: 1.4.0(24-20180515-CS)
+plc-line-freq: 50Hz
+plc-zero-crossing: detected
+plc-mac: B8:69:F4:C4:34:68
+```
 
- | 
+## 方法1
 
-Description
+有两种方法可以在不同的设备上设置相同的网络密钥。您可以使用network-key参数，它是network-password参数的散列版本。或者使用network-password参数，让路由器将哈希值应用于一个人类可读的字符串。
 
-|                         |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **configure** ()        | The command configures the attached PWR-Line device's network-key, network-password, plc-cco-selection-mode.                                                               |
-| **join** ()             | Initiates the pairing sequence which will look for other PWR-Line devices in the same electrical circuit that is also in the pairing mode. This mode lasts for 60 seconds. |
-| **leave** ()            | Initiates the leaving sequence which essentially randomizes the device's network-key.                                                                                      |
-| **monitor** ()          | Outputs PWR-Line-related statuses in real-time.                                                                                                                            |
-| **upgrade-firmware** () | Upgrades the PWR-Line device with specified firmware-file and pib-file files.                                                                                              |
+例如:
 
-# Configuration example
+`/interface pwr-line configure pwr-line1 network-password=mynetwork`
 
-For two or more devices to be able to connect with each other, they must share the same network-key value. The currently configured network-key can be seen using the monitor command as plc-actual-network-key.
+同样的: 
 
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
+`/interface pwr-line configure pwr-line1 network-key=cb01fcc6167bf3d1edb1433c2ebde4b3`
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@MikroTik] &gt; </code><code class="ros constants">/interface pwr-line </code><code class="ros functions">monitor </code><code class="ros plain">pwr-line1</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">name</code><code class="ros constants">: pwr-line1</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">connection-to-plc</code><code class="ros constants">: ok</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">tx-flow-control</code><code class="ros constants">: no</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">rx-flow-control</code><code class="ros constants">: no</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">plc-actual-network-key</code><code class="ros constants">: c973947c200e1540b0f84b571d92bebe</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">plc-hw-platform</code><code class="ros constants">: QCA7420</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">plc-sw-platform</code><code class="ros constants">: MAC</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros plain">plc-fw-version</code><code class="ros constants">: 1.4.0(24-20180515-CS)</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">plc-line-freq</code><code class="ros constants">: 50Hz</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros plain">plc-zero-crossing</code><code class="ros constants">: detected</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">plc-mac</code><code class="ros constants">: B8:69:F4:C4:34:68</code></div></div></td></tr></tbody></table>
+必须在希望相互通信的所有设备上设置相同的密钥或密码。
 
-## Method 1
+## 方法2
 
-There are two ways to set the same network-key on different devices. You can either use the network-key parameter which is a hashed version of network-password parameter. Or use the network-password parameter and let the router apply the hash on a human-readable string.
+可以使用join和leave命令，使PWR-Line设备自动同步网络密钥值。建议在使用join命令之前使用leave命令，以确保新网络密钥是随机生成的，并且设备不属于任何旧网络。
 
-For example:
+`/interface pwr-line leave pwr-line1`
 
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
+然后我们可以发出join命令。这样做时，配对序列将启用60秒，这意味着您必须在60秒内在另一台设备上启用配对模式才能成功配对。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line configure pwr-line1 network-password=mynetwork</code></div></div></td></tr></tbody></table>
+`/interface pwr-line join pwr-line1`
 
-is the same as: 
+## 方法3
 
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
+还可以使用plc- ccco -selection-mode参数为PWR-Line设备(主或从)设置指定角色。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line configure pwr-line1 network-key=cb01fcc6167bf3d1edb1433c2ebde4b3</code></div></div></td></tr></tbody></table>
+| 属性                                                                  | 说明                                                                                                                                                                                                |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **plc-cco-select -mode** (_auto \| always \| never_;Default:**auto**) | 设置PWR-Line设备模式:<br>- auto - PWR-Line将根据加入PWR-Line网络的情况自动决定扮演什么角色。<br>- always - PWR-Line将永远被迫充当“中央协调器”或主设备。<br>- never - PWR-Line将永远被迫充当从设备。 |
 
-You must set the same key or password on all devices you wish to communicate with each other. 
+例子: 
 
-## Method 2
+```shell
+/interface pwr-line configure pwr-line1 plc-cco-selection-mode=auto
 
-It is possible to use the join and leave commands and make the PWR-Line devices automatically synchronize the network-key value. It is advised to use the leave command before using the join command to make sure a new network-key is randomly generated and the device is not part of any old network.
+/interface pwr-line configure pwr-line1 plc-cco-selection-mode=always
 
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
+/interface pwr-line configure pwr-line1 plc-cco-selection-mode=never
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line leave pwr-line1</code></div></div></td></tr></tbody></table>
+# Sync按钮使用情况
 
-Then we can issue the join command. When doing so, the pairing sequence is enabled for 60 seconds, meaning you have to enable pairing mode on another device within 60 seconds for them to successfully pair.
+- 保持0.5 - 3秒打开同步模式。120秒后将尝试与另一个PWR-LINE设备通信。橙色LED灯闪烁，表示处于搜索模式。您还必须在其他PWR-LINE设备上执行相同的操作，以便它们能够同步。再次按下按钮取消搜索。您也可以在RouterOS设置中手动设置安全密钥。
 
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
+- 等待5 - 8秒生成新的安全密钥。这需要从现有的PWR-LINE网络中移除PWR-LINE设备。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line join pwr-line1</code></div></div></td></tr></tbody></table>
+- 长按10 ~ 15秒，重置PWR-LINE相关设置。
 
-## Method 3
+# 支持的硬件
 
-It is also possible to set a specified role for the PWR-Line device (master or slave) with the plc-cco-selection-mode parameter.
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                   |
-| --------------------------------- | ------ |
-| **plc-cco-selection-mode** (_auto | always | never_; Default: **auto**) | Sets PWR-Line device mode: |
-
--   auto - PWR-Line will automatically decide what role to take depending on the situation upon joining a PWR-Line network.
--   always - PWR-Line will always be forced to act as "central-coordinator" or master device.
--   never - PWR-Line will always be forced to act as a slave device.
-
- |
-
-Example: 
-
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line configure pwr-line1 plc-cco-selection-mode=auto</code></div></div></td></tr></tbody></table>
-
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line configure pwr-line1 plc-cco-selection-mode=always</code></div></div></td></tr></tbody></table>
-
-[?](https://help.mikrotik.com/docs/display/ROS/PWR+Line#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface pwr-line configure pwr-line1 plc-cco-selection-mode=never</code></div></div></td></tr></tbody></table>
-
-# Sync Button usage
-
--   Hold 0.5 – 3 seconds to turn on sync mode. For 120 seconds will try to communicate with another PWR-LINE device. A blinking orange LED light indicates that it is in search mode. You have to also do the same on the other PWR-LINE device, so they can synchronize. Press the button again to cancel the search. You can also manually set the security keys in RouterOS settings.
-
--   Hold 5 – 8 seconds to generate a new security key. This is needed to remove a PWR-LINE device from an existing PWR-LINE network.
-
--   Hold 10 – 15 seconds to reset all PWR-LINE related settings.
-
-# Supported Hardware
-
-The device is fully compatible with our PWR-LINE AP and the newest revisions of products that have a MicroUSB port, such as hAP lite, hAP lite tower, hAP mini, mAP, and mAP lite have a pwr-line interface. A simple software upgrade to v6.44+ enables this feature (supported by the mentioned devices with serial numbers that end with /9xx). PWR-LINE functionality is also supported by some previously manufactured units - if you have a unit with a serial number that ends with /8xx, upgrade to 6.44+ and see if the pwr-line interface shows up).
+该设备与我们的PWR-LINE AP完全兼容，并且具有microrousb端口的最新版本的产品，如hAP lite, hAP lite塔，hAP mini, mAP和mAP lite具有PWR-LINE接口。一个简单的软件升级到v6.44+就可以启用这个特性(由上述序列号以/9xx结尾的设备支持)。一些以前生产的设备也支持PWR-LINE功能-如果您的设备序列号以/8xx结尾，请升级到6.44+并查看PWR-LINE接口是否显示。

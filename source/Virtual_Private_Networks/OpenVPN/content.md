@@ -1,187 +1,131 @@
-# Overview
+# 概述
 
-The OpenVPN security model is based on SSL, the industry standard for secure communications via the internet. OpenVPN implements OSI layer 2 or 3 secure network extensions using the SSL/TLS protocol. 
+OpenVPN的安全模型是基于SSL的，SSL是通过互联网进行安全通信的行业标准。OpenVPN使用SSL/TLS协议实现OSI第2层或第3层安全网络扩展。
 
-# Introduction
+# 介绍
 
-OpenVPN has been ported to various platforms, including Linux and Windows, and its configuration is likewise on each of these systems, so it makes it easier to support and maintain. OpenVPN can run over User Datagram Protocol (UDP) or Transmission Control Protocol (TCP) transports, multiplexing created SSL tunnels on a single TCP/UDP port. OpenVPN is one of the few VPN protocols that can make use of a proxy, which might be handy sometimes.
+OpenVPN已经移植到各种平台，包括Linux和Windows，它的配置在这些系统上都是类似的，所以它更容易支持和维护。OpenVPN可以在用户数据报协议(UDP)或传输控制协议(TCP)传输上运行，在单个TCP/UDP端口上复用创建的SSL隧道。OpenVPN是少数几个可以使用代理的VPN协议之一，这有时可能很方便。
 
-# Limitations
+# 局限性
 
-Currently, unsupported OpenVPN features:
+目前，不支持的OpenVPN功能:
 
--   LZO compression
--   TLS authentication
--   authentication without username/password
+- LZO压缩
+- TLS认证
+- 不需要用户名和密码的鉴权
 
-OpenVPN username is limited to 27 characters and the password to 233 characters.
+OpenVPN用户名不超过27个字符，密码不超过233个字符。
 
-# OVPN Client
+# OVPN客户端
 
-| 
-Property
+| 属性                                                         | 说明                                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| **add-default-route** (_yes_ \| _no_; Default: **no**)       | 是否添加OVPN远端地址作为缺省路由。                                         |
+| **auth** (_md5_ \                                            | _sha1_ \                                                                   | _null_ \                                 | _sha256_ \   | _sha512_;Default:**sha1**) | 允许的认证方式。 |
+| **certificate** (_string_ \| _none_;Default:**none**)        | 客户端证书名称                                                             |
+| **cipher** (_null_ \                                         | _aes128-cbc_ \                                                             | _aes128-gcm_ \                           | _aes192-cbc_ | _aes192-gcm_ \             | _aes256-cbc_ \   | _aes256-gcm_ \ | _blowfish128_;Default:**blowfish128**) | 允许的密码。为了使用GCM类型的密码，“auth”参数必须设置为“null”，因为如果使用GCM密码，也负责“auth”。 |
+| **comment** (_string_;Default:)                              | 项目的描述性名称                                                           |
+| **connect-to** (_IP_;Default:)                               | OVPN服务器的远程地址。                                                     |
+| **disabled** (_yes_ \| _no_; Default: **yes**)               | 接口是否被禁用。缺省情况下是关闭的。                                       |
+| **mac-address** (_MAC_;Default:)                             | OVPN接口的Mac地址。如果未指定，将自动生成。                                |
+| **max-mtu** (_integer_;Default:**1500**)                     | 最大传输单元。OVPN接口在不产生数据包碎片的情况下能够发送的最大数据包大小。 |
+| **mode** (_ip_                                               | _ethernet_;Default:**ip**)                                                 | Layer3或layer2隧道模式(也可选择tun、tap) |
+| **name** (_string_;Default:)                                 | 接口的描述性名称。                                                         |
+| **password** (_string_;Default:**""**)                       | 鉴权密码。                                                                 |
+| **port** (_integer_;Default:**1194**)                        | 要连接的端口。                                                             |
+| **profile** (_name_; Default: **default**)                   | 指定建立隧道时使用哪一种PPP配置文件。                                      |
+| **protocol** (_tcp_ \| _udp_;Default:**tcp**)                | 表示与远程端点连接时使用的协议。                                           |
+| **verify-server-certificate** (_yes_ \| _no_;Default:**no**) | 根据“connect-to”参数检查证书CN或SAN。IP或主机名必须出现在服务器的证书中。  |
+| **tls-version** (_any_ \| _only-1.2_;Default:**any**)        | 指定允许的TLS版本                                                          |
+| **use-peer-dns** (_yes_ \| _no_;Default:**no**)              | 是否将OVPN服务器提供的DNS服务器添加到IP/DNS配置中。                        |
+| **route-nopull** (_yes_ \| _no_;Default:**no**)              | 是否允许OVPN服务器向OVPN客户端实例路由表中添加路由。                       |
+| **user** (_string_;Default:)                                 | 用于鉴权的用户名。                                                         |
 
- | 
+此外，还可以从OVPN配置文件导入OVPN客户机配置。这样的文件通常由OVPN服务器端提供，并且已经包含了配置，因此您只需要担心几个参数。
 
-Description
+`/interface/ovpn-client/import-ovpn-configuration ovpn-password=securepassword \
+key-passphrase=certificatekeypassphrase ovpn-user=myuserid skip-cert-import=no`
 
-|     |
-| --- |  |
-|     |
+# OVPN服务器
 
-Property
+为每一条与给定服务器建立的隧道创建一个接口。在OVPN服务器的配置中有两种类型的接口
 
- | 
+—如果需要引用为特定用户创建的特定接口名称(在防火墙规则或其他地方)，则通过管理方式添加静态接口。
+—动态接口将自动添加到此列表中，每当用户连接时，如果其用户名与任何现有的静态表项不匹配(或者如果该表项已经激活，因为不可能有两个单独的隧道接口被相同的名称引用)。
 
-Description
+动态接口在用户连接时出现，一旦用户断开连接就消失，因此不可能在路由器配置中(例如在防火墙中)引用为该用途创建的隧道，因此如果需要为该用户创建持久规则，请为他/她创建静态条目。否则，可以安全地使用动态配置。
 
-|                                            |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| **add-default-route** (_yes_               | _no_; Default: **no**)                                                                                                | Whether to add OVPN remote address as a default route.                  |
-| **auth** (_md5_                            | _sha1_                                                                                                                | _null_                                                                  | _sha256_     | _sha512_; Default: **sha1**) | Allowed authentication methods. |
-| **certificate** (_string_                  | _none_; Default: **none**)                                                                                            | Name of the client certificate                                          |
-| **cipher** (_null_                         | _aes128-cbc_                                                                                                          | _aes128-gcm_                                                            | _aes192-cbc_ | _aes192-gcm_                 | _aes256-cbc_                    | _aes256-gcm_ | _blowfish128_; Default: **blowfish128**) | Allowed ciphers. In order to use GCM type ciphers, the "auth" parameter must be set to "null", because GCM cipher is also responsible for "auth", if used. |
-| **comment** (_string_; Default: )          | Descriptive name of an item                                                                                           |
-| **connect-to** (_IP_; Default: )           | Remote address of the OVPN server.                                                                                    |
-| **disabled** (_yes_                        | _no_; Default: **yes**)                                                                                               | Whether the interface is disabled or not. By default it is disabled.    |
-| **mac-address** (_MAC_; Default: )         | Mac address of OVPN interface. Will be automatically generated if not specified.                                      |
-| **max-mtu** (_integer_; Default: **1500**) | Maximum Transmission Unit. Max packet size that the OVPN interface will be able to send without packet fragmentation. |
-| **mode** (_ip_                             | _ethernet_; Default: **ip**)                                                                                          | Layer3 or layer2 tunnel mode (alternatively tun, tap)                   |
-| **name** (_string_; Default: )             | Descriptive name of the interface.                                                                                    |
-| **password** (_string_; Default: **""**)   | Password used for authentication.                                                                                     |
-| **port** (_integer_; Default: **1194**)    | Port to connect to.                                                                                                   |
-| **profile** (_name_; Default: **default**) | Specifies which PPP profile configuration will be used when establishing the tunnel.                                  |
-| **protocol** (_tcp_                        | _udp_; Default: **tcp**)                                                                                              | indicates the protocol to use when connecting with the remote endpoint. |
-| **verify-server-certificate** (_yes_       | _no_; Default: **no**)                                                                                                |
+在这两种情况下，都必须正确配置PPP用户，静态表项不能替代PPP配置。
 
-Checks the certificates CN or SAN against the "connect-to" parameter. The IP or hostname must be present in the server's certificate.
+## 属性
 
- |
-| **tls-version** (_any_ | _only-1.2_; Default: **any**) | Specifies which TLS versions to allow |
-| **use-peer-dns** (_yes_ | _no_; Default: **no**) | Whether to add DNS servers provided by the OVPN server to IP/DNS configuration. |
-| 
+| 属性                                                                                                                                                                   | 说明                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **auth** (_md5_\| _sha1_\| _null_\| _sha256_\| _sha512_; Default: **sha1,md5,sha256,sha512**)                                                                          | 服务器将接受的身份验证方法。                                                                                                                                                                                                                                                                                                                                    |
+| **certificate** (_name_\| _none_; Default: **none**)                                                                                                                   | OVPN服务器使用的证书名称。                                                                                                                                                                                                                                                                                                                                      |
+| **cipher** (_null_\| _aes128-cbc_\| _aes128-gcm_ \| _aes192-cbc_ \| _aes192-gcm_ \| _aes256-cbc_\| _aes256-gcm_ \| _blowfish128_; Default: **aes128-cbc,blowfish128**) | 允许密码。                                                                                                                                                                                                                                                                                                                                                      |
+| **default-profile** (_name_; Default: **default**)                                                                                                                     | 要使用的默认配置文件。                                                                                                                                                                                                                                                                                                                                          |
+| **enabled** (_yes_ \| _no_;Default:**no**)                                                                                                                             | 定义是否启用OVPN服务器。                                                                                                                                                                                                                                                                                                                                        |
+| **protocol**(_tcp_\| _udp_;Default:tcp)                                                                                                                                | 表示与远程端点连接时使用的协议。                                                                                                                                                                                                                                                                                                                                |
+| **keepalive-timeout** (_integer_ \| _disabled_; Default: **60**)                                                                                                       | 定义路由器每秒钟开始发送keepalive报文的时间间隔(单位为秒)。如果在这段时间内(即2 * keepalive-timeout)没有流量和keepalive响应，则未响应的客户端被宣布断开连接                                                                                                                                                                                                     |
+| **mac-address** (_MAC_;Default:)                                                                                                                                       | 服务器自动生成的MAC地址。                                                                                                                                                                                                                                                                                                                                       |
+| **max-mtu** (_integer_;Default:**1500**)                                                                                                                               | 最大传输单元。OVPN接口在不产生数据包碎片的情况下能够发送的最大数据包大小。                                                                                                                                                                                                                                                                                      |
+| **mode** (_ip_ \| _ethernet_;Default:**ip**)                                                                                                                           | Layer3或layer2隧道模式(也可选择tun、tap)                                                                                                                                                                                                                                                                                                                        |
+| **netmask** (_integer_;Default:**24**)                                                                                                                                 | 客户端应用的子网掩码。                                                                                                                                                                                                                                                                                                                                          |
+| **port** (_integer_; Default: **1194**)                                                                                                                                | 运行服务器的端口。                                                                                                                                                                                                                                                                                                                                              |
+| **require-client-certificate** (_yes_\| _no_;Default:**no**)                                                                                                           | 如果设置为yes，则服务器检查客户端证书是否属于同一证书链。                                                                                                                                                                                                                                                                                                       |
+| **redirect-gateway** (_def1_ \| _disabled_ \| _ipv6;_ Default: **disabled**)                                                                                           | 指定OVPN客户端必须添加到路由表中的路由类型。<br>' def1 ' -使用此标志覆盖默认网关，使用0.0.0.0/1和128.0.0.0/1而不是0.0.0.0/0。这样做的好处是覆盖而不是清除原来的默认网关。<br>' disabled ' -不向OVPN客户端发送重定向网关标志。<br>' ipv6 ' -在客户端将ipv6路由重定向到隧道。这与def1标志类似，即添加更具体的IPv6路由(2000::/4和3000::/4)，覆盖整个IPv6单播空间。 |
+| **enable-tun-ipv6** (_yes_\| _no;_ Default: **no**)                                                                                                                    | 指定该OVPN服务器是否可以使用IPv6 IP隧道模式。                                                                                                                                                                                                                                                                                                                   |
+| **IPv6 -prefix-len** (_integer;_ Default:**64**)                                                                                                                       | 服务器端生成OVPN接口时使用的IPv6地址前缀长度。                                                                                                                                                                                                                                                                                                                  |
+| **tun_server - IPv6** (_IPv6 prefix;_ Default:**::**)                                                                                                                  | 服务器端生成OVPN接口时使用的IPv6前缀地址。                                                                                                                                                                                                                                                                                                                      |
 
-**route-nopull** (_yes_ | _no_; Default: **no**)
+此外，还可以为OVPN客户端准备一个.OVPN文件，以便在终端设备上轻松导入。
+ 
+`/interface/ovpn-server/server/export-client-configuration ca-certificate=myCa.crt \
+client-certificate=client1.crt client-cert-key=client1.key server-address=192.168.88.1`
 
- | Specifies whether to allow the OVPN server to add routes to the OVPN client instance routing table. |
-| **user** (_string_; Default: ) | User name used for authentication. |
+路由器上的日期必须在安装证书的过期日期范围内，这一点非常重要。为了克服任何证书验证问题，请在服务器和客户端同时启用 **NTP** 日期同步。
 
-Also, it is possible to import the OVPN client configuration from a .ovpn configuration file. Such a file usually is provided from the OVPN server side and already includes configuration so you need to worry only about a few parameters.
+# 例子
 
-[?](https://help.mikrotik.com/docs/display/ROS/OpenVPN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ovpn-client/import-ovpn-configuration ovpn-password=secure</code><code class="ros plain">password \</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros value">key-passphrase</code><code class="ros plain">=certificatekeypassphrase</code> <code class="ros value">ovpn-user</code><code class="ros plain">=myuserid</code> <code class="ros value">skip-cert-import</code><code class="ros plain">=no</code></div></div></td></tr></tbody></table>
-
-# OVPN Server
-
-An interface is created for each tunnel established to the given server. There are two types of interfaces in the OVPN server's configuration
-
--   Static interfaces are added administratively if there is a need to reference the particular interface name (in firewall rules or elsewhere) created for the particular user.
--   Dynamic interfaces are added to this list automatically whenever a user is connected and its username does not match any existing static entry (or in case the entry is active already, as there can not be two separate tunnel interfaces referenced by the same name).
-
-Dynamic interfaces appear when a user connects and disappear once the user disconnects, so it is impossible to reference the tunnel created for that use in router configuration (for example, in the firewall), so if you need a persistent rule for that user, create a static entry for him/her. Otherwise, it is safe to use dynamic configuration.
-
-In both cases PPP users must be configured properly - static entries do not replace PPP configuration.
-
-## Properties
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                    |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **auth** (_md5_                                    | _sha1_                                                                                                                | _null_                                                                                                                                                                                                                                                                     | _sha256_     | _sha512_; Default: **sha1,md5,sha256,sha512**) | Authentication methods that the server will accept. |
-| **certificate** (_name_                            | _none_; Default: **none**)                                                                                            | Name of the certificate that the OVPN server will use.                                                                                                                                                                                                                     |
-| **cipher** (_null_                                 | _aes128-cbc_                                                                                                          | _aes128-gcm_                                                                                                                                                                                                                                                               | _aes192-cbc_ | _aes192-gcm_                                   | _aes256-cbc_                                        | _aes256-gcm_ | _blowfish128_; Default: **aes128-cbc,blowfish128**) | Allowed ciphers. |
-| **default-profile** (_name_; Default: **default**) | Default profile to use.                                                                                               |
-| **enabled** (_yes_                                 | _no_; Default: **no**)                                                                                                | Defines whether the OVPN server is enabled or not.                                                                                                                                                                                                                         |
-| **protocol (_tcp_                                  | _udp_; Default: tcp)**                                                                                                | indicates the protocol to use when connecting with the remote endpoint.                                                                                                                                                                                                    |
-| **keepalive-timeout** (_integer_                   | _disabled_; Default: **60**)                                                                                          | Defines the time period (in seconds) after which the router is starting to send keepalive packets every second. If no traffic and no keepalive responses have come for that period of time (i.e. 2 \* keepalive-timeout), not responding client is proclaimed disconnected |
-| **mac-address** (_MAC_; Default: )                 | Automatically generated MAC address of the server.                                                                    |
-| **max-mtu** (_integer_; Default: **1500**)         | Maximum Transmission Unit. Max packet size that the OVPN interface will be able to send without packet fragmentation. |
-| **mode** (_ip_                                     | _ethernet_; Default: **ip**)                                                                                          | Layer3 or layer2 tunnel mode (alternatively tun, tap)                                                                                                                                                                                                                      |
-| **netmask** (_integer_; Default: **24**)           | Subnet mask to be applied to the client.                                                                              |
-| **port** (_integer_; Default: **1194**)            | Port to run the server on.                                                                                            |
-| **require-client-certificate** (_yes_              | _no_; Default: **no**)                                                                                                | If set to yes, then the server checks whether the client's certificate belongs to the same certificate chain.                                                                                                                                                              |
-| **redirect-gateway** (_def1_                       | _disabled_                                                                                                            | _ipv6;_ Default: **disabled**)                                                                                                                                                                                                                                             |
-
-Specifies what kind of routes the OVPN client must add to the routing table. 
-
-`def1` – Use this flag to override the default gateway by using 0.0.0.0/1 and 128.0.0.0/1 rather than 0.0.0.0/0. This has the benefit of overriding but not wiping out the original default gateway.  
-`disabled` - Do not send redirect-gateway flags to the OVPN client.  
-`ipv6` - Redirect IPv6 routing into the tunnel on the client side. This works similarly to the def1 flag, that is, more specific IPv6 routes are added (2000::/4 and 3000::/4), covering the whole IPv6 unicast space.
-
- |
-| **enable-tun-ipv6** (y_es_ | _no;_ Default: **no**) | 
-
-Specifies if IPv6 IP tunneling mode should be possible with this OVPN server.
-
- |
-| **ipv6-prefix-len** (_integer;_ Default: **64**) | 
-
-Length of IPv6 prefix for IPv6 address which will be used when generating OVPN interface on the server side.
-
- |
-| **tun-server-ipv6** (_IPv6 prefix;_ Default: **::**) | 
-
-IPv6 prefix address which will be used when generating the OVPN interface on the server side.
-
- |
-
-Also, it is possible to prepare a .ovpn file for the OVPN client which can be easily imported on the end device.
-
-[?](https://help.mikrotik.com/docs/display/ROS/OpenVPN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface/ovpn-server/server/export-client-configuration ca-certificate=myCa.crt \</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros value">client-certificate</code><code class="ros plain">=client1.crt</code> <code class="ros value">client-cert-key</code><code class="ros plain">=client1.key</code> <code class="ros value">server-address</code><code class="ros plain">=192.168.88.1</code></div></div></td></tr></tbody></table>
-
-It is very important that the date on the router is within the range of the installed certificate's date of expiration. To overcome any certificate verification problems, enable **NTP** date synchronization on both the server and the client.
-
-# Example
-
-## Setup Overview
+## 设置概述
 
 ![](https://help.mikrotik.com/docs/download/attachments/2031655/OpenVPN.png?version=1&modificationDate=1615380050324&api=v2)
 
-Assume that Office public IP address is 2.2.2.2 and we want two remote OVPN clients to have access to 10.5.8.20 and 192.168.55.0/24 networks behind the office gateway. 
+假设办公室的公网IP地址为2.2.2.2，我们希望两个远程OVPN客户端能够访问办公室网关后面的10.5.8.20和192.168.55.0/24网络。
 
-## Creating Certificates
+## 创建证书
 
-All certificates can be created on the RouterOS server using the certificate manager. [See example >>](https://wiki.mikrotik.com/wiki/Manual:Create_Certificates#Generate_certificates_on_RouterOS "Manual:Create Certificates").
+所有证书都可以在RouterOS服务器上通过证书管理器生成。[示例](https://wiki.mikrotik.com/wiki/Manual:Create_Certificates#Generate_certificates_on_RouterOS "Manual:Create Certificates")
 
-For the simplest setup, you need only an OVPN server certificate.
+对于最简单的设置，您只需要一个OVPN服务器证书。
 
-## Server Config
+## 服务器配置
 
-The first step is to create an IP pool from which client addresses will be assigned and some users.
+第一步是创建一个IP池，将从中分配客户机地址和一些用户。
 
-[?](https://help.mikrotik.com/docs/display/ROS/OpenVPN#)
+```shell
+/ip pool add name=ovpn-pool range=192.168.77.2-192.168.77.254
+ 
+/ppp profile add name=ovpn local-address=192.168.77.1 remote-address=ovpn-pool
+/ppp secret
+add name=client1 password=123 profile=ovpn
+add name=client2 password=234 profile=ovpn
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip pool </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ovpn-pool</code> <code class="ros value">range</code><code class="ros plain">=192.168.77.2-192.168.77.254</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ppp pro</code><code class="ros plain">file </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ovpn</code> <code class="ros value">local-address</code><code class="ros plain">=192.168.77.1</code> <code class="ros value">remote-address</code><code class="ros plain">=ovpn-pool</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">/ppp secret</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=client1</code> <code class="ros value">password</code><code class="ros plain">=123</code> <code class="ros value">profile</code><code class="ros plain">=ovpn</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=client2</code> <code class="ros value">password</code><code class="ros plain">=234</code> <code class="ros value">profile</code><code class="ros plain">=ovpn</code></div></div></td></tr></tbody></table>
+假设已经创建了服务器证书并命名为“server”
 
-Assume that the server certificate is already created and named "server" 
+`/interface ovpn-server server set enabled=yes certificate=server`
 
-[?](https://help.mikrotik.com/docs/display/ROS/OpenVPN#)
+## 客户端配置
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ovpn-server server </code><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">certificate</code><code class="ros plain">=server</code></div></div></td></tr></tbody></table>
+由于RouterOS不支持路由推送，你需要手动添加你想通过隧道访问的网络。
 
-## Client Config
-
-Since RouterOS does not support route-push you need to add manually which networks you want to access over the tunnel. 
-
-[?](https://help.mikrotik.com/docs/display/ROS/OpenVPN#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface ovpn-client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ovpn-client1</code> <code class="ros value">connect-to</code><code class="ros plain">=2.2.2.2</code> <code class="ros value">user</code><code class="ros plain">=client1</code> <code class="ros value">password</code><code class="ros plain">=123</code> <code class="ros value">disabled</code><code class="ros plain">=no</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/ip route</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=10.5.8.20</code> <code class="ros value">gateway</code><code class="ros plain">=ovpn-client1</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">dst-address</code><code class="ros plain">=192.168.55.0/24</code> <code class="ros value">gateway</code><code class="ros plain">=ovpn-client1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/ip firewall nat </code><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=srcnat</code> <code class="ros value">action</code><code class="ros plain">=masquerade</code> <code class="ros value">out-interface</code><code class="ros plain">=ovpn-client1</code></div></div></td></tr></tbody></table>
+```shell
+/interface ovpn-client
+add name=ovpn-client1 connect-to=2.2.2.2 user=client1 password=123 disabled=no
+/ip route
+add dst-address=10.5.8.20 gateway=ovpn-client1
+add dst-address=192.168.55.0/24 gateway=ovpn-client1
+/ip firewall nat add chain=srcnat action=masquerade out-interface=ovpn-client1
+```
