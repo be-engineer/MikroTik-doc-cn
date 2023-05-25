@@ -1,4 +1,4 @@
-# 概述
+# AP控制器概述
 
 CAPsMAN允许通过中央配置界面对多个microtik AP设备进行无线设置。
 
@@ -30,17 +30,19 @@ CAPsMAN设置包括定义配置模板，然后将其推送到可控制的AP设�
 
 在中心设备(CAPsMAN服务器)中，仅使用基本设置(网络名称，国家，本地局域网桥接接口，无线密码)创建一个新的“Configuration”模板:
 
-1.![add new configuration profile](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_1.png?version=1&modificationDate=1571145422722&api=v2 "add new configuration profile") 
-2.![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_2.png?version=1&modificationDate=1571145422560&api=v2) 
-3.![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_3.png?version=1&modificationDate=1571145422327&api=v2)
+1. ![add new configuration profile](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_1.png?version=1&modificationDate=1571145422722&api=v2 "add new configuration profile") 
+   
+2. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_2.png?version=1&modificationDate=1571145422560&api=v2) 
+   
+3. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_3.png?version=1&modificationDate=1571145422327&api=v2)
 
 然后创建一个新的“Provisioning”规则，将创建的配置模板分配给CAP设备:
 
-4. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_4.png?version=1&modificationDate=1571145422213&api=v2)
+4. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_4.png?version=1&modificationDate=1571145422213&api=v2)
 
 对于CAPsMAN，剩下要做的就是启用它:
 
-5. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_8.png?version=1&modificationDate=1571145422121&api=v2)
+5. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_8.png?version=1&modificationDate=1571145422121&api=v2)
 
 大多数microtik AP设备已经开箱即用地支持CAP模式，所需的就是确保它们与CAPsMAN在同一网络上，然后启动它们，同时按住重置按钮。
 

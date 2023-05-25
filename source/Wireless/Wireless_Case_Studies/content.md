@@ -34,9 +34,6 @@ Let's consider that we already have a working LDP setup from the [LDP configurat
 
 Routers R1, R3, and R4 have connected Customer A sites, and routers R1 and R3 have connected Customer B sites. Customers require transparent L2 connectivity between the sites.
 
-  
-
-  
 
 # Reference
 
@@ -49,24 +46,7 @@ List of all VPLS interfaces. This menu shows also dynamically created BGP-based 
 
 ### Properties
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                   |
+| Property                                                          | Description                              |
 | ----------------------------------------------------------------- | ---------------------------------------- |
 | **arp** (_disabled                                                | enabled                                  | proxy-arp                                                                                                                      | reply-only_; Default: **enabled**)                                                                                                                                                                                                                                       | Address Resolution Protocol |
 | **arp-timeout** (_time interval                                   | auto_; Default: auto)                    |
@@ -93,24 +73,7 @@ Description
   
 **Read-only properties**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                              |
+| Property                     | Description                                                                                                                          |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | **cisco-bgp-signaled** (_yes | no_)                                                                                                                                 |
 |                              |
@@ -134,30 +97,19 @@ Command `/interface vpls monitor [id]` will display the current VPLS interface
 
 For example:
 
-[?](https://help.mikrotik.com/docs/display/ROS/VPLS#)
+```shell
+[admin@10.0.11.23] /interface vpls> monitor vpls2
+remote-label: 800000
+local-label: 43
+remote-status:
+transport: 10.255.11.201/32
+transport-nexthop: 10.0.11.201
+imposed-labels: 800000
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@10.0.11.23] </code><code class="ros constants">/interface vpls&gt; </code><code class="ros functions">monitor </code><code class="ros plain">vpls2</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">remote-label</code><code class="ros constants">: 800000</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">local-label</code><code class="ros constants">: 43</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">remote-status</code><code class="ros constants">:</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">transport</code><code class="ros constants">: 10.255.11.201/32</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">transport-nexthop</code><code class="ros constants">: 10.0.11.201</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">imposed-labels</code><code class="ros constants">: 800000</code></div></div></td></tr></tbody></table>
+**Available read-only properties:**
 
-Available read-only properties:
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- |  |
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                     |
+| Property                            | Description                                                                                  |
 | ----------------------------------- | -------------------------------------------------------------------------------------------- |
 | **imposed-label** (_integer_)       | VPLS imposed label                                                                           |
 | **local-label** (_integer_)         | Local VPLS label                                                                             |
