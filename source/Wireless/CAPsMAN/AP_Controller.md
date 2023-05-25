@@ -30,21 +30,21 @@ CAPsMAN设置包括定义配置模板，然后将其推送到可控制的AP设�
 
 在中心设备(CAPsMAN服务器)中，仅使用基本设置(网络名称，国家，本地局域网桥接接口，无线密码)创建一个新的“Configuration”模板:
 
-1. ![add new configuration profile](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_1.png?version=1&modificationDate=1571145422722&api=v2 "add new configuration profile") 
+![add new configuration profile](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_1.png?version=1&modificationDate=1571145422722&api=v2 "add new configuration profile") 
    
-2. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_2.png?version=1&modificationDate=1571145422560&api=v2) 
+![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_2.png?version=1&modificationDate=1571145422560&api=v2) 
    
-3. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_3.png?version=1&modificationDate=1571145422327&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_3.png?version=1&modificationDate=1571145422327&api=v2)
 
 然后创建一个新的“Provisioning”规则，将创建的配置模板分配给CAP设备:
 
-4. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_4.png?version=1&modificationDate=1571145422213&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_4.png?version=1&modificationDate=1571145422213&api=v2)
 
 对于CAPsMAN，剩下要做的就是启用它:
 
-5. ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_8.png?version=1&modificationDate=1571145422121&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_CAPsMAN_Step2_8.png?version=1&modificationDate=1571145422121&api=v2)
 
-大多数microtik AP设备已经开箱即用地支持CAP模式，所需的就是确保它们与CAPsMAN在同一网络上，然后启动它们，同时按住重置按钮。
+大多数microtik AP设备已经开箱即用支持CAP模式，所需的就是确保它们与CAPsMAN在同一网络上，然后启动它们，同时按住重置按钮。
 
 因此，例如，在CAPsMAN设备LAN端口关闭时，将CAP设备连接到其中一个CAPsMAN设备LAN端口，然后按住复位按钮，给CAP设备上电。一直按住按钮，直到用户LED变成固体，现在释放以打开CAP模式。设备现在将寻找一个CAPsMAN服务器(总时间按住按钮，大约10秒)。
 
@@ -416,13 +416,13 @@ Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - runni
 | **width** (;Default:)                                                                                                  | 以MHz为单位设置通道宽度。(例20、40                                                                                                     |
 | **save-selected** (;Default:**yes**)                                                                                   | 为CAP电台保存选定的频道-将在CAP重新连接到CAPsMAN后选择此频道并使用它，直到为此CAP重新优化频道。                                        |
 
-##数据路径配置
+## 数据路径配置
 
 数据路径设置控制数据转发的相关方面。在CAPsMAN中，数据路径设置在数据路径配置文件菜单 **/caps-man datapath** 中配置，或直接在配置文件或界面菜单中配置 **datapath.** 前缀。
 
 主要有两种转发方式:
 
-—本地转发模式，CAP在本地向无线接口转发数据
+- 本地转发模式，CAP在本地向无线接口转发数据
 - manager转发模式，CAP将所有通过无线方式接收到的数据发送给CAPsMAN，只发送从CAPsMAN接收到的无线数据。在这种模式下，甚至客户机到客户机的转发也由CAPsMAN控制和执行。
 
 转发模式是在每个接口的基础上配置的，所以如果一个CAP提供2个无线电接口，一个可以配置为本地转发模式，另一个可以配置为管理转发模式。Virtual-AP接口也是如此，每个接口可以与主接口或其他Virtual-AP接口具有不同的转发模式。
@@ -730,7 +730,7 @@ set require-peer-certificate=yes
 
 但是，当您想要向CAPsMAN网络添加新的CAP设备时，您必须将此选项设置为 _no_ ，然后在CAP获得证书后将其设置为 _yes_ 。每次更改此选项时，CAPsMAN将删除所有动态接口，CAPs将尝试再次连接。
 
-如果您想将CAP锁定到特定的CAPsMAN，并确保它不会连接到其他CAPsMAN，您应该将选项_Lock to CAPsMAN_设置为 _yes_ 。另外，您可以通过在CAP设备上设置 _CAPsMAN证书通用名称_ 来指定要锁定的CAPsMAN:
+如果您想将CAP锁定到特定的CAPsMAN，并确保它不会连接到其他CAPsMAN，应该将选项 _Lock to CAPsMAN_ 设置为 _yes_ 。另外，您可以通过在CAP设备上设置 _CAPsMAN证书通用名称_ 来指定要锁定的CAPsMAN:
 
 ```shell
 /interface wireless cap
@@ -754,7 +754,7 @@ add name=CAPsMAN-temp common-name=CAPsMAN
 
 ```
 
-现在对证书模板进行_Sign_。首先_签署_CA证书，并使用CAPsMAN设备IP作为 _CA CRL Host_ :
+现在对证书模板进行签署。首先签署CA证书，并使用CAPsMAN设备IP作为 _CA CRL Host_ :
 
 ```
 /certificate
