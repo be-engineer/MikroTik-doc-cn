@@ -1,60 +1,100 @@
-# Summary
+# 概述
 
-VLANs provide the possibility to isolate devices into different Layer2 segments while still using the same Layer1 medium. This is very useful in setups where you want to separate different types of devices of users. This feature is also very useful for Wireless setups since you can isolate different Virtual APs and restricting access to certain services or networks by using Firewall. Below is an example with a setup with two Access Points on the same device that isolates them into saparate VLANs. This kind of scenario is very common when you have a **Guest AP** and **Work AP**.
+vlan提供了将设备隔离到不同的Layer2段的可能性，同时仍然使用相同的Layer1介质。这在您希望分离不同类型的用户设备的设置中非常有用。此功能对于无线设置也非常有用，因为您可以使用防火墙隔离不同的虚拟ap并限制对某些服务或网络的访问。下面是在同一设备上设置两个接入点的示例，将它们隔离到不同的vlan中。当您拥有Guest AP和Work AP时，这种情况非常常见。
 
-# Example
+**例子**
 
 ![](https://help.mikrotik.com/docs/download/attachments/122388507/Vlan-wlan1.jpg?version=1&modificationDate=1650965266847&api=v2)
 
-[Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) since RouterOS v6.41 provides VLAN aware Layer2 forwarding and VLAN tag modifications within the bridge.
+[网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 自RouterOS v6.41起，在网桥内提供VLAN感知的二层转发和VLAN标签修改功能。
 
-**R1:**
+** R1: **
 
--   Add necessary VLAN interfaces on ethernet interface to make it a VLAN trunk port. Add ip addresses on VLAN interfaces.
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R1] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface vlan</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=vlan111</code> <code class="ros value">vlan-id</code><code class="ros plain">=111</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">interface</code><code class="ros plain">=ether1</code> <code class="ros value">name</code><code class="ros plain">=vlan222</code> <code class="ros value">vlan-id</code><code class="ros plain">=222</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.1/24</code> <code class="ros value">interface</code><code class="ros plain">=vlan111</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.2.1/24</code> <code class="ros value">interface</code><code class="ros plain">=vlan222</code></div></div></td></tr></tbody></table>
+- 在以太网接口上添加必要的VLAN接口，使其成为VLAN trunk端口。在VLAN接口上添加ip地址。
+```shell
+[admin@R1] >
+/interface vlan
+add interface=ether1 name=vlan111 vlan-id=111
+add interface=ether1 name=vlan222 vlan-id=222
+ 
+/ip address
+add address=192.168.1.1/24 interface=vlan111
+add address=192.168.2.1/24 interface=vlan222
+```
 
   
 
 **R2:**
 
--   Add VirtualAP under wlan1 interface and create wireless security-profiles for wlan1 and wlan2
+- 在wlan1接口下添加VirtualAP，并分别为wlan1和wlan2创建无线安全配置文件
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R2] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface wireless</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros value">default-name</code><code class="ros plain">=wlan1</code> <code class="ros plain">] </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">mode</code><code class="ros plain">=ap-bridge</code> <code class="ros value">security-profile</code><code class="ros plain">=vlan111</code> <code class="ros value">ssid</code><code class="ros plain">=vlan111</code> <code class="ros value">vlan-id</code><code class="ros plain">=111</code> <code class="ros value">vlan-mode</code><code class="ros plain">=use-tag</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">master-interface</code><code class="ros plain">=wlan1</code> <code class="ros value">name</code><code class="ros plain">=wlan2</code> <code class="ros value">security-profile</code><code class="ros plain">=vlan222</code> <code class="ros value">ssid</code><code class="ros plain">=vlan222</code> <code class="ros value">vlan-id</code><code class="ros plain">=222</code> <code class="ros value">vlan-mode</code><code class="ros plain">=use-tag</code></div></div></td></tr></tbody></table>
-
+```shell
+[admin@R2] >
+/interface bridge
+add fast-forward=no name=bridge1 vlan-filtering=yes
+ 
+/interface bridge port
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=wlan1
+add bridge=bridge1 interface=wlan2
+/interface bridge vlan
+add bridge=bridge1 tagged=ether2,wlan1 vlan-ids=111
+add bridge=bridge1 tagged=ether2,wlan2 vlan-ids=222
+```
   
 
-It is important to set wlan1,wlan2 vlan-mode to "use-tag".
+重要的是将wlan1、wlan2的vlan模式设置为“use-tag”。
 
+
+- 创建_vlan-filtering=yes_的桥
+- 添加必要的桥接端口
+- 在 _interface bridge vlan_ section下添加 _tagged_ 接口，并配置正确的 _vlan-ids_
+
+```shell
+[admin@R2] >
+/interface bridge
+add fast-forward=no name=bridge1 vlan-filtering=yes
+ 
+/interface bridge port
+add bridge=bridge1 interface=ether2
+add bridge=bridge1 interface=wlan1
+add bridge=bridge1 interface=wlan2
+/interface bridge vlan
+add bridge=bridge1 tagged=ether2,wlan1 vlan-ids=111
+add bridge=bridge1 tagged=ether2,wlan2 vlan-ids=222
+```
   
 
--   Create bridge with _vlan-filtering=yes_
--   Add necessary bridge ports
--   Add _tagged_ interfaces under _interface bridge vlan_ section with correct _vlan-ids_
+一些设备有内置的交换芯片，可以在以太网端口之间以线速性能交换数据包。网桥VLAN过滤禁用硬件卸载(除了在CRS3xx系列交换机上)，这将阻止数据包的交换，这不会影响无线接口，因为通过它们的流量无论如何都不能卸载到交换芯片上。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R2] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/interface bridge</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">fast-forward</code><code class="ros plain">=no</code> <code class="ros value">name</code><code class="ros plain">=bridge1</code> <code class="ros value">vlan-filtering</code><code class="ros plain">=yes</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge port</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=ether2</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan1</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">interface</code><code class="ros plain">=wlan2</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">/interface bridge vlan</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2,wlan1</code> <code class="ros value">vlan-ids</code><code class="ros plain">=111</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">bridge</code><code class="ros plain">=bridge1</code> <code class="ros value">tagged</code><code class="ros plain">=ether2,wlan2</code> <code class="ros value">vlan-ids</code><code class="ros plain">=222</code></div></div></td></tr></tbody></table>
-
-  
-
-Some devices have a built-in switch chip that can switch packets between Ethernet ports with wire-speed performance. Bridge VLAN filtering disables hardware offloading (except on CRS3xx series switches), which will prevent packets from being switched, this does not affect Wireless interfaces as traffic through them cannot be offloaded to the switch chip either way.
-
-  
-  
-
-VLAN filtering is not required in this setup, but is highly recommended due to security reasons. Without VLAN filtering it is possible to forward unknown VLAN IDs in certain scenarios. Disabling VLAN filtering does have performance benefits.
+在此设置中不需要VLAN过滤，但出于安全原因强烈建议使用。在某些情况下，不进行VLAN过滤可以转发未知的VLAN id。禁用VLAN过滤确实具有性能优势。
 
   
 
 **R3:**
 
--   Add IP address on wlan1 interface.
--   Create wireless security-profile compatible with R2 wlan1.
+- 在wlan1接口添加IP地址。
+- 创建兼容R2 wlan1的无线安全配置文件。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R3] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.1.3/24</code> <code class="ros value">interface</code><code class="ros plain">=wlan1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros value">default-name</code><code class="ros plain">=wlan1</code> <code class="ros plain">] </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">security-profile</code><code class="ros plain">=vlan111</code></div></div></td></tr></tbody></table>
+```shell
+[admin@R3] >
+/ip address
+add address=192.168.1.3/24 interface=wlan1
+ 
+/interface wireless
+set [ find default-name=wlan1 ] disabled=no security-profile=vlan111
+```
 
 **R4:**
 
--   Add IP address on wlan1 interface.
--   Create wireless security-profile compatible with R2 wlan2.
+- 在wlan1接口添加IP地址。
+- 创建兼容R2 wlan2的无线安全配置文件。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@R4] &gt;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/ip address</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=192.168.2.4/24</code> <code class="ros value">interface</code><code class="ros plain">=wlan1</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[ </code><code class="ros functions">find </code><code class="ros value">default-name</code><code class="ros plain">=wlan1</code> <code class="ros plain">] </code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros value">security-profile</code><code class="ros plain">=vlan222</code></div></div></td></tr></tbody></table>
+```shell
+[admin@R4] >
+/ip address
+add address=192.168.2.4/24 interface=wlan1
+ 
+/interface wireless
+set [ find default-name=wlan1 ] disabled=no security-profile=vlan222
+```

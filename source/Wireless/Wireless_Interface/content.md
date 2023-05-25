@@ -1,4 +1,4 @@
-## Overview
+# Overview
 
 **Package:** wireless
 
@@ -42,7 +42,7 @@ This property has effect only in AP modes, and when value of **rate-set** is con
 | **channel-width** (_20/40/80/160mhz-Ceeeeeee | 20/40/80/160mhz-XXXXXXXX | 20/40/80/160mhz-eCeeeeee | 20/40/80/160mhz-eeCeeeee | 20/40/80/160mhz-eeeCeeee | 20/40/80/160mhz-eeeeCeee | 20/40/80/160mhz-eeeeeCee | 20/40/80/160mhz-eeeeeeCe | 20/40/80/160mhz-eeeeeeeC | 20/40/80mhz-Ceee | 20/40/80mhz-eCee | 20/40/80mhz-eeCe | 20/40/80mhz-eeeC | 20/40/80mhz-XXXX | 20/40mhz-Ce | 20/40mhz-eC | 20/40mhz-XX | 40mhz-turbo | 20mhz | 10mhz | 5mhz_; Default: **20mhz**) | Use of extension channels (e.g. Ce, eC etc) allows additional 20MHz extension channels and if it should be located below or above the control (main) channel. Extension channel allows 802.11n devices to use up to 40MHz (802.11ac up to 160MHz) of spectrum in total thus increasing max throughput. Channel widths with XX and XXXX extensions automatically scan for a less crowded control channel frequency based on the number of concurrent devices running in every frequency and chooses the “C” - Control channel frequency automatically. |
 | **comment** (_string_; Default: ) | Short description of the interface |
 | **compression** (_yes | no_; Default: **no**) | Setting this property to _yes_ will allow the use of the hardware compression. Wireless interface must have support for hardware compression. Connections with devices that do not use compression will still work. |
-| **country** (_name of the country | no\_country\_set_; Default: **etsi**) | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no\_country\_set_ is an FCC compliant set of channels. |
+| **country** (_name of the country | no_country_set_; Default: **etsi**) | Limits available bands, frequencies and maximum transmit power for each frequency. Also specifies default value of **scan-list**. Value _no_country_set_ is an FCC compliant set of channels. |
 | **default-ap-tx-limit** (_integer [0..4294967295]_; Default: **0**) | This is the value of **ap-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit. |
 | **default-authentication** (_yes | no_; Default: **yes**) | For AP mode, this is the value of **authentication** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). For station mode, this is the value of **connect** for APs that do not match any entry in the [connect-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-ConnectList) |
 | **default-client-tx-limit** (_integer [0..4294967295]_; Default: **0**) | This is the value of **client-tx-limit** for clients that do not match any entry in the [access-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). 0 means no limit |
@@ -254,7 +254,7 @@ Automatic adjustment does not work for WDS links that are manually configured as
 -   _static_ only allows WDS links that are manually configured in WDS
 -   _dynamic_ also allows WDS links with devices that are not configured in WDS, by creating required entries dynamically. Such dynamic WDS entries are removed automatically after the connection with the other AP is lost.
 
-\-mesh modes use different (better) method for establishing link between AP, that is not compatible with APs in non-mesh mode. This method avoids one-sided WDS links that are created only by one of the two APs. Such links cannot pass any data.When AP or station is establishing WDS connection with another AP, it uses connect-list to check whether this connection is allowed. If station in station-wds mode is establishing connection with AP, AP uses access-list to check whether this connection is allowed.If mode is station-wds, then this property has no effect.
+-mesh modes use different (better) method for establishing link between AP, that is not compatible with APs in non-mesh mode. This method avoids one-sided WDS links that are created only by one of the two APs. Such links cannot pass any data.When AP or station is establishing WDS connection with another AP, it uses connect-list to check whether this connection is allowed. If station in station-wds mode is establishing connection with AP, AP uses access-list to check whether this connection is allowed.If mode is station-wds, then this property has no effect.
 
  |
 | **wireless-protocol** (_802.11 | any | nstreme | nv2 | nv2-nstreme | nv2-nstreme-802.11 | unspecified_; Default: **any**) | Specifies protocol used on wireless interface;
@@ -276,147 +276,40 @@ wireless chipsets represent the total power, for reference see the table below:T
 
 Wireless chipset signal level representation
 
-| 
-Wireless chipset
-
- | 
-
-Enabled Chains
-
- | 
-
-Power per Chain
-
- | 
-
-Total Power
-
-|     |
-| --- ||  |  |
-|     |
-
-Wireless chipset
-
- | 
-
-Enabled Chains
-
- | 
-
-Power per Chain
-
- | 
-
-Total Power
-
-|          |
-| -------- | --- | ------------------------------ | ------------------------------ |
-| 802.11n  | 1   | Equal to the selected Tx Power | Equal to the selected Tx Power |
-| 802.11n  | 2   | Equal to the selected Tx Power | +3dBm                          |
-| 802.11n  | 3   | Equal to the selected Tx Power | +5dBm                          |
-| 802.11ac | 1   | Equal to the selected Tx Power | Equal to the selected Tx Power |
-| 802.11ac | 2   | \-3dBm                         | Equal to the selected Tx Power |
-| 802.11ac | 3   | \-5dBm                         | Equal to the selected Tx Power |
-| 802.11ac | 4   | \-6dBm                         | Equal to the selected Tx Power |
+| Wireless chipset | Enabled Chains | Power per Chain                | Total Power                    |
+| ---------------- | -------------- | ------------------------------ | ------------------------------ |
+| 802.11n          | 1              | Equal to the selected Tx Power | Equal to the selected Tx Power |
+| 802.11n          | 2              | Equal to the selected Tx Power | +3dBm                          |
+| 802.11n          | 3              | Equal to the selected Tx Power | +5dBm                          |
+| 802.11ac         | 1              | Equal to the selected Tx Power | Equal to the selected Tx Power |
+| 802.11ac         | 2              | -3dBm                          | Equal to the selected Tx Power |
+| 802.11ac         | 3              | -5dBm                          | Equal to the selected Tx Power |
+| 802.11ac         | 4              | -6dBm                          | Equal to the selected Tx Power |
 
 ### Basic and MCS Rate table
 
 Default basic and supported rates, depending on selected band
 
-| 
-band
-
- | 
-
-basic rates
-
- | 
-
-basic-HT-mcs
-
- | 
-
-basic-VHT-mcs
-
- | 
-
-VHT-mcs
-
- | 
-
-HT-mcs
-
- | 
-
-supported rates
-
-|     |
-| --- ||  |  |  |  |  |
-|     |
-
-band
-
- | 
-
-basic rates
-
- | 
-
-basic-HT-mcs
-
- | 
-
-basic-VHT-mcs
-
- | 
-
-VHT-mcs
-
- | 
-
-HT-mcs
-
- | 
-
-supported rates
-
-|                |
-| -------------- | ---- | ---- | ---- | --- | ---- | --------- |
-| 2.4ghz-b       | 1    | \-   | \-   | \-  | \-   | 1-11      |
-| 2.4ghz-onlyg   | 6    | \-   | \-   | \-  | \-   | 1-11,6-54 |
-| 2.4ghz-onlyn   | 6    | 0-7  | \-   | \-  | 0-23 | 1-11,6-54 |
-| 2.4ghz-b/g     | 1-11 | \-   | \-   | \-  | \-   | 1-11,6-54 |
-| 2.4ghz-b/g/n   | 1-11 | none | \-   | \-  | 0-23 | 1-11,6-54 |
-| 2.4ghz-g/n     | 6    | none | \-   | \-  | 0-23 | 6-54      |
-| 2.4ghz-g-turbo | 6    | \-   | \-   | \-  | \-   | 6-54      |
-| 5ghz-a         | 6    | \-   | \-   | \-  | \-   | 6-54      |
-| 5ghz-a/n       | 6    | none | \-   | \-  | 0-23 | 6-54      |
-| 5ghz-onlyn     | 6    | 0-7  | \-   | \-  | 0-23 | 6-54      |
-| 5ghz-a/n/ac    | 6    | none | none | 0-9 | 0-23 | 6-54      |
-| 5ghz-onlyac    | 6    | none | 0-7  | 0-9 | 0-23 | 6-54      |
+| band           | basic rates | basic-HT-mcs | basic-VHT-mcs | VHT-mcs | HT-mcs | supported rates |
+| -------------- | ----------- | ------------ | ------------- | ------- | ------ | --------------- |
+| 2.4ghz-b       | 1           | -            | -             | -       | -      | 1-11            |
+| 2.4ghz-onlyg   | 6           | -            | -             | -       | -      | 1-11,6-54       |
+| 2.4ghz-onlyn   | 6           | 0-7          | -             | -       | 0-23   | 1-11,6-54       |
+| 2.4ghz-b/g     | 1-11        | -            | -             | -       | -      | 1-11,6-54       |
+| 2.4ghz-b/g/n   | 1-11        | none         | -             | -       | 0-23   | 1-11,6-54       |
+| 2.4ghz-g/n     | 6           | none         | -             | -       | 0-23   | 6-54            |
+| 2.4ghz-g-turbo | 6           | -            | -             | -       | -      | 6-54            |
+| 5ghz-a         | 6           | -            | -             | -       | -      | 6-54            |
+| 5ghz-a/n       | 6           | none         | -             | -       | 0-23   | 6-54            |
+| 5ghz-onlyn     | 6           | 0-7          | -             | -       | 0-23   | 6-54            |
+| 5ghz-a/n/ac    | 6           | none         | none          | 0-9     | 0-23   | 6-54            |
+| 5ghz-onlyac    | 6           | none         | 0-7           | 0-9     | 0-23   | 6-54            |
 
   
 
 Used settings when **rate-set=configured**
 
-| 
-band
-
- | 
-
-used settings
-
-|     |
-| --- ||
-|     |
-
-band
-
- | 
-
-used settings
-
-|                            |
+| band                       | used settings                                                                         |
 | -------------------------- | ------------------------------------------------------------------------------------- |
 | 2.4ghz-b                   | basic-b, supported-b                                                                  |
 | 2.4ghz-b/g, 2.4ghz-onlyg   | basic-b, supported-b, basic-a/g, supported-a/g                                        |
@@ -442,7 +335,7 @@ Settings independent from **rate-set**:
 -   RTS/CTS based protection - device willing to send frame at first sends RequestToSend frame and waits for ClearToSend frame from intended destination. By "seeing" RTS or CTS frame 802.11 compliant devices know that somebody is about to transmit and therefore do not initiate transmission themselves
 -   "CTS to self" based protection - device willing to send frame sends CTS frame "to itself". As in RTS/CTS protocol every 802.11 compliant device receiving this frame know not to transmit. "CTS to self" based protection has less overhead, but it must be taken into account that this only protects against devices receiving CTS frame (e.g. if there are 2 "hidden" stations, there is no use for them to use "CTS to self" protection, because they will not be able to receive CTS sent by other station - in this case stations must use RTS/CTS so that other station knows not to transmit by seeing CTS transmitted by AP).
 
-Protection mode is controlled by **hw-protection-mode** setting of wireless interface. Possible values: **none** \- for no protection (default), **rts-cts** for RTS/CTS based protection or **cts-to-self** for "CTS to self" based protection.
+Protection mode is controlled by **hw-protection-mode** setting of wireless interface. Possible values: **none** - for no protection (default), **rts-cts** for RTS/CTS based protection or **cts-to-self** for "CTS to self" based protection.
 
 Frame size threshold at which protection should be used is controlled by **hw-protection-threshold** setting of wireless interface.
 
@@ -482,7 +375,7 @@ Nv2 protocol limit is 511 clients.
 
 #### Nv2 Troubleshooting
 
-Increase throughput on long distance with **tdma-period-size**. In Every "period", the Access Point leaves part of the time unused for data transmission (which is equal to _round trip time_ \- the time in which the frame can be sent and received from the client), it is used to ensure that client could receive the last frame from Access Point, before sending its own packets to it. The longer the distance, the longer the period is unused.
+Increase throughput on long distance with **tdma-period-size**. In Every "period", the Access Point leaves part of the time unused for data transmission (which is equal to _round trip time_ - the time in which the frame can be sent and received from the client), it is used to ensure that client could receive the last frame from Access Point, before sending its own packets to it. The longer the distance, the longer the period is unused.
 
 For example, the distance between Access Point and client is 30km. Frame is sent in 100us one direction, respectively round-trip-time is ~200us. **tdma-period-size** default value is 2ms, it means 10% of the time is unused. When tdma-period-size is increased to 4ms, only 5% of time is unused. For 60km wireless link, round-trip-time is 400ms, unused time is 20% for default tdma-period-size 2ms, and 10% for 4ms. Bigger tdma-period-size value increases latency on the link.
 
@@ -552,30 +445,13 @@ Then if signal drops to -56, client will be disconnected.
 
 ### Properties
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                             |
+| Property                                                    | Description                                                                                            |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **ap-tx-limit** (_integer [0..4294967295]_; Default: **0**) | Limit rate of data transmission to this client. Value _0_ means no limit. Value is in bits per second. |
 | **authentication** (_yes                                    | no_; Default: **yes**)                                                                                 |
 
--   _no_ \- Client association will always fail.
--   _yes_ \- Use authentication procedure that is specified in the [**security-profile**](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-SecurityProfiles) of the interface.
+-   _no_ - Client association will always fail.
+-   _yes_ - Use authentication procedure that is specified in the [**security-profile**](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-SecurityProfiles) of the interface.
 
  |
 | **client-tx-limit** (_integer [0..4294967295]_; Default: **0**) | Ask client to limit rate of data transmission. Value _0_ means no limit.
@@ -588,8 +464,8 @@ Value is in bits per second. |
  |
 | **forwarding** (_yes | no_; Default: **yes**) | 
 
--   _no_ \- Client cannot send frames to other station that are connected to same access point.
--   _yes_ \- Client can send frames to other stations on the same access point.
+-   _no_ - Client cannot send frames to other station that are connected to same access point.
+-   _yes_ - Client can send frames to other stations on the same access point.
 
  |
 | **interface** (_string | any | all_; Default: **any**) | Rules with **interface**\=_any_ are used for any wireless interface and the **interface**\=_all_ defines [interface-list](https://wiki.mikrotik.com/wiki/Manual:Interface/List#Lists "Manual:Interface/List") “all” name. To make rule that applies only to one wireless interface, specify that interface as a value of this property. |
@@ -599,12 +475,12 @@ Value is in bits per second. |
 | **private-algo** (_104bit-wep | 40bit-wep | aes-ccm | none | tkip_; Default: **none**) | Only for WEP modes. |
 | **private-key** (_string_; Default: **""**) | Only for WEP modes. |
 | **private-pre-shared-key** (_string_; Default: **""**) | Used in WPA PSK mode. |
-| **signal-range** (_NUM..NUM \- both NUM are numbers in the range -120..120_; Default: **\-120..120**) | Rule matches if signal strength of the station is within the range.
+| **signal-range** (_NUM..NUM - both NUM are numbers in the range -120..120_; Default: **-120..120**) | Rule matches if signal strength of the station is within the range.
 
 If signal strength of the station will go out of the range that is specified in the rule, access point will disconnect that station.
 
  |
-| **time** (_TIME-TIME,sun,mon,tue,wed,thu,fri,sat \- TIME is time interval 0..86400 seconds; all day names are optional; value can be unset_; Default: ) | Rule will match only during specified time.
+| **time** (_TIME-TIME,sun,mon,tue,wed,thu,fri,sat - TIME is time interval 0..86400 seconds; all day names are optional; value can be unset_; Default: ) | Rule will match only during specified time.
 
 Station will be disconnected after specified time ends. Both start and end time is expressed as time since midnight, 00:00.
 
@@ -616,55 +492,21 @@ Rule will match only during specified days of the week. |
 
 Align tool is used to help in alignment devices running this tool.
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                         |
-| ----------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **active-mode** (_yes                                                   | no_; Default: **yes**)                                         | If in active mode, will send out frames for align.                                    |
-| **audio-max** (_integer [-2147483648..2147483647]_; Default: **\-20**)  | Maxumum signal strength for beeper                             |
-| **audio-min** (_integer [-2147483648..2147483647]_; Default: **\-100**) | Minimum signal strength for beeper                             |
-| **audio-monitor** (_MAC_; Default: **00:00:00:00:00:00**)               | Which MAC address to use for audio monitoring                  |
-| **filter-mac** (_MAC_; Default: **00:00:00:00:00:00**)                  | Filtered out MAC address that will be shown in monitor screen. |
-| **frame-size** (_integer [200..1500]_; Default: **300**)                | Size of the frames used by monitor.                            |
-| **frames-per-second** (_integer [1..100]_; Default: **25**)             | Frame transmit interval                                        |
-| **receive-all** (_yes                                                   | no_; Default: **no**)                                          | If set to "yes", monitor will find all available devices.                             |
-| **ssid-all** (_yes                                                      | no_; Default: **no**)                                          | Whether to show all SSIDs in the monitor or only one configured in wireless settings. |
+| Property                                                               | Description                                                    |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **active-mode** (_yes                                                  | no_; Default: **yes**)                                         | If in active mode, will send out frames for align.                                    |
+| **audio-max** (_integer [-2147483648..2147483647]_; Default: **-20**)  | Maxumum signal strength for beeper                             |
+| **audio-min** (_integer [-2147483648..2147483647]_; Default: **-100**) | Minimum signal strength for beeper                             |
+| **audio-monitor** (_MAC_; Default: **00:00:00:00:00:00**)              | Which MAC address to use for audio monitoring                  |
+| **filter-mac** (_MAC_; Default: **00:00:00:00:00:00**)                 | Filtered out MAC address that will be shown in monitor screen. |
+| **frame-size** (_integer [200..1500]_; Default: **300**)               | Size of the frames used by monitor.                            |
+| **frames-per-second** (_integer [1..100]_; Default: **25**)            | Frame transmit interval                                        |
+| **receive-all** (_yes                                                  | no_; Default: **no**)                                          | If set to "yes", monitor will find all available devices.                             |
+| **ssid-all** (_yes                                                     | no_; Default: **no**)                                          | Whether to show all SSIDs in the monitor or only one configured in wireless settings. |
 
 ### Menu Specific Commands
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                      |
+| Property                                             | Description            |
 | ---------------------------------------------------- | ---------------------- |
 | **monitor** (_interface name_)                       | Start align monitoring |
 | **test-audio** (_integer [-2147483648..2147483647]_) | Test the beeper        |
@@ -693,24 +535,7 @@ Operation:
 
 ### Properties
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                       |
+| Property                              | Description                                                                                                                       |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | **3gpp** (_string_; Default: )        |
 |                                       |
@@ -718,15 +543,15 @@ Description
 | **comment** (_string_; Default: )     | Short description of an entry                                                                                                     |
 | **connect** (_yes                     | no_; Default: **yes**)                                                                                                            | Available options: |
 
--   _yes_ \- Connect to access point that matches this rule.
--   _no_ \- Do not connect to any access point that matches this rule.
+-   _yes_ - Connect to access point that matches this rule.
+-   _no_ - Do not connect to any access point that matches this rule.
 
  |
 | **disabled** (_yes | no_; Default: **no**) |   
  |
 | **mac-address** (_MAC_; Default: **00:00:00:00:00:00**) | Rule matches only AP with the specified MAC address. Value _00:00:00:00:00:00_ matches always. |
 | **security-profile** (_string | none_; Default: **none**) | Name of [security profile](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-SecurityProfiles) that is used when connecting to matching access points, If value of this property is _none_, then security profile specified in the interface configuration will be used. In station mode, rule will match only access points that can support specified security profile. Value _none_ will match access point that supports security profile that is specified in the interface configuration. In access point mode value of this property will not be used to match remote devices. |
-| **signal-range** (_NUM..NUM \- both NUM are numbers in the range -120..120_; Default: **\-120..120**) | Rule matches if signal strength of the access point is within the range. If station establishes connection to access point that is matched by this rule, it will disconnect from that access point when signal strength goes out of the specified range. |
+| **signal-range** (_NUM..NUM - both NUM are numbers in the range -120..120_; Default: **-120..120**) | Rule matches if signal strength of the access point is within the range. If station establishes connection to access point that is matched by this rule, it will disconnect from that access point when signal strength goes out of the specified range. |
 | **ssid** (_string_; Default: **""**) | Rule matches access points that have this SSID. Empty value matches any SSID. This property has effect only when station mode interface **ssid** is empty, or when access point mode interface has **wds-ignore-ssid**\=_yes_ |
 | **wireless-protocol** (_802.11 | any | nstreme | tdma_; Default: **any**) |   
  |
@@ -772,24 +597,7 @@ Description
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                     |
+| Property                            | Description                                                                                                       |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **2ghz-10mhz-power-channels** ()    |
 |                                     |
@@ -840,24 +648,7 @@ Description
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                 |
+| Property                                        | Description                   |
 | ----------------------------------------------- | ----------------------------- |
 | **comment** (_string_; Default: )               | Short description of an entry |
 | **manual-tx-powers** (_list of [Rate:TxPower];_ |
@@ -880,121 +671,88 @@ If we take hAP ac, as an example, we can see that number of chains is 3, and the
 
 **Integrated wireless interface frequency table**
 
-| 
-Board name
-
- | 
-
-Wireless interfaces
-
- | 
-
-Frequency range [MHz]
-
- | 
-
-Supported channel widths [Mhz]
-
-|     |
-| --- ||  |  |
-|     |
-
-Board name
-
- | 
-
-Wireless interfaces
-
- | 
-
-Frequency range [MHz]
-
- | 
-
-Supported channel widths [Mhz]
-
-|                          |
-| ------------------------ | --- | ------------------- | ---------------------------------------------------------------------------- |
-| 2011UAS-2HnD             | 1   | 2312-2732           | 20,40                                                                        |
-| 751G-2HnD                | 1   | 2200-2700           | 20,40 and advanced channel support                                           |
-| 751U-2HnD                | 1   | 2200-2700           | 20,40 and advanced channel support                                           |
-| 911-2Hn                  | 1   | 2312-2732           | 20,40                                                                        |
-| 911-5HacD                | 1   | 4920-6100           | 20,40,80                                                                     |
-| 911-5Hn                  | 1   | 4920-6100           | 5,10,20,40                                                                   |
-| 911-5HnD                 | 1   | 4920-6100           | 20,40                                                                        |
-| 911G-2HPnD               | 1   | 2312-2732           | 20,40                                                                        |
-| 911G-5HPacDr2 /-NB /-QRT | 1   | 4920-6100           | 5,10,20,40,80                                                                |
-| 911G-5HPnD /-QRT         | 1   | 4920-6100           | 5,10,20,40                                                                   |
-| 912UAG-2HPnD /-OUT       | 1   | 2312-2732           | 20,40                                                                        |
-| 912UAG-5HPnD /-OUT       | 1   | 4920-6100           | 5,10,20,40                                                                   |
-| 912UAG-6HPnD /-OUT       | 1   | 5500-6500           | and 20,40                                                                    |
-| 921GS-5HPacD-15S /-19S   | 1   | 4920-6100           | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
-| 22UGS-5HPacD2HnD         | 2   | 4920-5925,2412-2482 | 20,40,80 and 20,40                                                           |
-| 921UAGS-5SHPacD-NM       | 1   | 4920-6100           | 20,40,80                                                                     |
-| 921UAGS-5SHPacT-NM       | 1   | 4920-6100           | 20,40,80                                                                     |
-| 922UAGS-5HPacD /-NM      | 1   | 4920-6100           | 20,40,80                                                                     |
-| 922UAGS-5HPacT /-NM      | 1   | 4920-6100           | 20,40,80                                                                     |
-| 941-2nD /-TC             | 1   | 2312-2732           | 20,40                                                                        |
-| 951G-2HnD                | 1   | 2312-2732           | 20,40                                                                        |
-| 951Ui-2HnD               | 1   | 2312-2732           | 20,40                                                                        |
-| 951Ui-2nD                | 1   | 2312-2732           | 20,40                                                                        |
-| 952Ui-5ac2nD /-TC        | 2   | 2312-2732,4920-6100 | 20,40 and 20,40,80                                                           |
-| 953GS-5HnT /-RP          | 1   | 4920-6100           | 5,10,20,40                                                                   |
-| 962UiGS-5HacT2HnT        | 2   | 2312-2732,4920-6100 | 20,40 and 20,40,80                                                           |
-| cAP2n                    | 1   | 2312-2732           | 20,40                                                                        |
-| cAP2nD                   | 1   | 2312-2732           | 20,40                                                                        |
-| cAPL-2nD                 | 1   | 2312-2732           | 20,40                                                                        |
-| CRS109-8G-1S-2HnD-IN     | 1   | 2312-2732           | 20,40                                                                        |
-| CRS125-24G-1S-2HnD-IN    | 1   | 2312-2732           | 20,40                                                                        |
-| Disc-5nD                 | 1   | 4920-6100           | 20,40                                                                        |
-| DynaDishG-5HacD          | 1   | 4920-6100           | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
-| DynaDishG-6HnD           | 1   | 5500-6500           | 20,40                                                                        |
-| Groove52HPn              | 1   | 4920-6100,2312-2732 | 5,10,20,40 and 5,10,20,40                                                    |
-| GrooveA-52HPn            | 1   | 4920-6100,2312-2732 | 5,10,20,40 and 5,10,20,40                                                    |
-| GrooveG-52HPacn          | 1   | 4920-6100,2312-2732 | 20,40,80 and 20,40                                                           |
-| GrooveGA-52HPacn         | 1   | 4920-6100,2312-2732 | 20,40,80 and 20,40                                                           |
-| LDF-5nD                  | 1   | 4920-6100           | 20,40                                                                        |
-| LHG-5nD                  | 1   | 4920-6100           | 20,40                                                                        |
-| mAP2n                    | 1   | 2312-2732           | 20,40                                                                        |
-| mAP2nD                   | 1   | 2312-2732           | 20,40                                                                        |
-| mAPL-2nD                 | 1   | 2312-2732           | 20,40                                                                        |
-| Metal2SHPn               | 1   | 2200-2700           | 20,40 and advanced channel support                                           |
-| Metal5SHPn               | 1   | 4800-6100           | 5,10,20,40 and advanced channel support                                      |
-| Metal9HPn                | 1   | 902-928             | 5,10,20                                                                      |
-| MetalG-52SHPacn          | 1   | 4920-6100,2312-2732 | 20,40,80 and 20,40                                                           |
-| OmniTikG-5HacD           | 1   | 4920-6100           | 20,40,80                                                                     |
-| OmniTikPG-5HacD          | 1   | 4920-6100           | 20,40,80                                                                     |
-| OmniTIKU-5HnD            | 1   | 4800-6100           | 5,10,20,40                                                                   |
-| OmniTIKUPA-5HnD          | 1   | 4800-6100           | 5,10,20,40                                                                   |
-| QRTG-2SHPnD              | 1   | 2312-2732           | 20,40                                                                        |
-| SEXTANTG-5HPnD           | 1   | 4920-6100           | 20,40                                                                        |
-| SXT2nDr2                 | 1   | 2312-2732           | 20,40                                                                        |
-| SXT5HacD2n               | 2   | 2312-2732,4920-6100 | 5<sup>1</sup>,10<sup>1</sup>,20,40 and 5<sup>1</sup>,10<sup>1</sup>,20,40,80 |
-| SXT5HPnDr2               | 1   | 4920-6100           | 20,40                                                                        |
-| SXT5nDr2                 | 1   | 4920-6100           | 20,40                                                                        |
-| SXTG-2HnD                | 1   | 2200-2700           | 20,40                                                                        |
-| SXTG-2HnDr2              | 1   | 2300-2700           | 20,40                                                                        |
-| SXTG-5HPacD              | 1   | 4920-6100           | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
-| SXTG-5HPacD-HG /-SA      | 1   | 4920-6100           | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
-| SXTG-5HPnD-HGr2 /-SAr2   | 1   | 4920-6100           | 20,40                                                                        |
-| SXTG-6HPnD               | 1   | 5500-6500           | 20,40                                                                        |
-| SXTsq2nD                 | 1   | 2312-2484           | 20,40                                                                        |
-| wAP2nD /-BE              | 1   | 2312-2732           | 20,40                                                                        |
-| wAPG-5HacT2HnD /-BE      | 2   | 2312-2732,4920-6100 | 20,40 and 20,40,80                                                           |
-| R11e-2HnD                | 1   | 2312-2732           | 20,40                                                                        |
-| R11e-2HPnD               | 1   | 2312-2732           | 20,40                                                                        |
-| R11e-5HacD               | 1   | 4920-6100           | 20,40,80                                                                     |
-| R11e-5HacT               | 1   | 4920-6100           | 20,40,80                                                                     |
-| R11e-5HnD                | 1   | 4920-6100           | 20,40                                                                        |
-| R2SHPn                   | 1   | 2200-2700           | 20,40 and advanced channel support                                           |
-| R52H                     | 1   | 4920-6100,2192-2507 | 20 and 20                                                                    |
-| R52HnD                   | 1   | 4800-6100,2200-2700 | 20,40 and 20,40                                                              |
-| R52nM                    | 1   | 4800-6100,2200-2700 | 20,40 and 20,40 and advanced channel support                                 |
-| R5SHPn                   | 1   | 4800-6100           | 20,40 and advanced channel support                                           |
+| Board name               | Wireless interfaces | Frequency range [MHz] | Supported channel widths [Mhz]                                               |
+| ------------------------ | ------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| 2011UAS-2HnD             | 1                   | 2312-2732             | 20,40                                                                        |
+| 751G-2HnD                | 1                   | 2200-2700             | 20,40 and advanced channel support                                           |
+| 751U-2HnD                | 1                   | 2200-2700             | 20,40 and advanced channel support                                           |
+| 911-2Hn                  | 1                   | 2312-2732             | 20,40                                                                        |
+| 911-5HacD                | 1                   | 4920-6100             | 20,40,80                                                                     |
+| 911-5Hn                  | 1                   | 4920-6100             | 5,10,20,40                                                                   |
+| 911-5HnD                 | 1                   | 4920-6100             | 20,40                                                                        |
+| 911G-2HPnD               | 1                   | 2312-2732             | 20,40                                                                        |
+| 911G-5HPacDr2 /-NB /-QRT | 1                   | 4920-6100             | 5,10,20,40,80                                                                |
+| 911G-5HPnD /-QRT         | 1                   | 4920-6100             | 5,10,20,40                                                                   |
+| 912UAG-2HPnD /-OUT       | 1                   | 2312-2732             | 20,40                                                                        |
+| 912UAG-5HPnD /-OUT       | 1                   | 4920-6100             | 5,10,20,40                                                                   |
+| 912UAG-6HPnD /-OUT       | 1                   | 5500-6500             | and 20,40                                                                    |
+| 921GS-5HPacD-15S /-19S   | 1                   | 4920-6100             | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
+| 22UGS-5HPacD2HnD         | 2                   | 4920-5925,2412-2482   | 20,40,80 and 20,40                                                           |
+| 921UAGS-5SHPacD-NM       | 1                   | 4920-6100             | 20,40,80                                                                     |
+| 921UAGS-5SHPacT-NM       | 1                   | 4920-6100             | 20,40,80                                                                     |
+| 922UAGS-5HPacD /-NM      | 1                   | 4920-6100             | 20,40,80                                                                     |
+| 922UAGS-5HPacT /-NM      | 1                   | 4920-6100             | 20,40,80                                                                     |
+| 941-2nD /-TC             | 1                   | 2312-2732             | 20,40                                                                        |
+| 951G-2HnD                | 1                   | 2312-2732             | 20,40                                                                        |
+| 951Ui-2HnD               | 1                   | 2312-2732             | 20,40                                                                        |
+| 951Ui-2nD                | 1                   | 2312-2732             | 20,40                                                                        |
+| 952Ui-5ac2nD /-TC        | 2                   | 2312-2732,4920-6100   | 20,40 and 20,40,80                                                           |
+| 953GS-5HnT /-RP          | 1                   | 4920-6100             | 5,10,20,40                                                                   |
+| 962UiGS-5HacT2HnT        | 2                   | 2312-2732,4920-6100   | 20,40 and 20,40,80                                                           |
+| cAP2n                    | 1                   | 2312-2732             | 20,40                                                                        |
+| cAP2nD                   | 1                   | 2312-2732             | 20,40                                                                        |
+| cAPL-2nD                 | 1                   | 2312-2732             | 20,40                                                                        |
+| CRS109-8G-1S-2HnD-IN     | 1                   | 2312-2732             | 20,40                                                                        |
+| CRS125-24G-1S-2HnD-IN    | 1                   | 2312-2732             | 20,40                                                                        |
+| Disc-5nD                 | 1                   | 4920-6100             | 20,40                                                                        |
+| DynaDishG-5HacD          | 1                   | 4920-6100             | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
+| DynaDishG-6HnD           | 1                   | 5500-6500             | 20,40                                                                        |
+| Groove52HPn              | 1                   | 4920-6100,2312-2732   | 5,10,20,40 and 5,10,20,40                                                    |
+| GrooveA-52HPn            | 1                   | 4920-6100,2312-2732   | 5,10,20,40 and 5,10,20,40                                                    |
+| GrooveG-52HPacn          | 1                   | 4920-6100,2312-2732   | 20,40,80 and 20,40                                                           |
+| GrooveGA-52HPacn         | 1                   | 4920-6100,2312-2732   | 20,40,80 and 20,40                                                           |
+| LDF-5nD                  | 1                   | 4920-6100             | 20,40                                                                        |
+| LHG-5nD                  | 1                   | 4920-6100             | 20,40                                                                        |
+| mAP2n                    | 1                   | 2312-2732             | 20,40                                                                        |
+| mAP2nD                   | 1                   | 2312-2732             | 20,40                                                                        |
+| mAPL-2nD                 | 1                   | 2312-2732             | 20,40                                                                        |
+| Metal2SHPn               | 1                   | 2200-2700             | 20,40 and advanced channel support                                           |
+| Metal5SHPn               | 1                   | 4800-6100             | 5,10,20,40 and advanced channel support                                      |
+| Metal9HPn                | 1                   | 902-928               | 5,10,20                                                                      |
+| MetalG-52SHPacn          | 1                   | 4920-6100,2312-2732   | 20,40,80 and 20,40                                                           |
+| OmniTikG-5HacD           | 1                   | 4920-6100             | 20,40,80                                                                     |
+| OmniTikPG-5HacD          | 1                   | 4920-6100             | 20,40,80                                                                     |
+| OmniTIKU-5HnD            | 1                   | 4800-6100             | 5,10,20,40                                                                   |
+| OmniTIKUPA-5HnD          | 1                   | 4800-6100             | 5,10,20,40                                                                   |
+| QRTG-2SHPnD              | 1                   | 2312-2732             | 20,40                                                                        |
+| SEXTANTG-5HPnD           | 1                   | 4920-6100             | 20,40                                                                        |
+| SXT2nDr2                 | 1                   | 2312-2732             | 20,40                                                                        |
+| SXT5HacD2n               | 2                   | 2312-2732,4920-6100   | 5<sup>1</sup>,10<sup>1</sup>,20,40 and 5<sup>1</sup>,10<sup>1</sup>,20,40,80 |
+| SXT5HPnDr2               | 1                   | 4920-6100             | 20,40                                                                        |
+| SXT5nDr2                 | 1                   | 4920-6100             | 20,40                                                                        |
+| SXTG-2HnD                | 1                   | 2200-2700             | 20,40                                                                        |
+| SXTG-2HnDr2              | 1                   | 2300-2700             | 20,40                                                                        |
+| SXTG-5HPacD              | 1                   | 4920-6100             | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
+| SXTG-5HPacD-HG /-SA      | 1                   | 4920-6100             | 5<sup>1</sup>,10<sup>1</sup>,20,40,80                                        |
+| SXTG-5HPnD-HGr2 /-SAr2   | 1                   | 4920-6100             | 20,40                                                                        |
+| SXTG-6HPnD               | 1                   | 5500-6500             | 20,40                                                                        |
+| SXTsq2nD                 | 1                   | 2312-2484             | 20,40                                                                        |
+| wAP2nD /-BE              | 1                   | 2312-2732             | 20,40                                                                        |
+| wAPG-5HacT2HnD /-BE      | 2                   | 2312-2732,4920-6100   | 20,40 and 20,40,80                                                           |
+| R11e-2HnD                | 1                   | 2312-2732             | 20,40                                                                        |
+| R11e-2HPnD               | 1                   | 2312-2732             | 20,40                                                                        |
+| R11e-5HacD               | 1                   | 4920-6100             | 20,40,80                                                                     |
+| R11e-5HacT               | 1                   | 4920-6100             | 20,40,80                                                                     |
+| R11e-5HnD                | 1                   | 4920-6100             | 20,40                                                                        |
+| R2SHPn                   | 1                   | 2200-2700             | 20,40 and advanced channel support                                           |
+| R52H                     | 1                   | 4920-6100,2192-2507   | 20 and 20                                                                    |
+| R52HnD                   | 1                   | 4800-6100,2200-2700   | 20,40 and 20,40                                                              |
+| R52nM                    | 1                   | 4800-6100,2200-2700   | 20,40 and 20,40 and advanced channel support                                 |
+| R5SHPn                   | 1                   | 4800-6100             | 20,40 and advanced channel support                                           |
 
 **NOTES:**
 
-1.  \- Only in 802.11a/n standard
+1.  - Only in 802.11a/n standard
 
 ## Overview
 
@@ -1019,12 +777,12 @@ AR93xx doesn't support this feature
 
 Advanced Channels are configured in **interface wireless channels** menu. This menu contains ordered list of user-defined channels that can be grouped by means of **list** property. Channels have the following properties:
 
--   **name** \- name by which this channel can be referred to. If **name** is not specified when adding channel, it will be automatically generated from channel frequency and width;
--   **list** \- name of list this channel is part of. Lists can be used to group channels;
--   **frequency** \- channel center frequency in MHz, allowing to specify fractional MHz part, e.g. **5181.5**;
--   **width** \- channel width in MHz, allowing to specify fractional MHz part, e.g. **14.5**;
--   **band** \- defines default set of data rates when using this channel;
--   **extension-channel** \- specifies placement of 11n extension channel.
+-   **name** - name by which this channel can be referred to. If **name** is not specified when adding channel, it will be automatically generated from channel frequency and width;
+-   **list** - name of list this channel is part of. Lists can be used to group channels;
+-   **frequency** - channel center frequency in MHz, allowing to specify fractional MHz part, e.g. **5181.5**;
+-   **width** - channel width in MHz, allowing to specify fractional MHz part, e.g. **14.5**;
+-   **band** - defines default set of data rates when using this channel;
+-   **extension-channel** - specifies placement of 11n extension channel.
 
 ## Using Advanced Channels
 
@@ -1041,11 +799,11 @@ To use particular Advanced Channel for wireless interface (applies to modes that
 
 ```
 
-### **scan-list**
+### scan-list
 
 Interface **scan-list** is used in multiple modes that either gather information for list of channels (like interactive **scan** command) or selects channel to work on (like any of **station** modes or AP modes performing DFS). Interface **scan-list** can be configured with comma-separated list of the following items:
 
--   **default** \- default .11 channel list for given country and interface band and channel width;
+-   **default** - default .11 channel list for given country and interface band and channel width;
 -   numeric frequency ranges in MHz;
 -   Advanced Channel, referred to by name;
 -   Advanced Channel list, referred to by list name.
@@ -1072,24 +830,7 @@ This menu allows to switch a wireless card to the nstreme mode. In this case the
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                             |
+| Property                                                    | Description                   |
 | ----------------------------------------------------------- | ----------------------------- |
 | **comment** (_string_; Default: )                           | Short description of an entry |
 | **disable-csma** (_yes                                      | no_; Default: **no**)         | Disable CSMA/CA when polling is used (better performance) |
@@ -1098,10 +839,10 @@ Description
 | **framer-limit** (_integer [100..4000]_; Default: **3200**) | Maximal frame size            |
 | **framer-policy** (_best-fit                                | dynamic-size                  | exact-size                                                | none_; Default: **none**) | The method how to combine frames. A number of frames may be combined into a bigger one to reduce the amount of protocol overhead (and thus increase speed). The card is not waiting for frames, but in case a number of packets are queued for transmitting, they can be combined. There are several methods of framing: |
 
--   **none** \- do nothing special, do not combine packets (framing is disabled)
--   **best-fit** \- put as many packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
--   **exact-size** \- put as many packets as possible in one frame, until the framer-limit limit is met, even if fragmentation will be needed (best performance)
--   **dynamic-size** \- choose the best frame size dynamically
+-   **none** - do nothing special, do not combine packets (framing is disabled)
+-   **best-fit** - put as many packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
+-   **exact-size** - put as many packets as possible in one frame, until the framer-limit limit is met, even if fragmentation will be needed (best performance)
+-   **dynamic-size** - choose the best frame size dynamically
 
  |
 | **name** (_string_) | Name of an interface, to which setting will be applied. Read only. |
@@ -1129,24 +870,7 @@ Two radios in nstreme-dual-slave mode can be grouped together to make nstreme2 P
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                            |
+| Property                                                   | Description                   |
 | ---------------------------------------------------------- | ----------------------------- |
 | **arp** (_disabled                                         | enabled                       | proxy-arp                                                                                                 | reply-only_; Default: **enabled**)                                                                                                                                                                                                                                                                                      | [`Read more >>`](https://wiki.mikrotik.com/wiki/Manual:IP/ARP#ARP_Modes "Manual:IP/ARP") |
 | **comment** (_string_; Default: )                          | Short description of an entry |
@@ -1157,9 +881,9 @@ Description
 | **framer-limit** (_integer [64..4000]_; Default: **2560**) | Maximal frame size            |
 | **framer-policy** (_best-fit                               | exact-size                    | none_; Default: **none**)                                                                                 | The method how to combine frames. A number of frames may be combined into one bigger one to reduce the amout of protocol overhead (and thus increase speed). The card are not waiting for frames, but in case a number packets are queued for transmitting, they can be combined. There are several methods of framing: |
 
--   **none** \- do nothing special, do not combine packets
--   **best-fit** \- put as much packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
--   **exact-size** \- put as much packets as possible in one frame, until the framer-limit limit is met, even if fragmentation will be needed (best performance)
+-   **none** - do nothing special, do not combine packets
+-   **best-fit** - put as much packets as possible in one frame, until the framer-limit limit is met, but do not fragment packets
+-   **exact-size** - put as much packets as possible in one frame, until the framer-limit limit is met, even if fragmentation will be needed (best performance)
 
  |
 | **ht-channel-width** (_2040mhz | 20mhz | 40mhz_; Default: **20mhz**) |   
@@ -1212,24 +936,7 @@ In the registration table, you can see various information about currently conne
 
 All properties are read-only.
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                        |
+| Property                               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **802.1x-port-enabled** (_yes          | no_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | whether the data exchange is allowed with the peer (i.e., whether 802.1x authentication is completed, if needed) |
 | **ack-timeout** (_integer_)            | current value of ack-timeout                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -1324,31 +1031,14 @@ Security profiles are configured under the **/interface wireless security-profi
 
 ### Basic properties
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                 |
+| Property        | Description          |
 | --------------- | -------------------- |
 | **mode** (_none | static-keys-optional | static-keys-required | dynamic-keys_; Default: **none**) | Encryption mode for the security profile. |
 
--   none \- Encryption is not used. Encrypted frames are not accepted.
--   static-keys-required \- WEP mode. Do not accept and do not send unencrypted frames. Station in _static-keys-required_ mode will not connect to an Access Point in _static-keys-optional_ mode.
--   static-keys-optional \- WEP mode. Support encryption and decryption, but allow also to receive and send unencrypted frames. Device will send unencrypted frames if encryption algorithm is specified as _none_. Station in _static-keys-optional_ mode will not connect to an Access Point in _static-keys-required_ mode. See also: [static-sta-private-algo](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-WEPproperties), [static-transmit-key](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-WEPproperties).
--   dynamic-keys \- WPA mode.
+-   none - Encryption is not used. Encrypted frames are not accepted.
+-   static-keys-required - WEP mode. Do not accept and do not send unencrypted frames. Station in _static-keys-required_ mode will not connect to an Access Point in _static-keys-optional_ mode.
+-   static-keys-optional - WEP mode. Support encryption and decryption, but allow also to receive and send unencrypted frames. Device will send unencrypted frames if encryption algorithm is specified as _none_. Station in _static-keys-optional_ mode will not connect to an Access Point in _static-keys-required_ mode. See also: [static-sta-private-algo](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-WEPproperties), [static-transmit-key](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-WEPproperties).
+-   dynamic-keys - WPA mode.
 
  |
 | **name** (_text_; Default: ) | Name of the security profile |
@@ -1358,38 +1048,20 @@ Description
 These properties have effect only when **mode** is set to _dynamic-keys_.
 
   
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                    |
+| Property                           | Description            |
 | ---------------------------------- | ---------------------- |
 | **authentication-types** (_wpa-psk | wpa2-psk               | wpa-eap                                                                                                                                                                                   | wpa2-eap_; Default: ) | Set of supported authentication types, multiple values can be selected. Access Point will advertise supported authentication types, and client will connect to Access Point only if it supports any of the advertised authentication types. |
 | **disable-pmkid** (_no             | yes_; Default: **no**) | Whether to include PMKID into the EAPOL frame sent out by the Access Point. Disabling PMKID can cause compatibility issues with devices that use the PMKID to connect to an Access Point. |
 
--   yes \- removes PMKID from EAPOL frames (improves security, reduces compatibility).
--   no \- includes PMKID into EAPOL frames (reduces security, improves compatibility).
+-   yes - removes PMKID from EAPOL frames (improves security, reduces compatibility).
+-   no - includes PMKID into EAPOL frames (reduces security, improves compatibility).
 
 This property only has effect on Access Points. |
 | **unicast-ciphers** (_tkip | aes-ccm_; Default: **aes-ccm**) | Access Point advertises that it supports specified ciphers, multiple values can be selected. Client attempts connection only to Access Points that supports at least one of the specified ciphers. One of the ciphers will be used to encrypt unicast frames that are sent between Access Point and Station. |
 | **group-ciphers** (_tkip | aes-ccm_; Default: **aes-ccm**) | Access Point advertises one of these ciphers, multiple values can be selected. Access Point uses it to encrypt all broadcast and multicast frames. Client attempts connection only to Access Points that use one of the specified group ciphers.
 
--   tkip \- Temporal Key Integrity Protocol - encryption protocol, compatible with legacy WEP equipment, but enhanced to correct some of the WEP flaws.
--   aes-ccm \- more secure WPA encryption protocol, based on the reliable AES (Advanced Encryption Standard). Networks free of WEP legacy should use only this cipher.
+-   tkip - Temporal Key Integrity Protocol - encryption protocol, compatible with legacy WEP equipment, but enhanced to correct some of the WEP flaws.
+-   aes-ccm - more secure WPA encryption protocol, based on the reliable AES (Advanced Encryption Standard). Networks free of WEP legacy should use only this cipher.
 
  |
 | **group-key-update** (_time: 30s..1d_; Default: **5m**) | Controls how often Access Point updates the group key. This key is used to encrypt all broadcast and multicast frames. property only has effect for Access Points. |
@@ -1404,31 +1076,14 @@ This property only has effect on Access Points. |
 
 These properties have effect only when **authentication-types** contains _wpa-eap_ or _wpa2-eap_, and **mode** is set to _dynamic-keys_.
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                           |
+| Property                  | Description       |
 | ------------------------- | ----------------- |
 | **eap-methods** (_eap-tls | eap-ttls-mschapv2 | passthrough | peap_; Default: **passthrough**) | Allowed types of authentication methods, multiple values can be selected. This property only has effect on Access Points. |
 
--   eap-tls \- Use built-in EAP TLS authentication. Both client and server certificates are supported. See description of **tls-mode** and **tls-certificate** properties.
--   eap-ttls-mschapv2 \- Use EAP-TTLS with MS-CHAPv2 authentication.
--   passthrough \- Access Point will relay authentication process to the RADIUS server.
--   peap \- Use Protected EAP authentication.
+-   eap-tls - Use built-in EAP TLS authentication. Both client and server certificates are supported. See description of **tls-mode** and **tls-certificate** properties.
+-   eap-ttls-mschapv2 - Use EAP-TTLS with MS-CHAPv2 authentication.
+-   passthrough - Access Point will relay authentication process to the RADIUS server.
+-   peap - Use Protected EAP authentication.
 
  |
 | **supplicant-identity** (_text_; Default: **[Identity](https://help.mikrotik.com/docs/display/ROS/Identity)**) | EAP identity that is sent by client at the beginning of EAP authentication. This value is used as a value for User-Name attribute in RADIUS messages sent by RADIUS EAP accounting and RADIUS EAP pass-through authentication. |
@@ -1436,10 +1091,10 @@ Description
 | **mschapv2-password** (_text_; Default: ) | Password to use for authentication when _eap-ttls-mschapv2_ authentication method is being used. This property only has effect on Stations. |
 | **tls-mode** (_verify-certificate | dont-verify-certificate | no-certificates | verify-certificate-with-crl_; Default: **no-certificates**) | This property has effect only when **eap-methods** contains _eap-tls_.
 
--   verify-certificate \- Require remote device to have valid certificate. Check that it is signed by known certificate authority. No additional identity verification is done. Certificate may include information about time period during which it is valid. If router has incorrect time and date, it may reject valid certificate because router's clock is outside that period. See also the [Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates) configuration.
--   dont-verify-certificate \- Do not check certificate of the remote device. Access Point will not require client to provide certificate.
--   no-certificates \- Do not use certificates. TLS session is established using 2048 bit anonymous Diffie-Hellman key exchange.
--   verify-certificate-with-crl \- Same as _verify-certificate_ but also checks if the certificate is valid by checking the Certificate Revocation List.
+-   verify-certificate - Require remote device to have valid certificate. Check that it is signed by known certificate authority. No additional identity verification is done. Certificate may include information about time period during which it is valid. If router has incorrect time and date, it may reject valid certificate because router's clock is outside that period. See also the [Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates) configuration.
+-   dont-verify-certificate - Do not check certificate of the remote device. Access Point will not require client to provide certificate.
+-   no-certificates - Do not use certificates. TLS session is established using 2048 bit anonymous Diffie-Hellman key exchange.
+-   verify-certificate-with-crl - Same as _verify-certificate_ but also checks if the certificate is valid by checking the Certificate Revocation List.
 
  |
 | **tls-certificate** (_none | name_; Default: **none**) | Access Point always needs a certificate when configured when **tls-mode** is set to _verify-certificate_, or is set to _dont-verify-certificate_. Client needs a certificate only if Access Point is configured with **tls-mode** set to _verify-certificate_. In this case client needs a valid certificate that is signed by a CA known to the Access Point. This property only has effect when **tls-mode** is not set to _no-certificates_ and **eap-methods** contains _eap-tls_. |
@@ -1458,29 +1113,12 @@ Description
 
 #### RADIUS properties
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                     |
+| Property                            | Description           |
 | ----------------------------------- | --------------------- |
 | **radius-mac-authentication** (_yes | no_; Default: **no**) | This property affects the way how Access Point processes clients that are not found in the [Access List](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-AccessList). |
 
--   no \- allow or reject client authentication based on the value of [default-authentication](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#General_interface_properties "Manual:Interface/Wireless") property of the Wireless interface.
--   yes \- Query RADIUS server using MAC address of client as user name. With this setting the value of [default-authentication](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-Generalinterfaceproperties) has no effect.
+-   no - allow or reject client authentication based on the value of [default-authentication](https://wiki.mikrotik.com/wiki/Manual:Interface/Wireless#General_interface_properties "Manual:Interface/Wireless") property of the Wireless interface.
+-   yes - Query RADIUS server using MAC address of client as user name. With this setting the value of [default-authentication](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-Generalinterfaceproperties) has no effect.
 
  |
 | **radius-mac-accounting** (_yes | no_; Default: **no**) |   
@@ -1498,24 +1136,7 @@ Description
 
 These properties have effect only when **mode** is set to _static-keys-required_ or _static-keys-optional_.
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                               |
+| Property                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **static-key-0                                | static-key-1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | static-key-2  | static-key-3** (_hex_; Default: ) | Hexadecimal representation of the key. Length of key must be appropriate for selected algorithm. See the [Statically configured WEP keys](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-StaticallyconfiguredWEPkeys) section.                                                                                                                                                                                                                                                               |
 | **static-algo-0                               | static-algo-1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | static-algo-2 | static-algo-3** (_none            | 40bit-wep                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 104bit-wep                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | tkip | aes-ccm_; Default: **none**) | Encryption algorithm to use with the corresponding key. |
@@ -1529,13 +1150,13 @@ _**Used for**: Deauthentication attack prevention, MAC address cloning issue._
 
 RouterOS implements proprietary management frame protection algorithm based on shared secret. Management frame protection means that RouterOS wireless device is able to verify source of management frame and confirm that particular frame is not malicious. This feature allows to withstand deauthentication and disassociation attacks on RouterOS based wireless devices.
 
-Management protection mode is configured in security-profile with **management-protection** setting. Possible values are: **disabled** \- management protection is disabled (default), **allowed** \- use management protection if supported by remote party (for AP - allow both, non-management protection and management protection clients, for client - connect both to APs with and without management protection), **required** \- establish association only with remote devices that support management protection (for AP - accept only clients that support management protection, for client - connect only to APs that support management protection).
+Management protection mode is configured in security-profile with **management-protection** setting. Possible values are: **disabled** - management protection is disabled (default), **allowed** - use management protection if supported by remote party (for AP - allow both, non-management protection and management protection clients, for client - connect both to APs with and without management protection), **required** - establish association only with remote devices that support management protection (for AP - accept only clients that support management protection, for client - connect only to APs that support management protection).
 
 Management protection shared secret is configured with security-profile **management-protection-key** setting.
 
 When interface is in AP mode, default management protection key (configured in security-profile) can be overridden by key specified in access-list or RADIUS attribute.
 
-```
+```shell
 [admin@mikrotik] /interface wireless security-profiles> print 
  0 name="default" mode=none authentication-types="" unicast-ciphers="" 
   group-ciphers="" wpa-pre-shared-key="" wpa2-pre-shared-key="" 
@@ -1628,9 +1249,9 @@ It is possible to use one security profile for all clients, and different securi
 
 ##### WDS and WPA/WPA2
 
-If access point uses security profile with **mode**\=_dynamic-keys_, then encryption will be used for all WDS links. Since WPA authentication and key exchange is not symmetrical, one of the access points will act as a client for the purpose of establishing secure connection. This is similar to how _static-mesh_ and _dynamic-mesh_ WDS modes work. Some problems, like single sided WDS link between two incorrectly configured access points that use non_\-mesh_ mode, is not possible if WPA encryption is enabled. However, non_\-mesh_ modes with WPA still have other issues (like constant reconnection attempts in case of configuration mismatch) that are solved by use of the _\-mesh_ WDS modes.
+If access point uses security profile with **mode**\=_dynamic-keys_, then encryption will be used for all WDS links. Since WPA authentication and key exchange is not symmetrical, one of the access points will act as a client for the purpose of establishing secure connection. This is similar to how _static-mesh_ and _dynamic-mesh_ WDS modes work. Some problems, like single sided WDS link between two incorrectly configured access points that use non_-mesh_ mode, is not possible if WPA encryption is enabled. However, non_-mesh_ modes with WPA still have other issues (like constant reconnection attempts in case of configuration mismatch) that are solved by use of the _-mesh_ WDS modes.
 
-In general, WPA properties on both access points that establish WPA protected WDS link have to match. These properties are **authentication-types**, **unicast-ciphers**, **group-ciphers**. For non_\-mesh_ WDS mode these properties need to have the same values on both devices. In _mesh_ WDS mode each access point has to support the other one as a client.
+In general, WPA properties on both access points that establish WPA protected WDS link have to match. These properties are **authentication-types**, **unicast-ciphers**, **group-ciphers**. For non_-mesh_ WDS mode these properties need to have the same values on both devices. In _mesh_ WDS mode each access point has to support the other one as a client.
 
 Theoretically it is possible to use RADIUS MAC authentication and other RADIUS services with WDS links. However, only one access point will interact with the RADIUS server, the other access point will behave as a client.
 
@@ -1644,7 +1265,7 @@ Implementation of _eap-tls_ EAP method in RouterOS is particularly well suited
 
 Client uses value of [connect-list](https://help.mikrotik.com/docs/display/ROS/Wireless+Interface#WirelessInterface-ConnectList) **security-profile** property to match only those access points that support necessary security.
 
--   **mode**\=_static-keys-required_ and **mode**\=_static-keys-optional_ matches only access points with the same **mode** in interface **security-profile**.
+-  **mode**\=_static-keys-required_ and **mode**\=_static-keys-optional_ matches only access points with the same **mode** in interface **security-profile**.
 -   If **mode**\=_dynamic-keys_, then connect list entry matches if all of the **authentication-types**, **unicast-ciphers** and **group-ciphers** contain at least one value that is advertised by access point.
 
 ## Virtual interfaces
@@ -1682,24 +1303,7 @@ It is also possible to create virtual clients and have both an AP and a Client o
   
 Wireless sniffer allows to capture frames including Radio header, 802.11 header and other wireless related information.
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                                                                         |
+| Property                                                                                                | Description                                                                                                       |
 | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **channel-time** (; Default: **200ms**)                                                                 | How long to sniff each channel. Used only if **multiple-channels=yes**                                            |
 | **file-limit** (_integer [10..4294967295]_; Default: **10**)                                            | Allocated file size in bytes which will be used to store captured data. Applicable if **file-name** is specified. |
@@ -1776,7 +1380,7 @@ This tool monitors surrounding frequency usage, and displays which devices occup
 
 ## Spectral scan
 
--   See separate document [Manual:Spectral\_scan](https://wiki.mikrotik.com/wiki/Manual:Spectral_scan "Manual:Spectral scan")
+-   See separate document [Manual:Spectral_scan](https://wiki.mikrotik.com/wiki/Manual:Spectral_scan "Manual:Spectral scan")
 
 ## WDS
 
@@ -1784,24 +1388,7 @@ This tool monitors surrounding frequency usage, and displays which devices occup
 
 **Properties:**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                         |
+| Property                                                | Description            |
 | ------------------------------------------------------- | ---------------------- |
 | **arp** (_disabled                                      | enabled                | proxy-arp | reply-only_; Default: **enabled**) |
 |                                                         |
@@ -1825,16 +1412,7 @@ Description
   
 **Read-only properties:**
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
+|
 
 Property
 
@@ -1930,9 +1508,9 @@ The setup-repeater does the following steps:
 
 If your AP **does not support WPS**, it is possible to specify the settings manually, using these parameters:
 
--   **address** \- MAC address of AP to setup repeater for (optional)
--   **ssid** \- SSID of AP to setup repeater for (optional)
--   **passphrase** \- key to use for AP - if this IS specified, command will just scan for AP and create security profile based on info in beacon and with this passphrase. If this IS NOT specified, command will do WPS to find out passphrase.
+-   **address** - MAC address of AP to setup repeater for (optional)
+-   **ssid** - SSID of AP to setup repeater for (optional)
+-   **passphrase** - key to use for AP - if this IS specified, command will just scan for AP and create security profile based on info in beacon and with this passphrase. If this IS NOT specified, command will do WPS to find out passphrase.
 
 ## Roaming
 
@@ -1954,30 +1532,13 @@ You can configure your RADIUS authentication server to assign users or groups of
 
   
 
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                        |
+| Property               | Description      |
 | ---------------------- | ---------------- |
 | **vlan-mode** (_no tag | user service tag | use tag_; Default: **no tag**) | Three VLAN modes are available: |
 
--   _no-tag_ \- AP don't use VLAN tagging
--   _use-service-tag_ \- VLAN ID use 802.1ad tag type
--   _use-tag_ \- VLAN ID use 802.1q tag type
+-   _no-tag_ - AP don't use VLAN tagging
+-   _use-service-tag_ - VLAN ID use 802.1ad tag type
+-   _use-tag_ - VLAN ID use 802.1q tag type
 
  |
 | **vlan-id** (_integer [1..4095]_; Default: **1**) | VLAN identification number |
@@ -2002,7 +1563,7 @@ This way traffic can be separated between wireless clients even on the same inte
 
 For more information about interworking-profiles see the [manual](https://help.mikrotik.com/docs/display/ROS/Interworking+Profiles).
 
-**realms-raw** \- list of strings with hex values. Each string specifies contents of "NAI Realm Tuple", excluding "NAI Realm Data Field Length" field.
+**realms-raw** - list of strings with hex values. Each string specifies contents of "NAI Realm Tuple", excluding "NAI Realm Data Field Length" field.
 
 Each hex encoded string must consist of the following fields:
 

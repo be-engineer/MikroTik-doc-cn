@@ -52,60 +52,17 @@ The following matrix specifies _station_ modes available for each **wireless-pro
 
 _Table applies to RouterOS v5rc11 and above:_
 
-| 
-  
-
-
- | 
-
-802.11
-
- | 
-
-ROS 802.11
-
- | 
-
-nstreme
-
- | 
-
-nv2
-
-|     |
-| --- |  |  |  |  |
-|     |
-
-  
-
-
- | 
-
-802.11
-
- | 
-
-ROS 802.11
-
- | 
-
-nstreme
-
- | 
-
-nv2
-
-|                                |
-| ------------------------------ | --- | --- | --- | --- |
-| **station**                    | V   | V   | V   | V   |
+| 802.11                         | ROS 802.11 | nstreme | nv2 |
+| ------------------------------ | ---------- | ------- | --- | --- |
+| **station**                    | V          | V       | V   | V   |
 | **station-wds**                |
-| V                              | V   | V   |
-| **station-pseudobridge**       | V   | V   | V   |
+| V                              | V          | V       |
+| **station-pseudobridge**       | V          | V       | V   |
 |                                |
-| **station-pseudobridge-clone** | V   | V   | V   |
+| **station-pseudobridge-clone** | V          | V       | V   |
 |                                |
 | **station-bridge**             |
-| V                              | V   | V   |
+| V                              | V          | V       |
 
 # Mode _station_
 

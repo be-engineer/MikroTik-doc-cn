@@ -1,52 +1,52 @@
-# Introduction
+# 介绍
 
-The spectral scan can scan all frequencies supported by your wireless card, and plot them directly in the console. The exact frequency span depends on the card. Allowed ranges on r52n: [4790; 6085], [2182; 2549].
+频谱扫描可以扫描无线网卡支持的所有频率，并直接在控制台中绘制它们。确切的频率范围取决于卡片。r52n上允许的范围:[4790;6085]、[2182;2549]。
 
-A wireless card can generate 4us long spectral snapshots for any 20mhz wide channel. This is considered a single spectral sample.
+无线网卡可以为任何20mhz宽信道生成4us长的频谱快照。这被认为是一个单一的光谱样本。
 
-To improve data quality spectrum is scanned with 10mhz frequency increments, which means doubled sample coverage at each specific frequency (considering 20mhz wide samples).
+为了提高数据质量，频谱以10mhz的频率增量扫描，这意味着在每个特定频率下(考虑20mhz宽的样本)的采样覆盖率增加了一倍。
 
-Currently, is NOT supported for Atheros 802.11ac chips (e.g. QCA98xx, IPQ-4018). See [https://mikrotik.com/products](https://mikrotik.com/products) determine the wireless chip on your device.
+目前，不支持Atheros 802.11ac芯片(例如QCA98xx, IPQ-4018)。请参阅 [https://mikrotik.com/products](https://mikrotik.com/products) 确定您设备上的无线芯片。
 
-# Console
+# 控制台
 
-## Spectral History
+## 光谱历史
 
 ![](https://help.mikrotik.com/docs/download/attachments/139526162/Spectral-history.png?version=1&modificationDate=1658911224048&api=v2)
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless spectral-history &lt;wireless interface name&gt;</code></div></div></td></tr></tbody></table>
+`/interface wireless spectral-history <wireless interface name>`
 
   
 
-Plots spectrogram. Legend and frequency ruler is printed every 24 lines. Numbers in the ruler correspond to the value at their leftmost character position. Power values that fall in different ranges are printed as different colored characters with the same foreground and background color, so it is possible to copy and paste the terminal output of this command.
+阴谋声谱图。图例和频率标尺每24行印一次。标尺中的数字对应于其最左边字符位置的值。在不同范围内的功率值被打印为具有相同前景和背景颜色的不同颜色的字符，因此可以复制和粘贴该命令的终端输出。
 
--   _value_ -- select value that is plotted on the output. 'interference' is special as it shows detected interference sources (affected by the 'classify-samples' parameter) instead of power readings, and cannot be made audible;
--   _interval_ -- interval at which spectrogram lines are printed;
--   _duration_ -- terminate command after a specified time. default is indefinite;
--   _buckets_ -- how many values to show in each line of a spectrogram. This value is limited by the number of columns in the terminal. It is useful to reduce this value if using 'audible';
--   _average-samples_ -- Number of 4us spectral snapshots to take at each frequency, and calculate average and maximum energy over them. (default 10);
--   _classify-samples_ -- Number of spectral snapshots taken at each frequency and processed by the interference classification algorithm. Generally, more samples give more chance to spot certain types of interference (default 50);
--   _range_ --
-    -   2.4ghz - scan the whole 2.4ghz band;
-    -   5ghz - scan the whole 5ghz band;
-    -   current-channel - scan current channel only (20 or 40 MHz wide);
-    -   range - scan specific range;
+- _value_ - 选择绘制在输出上的值。“interference”是特殊的，因为它显示检测到的干扰源(受“classiy -samples”参数的影响)而不是功率读数，并且不能使声音;
+- _interval_ - 打印谱线的时间间隔;
+- _duration_ - 在指定时间后终止命令。违约是无限期的;
+- _buckets_ - 在谱图的每一行显示多少个值。该值受终端中列数的限制。如果使用“audible”，减少这个值是有用的;
+- _average-samples_ - 在每个频率上拍摄的4us光谱快照的数量，并计算它们的平均和最大能量。(默认10);
+- _classify-samples_ - 在每个频率下拍摄并经过干扰分类算法处理的光谱快照个数。一般来说，越多的样本越有机会发现某些类型的干扰(默认为50);
+- _range_
+  - 2.4ghz - 扫描整个2.4ghz频段;
+  - 5ghz - 扫描整个5ghz频段;
+  - 电流通道 - 仅扫描电流通道(20或40 MHz宽);
+  - range - 扫描的特定范围;
 
--   _audible=yes_ -- play each line as it is printed. There is a short silence between the lines. Each line is played from left to right, with higher frequencies corresponding to higher values in the spectrogram.
+- _audible=yes_ -播放打印出来的每一行。字里行间有短暂的沉默。每条线从左到右播放，频率越高，谱图中的值越高。
 
-## Spectral Scan
+## 光谱扫描
 
 ![](https://help.mikrotik.com/docs/download/attachments/139526162/Spectral-scan.png?version=1&modificationDate=1658911497641&api=v2)
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/interface wireless spectral-</code><code class="ros functions">scan </code><code class="ros plain">&lt;wireless interface name&gt;</code></div></div></td></tr></tbody></table>
+`/interface wireless spectral-scan <wireless interface name>`
 
-Continuously monitor spectral data. This command uses the same data source as 'spectral-history', and thus shares many parameters.
+连续监测光谱数据。该命令使用与'spectral-history'相同的数据源，因此共享许多参数。
 
-Each line displays one spectrogram bucket -- frequency, the numeric value of power average, and a character graphic bar. A bar shows average power value with ':' characters and average peak hold with '.' characters. Maximum is displayed as a lone floating ':' character.
+每一行显示一个谱图桶——频率、功率平均值的数值和字符图形条。柱状图显示平均功率值，字符为“:”，平均峰值保持率为“”。的字符。Maximum显示为单个浮动':'字符。
 
--   _show-interference_ -- add a column that shows detected interference sources;
+- _show-interference_ - 增加一列显示检测到的干扰源;
 
-Types of possibly classified interference:
+可能分类干扰的类型:
 
 -   Bluetooth-headset
 -   Bluetooth-stereo
@@ -56,14 +56,14 @@ Types of possibly classified interference:
 -   video-bridge
 -   wifi
 
-# The Dude
+# Dude
 
-The Dude is a free network monitoring and management program by MikroTik. You [can download it here](http://www.mikrotik.com/thedude.php).
+Dude是一个免费的网络监控和管理程序，由MikroTik。你可以在这里 [下载](http://www.mikrotik.com/thedude.php)。
 
-The Dude has a built-in capability to run graphical Spectral Scan from any of your RouterOS devices with a supported wireless card. Simply select this device in your Dude map, right click and choose Tools -> Spectral Scan.
+Dude具有内置功能，可以通过支持的无线网卡从任何RouterOS设备运行图形化频谱扫描。只需在您的Dude地图中选择此设备，右键单击并选择工具->光谱扫描。
 
 ![](https://help.mikrotik.com/docs/download/attachments/139526162/Spectral1.png?version=1&modificationDate=1658911632889&api=v2)
 
-This will bring up the Spectral Scan GUI with various options and different view modes:
+这将打开具有各种选项和不同视图模式的光谱扫描GUI:
 
 ![](https://help.mikrotik.com/docs/download/attachments/139526162/Spectral-scan-dude.png?version=1&modificationDate=1658911642856&api=v2)
