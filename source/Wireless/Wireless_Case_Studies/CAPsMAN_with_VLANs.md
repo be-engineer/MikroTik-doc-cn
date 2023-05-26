@@ -1,20 +1,20 @@
-# Summary
+# CAPsMAN VLAN概述
 
-It is possible to create a centralized Access Point management setup for a home or office environment that is scalable to many Access Points, such a setup is quite easy to configure and has been explained in the [Simple CAPsMAN setup](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-SimplesetupofaCAPsMANsystem) guide, but for more complex setups VLANs might be required. CAPsMAN has the functionality to assign a certain VLAN ID under certain conditions. This guide will provide an example on how to assign a VLAN ID to Wireless packets based on the AP, to which a wireless client connects to. CAPsMAN with VLANs can be achieved either by using [Local Forwarding Mode](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-LocalForwardingMode) or [CAPsMAN Forwarding Mode](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-ManagerForwardingMode), the Local Forwarding Mode will provide the possibility to use a switch between your APs and CAPsMAN router to switch packets (to achieve larger throughput), while CAPsMAN Forwarding Mode should be used when all traffic should always be forwarded to the CAPsMAN router (in most cases to filter packets).
+可以为家庭或办公环境创建可扩展到许多接入点的集中式接入点管理设置，这种设置非常容易配置，并在 [简单CAPsMAN设置](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-SimplesetupofaCAPsMANsystem) 指南中进行了说明，但对于更复杂的设置，可能需要vlan。CAPsMAN具有在特定条件下分配特定VLAN ID的功能。本指南将举例说明如何根据无线客户端所连接的AP为无线报文分配VLAN ID。具有vlan的CAPsMAN可以通过使用 [本地转发模式](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-LocalForwardingMode) 或 [CAPsMAN转发模式](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-ManagerForwardingMode) 来实现，本地转发模式将提供在ap和CAPsMAN路由器之间使用交换机来交换数据包的可能性(以实现更大的吞吐量)。而CAPsMAN转发模式应用于所有流量都应始终转发到CAPsMAN路由器(在大多数情况下过滤数据包)。
 
-In this example, we are going to assign all our Wireless clients to **VLAN10**, if they connect to **WiFi_WORK**, and going to assign Wireless clients to **VLAN20**, if they connect to **WiFi_GUEST**. We are going to use Virtual APs along with CAPsMAN to create multiple SSIDs for our Wireless clients to connect to while using a single physical device. An example of how to use a single SSID for a single physical device will also be shown by using CAPsMAN provisioning rules.
+在本例中，如果无线客户端连接到WiFi_WORK，我们将把所有无线客户端分配到VLAN10，如果无线客户端连接到WiFi_GUEST，我们将把无线客户端分配到VLAN20。我们将使用Virtual ap和CAPsMAN为我们的无线客户端创建多个ssid，以便在使用单个物理设备时连接到它们。还将通过使用CAPsMAN配置规则展示如何为单个物理设备使用单个SSID的示例。
 
-# Using Local Forwarding Mode
+# 使用本地转发模式
 
 ![](https://help.mikrotik.com/docs/download/attachments/137986075/CAPsMAN_VLANs_local.jpg?version=1&modificationDate=1659444976438&api=v2)
 
-In Local Forwarding Mode, the CAPsMAN router is distributing the configuration across all CAPs that are being provisioned by the CAPsMAN router. In Local Forwarding Mode traffic is not required to be sent to the CAPsMAN router, rather it can be sent to a different router without involving the CAPsMAN router when forwarding traffic. This mode allows you to tag traffic to a certain VLAN ID before it is sent to your network from your Wireless client, which adds the possibility to use a switch to limit certain VLAN IDs to certain ports. In Local Forwarding Mode traffic is not encapsulated with a special CAPsMAN header, which can only be removed by a CAPsMAN router.
+在本地转发模式下，CAPsMAN路由器将配置分发到由CAPsMAN路由器提供的所有cap上。在本地转发模式中，流量不需要发送到CAPsMAN路由器，而是可以在转发流量时发送到不同的路由器，而不涉及CAPsMAN路由器。这种模式允许您在流量从无线客户端发送到您的网络之前将其标记为特定的VLAN ID，这增加了使用交换机将某些VLAN ID限制到某些端口的可能性。在本地转发模式中，流量没有封装在一个特殊的CAPsMAN报头中，这个报头只能由CAPsMAN路由器移除。
 
-## CAPsMAN Router:
+## CAPsMAN路由器:
 
--   Create appropriate CAP configurations for each VLAN
+—为每个VLAN配置相应的CAP配置
 
-```
+```shell
 /caps-man configuration
 add country=latvia datapath.local-forwarding=yes datapath.vlan-id=10 datapath.vlan-mode=use-tag name=Config_WORK security.authentication-types=wpa-psk,wpa2-psk \
     security.passphrase=secret_work_password ssid=WiFi_WORK
@@ -23,25 +23,25 @@ add country=latvia datapath.local-forwarding=yes datapath.vlan-id=20 datapath.vl
 
 ```
 
--   We are going to create a single CAPsMAN provisioning rule to create the **WiFi\_WORK** and the **WiFi\_GUEST** SSIDs on a single device, each connected CAP is going to create these SSIDs automatically
+- 我们将创建一个单一的CAPsMAN配置规则来创建WiFi_WORK和WiFi_GUEST ssid在单个设备上，每个连接的CAP将自动创建这些ssid
 
-```
+```shell
 /caps-man provisioning
 add action=create-dynamic-enabled master-configuration=Config_WORK slave-configurations=Config_GUEST
 ```
 
-You can create even more Virtual APs by adding multiple slave-configurations. That requires multiple CAPsMAN configurations that were created earlier.
+通过添加多个从配置，可以创建更多的Virtual ap。这需要前面创建的多个CAPsMAN配置。
 
--   For security reasons, limit the CAPsMAN to a single interface
+—出于安全考虑，请将CAPsMAN限制为单个接口
 
-```
+```shell
 /caps-man manager interface
 set [ find default=yes ] forbid=yes
 add disabled=no interface=ether1
 
 ```
 
--   Enable the CAPsMAN manager
+-   启用CAPsMAN管理器
 
 ```
 /caps-man manager
@@ -49,9 +49,9 @@ set enabled=yes
 
 ```
 
--   Setup DHCP Server for each VLAN
+-   为每个VLAN配置DHCP Server
 
-```
+```shell
 /interface vlan
 add interface=ether1 name=VLAN10 vlan-id=10
 add interface=ether1 name=VLAN20 vlan-id=20
@@ -69,13 +69,13 @@ add address=192.168.10.0/24 dns-server=8.8.8.8 gateway=192.168.10.1
 add address=192.168.20.0/24 dns-server=8.8.8.8 gateway=192.168.20.1
 ```
 
-## Switch:
+## 交换
 
-In this example, we are going to be using [Bridge VLAN Filtering](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-VLANExample-TrunkandAccessPorts) to filter unknown VLANs and to assign other devices to the same networks. Some devices are capable of offloading this to the built-in switch chip, check [Basic VLAN switching](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) guide to see how to configure it on different types of devices.
+在这个例子中，我们将使用 [网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-VLANExample-TrunkandAccessPorts) 来过滤未知的VLAN，并将其他设备分配到相同的网络。 有些设备能够将其卸载到内置的交换芯片，请查看 [基本VLAN交换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南，了解如何在不同类型的设备上配置它。
 
--   Setup Bridge VLAN Filtering
+- 设置网桥VLAN过滤
 
-```
+```shell
 /interface bridge
 add name=bridge1 vlan-filtering=yes
 /interface bridge port
@@ -89,13 +89,13 @@ add bridge=bridge1 tagged=ether1,ether2,ether3 untagged=ether4 vlan-ids=10
 add bridge=bridge1 tagged=ether1,ether2,ether3 untagged=ether5 vlan-ids=20
 ```
 
-In this example, untagged traffic is going to be used to communicate between CAPs and CAPsMAN Router. By default, if PVID is not changed, untagged traffic is going to be forwarded between ports that have the same PVID value set (including the default PVID).
+在本例中，未标记的流量将用于CAPs和CAPsMAN路由器之间的通信。缺省情况下，如果不更改PVID，则在具有相同PVID值(包括缺省PVID)的端口之间转发无标签流量。
 
-## CAPs:
+## CAP
 
--   Create a bridge and assign a port to it, that is connected to the CAPsMAN Router
+- 创建一个桥接并分配一个端口给它，连接到CAPsMAN路由器
 
-```
+```shell
 /interface bridge
 add name=bridge1
 /interface bridge port
@@ -103,17 +103,17 @@ add bridge=bridge1 interface=ether1
 
 ```
 
--   Enable CAP mode on the AP, and make sure you specify to use the newly created bridge
+-   在AP上启用CAP模式，并确保指定使用新创建的网桥
 
-```
+```shell
 /interface wireless cap
 set bridge=bridge1 discovery-interfaces=bridge1 enabled=yes interfaces=wlan1
 
 ```
 
--   After CAPs are successfully connected to the CAPsMAN Router, the wlan1 (SSID **WiFi\_WORK**) and a newly created virtual wlan5 (SSID **WiFi\_GUEST**) interfaces get dynamically added as bridge ports. The VLAN is assigned for a wireless interface and as a result, all data coming from wireless gets tagged and only data with this tag will be sent out over wireless. A bridge vlan-filtering can be disabled if additional VLAN managing and controlling is not needed. The associated VLAN can be seen with a port VLAN ID (PVID) property.
+-   CAPs成功连接到CAPsMAN路由器后，wlan1 (SSID WiFi_WORK)和新创建的虚拟wlan5 (SSID WiFi_GUEST)接口将被动态添加为桥接端口。为无线接口分配VLAN，因此，所有来自无线的数据都被标记，只有带有此标记的数据将通过无线发送出去。如果不需要额外的VLAN管理和控制，可以禁用网桥VLAN过滤。关联的VLAN可以通过端口VLAN ID (PVID)属性来查看。
 
-```
+```shell
 [admin@CAP_1] /interface bridge port pr
 Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload 
  #     INTERFACE                     BRIDGE                    HW  PVID PRIORITY  PATH-COST INTERNAL-PATH-COST    HORIZON
@@ -123,19 +123,19 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 ```
 
-That is it! Connect Wireless clients to your APs and check connectivity.
+就是这样!把无线客户端连接到ap并检查连通性。
 
-# Using CAPsMAN Forwarding Mode
+# 使用CAPsMAN转发模式
 
 ![](https://help.mikrotik.com/docs/download/attachments/137986075/CAPsMAN_VLANs.jpg?version=1&modificationDate=1659445096063&api=v2)
 
-In CAPsMAN Forwarding Mode all traffic that is coming from a CAP is encapsulated with a special CAPsMAN header, which can only be removed by a CAPsMAN router, this means that a switch will not be able to distinguish the VLAN ID set by the CAP since the VLAN tag is also going to be encapsulated. This mode limits the possibility to divert traffic in Layer2 networks, but gives you the possibility to forward traffic from each CAP over Layer3 networks for a distant CAPsMAN router to process the traffic, this mode is useful when you want to control multiple CAPs in remote locations, but want to use a central gateway.
+在CAPsMAN转发模式中，所有来自CAP的流量都被封装在一个特殊的CAPsMAN报头中，这个报头只能被CAPsMAN路由器删除，这意味着交换机将无法区分CAP设置的VLAN ID，因为VLAN标签也将被封装。这种模式限制了在第2层网络中转移流量的可能性，但使您可以通过第3层网络转发来自每个CAP的流量，以便远程CAPsMAN路由器处理流量，当您希望控制远程位置的多个CAP，但希望使用中心网关时，这种模式非常有用。
 
-## CAPsMAN router:
+## CAPsMAN路由器:
 
--   Setup Bridge VLAN filtering to limit interfaces to appropriate VLANs
+- 配置网桥VLAN过滤，将接口限制在相应的VLAN中
 
-```
+```shell
 /interface bridge
 add name=bridge1 vlan-filtering=yes
 /interface bridge port
@@ -149,17 +149,13 @@ add bridge=bridge1 tagged=bridge1 untagged=ether2 vlan-ids=20
 
   
 
-CAPsMAN will attach CAP interfaces to the bridge and automatically will add appropriate entries to the bridge VLAN table
+CAPsMAN将把CAP接口附加到网桥上，并自动将适当的条目添加到网桥VLAN表中
 
-  
+**注:**  CAPsMAN将把CAP接口附加到网桥上，并自动将适当的表项添加到网桥VLAN表中。该特性从RouterOS v6.43开始可用
 
-**Note:** CAPsMAN will attach CAP interfaces to the bridge and automatically will add appropriate entries to the bridge VLAN table. This feature is available starting with RouterOS v6.43
+—为每个VLAN配置相应的CAP配置
 
-  
-
--   Create appropriate CAP configurations for each VLAN
-
-```
+```shell
 /caps-man configuration
 add country=latvia datapath.bridge=bridge1 datapath.vlan-id=10 datapath.vlan-mode=use-tag name=Config_WORK security.authentication-types=wpa-psk,wpa2-psk \
     security.passphrase=secret_work_password ssid=WiFi_WORK
@@ -168,22 +164,20 @@ add country=latvia datapath.bridge=bridge1 datapath.vlan-id=20 datapath.vlan-mod
 
 ```
 
--   We are going to create a single CAPsMAN provisioning rule to create the **WiFi\_WORK** and the **WiFi\_GUEST** SSIDs on a single device, each connect CAP is going to create these SSIDs automatically
+-   我们将创建一个CAPsMAN配置规则来在单个设备上创建WiFi_WORK和WiFi_GUEST ssid，每个连接CAP将自动创建这些ssid
 
-```
+```shell
 /caps-man provisioning
 add action=create-dynamic-enabled master-configuration=Config_WORK slave-configurations=Config_GUEST
 ```
 
   
 
-You can create even more Virtual APs by adding multiple slave-configurations. That requires multiple CAPsMAN configurations that were created earlier.
+通过添加多个从配置，可以创建更多的Virtual ap。这需要前面创建的多个CAPsMAN配置。
 
-  
+- 出于安全考虑，建议将CAPsMAN限制为接口。cap将被连接到哪里？
 
--   For security reasons, limit the CAPsMAN to interfaces. to which CAPs are going to be connected
-
-```
+```shell
 /caps-man manager interface
 set [ find default=yes ] forbid=yes
 add disabled=no interface=ether3
@@ -191,7 +185,7 @@ add disabled=no interface=ether4
 
 ```
 
--   Enable the CAPsMAN manager
+-   启用CAPsMAN管理器
 
 ```
 /caps-man manager
@@ -199,9 +193,9 @@ set enabled=yes
 
 ```
 
--   Setup DHCP Server for each VLAN
+-   为每个VLAN配置DHCP Server
 
-```
+```shell
 /interface vlan
 add interface=bridge1 name=VLAN10 vlan-id=10
 add interface=bridge1 name=VLAN20 vlan-id=20
@@ -219,18 +213,18 @@ add address=192.168.10.0/24 dns-server=8.8.8.8 gateway=192.168.10.1
 add address=192.168.20.0/24 dns-server=8.8.8.8 gateway=192.168.20.1
 ```
 
-## CAPs:
+## CAPs
 
--   Enable CAP mode on each AP, specify which interface is connected to the CAPsMAN router
+-  在每个AP上使能CAP模式，指定连接到CAPsMAN路由器的接口
 
 ```
 /interface wireless cap set discovery-interfaces=ether1 enabled=yes interfaces=wlan1
 
 ```
 
--   After CAPs are successfully connected to the CAPsMAN Router, two CAP interfaces will be dynamically created on the CAPsMAN Router. Both of these interfaces will get dynamically added as bridge ports on the same CAPsMAN Router due to explicitly selecting the bridge interface with datapath.bridge=bridge1 and using the default CAPsMAN Forwarding Mode datapath.local-forwarding=no. Because of using a bridge with enabled vlan-filtering, both CAP interfaces will also show up in a bridge VLAN table.
+-  CAPsMAN路由器与CAPs连接成功后，将在CAPsMAN路由器上动态创建两个CAP接口。由于显式地选择具有数据路径的桥接接口，这两个接口将作为桥接端口动态地添加到同一个CAPsMAN路由器上。bridge=bridge1，使用默认的CAPsMAN转发模式datapath.local-forwarding=no。由于使用已启用VLAN过滤的网桥，两个CAP接口也将显示在网桥VLAN表中。
 
-```
+```shell
 [admin@CAPsMAN_Router] /interface bridge port print
 Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload 
  #     INTERFACE                       BRIDGE                      HW  PVID PRIORITY  PATH-COST INTERNAL-PATH-COST    HORIZON
@@ -247,24 +241,24 @@ Flags: X - disabled, D - dynamic
 
 ```
 
-That is it! Connect Wireless clients to your APs and check connectivity.
+就是这样!把无线客户端连接到ap并检查连通性。
 
-# Case studies
+# 案例研究
 
-## Without Virtual APs
+## 没有虚拟ap
 
-Not everyone wants to create Virtual APs since that does decrease the total throughput. If you want to use multiple devices to create multiple SSIDs, then it is possible to assign a certain configuration on a CAP based on its identity. To achieve this you should use CAPsMAN provisioning rules along with RegEx expressions. In this example we are going to assign the **Config_WORK** configuration to CAPs that have identity set to **AP_WORK_** and we are going to assign the **Config_GUEST** configuration to CAPs that have identity set to **AP_GUEST_**. To do this, you simply need to change the CAPsMAN provisioning rules.
+并不是每个人都想创建虚拟ap，因为这会降低总吞吐量。如果您希望使用多个设备创建多个ssid，那么可以根据其标识在CAP上分配特定的配置。要实现这一点，您应该使用CAPsMAN配置规则和RegEx表达式。在本例中，我们将把 **Config_WORK** 配置分配给具有身份设置为 **AP_WORK_** 的CAPs，把 **Config_GUEST** 配置分配给具有身份设置为 **AP_GUEST_** 的CAPs。为此只需要更改CAPsMAN规则。
 
--   Remove any existing provisioning rules
+- 删除所有现有的发放规则
 
 ```
 /caps-man provisioning remove [f]
 
 ```
 
--   Create new provisioning rules that will assign appropriate configuration on a CAP based on its identity
+-   创建新的供应规则，根据CAP的标识为其分配适当的配置
 
-```
+```shell
 /caps-man provisioning
 add action=create-dynamic-enabled identity-regexp=^AP_GUEST_ master-configuration=Config_GUEST
 add action=create-dynamic-enabled identity-regexp=^AP_WORK_ master-configuration=Config_WORK
@@ -272,4 +266,4 @@ add action=create-dynamic-enabled identity-regexp=^AP_WORK_ master-configuration
 
   
 
-Don't forget to set a proper identity on the CAPs since CAPsMAN is going to assign appropriate configuration on the APs based on it's identity.
+不要忘记在cap上设置适当的标识，因为CAPsMAN将根据它的标识在ap上分配适当的配置。

@@ -1,161 +1,58 @@
-# Interworking
+# 互联工作
 
-Interworking is the occurrence of two or more things working together. For a better Wireless network experience information about the network must be exchanged between Access Points and Wireless client devices, the information that can be found in basic Wireless beacons and probe requests is limited. For this reason, the IEEE 802.11u™-2011 (Interworking with External Networks) standard was created, that specifies how devices should exchange information between each other. Network discovery and Access Point selection process can be enhanced with the interworking service. Wireless client devices can have more criteria upon which they can choose the network with which to associate.
+互联工作是指两个或多个事物一起工作的现象。为了获得更好的无线网络体验，必须在接入点和无线客户端设备之间交换有关网络的信息，可以在基本无线信标和探测请求中找到的信息是有限的。因此，IEEE 802.11u™-2011(与外部网络的交互)标准被创建，该标准规定了设备之间应该如何交换信息。该互联服务可以增强网络发现和接入点选择过程。无线客户机设备可以有更多的标准来选择要关联的网络。
 
-# Hotspot 2.0
+# 热点2.0
 
-Hotspot 2.0 is a specification developed and owned by the Wi-Fi Alliance. It was designed to enable a more cellular-like experience when connecting to Wi-Fi networks. In the attempt to increase Wireless network security Hotspot 2.0 access points use mandatory WPA2 authentication. Hotspot 2.0 relies on Interworking as well as adds some of its own properties and procedures.
+Hotspot 2.0是由Wi-Fi联盟开发和拥有的规范。它的设计目的是在连接Wi-Fi网络时提供更像蜂窝的体验。为了提高无线网络的安全性，Hotspot 2.0接入点使用强制的WPA2认证。Hotspot 2.0依赖于互操作，并添加了一些自己的属性和过程。
 
-  
-Interworking profiles are implemented according to IEEE 802.11u and Hotspot 2.0 Release 1 specifications.
 
-This manual page describes the configuration of the regular wireless package, the same parameters are available in the WifiWave2 package as well.
+对接配置文件根据IEEE 802.11u和Hotspot 2.0 Release 1规范实现。
 
-# Configuration Properties
+本手册页面描述了常规无线包的配置，WifiWave2包中也有相同的参数。
+
+# 配置属性
 
 **Sub-menu:** `/interface wireless interworking-profiles`
 
-## Information elements in beacon and probe response
+## 信标和探测响应中的信息元素
 
-Some information can be added to beacon and probe response packets with a Interworking element. Following parameters of a Interworking element can be configured:
+一些信息可以添加到信标和探测响应数据包与一个互操作元素。对接元素可配置的参数如下:
 
-| Property                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **asra** (_yes                        | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                | Additional Steps Required for Access. Set to `yes`, if a user should take additional steps to access the internet, like the walled garden. |
-| **esr** (_yes                         | no_; Default: **no**)                                                                                                                                                                                                                                                                                                                                                                                                                | Emergency services reachable (ESR). Set to `yes` in order to indicate that emergency services are reachable through the access point.      |
-| **hessid** (_MAC address_; Default: ) | Homogenous extended service set identifier (HESSID). Devices that provide access to same external networks are in one homogenous extended service set. This service set can be identified by HESSID that is the same on all access points in this set. 6-byte value of HESSID is represented as MAC address. It should be globally unique, therefore it is advised to use one of the MAC address of access point in the service set. |
-| **internet** (_yes                    | no_; Default: **yes**)                                                                                                                                                                                                                                                                                                                                                                                                               | Whether the internet is available through this connection or not. This information is included in the Interworking element.                |
-| **network-type** (_emergency-only     | personal-device                                                                                                                                                                                                                                                                                                                                                                                                                      | private                                                                                                                                    | private-with-guest | public-chargeable | public-free | test | wildcard_; Default: **wildcard**) | Information about network access type. |
+| 属性                                                                                                                                                               | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **asra** (_yes\| no_; Default: **no**)                                                                                                                             | 访问所需的其他步骤。设置为“是”，如果用户需要采取额外的步骤来访问互联网，如围墙花园。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **esr** (_yes \| no_;Default:**no**)                                                                                                                               | 紧急服务可达(ESR)。设置为“是”，以指示可通过接入点访问紧急服务。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **hessid** (_MAC地址_;Default:)                                                                                                                                    | 同构扩展服务集标识符(HESSID)。提供对相同外部网络访问的设备位于一个同构扩展服务集中。该服务集可以由HESSID标识，它在该集的所有接入点上都是相同的。HESSID的6字节值表示为MAC地址。全局唯一，建议使用服务集中接入点的MAC地址之一。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **internet** (_yes\| no_; Default: **yes**)                                                                                                                        | 通过这种连接是否可以使用互联网。该信息包含在Interworking元素中。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **network-type** (_emergency-only) \|personal-device \| private \| private-with-guest \| public-charge \| public-free \| test \| wildcard_;(Default: **wildcard**) | 网络接入类型信息。 <br>- "emergency-only"——专门用于获取紧急服务的网络;<br>- "personal-device"——个人设备网络。这种类型的网络的一个例子是连接到打印机的相机，从而形成用于打印图片的网络;<br>- "private" -为拥有用户帐户的用户提供的网络。通常在企业中用于员工，而非客人;<br>- "private-with-guest" -与private相同，但可以使用guest帐户;<br>-“public-chargeable”-任何愿意付费的人都可以使用的网络。例如，订阅Hotspot 2.0服务或在酒店房间内上网;<br>-“public-free”-任何人都可以免费使用网络。例如，城市或机场的市政网络热点;<br>- test -用于测试和实验用途的网络。不用于生产的;<br>- 'wildcard' -用于无线客户端。发送带有通配符作为网络类型值的探测请求将使所有互连接入点响应，尽管它们的实际网络类型设置。<br>客户端发送一个探测请求帧，将网络类型设置为它感兴趣的值。它将只从具有相同值的接入点接收应答(通配符的情况除外)。 |
+| **usa** (_yes \| no_;Default:**no**)                                                                                                                               | 未经身份验证的紧急服务可访问(UESA)。<br>- "no" -表示无法通过该接入点访问未经身份验证的紧急服务;<br>- "yes"-表示可通过此接入点访问更高层未经身份验证的紧急服务。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **venue** (_venue_; Default: **unspecified**)                                                                                                                      | 指定接入点所在的场地。从可用值中选择值。一些例子:<pre><br>venue=business-bank<br>venue=mercantile-shopping-mall<br>venue=educational-university-or-college                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| </pre>                                                                                                                                                             |
 
--   `emergency-only` \- a network dedicated and limited to accessing emergency services;
--   `personal-device` \- a network of personal devices. An example of this type of network is a camera that is attached to a printer, thereby forming a network for the purpose of printing pictures;
--   `private` \- network for users with user accounts. Usually used in enterprises for employees, not guests;
--   `private-with-guest` \- same as private, but guest accounts are available;
--   `public-chargeable` \- a network that is available to anyone willing to pay. For example, a subscription to Hotspot 2.0 service or in-room internet access in a hotel;
--   `public-free` \- network is available to anyone without any fee. For example, municipal network in city or airport Hotspot;
--   `test` \- network used for testing and experimental uses. Not used in production;
--   `wildcard` \- is used on Wireless clients. Sending probe request with a wildcard as network type value will make all Interworking Access Points respond despite their actual network-type setting.
+## ANQP元素
 
-A client sends a probe request frame with network-type set to value it is interested in. It will receive replies only from access points with the same value (except the case of wildcard). |
-| **uesa** (_yes | no_; Default: **no**) | Unauthenticated emergency service accessible (UESA).
+接入网络查询协议(ANQP)。并非所有必要的信息都包含在探测响应和信标帧中。为了使客户端设备在选择接入点与ANQP相关联之前获得更多的信息。接入点可以在多个ANQP元素中存储信息。客户端设备将使用ANQP只查询它感兴趣的信息。这减少了联想之前所需的时间。
 
--   `no` \- indicates that no unauthenticated emergency services are reachable through this Access Point;
--   `yes` \- indicates that higher layer unauthenticated emergency services are reachable through this Access Point.
-
- |
-| **venue** (_venue_; Default: **unspecified**) | Specify the venue in which the Access Point is located. Choose the value from available ones. Some examples:
-
-```
-venue=business-bank
-venue=mercantile-shopping-mall
-venue=educational-university-or-college
-
-```
-
- |
-
-## ANQP elements
-
-Access network query protocol (ANQP). Not all necessary information is included in probe response and beacon frames. For client device to get more information before choosing access point to associate with ANQP is used. The Access Point can have stored information in multiple ANQP elements. Client device will use ANQP to query only for the information it is interested in. This reduces the time needed before association.
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                                  |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **3gpp-raw** (_octet string in hex_; Default: )  | Cellular network advertisement information - country and network codes. This helps Hotspot 2.0 clients in the selection of an Access Point to access 3GPP network. Please see 3GPP TS 24.302. (Annex H) for a format of this field. This value is sent ANQP response if queried.                                           |
-| **3gpp-info** (_number/number_; Default: )       | Cellular network advertisement information - country and network codes. This helps Hotspot 2.0 clients in the selection of an Access Point to access 3GPP network.  Written as "mcc/mnc". Usage is identical to "3gpp-raw", but without using hex. Multiple mcc/mnc pairs can be defined, by separating them with a comma. |
-| **authentication-types** (_dns-redirection:`url` | https-redirection:`url`                                                                                                                                                                                                                                                                                                    | online-enrollment:`url` | terms-and-conditions:`url`_; Default: ) | This property is only effective when asra is set to `yes`. Value of `url` is optional and not needed if `dns-redirection` or `online-enrollment` is selected. To set the value of `url` to empty string use double quotes. For example: |
-
-```
-authentication-types=online-enrollment:""
-```
-
- |
-| **connection-capabilities** (_number:number:closed|open|unknown_; Default: ) | This option allows to provide information about the allowed IP protocols and ports. This information can be provided in ANQP response. The first number represents the IP protocol number, the second number represents a port number.
-
--   `closed` \- set if protocol and port combination is not allowed;
--   `open` \- set if protocol and port combination is allowed;
--   `unknown` \- set if protocol and port combination is either open or closed.
-
-Example:
-
-```
-connection-capabilities=6:80:open,17:5060:closed
-```
-
-Setting such a value on an Access Point informs the Wireless client, which is connecting to the Access Point, that HTTP (6 - TCP, 80 - HTTP) is allowed and VoIP (17 - UDP; 5060 - VoIP) is not allowed.
-
-This property does not restrict or allow usage of these protocols and ports, it only gives information to station device which is connecting to Access Point. |
-| **domain-names** (_list of strings_; Default: ) | None or more fully qualified domain names (FQDN) that indicate the entity operating the Hotspot. A station that is connecting to the Access Point can request this AQNP property and check if there is a suffix match with any of the domain names it has credentials to. |
-| **ipv4-availability** (_double-nated | not-available | port-restricted | port-restricted-double-nated | port-restricted-single-nated | public | single-nated | unknown_; Default: **not-available**) | Information about what IPv4 address and access are available.
-
--   `not-available` \- Address type not available;
--   `public` \- public IPv4 address available;
--   `port-restricted` \- port-restricted IPv4 address available;
--   `single-nated` \- single NATed private IPv4 address available;
--   `double-nated` \- double NATed private IPv4 address available;
--   `port-restricted-single-nated` \-port-restricted IPv4 address and single NATed IPv4 address available;
--   `port-restricted-double-nated` \- port-restricted IPv4 address and double NATed IPv4 address available;
--   `unknown` \- availability of the address type is not known.
-
- |
-| **ipv6-availability** (_available | not-available | unknown_; Default: **not-available**) | Information about what IPv6 address and access are available.
-
--   `not-available` \- Address type not available;
--   `available` \- address type available;
--   `unknown` \- availability of the address type is not known.
-
- |
-| **realms** (_string:eap-sim|eap-aka|eap-tls|not-specified_; Default: ) | Information about supported realms and the corresponding EAP method.
-
-```
-realms=example.com:eap-tls,foo.ba:not-specified
-
-```
-
- |
-| **realms-raw** (_octet string in hex_; Default: ) | Set NAI Realm ANQP-element manually. |
-| **roaming-ois** (_octet string in hex_; Default: ) | Organization identifier (OI) usually are 24-bit is unique identifiers like organizationally unique identifier (OUI) or company identifier (CID). In some cases, OI is longer for example OUI-36.
-
-A subscription service provider (SSP) can be specified by its OI. roaming-ois property can contain zero or more SSPs OIs whose networks are accessible via this AP. Length of OI should be specified before OI itself. For example, to set E4-8D-8C and 6C-3B-6B:
-
-```
-roaming-ois=03E48D8C036C3B6B
-
-```
-
- |
-| **venue-names** (_string:lang_; Default: ) | Venue name can be used to provide additional info on the venue. It can help the client to choose a proper Access Point.
-
-Venue-names parameter consists of zero or more duple that contain Venue Name and Language Code:
-
-```
-venue-names=CoffeeShop:eng,TiendaDeCafe:es
-
-```
-
-The Language Code field value is a two or three-character 8 language code selected from ISO-639. |
+| 属性                                                                                                                                                                                                       | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **3gpp-raw** (_octet string in hex_; Default: )                                                                                                                                                            | 蜂窝网络通告信息-国家和网络代码。这有助于Hotspot 2.0客户端选择接入3GPP网络的接入点。请参阅3GPP TS 24.302。(附件H)的格式。查询时发送ANQP响应。                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **3gpp-info** (_number/number_; Default: )                                                                                                                                                                 | 蜂窝网络通告信息-国家和网络代码。这有助于Hotspot 2.0客户端选择接入3GPP网络的接入点。写为“mcc/mnc”。用法与“3gpp-raw”相同，但不使用十六进制。可以定义多个mcc/mnc对，用逗号分隔。                                                                                                                                                                                                                                                                                                                                                                               |
+| **authentication-types** (_dns-redirection:`url` \| https-redirection:`url`\| online-enrollment:`url` \| terms-and-conditions:`url`_; Default: )                                                           | 此属性仅在asra设置为“yes”时有效。如果选择了“dns-重定向”或“在线注册”，url的值是可选的，不需要。要设置' url '的值为空字符串，请使用双引号。例如:<br><pre>authentication-types=online-enrollment:""</pre>                                                                                                                                                                                                                                                                                                                                                       |
+| **connection-capabilities** (_number:number:closed \| open \| unknown_; Default: )                                                                                                                         | 此选项允许提供有关允许的IP协议和端口的信息。这些信息可以在ANQP响应中提供。第一个数字表示IP协议号，第二个数字表示端口号。<br>- ' closed ' -如果不允许协议和端口组合设置;<br>- ' open ' -设置是否允许协议和端口组合;<br>- ' unknown ' -设置协议和端口组合是打开还是关闭。<br>例子:<br><pre>connection-capabilities=6:80:open,17:5060:closed</pre><br>在接入点上设置这样的值通知连接到接入点的无线客户端，允许HTTP (6 - TCP, 80 - HTTP)和VoIP (17 - UDP;5060 (VoIP)是不允许的。<br>此属性不限制或允许使用这些协议和端口，它仅向连接到接入点的站点设备提供信息。 |
+| **domain-names** (_list of strings_; Default: )                                                                                                                                                            | 无或多个FQDN (fully qualified domain names)，用于标识运行热点的实体。连接到接入点的站点可以请求此AQNP属性，并检查是否有一个后缀与其拥有凭据的任何域名相匹配。                                                                                                                                                                                                                                                                                                                                                                                                |
+| **ipv4-availability** (_double-nated \| not-available\| port-restricted \| port-restricted-double-nated \| port-restricted-single-nated \| public \| single-nated \| unknown_; Default: **not-available**) | 关于可用的IPv4地址和访问的信息。<br>- ' not-available ' -地址类型不可用;<br>- ' public ' -公共IPv4地址可用;<br>- ' port-restricted ' -端口限制的IPv4地址可用;<br>- ' single- NATed ' -单个NATed私有IPv4地址可用;<br>- ' double- NATed ' -双NATed私有IPv4地址可用;<br>- ' port-restricted-single-nated ' -port-restricted IPv4地址和single- NATed IPv4地址可用;<br>- ' port-restricted-double- NATed ' - port-restricted IPv4地址和double- NATed IPv4地址可用;<br>- ' unknown ' -地址类型的可用性未知。                                                       |
+| **ipv6-availability** (_available \| not-available \| unknown_; Default: **not-available**)                                                                                                                | 关于可用的IPv6地址和访问的信息。<br>- ' not-available ' -地址类型不可用;<br>- ' available ' -可用的地址类型;<br>- ' unknown ' -地址类型的可用性未知。                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **realms** (_string:eap-sim\|eap-aka\|eap-tls\|not-specified_; Default: )                                                                                                                                  | 有关支持的领域和相应EAP方法的信息。<br><pre>realms=example.com:eap-tls,foo.ba:not-specified</pre>                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **realms-raw** (_octet string in hex_; Default: )                                                                                                                                                          | 手动设置NAI Realm anqp元素。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **roaming-ois** (_octet string in hex_; Default: )                                                                                                                                                         | 组织标识符(OI)通常是24位的唯一标识符，如组织唯一标识符(OUI)或公司标识符(CID)。在某些情况下，OI更长，例如OUI-36。<br>订阅服务提供者(SSP)可以由其OI指定。routing - OIs属性可以包含0个或多个ssp OI，这些ssp的网络可以通过该AP访问。OI的长度应该在OI本身之前指定。例如，设置E4-8D-8C和6C-3B-6B:<br><pre>roam -ois=03E48D8C036C3B6B</pre>                                                                                                                                                                                                                         |
+| **venue-names** (_string:lang_; Default: )                                                                                                                                                                 | 场地名称可用于提供有关场地的其他信息。它可以帮助客户端选择合适的接入点。<br>参数由零个或多个包含场馆名称和语言代码的双元组组成:<br><pre>venue-names=CoffeeShop:eng,TiendaDeCafe:es</pre><br>语言代码字段值是从ISO-639中选择的两个或三个字符的8个语言代码。                                                                                                                                                                                                                                                                                                   |
 
 ### Realms raw
 
-**realms-raw** \- list of strings with hex values. Each string specifies contents of "NAI Realm Tuple", excluding "NAI Realm Data Field Length" field.
+**realms-raw** -十六进制值的字符串列表。每个字符串指定“NAI Realm Tuple”的内容，不包括“NAI Realm Data Field Length”字段。
 
-Each hex encoded string must consist of the following fields:
+每个十六进制编码字符串必须包含以下字段:
 
 ```
 - NAI Realm Encoding (1 byte)
@@ -166,7 +63,7 @@ Each hex encoded string must consist of the following fields:
 
 ```
 
-For example, value "00045465737401020d00" decodes as:
+例如，值“00045465737401020d00”解码为:
 
 ```
 - NAI Realm Encoding: 0 (rfc4282)
@@ -178,111 +75,47 @@ For example, value "00045465737401020d00" decodes as:
 
 ```
 
-Note, that setting "realms-raw=00045465737401020d00" produces the same advertisement contents as setting "realms=Test:eap-tls".
+注意，设置“realms-raw=00045465737401020d00”会产生与设置“realms=Test:eap-tls”相同的通告内容。
 
-Refer to 802.11-2016, section 9.4.5.10 for full NAI Realm encoding.
+有关完整的NAI Realm编码，请参阅802.11-2016，第9.4.5.10节。
 
-## Hotspot 2.0 ANQP elements
+## 热点2.0 ANQP元素
 
-Hotspot 2.0 specification introduced some additional ANQP elements. These elements use an ANQP vendor specific element ID. Here are available properties to change these elements.
+Hotspot 2.0规范引入了一些额外的ANQP元素。这些元素使用ANQP供应商特定的元素ID。以下是可用于更改这些元素的属性。
 
-| 
-Property
+| 属性                                                                     | 说明                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hotspot20** (_yes\| no_; Default: **yes**)                             | 表示接入点的Hotspot 2.0能力。                                                                                                                                                                                                                                     |
+| **hotspot20-dgaf** (_yes \| no_; Default: **yes**)                       | 下游组寻址转发(DGAF)。设置DGAF位的值，以指示向客户端发送的组播和广播帧是禁用还是启用。<br>- ' yes ' -向客户端启用组播和广播帧<br>- ' no ' -禁止向客户端发送组播和广播帧。<br>要禁用多播和广播帧，请设置“multicast-helper=full”。                                  |
+| **operational-classes** (_list of numbers_; Default: )                   | 同一ESS的其他可用频带信息。                                                                                                                                                                                                                                       |
+| **operator-names** (_string:lang_; Default: )                            | 设置操作符名称。必须为每个操作符名称条目指定语言。<br>Operator-names形参由0个或多个包含Operator Name和Language Code的双元组组成:<br><pre>operator-names=BestOperator:eng,MejorOperador:es</pre><br>语言代码字段值是从ISO-639中选择的两个或三个字符的8个语言代码。 |
+| **wan-at-capacity** (_yes \| no_; Default: **no**)                       | 接入点或网络是否处于最大容量。如果设置为“是”，则不允许其他移动设备与AP关联                                                                                                                                                                                        |
+| **wan-downlink** (_number_;Default:**0**)                                | 广域网连接的下行速度，单位为kbps。如果下行速率未知，则设置为0。                                                                                                                                                                                                   |
+| **wan-downlink-load** (_number_; Default: **0**)                         | 在“WAN -measurement-duration”期间测量的WAN连接的下行链路负载。取值范围为0 ~ 255。<br>-   `0` - unknown;<br>-   `255` - 100%.                                                                                                                                      |
+| **wan-measurement-duration** (_number_; Default: **0**)                  | 测量wan-下行链路负载和wan-上行链路负载的持续时间。Value为数字，取值范围为0 ~ 65535，代表十分之一秒。<br>-   `0` - 未测量;<br>-   `10` - 1秒;<br>-   `65535` - 1小时49分或更多.                                                                                    |
+| **wan-status** (_down \| reserved \| test \| up_; Default: **reserved**) | 有关接入点WAN连接状态的信息。没有使用“reserved”值。                                                                                                                                                                                                               |
+| **wan-symmetric** (_yes \| no_;Default:**no**)                           | 广域网链路是否对称(上传和下载速度相同)。                                                                                                                                                                                                                          |
+| **wan-uplink** (_number_;Default:**0**)                                  | 广域网连接上行速率，单位为kbps。如果上行链路速率未知，则设置为0。                                                                                                                                                                                                 |
+| **wan-uplink-load** (_number_; Default: **0**)                           | WAN -measurement-duration内测量的WAN连接上行链路负载。取值范围为0 ~ 255。<br>-   `0` - unknown;<br>-   `255` - 100%.                                                                                                                                              |
 
- | 
+## 其他属性
 
-Description
+| 属性                            | 说明                 |
+| ------------------------------- | -------------------- |
+| **comment** (_string_;Default:) | 配置文件的简短描述   |
+| **name** (_string_;Default:)    | 对接配置文件的名称。 |
 
-|     |
-| --- ||
-|     |
+使用本地RadSec和Orion Wifi的配置指南:
 
-Property
+本指南描述了如何设置您的MikroTik设备，以便您可以与RadSec代理和Orion Wifi一起使用它们，尽管主要配置步骤保持不变，并且可以与不同的提供商一起工作:
+确保使用最新的长期或稳定的RouterOS版本。
 
- | 
+在无线局域网控制器和Orion Wifi之间建立一个安全的RADIUS连接是很重要的。
+Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加密。
 
-Description
+1) 导入从Orion下载的RadSec证书:
 
-|                          |
-| ------------------------ | ---------------------- |
-| **hotspot20** (_yes      | no_; Default: **yes**) | Indicate Hotspot 2.0 capability of the Access Point.                                                                                                        |
-| **hotspot20-dgaf** (_yes | no_; Default: **yes**) | Downstream Group-Addressed Forwarding (DGAF). Sets value of DGAF bit to indicate whether multicast and broadcast frames to clients are disabled or enabled. |
-
--   `yes` \- multicast and broadcast frames to clients are enabled;
--   `no` \- multicast and broadcast frames to clients are disabled.
-
-To disable multicast and broadcast frames set `multicast-helper=full`. |
-| **operational-classes** (_list of numbers_; Default: ) | Information about other available bands of the same ESS. |
-| **operator-names** (_string:lang_; Default: ) | Set operator name. Language must be specified for each operator name entry.
-
-Operator-names parameter consists of zero or more duple that contain Operator Name and Language Code:
-
-```
-operator-names=BestOperator:eng,MejorOperador:es
-
-```
-
-The Language Code field value is a two or three-character 8 language code selected from ISO-639. |
-| **wan-at-capacity** (_yes | no_; Default: **no**) | Whether the Access Point or the network is at its max capacity. If set to `yes` no additional mobile devices will be permitted to associate to the AP. |
-| **wan-downlink** (_number_; Default: **0**) | The downlink speed of the WAN connection set in kbps. If the downlink speed is not known, set to 0. |
-| **wan-downlink-load** (_number_; Default: **0**) | The downlink load of the WAN connection measured over `wan-measurement-duration`. Values from 0 to 255.
-
--   `0` \- unknown;
--   `255` \- 100%.
-
- |
-| **wan-measurement-duration** (_number_; Default: **0**) | Duration during which wan-downlink-load and `wan-uplink-load` are measured. Value is a numeric value from 0 to 65535 representing tenths of seconds.
-
--   `0` \- not measured;
--   `10` \- 1 second;
--   `65535` \- 1 hour 49 minutes or more.
-
- |
-| **wan-status** (_down | reserved | test | up_; Default: **reserved**) | Information about the status of the Access Point's WAN connection. The value `reserved` is not used. |
-| **wan-symmetric** (_yes | no_; Default: **no**) | Weather the WAN link is symmetric (upload and download speeds are the same) or not. |
-| **wan-uplink** (_number_; Default: **0**) | The uplink speed of the WAN connection set in kbps. If the uplink speed is not known set to 0. |
-| **wan-uplink-load** (_number_; Default: **0**) | The uplink load of th WAN connection measured over wan-measurement-duration. Values from 0 to 255.
-
--   `0` \- unknown;
--   `255` \- 100%.
-
- |
-
-## Other Properties
-
-| 
-Property
-
- | 
-
-Description
-
-|     |
-| --- ||
-|     |
-
-Property
-
- | 
-
-Description
-
-|                                   |
-| --------------------------------- | --------------------------------- |
-| **comment** (_string_; Default: ) | Short description of the profile  |
-| **name** (_string_; Default: )    | Name of the Interworking profile. |
-
-# Configuration guide using native RadSec and Orion Wifi:
-
-This guide describes how to set up your MikroTik devices so you can use them with RadSec proxy and Orion Wifi, though the main configuration steps remain the same and will work with different providers as well:   
-Make sure to use the latest long-term or stable RouterOS releases.
-
-It is important to set up a secure RADIUS connection between the wireless LAN controller and Orion Wifi.  
-Orion Wifi uses RADIUS over TLS (RadSec) to ensure end-to-end encryption of AAA traffic. 
-
-1) Import RadSec certificates you have downloaded from the Orion:
-
-Drag and drop certificate in WinBox, and then use the import function for it, which can be found under /system certificates in WinBox, command line equivalent is :"/certificate import file-name=bw.radsec.cacert.pem passphrase=""", "/certificate import file-name=cert.pem passphrase=""", "/certificate import file-name=key.pem passphrase="""
+在WinBox中拖放证书，然后使用导入功能对其进行导入，该功能可以在WinBox的/system certificates下找到，命令行相当于:"/certificate import file-name=bw.radsec.cacert. "Pem passphrase="""， "/certificate import file-name=cert. PemPem passphrase="""， "/certificate import file-name=key. Pem passphrase= " "
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/radsecCert.png?version=1&modificationDate=1624954284764&api=v2)
 
@@ -290,17 +123,17 @@ Drag and drop certificate in WinBox, and then use the import function for it, wh
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/radsec_key.png?version=1&modificationDate=1626168193158&api=v2)
 
-Once certificates are imported, they should look like this:
+证书导入后应该是这样的:
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/radsec_endresult.png?version=1&modificationDate=1626168225808&api=v2)
 
-2) Configure the Radius client
+2) 配置Radius客户端
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/radsec.png?version=1&modificationDate=1628589240137&api=v2)
 
-Command line equivalent: "/radius add address=216.239.32.91 certificate=cert.pem\_0 protocol=radsec service=wireless timeout=1s500ms"
+命令行等效:"/radius add address=216.239.32.91 certificate=cert. pem_0 protocol=radsec service=wireless timeout=1s500ms "
 
-3)  Create a wireless security profile that would perform 802.1x authentication
+3) 创建执行802.1x认证的无线安全配置文件
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/image2021-5-19_15-50-58.png?version=1&modificationDate=1621428658412&api=v2)
 
@@ -308,17 +141,17 @@ Command line equivalent: "/radius add address=216.239.32.91 certificate=cert.pem
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/image2021-5-19_15-54-46.png?version=1&modificationDate=1621428886421&api=v2)
 
-Command line equivalent is _“/interface wireless security-profiles add authentication-types=wpa2-eap management-protection=allowed mode=dynamic-keys name=dot1x\_profile supplicant-identity="" radius-eap-accounting=yes eap-methods=passthrough_“.
+命令行相当于 "/interface wireless security-profiles add authentication-types=wpa2-eap management-protection=allowed mode=dynamic-keys name=dot1x_profile supplicagent -identity="" radius-eap-accounting=yes eap-methods=passthrough"。
 
-4) The next step is configuring the wireless interface and assigning the created security profile. Press “Advanced mode” to see all the options.
+4) 下一步是配置无线接口，并分配创建的安全配置文件。按“高级模式”查看所有选项。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/image2021-5-19_16-11-18.png?version=1&modificationDate=1621429878808&api=v2)
 
-Command line equivalent is: "_/interface wireless set \[ find default-name=wlan1 \] mode=ap-bridge security-profile=dot1x\_profile wps-mode=disabled_".
+命令行相当于:“/interface wireless set [find default-name=wlan1] mode=ap-bridge security-profile=dot1x_profile wps-mode=disabled”。
 
-Make sure the correct country profile is configured. In this example, we are using “wlan1”, but the same command would work with other interfaces, or as “_/interface wireless set wlan1_”.
+确保配置了正确的国家配置文件。在这个例子中，我们使用的是" wlan1 "，但是同样的命令也可以用于其他接口，或者使用" /interface wireless set wlan1 "。
 
-5) Configure interworking settings (hotspot 2.0 ).
+5) 配置对接设置(热点2.0)。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/creating_iw_profile.png?version=2&modificationDate=1626170039913&api=v2)
 
@@ -326,34 +159,34 @@ Make sure the correct country profile is configured. In this example, we are usi
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/hs2.png?version=2&modificationDate=1628066327616&api=v2)
 
-Command line equivalent: _“/interface wireless interworking-profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion\_MikroTik network-type=public-chargeable operator-names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=business-unspecified venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up_”.
+命令行相当于:/interface wireless interworking-profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable operator-names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=business-unspecified venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”
 
-Pay special attention to "wan-downlink" and "wan-uplink", in this scenario value of "50" is used as a placeholder, make sure to adjust the values according to your setup, some client devices use it to evaluate, if they should join the network. Set “venue” – venue type, ”venue-names” and other attributes as applicable. “domain-names” should be of hotspot 2.0 Operator.
+特别注意“wan-downlink”和“wan-uplink”，在这种情况下，“50”的值被用作占位符，请确保根据您的设置调整值，一些客户端设备使用它来评估是否应该加入网络。设置“场地”-场地类型，“场地名称”和其他适用的属性。“domain-names”应该是热点2.0操作符。
 
-6) Assign the interworking profile to the interface.
+6) 为接口配置对接配置文件。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/interworking_wireless_int.png?version=2&modificationDate=1626170014924&api=v2)
 
-Command-line equivalent is: “/interface wireless set wlan1 interworking-profile=Orion\_MikroTik”. If you don't see the interworking-profile field, press "Advanced mode".
+命令行相当于:" /interface wireless set wlan1 interworking-profile=Orion_MikroTik "。如果没有看到交互配置文件字段，请按“高级模式”。
 
-Note: NAS-id that's used by Orion to differentiate networks is equal to system identity, to adjust the nas-id, you can do "/system identity set name=exampleName". Graphical interface support for interworking profiles are added from versions above 6.47.10, 6.48.3.
+注意:Orion用于区分网络的NAS-id等于系统标识，可以执行“/system identity set name=exampleName”命令调整NAS-id。从6.47.10和6.48.3以上的版本中添加了对互联配置文件的图形界面支持。
 
-# Configuration guide using RadSec proxy and Orion Wifi:
+使用RadSec代理和Orion Wifi的配置指南:
 
-This guide describes how to set up your MikroTik devices so you can use them with RadSec proxy and Orion Wifi, though the main configuration steps remain the same and will work with different providers as well:   
-This guide assumes that you have configured a radsecproxy with Orion Wifi credentials. Make sure to use the latest long-term or stable RouterOS releases.  
-  
-It is important to set up a secure RADIUS connection between the wireless LAN controller and Orion Wifi.  
-Orion Wifi uses RADIUS over TLS (RadSec) to ensure end-to-end encryption of AAA traffic. This guide is made for scenarios where the RouterOS access point redirects AAA traffic to a RadSec proxy (radsecproxy) before the traffic is sent over the internet.   
-1) Configure the Radius client that points to radsecproxy. 
+本指南描述了如何设置您的MikroTik设备，以便您可以与RadSec代理和Orion Wifi一起使用它们，尽管主要配置步骤保持不变，并且可以与不同的提供商一起工作:
+本指南假设您已经配置了具有Orion Wifi凭据的radsecproxy。确保使用最新的长期或稳定的RouterOS版本。
+
+在无线局域网控制器和Orion Wifi之间建立一个安全的RADIUS连接是很重要的。
+Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加密。本指南适用于以下场景:在AAA流量通过internet发送之前，RouterOS接入点将AAA流量重定向到RadSec代理(radsecproxy)。
+1) 配置指向radsecproxy的Radius客户端。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/radproxy.png?version=1&modificationDate=1628587191157&api=v2)
 
-Command line equivalent is _“/radius add address=192.168.88.233 secret=yourSecret service=wireless timeout=1s500ms_”
+命令行相当于"/radius add address=192.168.88.233 secret=yourSecret service=wireless timeout= 1500ms"
 
-The secret should match the one configured on the radsecproxy, in this example “192.168.88.233” is a virtual machine running the proxy.
+该密钥应该与radsecproxy上配置的密钥匹配，在本例中，“192.168.88.233”是运行该代理的虚拟机。
 
-2) Create a wireless security profile that would perform 802.1x authentication
+2) 创建执行802.1x认证的无线安全配置文件
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/image2021-5-19_15-50-58.png?version=1&modificationDate=1621428658412&api=v2)
 
@@ -363,17 +196,17 @@ The secret should match the one configured on the radsecproxy, in this example �
 
   
 
-Command line equivalent is _“/interface wireless security-profiles add authentication-types=wpa2-eap management-protection=allowed mode=dynamic-keys name=dot1x\_profile supplicant-identity="" radius-eap-accounting=yes eap-methods=passthrough_“.
+命令行相当于"/interface wireless security-profiles add authentication-types=wpa2-eap management-protection=allowed mode=dynamic-keys name=dot1x_profile supplicant-identity="" radius-eap-accounting=yes eap-methods=passthrough "。
 
-3) The next step is configuring the wireless interface and assigning the created security profile. Press “Advanced mode” to see all the options.
+3) 下一步是配置无线接口，并分配创建的安全配置文件。按“高级模式”查看所有选项。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/image2021-5-19_16-11-18.png?version=1&modificationDate=1621429878808&api=v2)
 
-Command line equivalent is: "_/interface wireless set \[ find default-name=wlan1 \] mode=ap-bridge security-profile=dot1x\_profile wps-mode=disabled_".
+命令行相当于:"/interface wireless set [find default-name=wlan1] mode=ap-bridge security-profile=dot1x_profile wps-mode=disabled"。
 
-Make sure the correct country profile is configured. In this example, we are using “wlan1”, but the same command would work with other interfaces, or as “_/interface wireless set wlan1_”.
+确保配置了正确的国家配置文件。在这个例子中用的是" wlan1 "，但是同样的命令也可以用于其他接口，或者使用" /interface wireless set wlan1 "。
 
-4) Configure interworking settings (hotspot 2.0 ).
+4) 配置对接设置(热点2.0)。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/creating_iw_profile.png?version=2&modificationDate=1626170039913&api=v2)
 
@@ -381,27 +214,27 @@ Make sure the correct country profile is configured. In this example, we are usi
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/hs2.png?version=2&modificationDate=1628066327616&api=v2)
 
-Command line equivalent: _“/interface wireless interworking-profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion\_MikroTik network-type=public-chargeable operator-names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=business-unspecified venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up_”.
+命令行相当于:“/interface wireless internetworking -profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable carrier -names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=业务未指定的venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”。
 
-Be sure to specify somevalue in "wan-downlink" and "wan-uplink", in this scenario value of "50" is used as a placeholder, some client devices use it to evaluate, if they should join the network. Set “venue” – venue type, ”venue-names” and other attributes as applicable. “domain-names” should be of hotspot 2.0 Operator.
+一定要在“wan-downlink”和“wan-uplink”中指定一些值，在这种情况下，“50”的值被用作占位符，一些客户端设备使用它来评估是否应该加入网络。设置“场地”-场地类型，“场地名称”和其他适用的属性。“domain-names”应该是热点2.0操作符。
 
-5) Assign the interworking profile to the interface.
+5) 为接口配置对接配置文件。
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/interworking_wireless_int.png?version=2&modificationDate=1626170014924&api=v2)
 
-This step can also be done with the following command: “/interface wireless set wlan1 interworking-profile=Orion\_MikroTik”.
+此步骤也可以通过以下命令完成:" /interface wireless set wlan1 interworking-profile=Orion_MikroTik "。
 
-If the radsecproxy is working, then clients with the appropriate Hotspot profile installed should be able to connect.
+如果radsecproxy正常工作，那么安装了适当Hotspot配置文件的客户机应该能够连接。
 
-Note: NAS-id that's used by Orion to differentiate networks is equal to system identity, to adjust the nas-id, you can do "/system identity set name=exampleName". Graphical interface support for interworking profiles is added from versions above 6.47.10, 6.48.3.
+注意:Orion用于区分网络的NAS-id等于系统标识，可以执行“/system identity set name=exampleName”命令调整NAS-id。从6.47.10、6.48.3以上的版本中增加了对互联配置文件的图形界面支持。
 
-# Troubleshooting
+# 故障排除
 
-To check the status of RADIUS messages, you can use the radius menu.  
+可以通过RADIUS菜单查看RADIUS消息的状态。
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/rad_stat.png?version=1&modificationDate=1628585948146&api=v2)  
-Or alternatively via the command line run "/radius monitor X", X being the numerical ID, you can see the IDs with "/radius print".  
-For more information, additional logging can be configured under "/system logging add topics=radius,debug,packet". You can view results under ["/log"](https://help.mikrotik.com/docs/display/ROS/Log).
+或者通过命令行运行“/radius monitor X”，X是数字ID，可以看到带有“/radius print”的ID。
+要了解更多信息，可以在“/system logging add topics=radius,debug,packet”下配置额外的日志记录。可以在 [/log](https://help.mikrotik.com/docs/display/ROS/Log) 下查看结果。
 
-To view active wireless connections check the wireless registration table (_/interface wireless registration-table print_)
+要查看活动的无线连接，请检查无线注册表(/interface wireless registration-table print)
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/wireless_registration.png?version=1&modificationDate=1628586992199&api=v2)

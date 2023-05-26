@@ -1,102 +1,98 @@
-# Overview
+# 无线基站模式概述
 
-Wireless interface in any of _station_ modes will search for acceptable access point (AP) and connect to it. The connection between station and AP will behave in slightly different way depending on type of _station_ mode used, so correct mode must be chosen for given application and equipment. This article attempts to describe differences between available _station_ modes.
+在任意一种模式下的无线接口将搜索可接受的接入点(AP)并连接到它。根据所使用的_station_模式的类型，站和AP之间的连接将以略有不同的方式运行，因此必须为给定的应用程序和设备选择正确的模式。本文试图描述可用的站点模式之间的差异。
 
-Primary difference between _station_ modes is in how L2 addresses are processed and forwarded across wireless link. This directly affects the ability of wireless link to be part of L2 bridged infrastructure.
+_station_ 模式之间的主要区别在于L2地址在无线链路上的处理和转发方式。这直接影响到无线链路作为L2桥接基础设施一部分的能力。
 
-If L2 bridging over wireless link is not necessary - as in case of routed or MPLS switched network, basic **mode=station** setup is suggested and will provide highest efficiency.
+如果不需要在无线链路上进行L2桥接，例如在路由或MPLS交换网络中，建议使用mode=station设置，这样可以提供最高的效率。
 
-Availability of particular _station_ mode depends on **wireless-protocol** that is used in wireless network. Please refer to [applicability matrix](https://help.mikrotik.com/docs/display/ROS/Wireless+Station+Modes#WirelessStationModes-ApplicabilityMatrix) for information on mode support in protocols. It is possible that connection between station and AP will be established even if particular mode is not supported for given protocol. Beware that such connection will not behave as expected with respect to L2 bridging.
+特定站台模式的可用性取决于无线网络中所使用的无线协议。请参考 [适用性矩阵](https://help.mikrotik.com/docs/display/ROS/Wireless+Station+Modes#WirelessStationModes-ApplicabilityMatrix) 了解协议中模式支持的信息。即使给定协议不支持特定模式，也有可能建立站与AP之间的连接。注意，这种连接在L2桥接方面不会像预期的那样运行。
 
-# 802.11 limitations for L2 bridging
+# 802.11 L2桥接限制
 
-Historically 802.11 AP devices were supposed to be able to bridge frames between wired network segment and wireless, but station device was not supposed to do L2 bridging.
+从历史上看，802.11 AP设备应该能够在有线网络段和无线网络段之间桥接帧，但是站设备不应该做L2桥接。
 
-Consider the following network:
+考虑以下网络:
 
 ```
 [X]---[AP]-(     )-[STA]---[Y]
 
 ```
 
-where X-to-AP and STA-to-Y are ethernet links, but AP-to-STA are connected wirelessly. According to 802.11, AP can transparently bridge traffic between X and STA, but it is not possible to bridge traffic between AP and Y, or X and Y.
+其中X-to-AP和STA-to-Y是以太网链路，但AP-to-STA是无线连接。根据802.11,AP可以透明地桥接X和STA之间的流量，但不可能桥接AP和Y之间的流量，或者X和Y之间的流量。
 
-802.11 standard specifies that frames between station and AP device must be transmitted in so called _3 address_ frame format, meaning that header of frame contains 3 MAC addresses. Frame transmitted from AP to station has the following addresses:
+802.11标准规定站与AP设备之间的帧必须以所谓的_3 address_帧格式传输，即帧头包含3个MAC地址。AP向站传输的帧有以下地址:
 
--   destination address - address of station device, also radio receiver address
--   radio transmitter address - address of AP
--   source address - address of originator of particular frame
+- 目的地址-电台设备的地址，也可以是无线电接收机地址
+- 无线发射机地址- AP地址
+- 源地址-特定帧的发送者的地址
 
-Frame transmitted from station to AP has the following addresses:
+从站到AP传输的帧有以下地址:
 
--   radio receiver address - address of AP
--   source address - address of station device, also radio transmitter address
--   destination address
+- radio receiver address - AP地址
+- 源地址-电台设备的地址，也称为无线电发射机地址
+- 目的地址
 
-Considering that every frame must include radio transmitter and receiver address, it is clear that _3 address_ frame format is not suitable for transparent L2 bridging over station, because station can not send frame with source address different from its address - e.g. frame from Y, and at the same time AP can not format frame in a way that would include address of Y.
+考虑到每一帧都必须包含无线电发送地址和接收地址，很明显，_3地址_ 帧格式不适合透明L2桥接站，因为站不能发送源地址与其地址不同的帧-例如来自Y的帧，同时AP不能以包含Y地址的方式格式化帧。
 
-802.11 includes additional frame format, so called _4 address_ frame format, intended for "wireless distribution system" (WDS) - a system to interconnect APs wirelessly. In this format additional address is added, producing header that contains the following addresses:
+802.11包括额外的帧格式，称为4地址帧格式，用于“无线分配系统”(WDS)——一种无线连接ap的系统。在这种格式中，添加了额外的地址，产生包含以下地址的报头:
 
--   radio receiver address
--   radio transmitter address
--   destination address
--   source address
+- 无线电接收机地址
+- 无线电发射机地址
+- 目的地址
+- 源地址
 
-This frame format includes all necessary information for transparent L2 bridging over wireless link. Unluckily 802.11 does not specify how WDS connections should be established and managed, therefore any usage of _4 address_ frame format (and WDS) is implementation specific.
+这种帧格式包括无线链路上透明L2桥接所需的所有信息。不幸的是，802.11没有指定应该如何建立和管理WDS连接，因此对 _4地址_ 帧格式(和WDS)的任何使用都是特定于实现的。
 
-Different _station_ modes attempt to solve shortcomings of standard station mode to provide support for L2 bridging.
+不同的站模式试图解决标准站模式的缺点，为L2桥接提供支持。
 
-# Applicability Matrix
+# 适用性矩阵
 
-The following matrix specifies _station_ modes available for each **wireless-protocol**. Note that there are 2 columns for 802.11 protocol: **802.11** specifies availability of mode in "pure" 802.11 network (when connecting to any vendor AP) and **ROS 802.11** specifies availability of mode when connecting to RouterOS AP that implements necessary proprietary extensions for mode to work.
+下面的矩阵指定了每种无线协议可用的station模式。请注意，802.11协议有两列: **802.11** 指定“纯”802.11网络中模式的可用性(当连接到任何供应商AP时)，**ROS 802.11** 指定连接到RouterOS AP时模式的可用性，该AP实现了模式工作所需的专有扩展。
 
-_Table applies to RouterOS v5rc11 and above:_
+Table适用于RouterOS v5rc11及以上版本
 
-| 802.11                         | ROS 802.11 | nstreme | nv2 |
-| ------------------------------ | ---------- | ------- | --- | --- |
-| **station**                    | V          | V       | V   | V   |
-| **station-wds**                |
-| V                              | V          | V       |
-| **station-pseudobridge**       | V          | V       | V   |
-|                                |
-| **station-pseudobridge-clone** | V          | V       | V   |
-|                                |
-| **station-bridge**             |
-| V                              | V          | V       |
+|                                | 802.11 | ROS 802.11 | nstreme | nv2 |
+| ------------------------------ | ------ | ---------- | ------- | --- |
+| **station**                    | V      | V          | V       | V   |
+| **station-wds**                |        | V          | V       | V   |
+| **station-pseudobridge**       | V      | V          | V       |     |
+| **station-pseudobridge-clone** | V      | V          | V       |     |
+| **station-bridge**             |        | V          | V       | V   |
 
-# Mode _station_
+# _station_ 模式
 
-This is standard mode that does not support L2 bridging on station - attempts to put wireless interface in bridge will not produce expected results. On the other hand this mode can be considered the most efficient and therefore should be used if L2 bridging on station is not necessary - as in case of routed or MPLS switched network. This mode is supported for all wireless protocols.
+这是标准模式，不支持站上的L2桥接——尝试将无线接口放在桥接中不会产生预期的结果。另一方面，这种模式可以被认为是最有效的，因此如果站上的L2桥接不是必要的，就应该使用这种模式——比如路由或MPLS交换网络。该模式支持所有无线协议。
 
-# Mode _station-wds_
+# _station-wds_ 模式
 
-This mode works only with RouterOS APs. As a result of negotiating connection, separate WDS interface is created on AP for given station. This interface can be thought of point-to-point connection between AP and given station - whatever is sent out WDS interface is delivered to station (and only to particular station) and whatever station sends to AP is received from WDS interface (and not subject to forwarding between AP clients), preserving L2 addresses.
+该模式仅适用于RouterOS ap。协商连接的结果是在AP上为给定站点创建单独的WDS接口。这个接口可以看作是AP和给定站点之间的点对点连接——从WDS接口发送出去的任何内容都被传送到站点(并且仅传送到特定站点)，而站点发送给AP的任何内容都从WDS接口接收(并且不受AP客户端之间转发的影响)，从而保留L2地址。
 
-This mode is supported for all wireless protocols except when 802.11 protocol is used in connection to non-RouterOS device. Mode uses _4 address_ frame format when used with 802.11 protocol, for other protocols (such as nstreme or nv2), protocol internal means are used.
+除使用802.11协议连接非routeros设备外，所有无线协议均支持该模式。Mode与802.11协议配合使用时采用_4 address_帧格式，其他协议(如nstream、nv2)采用协议内部方式。
 
-This mode is safe to use for L2 bridging and gives most administrative control on AP by means of separate WDS interface, for example use of bridge firewall, RSTP for loop detection and avoidance, etc.
+这种模式可以安全地用于L2桥接，并通过单独的WDS接口对AP进行大部分管理控制，例如使用桥接防火墙、用于环路检测和避免的RSTP等。
 
-With station-wds mode, it is not possible to connect to CAPsMAN controlled CAP.
+使用station-wd模式，无法连接到CAPsMAN控制的CAP。
 
-# Mode _station-pseudobridge_
+# _station-pseudobridge_ 模式
 
-From the wireless connection point of view, this mode is the same as standard station mode. It has limited support for L2 bridging by means of some services implemented in station:
+从无线连接的角度来看，这种模式与标准站模式相同。通过在站内实施的一些服务，它对L2桥接的支持有限:
 
--   MAC address translation for IPv4 packets - station maintains IPv4-to-MAC mapping table and replaces source MAC address with its own address when sending frame to AP (in order to be able to use _3 address_ frame format), and replaces destination MAC address with address from mapping table for frames received from AP. IPv4-to-MAC mappings are built also for VLAN encapsulated frames.
--   single MAC address translation for the rest of protocols - station learns source MAC address from first forwarded non-IPv4 frame and uses it as default for reverse translation - this MAC address is used to replace destination MAC address for frames received from AP if IPv4-to-MAC mapping can not be performed (e.g. - non-IPv4 frame or missing mapping).
+- IPv4报文的MAC地址转换—站维护IPv4-to-MAC映射表，在向AP发送帧时用自己的地址替换源MAC地址(为了能够使用_3 address_ frame格式)，从AP接收帧时用映射表中的地址替换目的MAC地址。VLAN封装帧也建立了IPv4-to-MAC映射。
+- 其他协议的单一MAC地址转换-站从第一个转发的非ipv4帧中学习源MAC地址，并将其作为默认值进行反向转换-如果不能执行ipv4到MAC映射(例如-非ipv4帧或缺少映射)，则该MAC地址用于替换从AP接收的帧的目的MAC地址。
 
-This mode is limited to complete L2 bridging of data to single device connected to station (by means of single MAC address translation) and some support for IPv4 frame bridging - bridging of non-IP protocols to more than one device will not work. Also MAC address translation limits access to station device from AP side to IPv4 based access - the rest of protocols will be translated by single MAC address translation and will not be received by station itself.
+这种模式仅限于将数据完成L2桥接到连接到站点的单个设备(通过单个MAC地址转换)，并支持IPv4帧桥接——非ip协议桥接到多个设备将不起作用。此外，MAC地址转换限制了从AP端到基于IPv4的访问站点设备-其余协议将通过单个MAC地址转换进行转换，并且不会被站点本身接收。
 
-This mode is available for all protocols except nv2 and **should be avoided when possible**. The usage of this mode can only be justified if AP does not support better mode for L2 bridging (e.g. when non-RouterOS AP is used) or if only one end-user device must be connected to network by means of station device.
+此模式可用于除nv2之外的所有协议，并且应尽可能避免使用。只有当AP不支持更好的L2桥接模式时(例如，当使用非routeros AP时)，或者只有一个终端用户设备必须通过站设备连接到网络时，才有理由使用该模式。
 
-# Mode _station-pseudobridge-clone_
+# _station-pseudobridge-clone_ 模式
 
-This mode is the same as _station-pseudobridge_ mode, except that it connects to AP using "cloned" MAC address - that is either address configured in **station-bridge-clone-mac** parameter (if configured) or source address of first forwarded frame. This essentially appears on AP as if end-user device connected to station connected to AP.
+此模式与_station-pseudobridge_模式相同，不同之处是使用“克隆”MAC地址连接AP——即在station-bridge-clone-mac参数中配置的地址(如果配置了)或第一转发帧的源地址。这实际上显示在AP上，就像连接到连接到AP的站点的终端用户设备一样。
 
-# Mode _station-bridge_
+# _station-bridge_ 模式
 
-This mode works only with RouterOS APs and provides support for transparent protocol-independent L2 bridging on the station device. RouterOS AP accepts clients in _station-bridge_ mode when enabled using **bridge-mode** parameter. In this mode, the AP maintains a forwarding table with information on which MAC addresses are reachable over which station device.
+该模式仅适用于RouterOS ap，支持站设备上与协议无关的透明L2桥接。当使用bridge-mode参数启用时，RouterOS AP以station-bridge模式接受客户端。在这种模式下，AP维护一个转发表，其中包含了通过哪个站设备可以访问的MAC地址的信息。
 
-This mode is MikroTik proprietary and cannot be used to connect to other brands of devices.
+此模式是microtik专有的，不能用于连接其他品牌的设备。
 
-This mode is safe to use for L2 bridging and is the preferred mode unless there are specific reasons to use _station-wds_ mode. With station-bridge mode, it is not possible to connect to CAPsMAN controlled CAP.
+这种模式对于L2桥接来说是安全的，并且是首选模式，除非有特殊的原因需要使用station-wds模式。在站桥模式下，不可能连接到CAPsMAN控制的CAP。

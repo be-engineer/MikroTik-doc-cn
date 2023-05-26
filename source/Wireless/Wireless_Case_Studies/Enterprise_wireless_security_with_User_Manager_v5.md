@@ -1,89 +1,132 @@
-User Manager version 5 ( available for RouterOS v7 ) supports user authentication via the Extensible Authentication Protocol (EAP).
+# 企业无线安全与用户管理器
 
-This guide will explain the steps needed to configure User Manager v5 as the authentication server for MikroTik wireless access points with users being offered PEAP and EAP-TLS authentication methods.
+User Manager version 5(适用于RouterOS v7)支持通过EAP (Extensible authentication Protocol)协议对用户进行认证。
 
-The guide assumes a standalone device running User Manager at the network address 10.0.0.10 and 2 Access Points - one at 10.0.0.11 and the other at 10.0.0.12
+本指南将解释将User Manager v5配置为microtik无线接入点的身份验证服务器所需的步骤，并为用户提供PEAP和EAP-TLS身份验证方法。
 
-# Installing User Manager
+本指南假设在网络地址10.0.0.10上运行User Manager的独立设备和2个接入点-一个在10.0.0.11，另一个在10.0.0.12
 
-User Manager v5 can be found in the 'Extra packages' archive for the [latest release of RouterOS v7](https://mikrotik.com/download).
+# 安装用户管理器
 
-Download the archive for the appropriate CPU architecture, extract it, upload the User Manager package to  the router and reboot it.
+User Manager v5可以在 [最新版本的RouterOS v7](https://mikrotik.com/download) 的“Extra packages”存档中找到。
 
-# Generating TLS certificates
+下载相应CPU架构的归档文件，解压缩它，将User Manager包上传到路由器并重新启动它。
 
-When using secure EAP methods, the client device (supplicant) verifies the identity of the authenication server before sending its own credentials to it.  
-For this to happen, the authentication server needs a TLS certificate.
+# 生成TLS证书
 
-This certificate should:
+当使用安全EAP方法时，客户机设备(请求方)在向身份验证服务器发送自己的凭据之前验证其身份。
+为此，身份验证服务器需要一个TLS证书。
 
-1.  Be valid and signed by a certificate authority which is trusted by the client device
-2.  Have a fully qualified domain name in the Common Name (CN) and Subject Alt Name fields
-3.  Have the Extended Key Usage attribute indicating that it is authorized for authentcating a TLS server
-4.  Have Validity period of no more than 825 days
+该证书应:
 
-The EAP-TLS method requires the client device to have a TLS certificate (instead of a password).
+1.  由客户端设备信任的证书颁发机构有效并签名
+2.  在通用名称(CN)和主题替代名称字段中有一个完全合格的域名
+3.  是否有扩展密钥使用属性表明它被授权对TLS服务器进行身份验证
+4.  有效期不超过825天
 
-To be considered valid by User Manager, a client certificate must:
+EAP-TLS方法要求客户端设备具有TLS证书(而不是密码)。
 
-1.  Be valid and signed by an authority, which is trusted by the device running User Manager
-2.  Have the user name in the Subject Alt Name (SAN) field. For backward compatibility, you can also add it in the CN field. For more information please see: [https://datatracker.ietf.org/doc/html/rfc5216#section-5.2](https://datatracker.ietf.org/doc/html/rfc5216#section-5.2) 
+要被用户管理器视为有效，客户端证书必须:
 
-Finally, the [WPA3 enterprise specification](https://www.wi-fi.org/download.php?file=/sites/default/files/private/WPA3_Specification_v3.0.pdf) includes an extra secure mode, which provides 192-bit cryptographic security.
+1.  由运行用户管理器的设备所信任的权威机构有效并签名
+2.  在Subject Alt name (SAN)字段中设置用户名。为了向后兼容，您还可以将其添加到CN字段中。更多信息请访问: [https://datatracker.ietf.org/doc/html/rfc5216#section-5.2](https://datatracker.ietf.org/doc/html/rfc5216#section-5.2)
 
-This mode requires using EAP-TLS with certificates that:
+最后，[WPA3企业规范](https://www.wi-fi.org/download.php?file=/sites/default/files/private/WPA3_Specification_v3.0.pdf) 包括一个额外的安全模式，它提供192位加密安全性。
 
-1.  Use either P-384 elliptic curve keys or RSA keys which are at least 3072 bits in length
-2.  Use SHA384 as the digest (hashing) algorithm
+此模式需要使用EAP-TLS和以下证书:
 
-For the sake of brevity (and to showcase more of RouterOS' capabilities), this guide will show how to generate all the certificates on the device running User Manager, but in a large scale enterprise environment, the authentication server and client devices would each generate private keys and certificate signing requests locally, then upload CSRs to a certificate authority for signing.
+1.  请使用长度至少为3072位的P-384椭圆曲线密钥或RSA密钥
+2.  使用SHA384作为摘要(哈希)算法
 
-**Commands executed on device running User Manager**
+为了简洁起见(以及展示更多的RouterOS功能)，本指南将展示如何在运行User Manager的设备上生成所有证书，但在大型企业环境中，认证服务器和客户端设备将各自在本地生成私钥和证书签名请求，然后将csr上传到证书颁发机构进行签名。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Enterprise+wireless+security+with+User+Manager+v5#)
+在运行User Manager的设备上执行的命令
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Generating a Certificate Authority</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/certificate</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=radius-ca</code> <code class="ros value">common-name</code><code class="ros plain">=</code><code class="ros string">"RADIUS CA"</code> <code class="ros value">key-size</code><code class="ros plain">=secp384r1</code> <code class="ros value">digest-algorithm</code><code class="ros plain">=sha384</code> <code class="ros value">days-valid</code><code class="ros plain">=1825</code> <code class="ros value">key-usage</code><code class="ros plain">=key-cert-sign,crl-sign</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">sign radius-ca </code><code class="ros value">ca-crl-host</code><code class="ros plain">=radius.mikrotik.test</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># Generating a server certificate for User Manager</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=userman-cert</code> <code class="ros value">common-name</code><code class="ros plain">=radius.mikrotik.test</code> <code class="ros value">subject-alt-name</code><code class="ros plain">=DNS:radius.mikrotik.test</code> <code class="ros value">key-size</code><code class="ros plain">=secp384r1</code> <code class="ros value">digest-algorithm</code><code class="ros plain">=sha384</code> <code class="ros value">days-valid</code><code class="ros plain">=800</code> <code class="ros value">key-usage</code><code class="ros plain">=tls-server</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">sign userman-cert </code><code class="ros value">ca</code><code class="ros plain">=radius-ca</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros comments"># Generating a client certificate</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=maija-client-cert</code> <code class="ros value">common-name</code><code class="ros plain">=maija@mikrotik.test</code> <code class="ros value">key-usage</code><code class="ros plain">=tls-client</code> <code class="ros value">days-valid</code><code class="ros plain">=800</code> <code class="ros value">key-size</code><code class="ros plain">=secp384r1</code> <code class="ros value">digest-algorithm</code><code class="ros plain">=sha384</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">sign maija-client-cert </code><code class="ros value">ca</code><code class="ros plain">=radius-ca</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># Exporting the public key of the CA as well as the generated client private key and certificate for distribution to client devices</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">export-certificate radius-ca </code><code class="ros value">file-name</code><code class="ros plain">=radius-ca</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros comments"># A passphrase is needed for the export to include the private key</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros plain">export-certificate maija-client-cert </code><code class="ros value">type</code><code class="ros plain">=pkcs12</code> <code class="ros value">export-passphrase</code><code class="ros plain">=</code><code class="ros string">"true zebra capacitor ziptie"</code></div></div></td></tr></tbody></table>
+```shell
+# Generating a Certificate Authority
+/certificate
+add name=radius-ca common-name="RADIUS CA" key-size=secp384r1 digest-algorithm=sha384 days-valid=1825 key-usage=key-cert-sign,crl-sign
+sign radius-ca ca-crl-host=radius.mikrotik.test
+# Generating a server certificate for User Manager
+add name=userman-cert common-name=radius.mikrotik.test subject-alt-name=DNS:radius.mikrotik.test key-size=secp384r1 digest-algorithm=sha384 days-valid=800 key-usage=tls-server
+sign userman-cert ca=radius-ca
+# Generating a client certificate
+add name=maija-client-cert common-name=maija@mikrotik.test key-usage=tls-client days-valid=800 key-size=secp384r1 digest-algorithm=sha384
+sign maija-client-cert ca=radius-ca
+# Exporting the public key of the CA as well as the generated client private key and certificate for distribution to client devices
+export-certificate radius-ca file-name=radius-ca
+# A passphrase is needed for the export to include the private key
+export-certificate maija-client-cert type=pkcs12 export-passphrase="true zebra capacitor ziptie"
+```
 
-# Configuring User Manager
+# 配置用户管理器
 
-**Commands executed on device running User Manager**
+在运行User Manager的设备上执行的命令
 
-[?](https://help.mikrotik.com/docs/display/ROS/Enterprise+wireless+security+with+User+Manager+v5#)
+```shell
+# Enabling User Manager and specifying, which certificate to use
+/user-manager
+set enabled=yes certificate=userman-cert
+# Enabling CRL checking to avoid accepting revoked user certificates
+/certificate settings
+set crl-download=yes crl-use=yes
+# Adding access points
+/user-manager router
+add name=ap1 address=10.0.0.11 shared-secret="Use a secure password generator for this"
+add name=ap2 address=10.0.0.12 shared-secret="Use a secure password generator for this too"
+# Limiting allowed authentication methods
+/user-manager user group
+set [find where name=default] outer-auths=eap-tls,eap-peap
+add name=certificate-authenticated outer-auths=eap-tls
+# Adding users
+/user-manager user
+add name=maija@mikrotik.test group=certificate-authenticated
+add name=paija@mikrotik.test group=default password="right mule accumulator nail"
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Enabling User Manager and specifying, which certificate to use</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/user-manager</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">enabled</code><code class="ros plain">=yes</code> <code class="ros value">certificate</code><code class="ros plain">=userman-cert</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># Enabling CRL checking to avoid accepting revoked user certificates</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/certificate settings</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros value">crl-download</code><code class="ros plain">=yes</code> <code class="ros value">crl-use</code><code class="ros plain">=yes</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros comments"># Adding access points</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">/user-manager router</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ap1</code> <code class="ros value">address</code><code class="ros plain">=10.0.0.11</code> <code class="ros value">shared-secret</code><code class="ros plain">=</code><code class="ros string">"Use a secure password generator for this"</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=ap2</code> <code class="ros value">address</code><code class="ros plain">=10.0.0.12</code> <code class="ros value">shared-secret</code><code class="ros plain">=</code><code class="ros string">"Use a secure password generator for this too"</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># Limiting allowed authentication methods</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">/user-manager user group</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">where </code><code class="ros value">name</code><code class="ros plain">=default]</code> <code class="ros value">outer-auths</code><code class="ros plain">=eap-tls,eap-peap</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=certificate-authenticated</code> <code class="ros value">outer-auths</code><code class="ros plain">=eap-tls</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros comments"># Adding users</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros constants">/user-manager user</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=maija@mikrotik.test</code> <code class="ros value">group</code><code class="ros plain">=certificate-authenticated</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=paija@mikrotik.test</code> <code class="ros value">group</code><code class="ros plain">=default</code> <code class="ros value">password</code><code class="ros plain">=</code><code class="ros string">"right mule accumulator nail"</code></div></div></td></tr></tbody></table>
+# 配置接入点
 
-# Configuring access points
+## AP运行常规无线包
 
-## AP running regular wireless package
+在ap1上执行的命令
 
-**Commands executed on ap1**
+```shell
+# Configuring radius client
+/radius
+add address=10.0.0.10 secret="Use a secure password generator for this" service=wireless timeout=1s
+# Adding a security profile and applying it to wireless interfaces
+/interface/wireless/security-profile
+add name=radius mode=dynamic-keys authentication-types=wpa2-eap
+/interface/wireless
+set [find] security-profile=radius
+```
 
-[?](https://help.mikrotik.com/docs/display/ROS/Enterprise+wireless+security+with+User+Manager+v5#)
+## AP运行wifiwave2包
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Configuring radius client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.0.0.10</code> <code class="ros value">secret</code><code class="ros plain">=</code><code class="ros string">"Use a secure password generator for this"</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">timeout</code><code class="ros plain">=1s</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># Adding a security profile and applying it to wireless interfaces</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wireless/security-pro</code><code class="ros plain">file</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=radius</code> <code class="ros value">mode</code><code class="ros plain">=dynamic-keys</code> <code class="ros value">authentication-types</code><code class="ros plain">=wpa2-eap</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wireless</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">security-profile</code><code class="ros plain">=radius</code></div></div></td></tr></tbody></table>
+ap2上执行的命令
 
-## AP running wifiwave2 package
+```shell
+# Configuring radius client
+/radius
+add address=10.0.0.10 secret="Use a secure password generator for this too" service=wireless timeout=1s
+# Configuring enabled authentication types. Can also be done via a security profile, but note that interface properties, if specified, override profile properties
+/interface/wifiwave2 set [find] security.authentication-types=wpa2-eap,wpa3-eap
+```
 
-**Commands executed on ap2**
+wifiwave2 AP也可以配置为使用更安全的wpa3-eap-192模式，但请注意，它要求所有客户端设备支持gmp -256密码并使用EAP-TLS身份验证。
 
-[?](https://help.mikrotik.com/docs/display/ROS/Enterprise+wireless+security+with+User+Manager+v5#)
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Configuring radius client</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/radius</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=10.0.0.10</code> <code class="ros value">secret</code><code class="ros plain">=</code><code class="ros string">"Use a secure password generator for this too"</code> <code class="ros value">service</code><code class="ros plain">=wireless</code> <code class="ros value">timeout</code><code class="ros plain">=1s</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># Configuring enabled authentication types. Can also be done via a security profile, but note that interface properties, if specified, override profile properties</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">/interface/wifiwave2 </code><code class="ros functions">set </code><code class="ros plain">[find] </code><code class="ros value">security.authentication-types</code><code class="ros plain">=wpa2-eap,wpa3-eap</code></div></div></td></tr></tbody></table>
-
-A wifiwave2 AP can  also be configured to use the extra secure wpa3-eap-192 mode, but note that it requires that all client devices support the GCMP-256 cipher and use EAP-TLS authentication.
-
-# Notes on client device configuration
+客户端设备配置注意事项
 
 ## Windows
 
-When manually installing a CA in Windows, make sure to explicitly place it in the 'Trusted Root Certification Authorities' certificate store. It will not be placed there automatically.
+在Windows中手动安装CA时，请确保显式地将其放置在“受信任的根证书颁发机构”证书存储区中。它不会自动放置在那里。
 
-## Android
+## 安卓
 
-When connecting to a network with EAP authentication, Android devices ask the user to specify a 'domain'. This refers to the expected domain of the host name included in the RADIUS server's TLS certificate ( 'mikrotik.test' in our example).
+当连接到带有EAP认证的网络时，Android设备会要求用户指定一个“域”。这是指RADIUS服务器的TLS证书中包含的主机名的预期域(microtik)。Test(在我们的例子中)。
 
-By default, Android devices use the device's built-in root CA list for validating the RADIUS server's certificate. When using your own CA, it needs to be selected in the appropriate dropdown menu.
+缺省情况下，Android设备使用设备内置的根CA列表验证RADIUS服务器的证书。当使用自己的CA时，需要在适当的下拉菜单中选择它。
 
 ## iOS
 
-Apple iOS does not appear to actually trust a manually imported CA to authenticate RADIUS servers. The server certificate is marked as 'Not Trusted' unless the CA was imported using Apple's proprietary 'Configurator' utility or an approved third party MDM tool.
+Apple iOS似乎并不真正信任手动导入的CA来认证RADIUS服务器。服务器证书被标记为“不受信任”，除非CA是使用Apple专有的“Configurator”实用程序或经过批准的第三方MDM工具导入的。
