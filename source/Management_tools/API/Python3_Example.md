@@ -2,7 +2,6 @@
 
 - 使用方法： api.py _ip-address_ _username_ _password secure  
     例如：api.py 10.0.0.1 Admin Badpassword123 True  
-    _
 - 之后从键盘上输入单词，用新的一行结束
 - 由于一个空字会终止一个句子，应该在最后一个字后按下回车键 **两次**，句子才会发送到路由器上。
 

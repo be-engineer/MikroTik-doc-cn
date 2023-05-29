@@ -1,6 +1,6 @@
 在RouterOS软件安装成功后(如果需要)，就可以第一次访问路由器了。连接它的方式有很多种:
 
-- [命令行界面(CLI)](https://help.mikrotik.com/docs/display/ROS/Command+Line+Interface)通过Telnet, ssh，串行电缆甚至键盘和显示器，如果路由器有VGA卡。
+- [命令行界面(CLI)](https://help.mikrotik.com/docs/display/ROS/Command+Line+Interface) 通过Telnet, ssh，串行电缆甚至键盘和显示器，如果路由器有VGA卡。
 - [Web界面(WebFig)](https://help.mikrotik.com/docs/display/ROS/Webfig)
 - [WinBox配置工具](https://help.mikrotik.com/docs/display/ROS/Winbox)
 - [使用移动工具(TikApp)](https://help.mikrotik.com/docs/display/ROS/MikroTik+mobile+app)
@@ -9,7 +9,7 @@
 
 如果没有可用的IP或MAC连接，一些设备允许通过串口(DB9或RJ45，具体取决于型号)连接;
 
--[通过串行控制台访问设备](https://help.mikrotik.com/docs/display/ROS/Serial+Console)
+- [通过串行控制台访问设备](https://help.mikrotik.com/docs/display/ROS/Serial+Console)
 
 
 # 概述
@@ -46,7 +46,7 @@ API-ssl服务能够以两种模式工作-有证书和无证书。如果在 _/ip 
 - 如果字的第一个字节是 **>=0xF8**，那么就是一个保留控制字节。在收到未知的控制字节后，API客户端无法继续，因为不知道如何解释下面的字节；
 - 目前控制字节不使用；
 
-一般来说，_字_ 可以这样描述《编码的字长》《字内容》。字内容可以分成5个部分： [命令词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Commandword), [属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Attributeword), [API属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-APIattributeword). [查询词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Queryword),和 [回复词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Replyword)。
+一般来说，字可以这样描述《编码的字长》《字内容》。字内容可以分成5个部分： [命令词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Commandword), [属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Attributeword), [API属性词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-APIattributeword). [查询词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Queryword),和 [回复词](https://help.mikrotik.com/docs/display/ROS/API#API-heading-Replyword)。
 
 #### 命令词
 
@@ -215,7 +215,7 @@ v6.43之后的登录方法：
     - 所有被取消的命令都会被打断，在通常情况下会产生"！陷阱 "和"！完成 "的响应。
     - 请注意，/cancel是单独的命令，可以有它自己独特的".tag "参数，与本命令的"=tag "参数无关。
 
-- 听
+-  listen
     - 在有控制台打印命令的地方可以使用listen命令，但它并不是在所有地方都有预期的效果（也就是说，可能无法工作）。
     - 当某一项目列表中的某些内容发生变化时，会产生"！re "句子
     - 当一个项目被删除或以任何其他方式消失时，'！re'句子包括'=.dead=yes'的值。
@@ -225,7 +225,7 @@ v6.43之后的登录方法：
     - getall命令在有控制台打印命令的地方可用（getall是print的一个别名）。
     - 回复包含=.id=_Item internal number_属性。
 
-- 打印
+- print
     - API打印命令在以下方面与控制台的对应命令不同：
         - 在一个参数不被支持的地方。项目可以使用查询词进行过滤（见下文）。
         - .proplist参数是一个逗号分隔的属性名称列表，应该包括返回的项目。
