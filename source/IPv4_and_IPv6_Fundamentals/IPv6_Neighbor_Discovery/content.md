@@ -1,6 +1,6 @@
 # 概述
 
-**标准：** RFC 2462，RFC 2461，RFC 4861`
+**标准：** RFC 2462，RFC 2461，RFC 4861
 
 Routeros使用路由器广告守护程序（RADVD）具有IPv6邻居发现和无状态地址自动配置支持。
 
@@ -18,16 +18,16 @@ Routeros使用路由器广告守护程序（RADVD）具有IPv6邻居发现和无
 有几种类型的自动配置：
 
  -  _stateless_ -地址配置是通过接收路由器广告消息来完成的。 这些消息包括无状态地址前缀，并要求主机不使用状态地址配置协议。
--_stateful _ -地址配置是通过使用状态地址配置协议（DHCPV6）完成的。 如果RA消息不包括地址前缀，则使用状态协议。
+-  _stateful_ -地址配置是通过使用状态地址配置协议（DHCPV6）完成的。 如果RA消息不包括地址前缀，则使用状态协议。
  -  _BOTH_ - RA消息包括无状态地址前缀，并要求主机使用状态地址配置协议。
 
 IPv6的一个非常有用的功能是能够在不使用诸如DHCP之类的状态配置协议的情况下自动配置自身([请参阅](https://wiki.mikrotik.com/wiki/wiki/wiki/manual：ipv6/nd#statpateless_autoconfiguration_example))。
 
 **注意：** 地址自动配置只能在具有多播功能的界面上执行。
 
--IPv6子网前缀
- - 默认路由器链接 - 本地地址
- - 可能是可选的其他参数：链接MTU，默认的HOP限制和路由器寿命。
+- IPv6子网前缀
+- 默认路由器链接 - 本地地址
+- 可能是可选的其他参数：链接MTU，默认的HOP限制和路由器寿命。
 
 然后主机捕获广播，配置全局IPv6地址和默认路由器。 全局IPv6地址是由广播 [子网前缀](https://wiki.mikrotik.com/wiki/Manual:IPv6/Address#Prefix"Manual:IPv6/Address") 生成和eui-64 [界面标识符](https://wiki.mikrotik.com/wiki/Manual:IPv6/Address#Interface_Identifier "Manual:IPv6/Address")。
 

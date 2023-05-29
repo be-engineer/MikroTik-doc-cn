@@ -81,7 +81,7 @@ RouterOS的路由信息由两个主要部分组成：
 
 ![](https://help.mikrotik.com/docs/download/attachments/328084/routing-hops.jpg?version=1&modificationDate=1572931725399&api=v2)
 
-路由信息库是一个数据库，列出了特定网络目的地的条目及其网关（沿路下一个设备的地址或简称下一跳）。路由表中的一个这样的条目被称为 _route_。
+路由信息库是一个数据库，列出了特定网络目的地的条目及其网关（沿路下一个设备的地址或简称下一跳）。路由表中的一个这样的条目被称为route。
 
 当一个数据包从一个网段传到另一个网段时，就发生了一跳。
 
