@@ -10,7 +10,7 @@
 -   6 [Migrating to Nv2](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-MigratingtoNv2)
 -   7 [Nv2 AP Synchronization](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2APSynchronization)
     -   7.1 [Configuration example](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Configurationexample)
--   8[QoS in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
+-   8 [QoS in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
     -   8.1 [Nv2-qos=default](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=default)
     -   8.2 [Nv2-qos=frame-priority](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=frame-priority)
 -   9 [Security in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-SecurityinNv2network)
@@ -97,7 +97,7 @@ Nv2和nstream的主要区别:
 
 大多数Nv2设置只对Nv2 AP有意义——Nv2客户端会自动适应AP的必要设置。以下设置与Nv2 AP相关:
 
-- **Nv2-queue-count**指定在Nv2网络中使用的优先队列的个数。更多详细信息请参见 [Nv2网络中的QoS](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
+- **Nv2-queue-count** 指定在Nv2网络中使用的优先队列的个数。更多详细信息请参见 [Nv2网络中的QoS](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
 - **Nv2-qos** -控制帧到优先队列的映射策略。更多详细信息请参见 [Nv2网络中的QoS](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
 - **Nv2-cell-radius** 指定到Nv2网络中最远客户端的距离，单位为km。此设置影响AP为客户端分配用于发起连接的争用时隙的大小，以及用于估计到客户端的距离的时隙的大小。如果此设置太小，则较远的客户端可能在连接和/或断开连接时出现“测距超时”错误。虽然在正常操作期间，此设置的影响应该可以忽略不计，但为了保持最大性能，建议在没有必要的情况下不要增加此设置，因此AP不是保留实际上从未使用过的时间，而是将其分配给实际的数据传输。
 - **tdma-period-size** 指定Nv2 AP用于媒体访问调度的时间段大小，单位为毫秒。较小的周期可以潜在地减少延迟(因为AP可以更快地为客户机分配时间)，但会增加协议开销，从而降低吞吐量。另一方面，增加周期会增加吞吐量，但也会增加延迟。对于特别长的链路，可能需要增加这个值以获得可接受的吞吐量。这种必要性可能是由于在下行链路(从AP到客户端)和上行链路(从客户端到AP)数据之间存在“传播间隙”，在此期间没有发生数据传输。这个间隔是必要的，因为客户端必须从AP接收到最后一个帧——这发生在AP传输后的传播延迟之后，只有这样客户端才能传输——结果客户端的帧在客户端传输后的传播延迟之后到达AP(所以间隔是传播延迟的两倍)。距离越长，每个周期的必要传播间隙就越大。如果传播间隔占用周期的很大一部分，则实际吞吐量可能变得不可接受，周期大小应该以增加延迟为代价来增加。基本上，必须仔细选择此设置的值，以最大限度地提高吞吐量，同时将延迟保持在可接受的水平。
@@ -111,7 +111,7 @@ Nv2和nstream的主要区别:
 
 - **Nv2-security** -指定Nv2的安全模式，详见 [Nv2网络中的安全](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Security_in_Nv2_network)
 - **Nv2-preshared-key** -指定要使用的预共享密钥，详细信息请参见 [Nv2网络安全](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Security_in_Nv2_network)
-- ** Nv2 -sync-secret** - 指定用于Nv2同步的秘密密钥。为了建立同步状态，Secret应该在主设备和从设备上匹配。
+- **Nv2 -sync-secret** - 指定用于Nv2同步的秘密密钥。为了建立同步状态，Secret应该在主设备和从设备上匹配。
 
 # 迁移到Nv2
 
@@ -206,7 +206,7 @@ Nv2中的QoS是通过可变数量的优先级队列实现的。根据802.1D-2004
 
 在Nv2网络中，QoS策略由AP控制，客户端从AP中调整策略。在AP上，QoS策略配置了 **Nv2-queue-count** 和 **Nv2- QoS** 参数。**Nv2-queue-count** 参数指定使用的优先队列数量。帧到队列的映射由 **Nv2-qos** 参数控制。
 
-## Nv2-qos =违约
+## Nv2-qos =default
 
 在这种模式下，首先通过内置的QoS策略算法对出帧进行检查，该算法根据数据包的类型和大小选择队列。如果内置规则不匹配，则根据帧优先级字段选择队列，如Nv2-qos=frame-priority模式。
 

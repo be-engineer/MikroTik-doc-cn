@@ -159,7 +159,7 @@ Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加�
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/hs2.png?version=2&modificationDate=1628066327616&api=v2)
 
-命令行相当于:/interface wireless interworking-profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable operator-names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=business-unspecified venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”
+命令行相当于:/interface wireless interworking-profile add domain-names= [orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable operator-names=Orion:eng realms= [orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=business-unspecified venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”
 
 特别注意“wan-downlink”和“wan-uplink”，在这种情况下，“50”的值被用作占位符，请确保根据您的设置调整值，一些客户端设备使用它来评估是否应该加入网络。设置“场地”-场地类型，“场地名称”和其他适用的属性。“domain-names”应该是热点2.0操作符。
 
@@ -214,7 +214,7 @@ Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加�
 
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/hs2.png?version=2&modificationDate=1628066327616&api=v2)
 
-命令行相当于:“/interface wireless internetworking -profile add domain-names=[orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable carrier -names=Orion:eng realms=[orion.area120.com](http://orion.area120.com):eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=业务未指定的venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”。
+命令行相当于:“/interface wireless internetworking -profile add domain-names= [orion.area120.com](http://orion.area120.com) ipv4-availability=public name=Orion_MikroTik network-type=public-chargeable carrier -names=Orion:eng realms= [orion.area120.com](http://orion.area120.com) :eap-tls roaming-ois=f4f5e8f5f4,baa2D00100,baa2d00000 venue=业务未指定的venue-names=Orion:eng wan-downlink=50 wan-uplink=50 wan-status=up”。
 
 一定要在“wan-downlink”和“wan-uplink”中指定一些值，在这种情况下，“50”的值被用作占位符，一些客户端设备使用它来评估是否应该加入网络。设置“场地”-场地类型，“场地名称”和其他适用的属性。“domain-names”应该是热点2.0操作符。
 
@@ -231,7 +231,9 @@ Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加�
 # 故障排除
 
 可以通过RADIUS菜单查看RADIUS消息的状态。
+
 ![](https://help.mikrotik.com/docs/download/attachments/7962628/rad_stat.png?version=1&modificationDate=1628585948146&api=v2)  
+
 或者通过命令行运行“/radius monitor X”，X是数字ID，可以看到带有“/radius print”的ID。
 要了解更多信息，可以在“/system logging add topics=radius,debug,packet”下配置额外的日志记录。可以在 [/log](https://help.mikrotik.com/docs/display/ROS/Log) 下查看结果。
 

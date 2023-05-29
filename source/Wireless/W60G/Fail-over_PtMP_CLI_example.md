@@ -9,6 +9,8 @@
 
 1. 配置复位后，只允许mac-telnet。
 通过连接设备的MAC地址连接设备，或者使用WinBox New终端通过发出命令查找W60G设备的设备MAC地址:
+
+
     `/ip neighbor print`
     
 2. 要连接到W60G设备，用命令:
