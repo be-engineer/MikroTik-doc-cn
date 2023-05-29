@@ -188,7 +188,7 @@ ADDRESS TIME STATUS
 
 ## 反应模式
 
-![](https://help.mikrotik.com/docs/download/attachments/8978441/520px-Hwmp_reactive_a.jpg?version=1&modificationDate=1612788675602&api=v2)  
+![](https://help.mikrotik.com/docs/download/attachments/8978441/520px-Hwmp_reactive_a.jpg?version=1&modificationDate=1612788675602&api=v2)
 
 路由器A想要发现一条到C的路径
 
@@ -204,12 +204,14 @@ ADDRESS TIME STATUS
 ## 主动模式
 
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/Hwmp_proactive_a.jpg?version=1&modificationDate=1612788716474&api=v2)  
-The root announces itself by flooding RANN
+
+根通过泛滥RANN来申明自己
 
   
 
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/Hwmp_proactive_b.jpg?version=1&modificationDate=1612788725360&api=v2)  
-Internal nodes respond with PREGs
+
+内部节点响应preg
 
 在主动模式下，有一些路由器被配置为门户。一般来说，作为一个门户意味着路由器有通往其他网络的接口，也就是说，它是网状网络的入口/出口点。
 
@@ -222,10 +224,12 @@ Internal nodes respond with PREGs
 ## 拓扑变更检测
 
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/Hwmp_error_a.jpg?version=1&modificationDate=1612788766081&api=v2)  
-Data flow path
+
+数据量路径
 
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/Hwmp_error_b.jpg?version=1&modificationDate=1612788772566&api=v2)  
-After the link disappears, an error is propagated upstream
+
+链路消失后，错误向上游传播
 
 HWMP+使用PERR (Path Error)消息来通知链路已经消失。消息被传播到所有上游节点直至数据源。接收到PERR的源重启路径发现过程。
 

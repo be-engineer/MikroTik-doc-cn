@@ -1,19 +1,19 @@
 # 概述
 
--   1[Overview](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Overview)
--   2[Nv2 protocol implementation status](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2protocolimplementationstatus)
--   3[Compatibility and coexistence with other wireless protocols](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Compatibilityandcoexistencewithotherwirelessprotocols)
--   4[How Nv2 compares with Nstreme and 802.11](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-HowNv2compareswithNstremeand802.11)
-    -   4.1[Nv2 vs 802.11](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2vs802.11)
-    -   4.2[Nv2 vs Nstreme](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2vsNstreme)
--   5[Configuring Nv2](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-ConfiguringNv2)
--   6[Migrating to Nv2](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-MigratingtoNv2)
--   7[Nv2 AP Synchronization](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2APSynchronization)
-    -   7.1[Configuration example](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Configurationexample)
+-   1 [Overview](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Overview)
+-   2 [Nv2 protocol implementation status](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2protocolimplementationstatus)
+-   3 [Compatibility and coexistence with other wireless protocols](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Compatibilityandcoexistencewithotherwirelessprotocols)
+-   4 [How Nv2 compares with Nstreme and 802.11](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-HowNv2compareswithNstremeand802.11)
+    -   4.1 [Nv2 vs 802.11](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2vs802.11)
+    -   4.2 [Nv2 vs Nstreme](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2vsNstreme)
+-   5 [Configuring Nv2](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-ConfiguringNv2)
+-   6 [Migrating to Nv2](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-MigratingtoNv2)
+-   7 [Nv2 AP Synchronization](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2APSynchronization)
+    -   7.1 [Configuration example](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Configurationexample)
 -   8[QoS in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-QoSinNv2network)
-    -   8.1[Nv2-qos=default](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=default)
-    -   8.2[Nv2-qos=frame-priority](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=frame-priority)
--   9[Security in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-SecurityinNv2network)
+    -   8.1 [Nv2-qos=default](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=default)
+    -   8.2 [Nv2-qos=frame-priority](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-Nv2-qos=frame-priority)
+-   9 [Security in Nv2 network](https://help.mikrotik.com/docs/display/ROS/Nv2#Nv2-SecurityinNv2network)
 
 Nv2协议是由microtik开发的专用无线协议，用于Atheros 802.11无线芯片。Nv2基于TDMA(时分多址)媒体访问技术，而不是普通802.11设备使用的CSMA(载波感知多址)媒体访问技术。
 
