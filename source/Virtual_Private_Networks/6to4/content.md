@@ -24,7 +24,7 @@
 
 ## 简单的6to4隧道封装(目前不工作)
 
-! [] (https://help.mikrotik.com/docs/download/attachments/135004174/6to4-tunnel.jpg?version=1&modificationDate=1656683221465&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/135004174/6to4-tunnel.jpg?version=1&modificationDate=1656683221465&api=v2)
 
 通过利用2002::/16分配的地址空间，可以简单地在IPv4网络上路由IPv6数据包。所有6to4节点都必须具有可访问的IPv4地址——如果您在Internet上运行此设置，则所有IPv4地址都必须是公共地址。
 
