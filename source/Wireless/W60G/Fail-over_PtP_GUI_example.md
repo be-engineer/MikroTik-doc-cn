@@ -66,7 +66,7 @@
 4.  选择名称、模式、认证类型和安全密码。
 5.  应用配置。
 
-**![](https://help.mikrotik.com/docs/download/attachments/43843592/5Ghz_security_profile.png?version=1&modificationDate=1622186103507&api=v2)**
+![](https://help.mikrotik.com/docs/download/attachments/43843592/5Ghz_security_profile.png?version=1&modificationDate=1622186103507&api=v2)
 
 **用于桥接设备**
 

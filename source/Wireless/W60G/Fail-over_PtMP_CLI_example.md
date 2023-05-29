@@ -7,26 +7,18 @@
 ## 逐步连接设备
 
 
-1.  配置复位后，只允许mac-telnet。
+1. 配置复位后，只允许mac-telnet。
 通过连接设备的MAC地址连接设备，或者使用WinBox New终端通过发出命令查找W60G设备的设备MAC地址:
+    `/ip neighbor print`
     
+2. 要连接到W60G设备，用命令:
+    
+    `/tool mac-telnet mac-address`
 
-    ```
-    /ip neighbor print
-    ```
-    
-2.  要连接到W60G设备，用命令:
-    
-    ```
-    /tool mac-telnet mac-address
-    ```
-
-3.  输入用户名和密码。默认用户名为admin，密码为空白或打印在设备贴纸上。
+3. 输入用户名和密码。默认用户名为admin，密码为空白或打印在设备贴纸上。
     
    
-    ```
-    [admin@KD_GW] > /tool mac-telnet C4:AD:34:84:EE:5DLogin: adminPassword: Trying C4:AD:34:84:EE:5D...Connected to C4:AD:34:84:EE:5D
-    ```
+    `[admin@KD_GW] > /tool mac-telnet C4:AD:34:84:EE:5DLogin: adminPassword: Trying C4:AD:34:84:EE:5D...Connected to C4:AD:34:84:EE:5D`
    
 
 ## 配置网桥
@@ -116,7 +108,7 @@
     ```
     
 
-## Configure bridge for Access Point  
+## 为AP配置网桥  
 
 
 1.  为AP配置网桥，以确保5ghz作为故障转移。需要桥接wlan1、ether1和所有60ghz 站接口。
@@ -137,14 +129,11 @@
 1.  在此设置中配置绑定并分配从接口，它被选择为内置的wlan1接口，但在其他类型的设置中也可以是以太网接口。
 
 对于站桥式装置，请将**绑定**设置为:
-    
 ```shell
 [admin@MikroTik] > /interface bonding add mode=active-backup name=bond1 primary=wlan60-1 slaves=wlan60-1,wlan1
 ```
     
 2.  将接口成员(ether1和bond1)添加到新建的网桥中。
-    
-
 ```shell
 [admin@MikroTik] > /interface bridge port add interface=ether1 bridge=bridge 
 [admin@MikroTik] > /interface bridge port add interface=bond1  bridge=bridge 

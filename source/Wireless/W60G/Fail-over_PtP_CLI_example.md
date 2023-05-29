@@ -9,15 +9,13 @@
 
 1.  配置复位后，只允许mac-telnet。
 通过连接设备的MAC地址连接设备，或者使用WinBox New终端通过发出命令查找W60G设备的设备MAC地址:
-    
-    
+
     ```
     /ip neighbor print
     ```
     
 2.  要连接到W60G设备，用命令:
    
-
     ```
     /tool mac-telnet mac-address
     ```
@@ -25,7 +23,6 @@
     
 3.  输入用户名和密码。默认用户名为admin，密码为空白或打印在设备贴纸上。
     
-
     ```
     [admin@KD_GW] > /tool mac-telnet C4:AD:34:84:EE:5DLogin: adminPassword: Trying C4:AD:34:84:EE:5D...Connected to C4:AD:34:84:EE:5D
     ```
@@ -121,14 +118,14 @@
 
 1.  在此设置中配置绑定并分配从接口，它被选择为内置的wlan1接口，但在其他类型的设置中也可以是以太网接口。
 
-对于桥接装置，请将bonding设置为:
+    对于桥接装置，请将bonding设置为:
 
     ```shell
     [admin@MikroTik] > /interface bonding add comment=bondingbackup mode=active-backup name=bond1 primary=wlan60-station-1 slaves=wlan60-station-1,wlan1
     ```
 
     
-对于站桥设备，请将bonding设置为:
+    对于站桥设备，请将bonding设置为:
     
 
     ```shell

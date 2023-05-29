@@ -1,6 +1,6 @@
 # 概述
 
-**Packages:** `system`,`wireless`
+**Packages:** `system`, `wireless`
 
 802.11ad实现能够在无线网络上提供千兆以太网速度。
 
@@ -73,11 +73,11 @@ rx-mpdu-crc-ok: 285 649
 
 **Sub-menu:** `/interface w60g station`
 
-| 属性                                                                | 说明                          |
-| ------------------------------------------------------------------- | ----------------------------- |
-| **parent** (_string_;Default:**wlan60-**)                           | 父接口名                      |
-| **put-in-bridge** (_none                                            | parent                        | bridge-name_;Default:**parent**) | 将站点设备接口添加到特定网桥 |
-| **remote-address** (_MAC_;Default:**matches bridge interface MAC**) | 网桥接口MAC地址，站点正在连接 |
+| 属性                                                                  | 说明                          |
+| --------------------------------------------------------------------- | ----------------------------- |
+| **parent** (_string_;Default:**wlan60-**)                             | 父接口名                      |
+| **put-in-bridge** (_none\| parent \| bridge-name_;Default:**parent**) | 将站点设备接口添加到特定网桥  |
+| **remote-address** (_MAC_;Default:**matches bridge interface MAC**)   | 网桥接口MAC地址，站点正在连接 |
 
 ## scan
 
