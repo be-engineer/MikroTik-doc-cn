@@ -1108,29 +1108,29 @@ WPS服务器允许将支持WPS的无线客户端连接到使用预共享密钥�
  /interface wireless set wlan1 wps-mode=push-button
 ```
 
-Wps-mode has 3 options
+wps模式有3个选项
 
--   disabled
--   push-button - WPS is activated by pushing physical button on the board (few boards has such button marked on the board case/label)
--   push-button-virtual-only - WPS is activated by pushing "WPS Accept" button from the RouterOS wireless interface menu
+- 禁用
+- 按钮- WPS是通过按板子上的物理按钮激活的(很少有板子在板子外壳/标签上有这样的按钮标记)
+- push-button-virtual-only -通过按下RouterOS无线接口菜单中的“WPS Accept”按钮激活WPS
 
-By pushing the WPS physical/virtual button the AP enables the WPS functionality. If within 2 minutes the WPS process isn't initiated the WPS Accept Function is stopped.
+通过按下WPS物理/虚拟按钮，AP启用WPS功能。如果在2分钟内没有启动WPS进程，则停止WPS接受功能。
 
-WPS Server is enabled by default on few boards that has physical WPS button marked. For example, hap lite, hap, hap ac lite, hap ac, map lite
+WPS服务器在少数标记有物理WPS按钮的单板上默认启用。例如，幸福生活，幸福生活，幸福生活，幸福生活，幸福生活
 
-WPS Server is active only when wireless AP interface has Pre-Shared Key Authentication (PSK) enabled. It is possible to configure this mode for the Virtual AP interfaces as well.
+只有无线AP接口开启了PSK (Pre-Shared Key Authentication)功能，WPS Server才会激活。也可以为Virtual AP接口配置此模式。
 
-### WPS Client
+### WPS客户端
 
-WPS Client function allows the wireless client to get the Pre-Shared Key configuration of the AP that has WPS Server enabled. WPS Client can be enabled by such command:
+WPS客户端功能允许无线客户端获取启用了WPS服务器的AP的预共享密钥配置。WPS Client可以通过以下命令启用:
 
 ```
  /interface wireless wps-client wlan1
 ```
 
-WPS Client command outputs all the information of the WPS Enabled AP on the screen. Example:
+WPS Client命令将WPS启用AP的所有信息显示在屏幕上。例子:
 
-```
+```shell
 [admin@MikroTik] /interface wireless> wps-client wlan1
           status: disconnected, success
             ssid: MikroTik
@@ -1141,96 +1141,90 @@ WPS Client command outputs all the information of the WPS Enabled AP on the scre
 
 ```
 
-It is possible to specify additional settings for the WPS-Client command:
+可以为WPS-Client命令指定其他设置:
 
--   create-profile - creates wireless security profile with the specified name, configures it with security details received from the WPS AP, specifies the wireless interface to use the new created security profile
--   ssid - get WPS information only from AP with specified SSID
--   mac-address - get WPS information only from AP with specified mac-address
+- create-profile创建指定名称的无线安全配置文件，并配置从WPS AP接收的安全详细信息，指定无线接口使用新创建的安全配置文件
+- ssid只从指定ssid的AP获取WPS信息
+- mac-address只从指定mac地址的AP获取WPS信息
 
-## Repeater
+## 中继器
 
-Wireless repeater will allow to receive the signal from the AP and repeat the signal using the same physical interface locally for connecting other clients. This will allow to extend the wireless service for the wireless clients. Wireless repeater function will configure the wireless interface to connect to the AP with station-bridge or station-pseudobridge option, create a virtual AP interface, create a bridge interface and add both (main and the virtual) interfaces to the bridge ports.
+无线中继器将允许从AP接收信号，并在本地使用相同的物理接口重复信号，以连接其他客户端。这将允许为无线客户端扩展无线服务。无线中继器功能将无线接口配置为以站桥或站伪桥选项连接AP，创建虚拟AP接口，创建网桥接口，并将主接口和虚拟接口都添加到网桥端口。
 
-If your AP **supports button-enabled WPS** mode, you can use the automatic setup command:
+如果AP支持按钮启用WPS模式，可以用自动设置命令:
 
 ```
 /interface wireless setup-repeater wlan1
 
 ```
 
-The setup-repeater does the following steps:
+设置重复器执行以下步骤:
 
--   searches for WPS AP with button pushed
--   acquires SSID, key, channel from AP
--   resets main master interface config (same as reset-configuration)
--   removes all bridge ports that were added for virtual interfaces added to this master (so there are no dangling invalid bridge ports later)
--   removes all virtual interfaces added to this master
--   creates security profile with name "<interfacename>-<ssid>-repeater", if such security profile already exists does not create new, just updates settings
--   configures master interface, interface mode is selected like this: if AP supports bridge mode, use station-bridge, else if AP supports WDS, use station-wds, else use station-pseudobridge
--   creates virtual AP interface with same SSID and security profile as master
--   if master interface is not in some bridge, creates new bridge interface and adds master interface to it
--   adds virtual AP interface to the same bridge master interface is in.
+-按下按钮搜索WPS AP
+-从AP获取SSID、密钥、信道
+-重置主接口配置(与reset-configuration相同)
+删除所有添加到主接口上的虚拟接口的桥端口(这样以后就不会有无效的桥端口悬空了)
+-移除加入该master的所有虚拟接口
+-创建名为“<interfacename>-<ssid>-repeater”的安全配置文件，如果这样的安全配置文件已经存在，则不创建新的，只是更新设置
+-配置主接口，接口模式选择如下:如果AP支持网桥模式，则使用station-bridge;如果AP支持WDS模式，则使用station-wds，否则使用station-pseudobridge
+-创建与master接口具有相同SSID和安全配置文件的虚拟AP接口
+如果主接口不在某个网桥上，则创建一个新的网桥接口，并将主接口加入其中
+-将虚拟AP接口加入到主接口所在的桥中。
 
-If your AP **does not support WPS**, it is possible to specify the settings manually, using these parameters:
+如果AP不支持WPS，则可以用以下参数手动指定设置:
 
--   **address** - MAC address of AP to setup repeater for (optional)
--   **ssid** - SSID of AP to setup repeater for (optional)
--   **passphrase** - key to use for AP - if this IS specified, command will just scan for AP and create security profile based on info in beacon and with this passphrase. If this IS NOT specified, command will do WPS to find out passphrase.
+- **address** -要设置中继器的AP MAC地址(可选)
+- **ssid** -要设置中继器的AP的ssid(可选)
+- **passphrase** -用于AP的密钥-如果指定了这个，命令将扫描AP并根据信标中的信息和这个passphrase创建安全配置文件。如果没有指定，命令将执行WPS来查找密码短语。
 
-## Roaming
+## 漫游
 
-### Station Roaming
+### 站漫游
 
-Station Roaming feature is available only for 802.11 wireless protocol and only for station modes. When RouterOS wireless client is connected to the AP using 802.11 wireless protocol it will periodically perform the background scan with specific time intervals. When the background scan will find an AP with better signal it will try to roam to that AP. The time intervals between the background scans will become shorter when the wireless signal becomes worse and the background scan interval will become longer when the wireless client signal will get better.
+站点漫游功能仅适用于802.11无线协议，并且仅适用于站点模式。当RouterOS无线客户端通过802.11无线协议与AP连接时，它会按指定的时间间隔周期性地进行后台扫描。当后台扫描发现信号较好的AP时，它会尝试漫游到该AP。当无线信号变差时，后台扫描的时间间隔会变短，当无线客户端信号变好时，后台扫描的时间间隔会变长。
 
-## VLAN tagging
+## VLAN标签
 
 **Sub-menu:** `/interface wireless`
 
-With VLAN tagging it is possible to separate Virtual AP traffic on Ethernet side of "locally forwarding" AP (the one on which wireless interfaces are bridged with Ethernet). This is necessary to separate e.g. "management" and "guest" network traffic of Ethernet side of APs.
+使用VLAN标记可以将以太网端的虚拟AP流量与“本地转发”AP(无线接口与以太网桥接的AP)分开。这是必要的。ap以太网端的“管理”和“访客”网络流量。
 
-VLAN is assigned for wireless interface and as a result all data coming from wireless gets tagged with this tag and only data with this tag will send out over wireless. This works for all wireless protocols except that on Nv2 there's no Virtual AP support.
+VLAN被分配给无线接口，因此所有来自无线的数据都被标记为这个标签，只有这个标签的数据才会通过无线发送出去。这适用于所有无线协议，除了Nv2上没有虚拟AP支持。
 
-You can configure your RADIUS authentication server to assign users or groups of users to a specific VLAN when they authenticate to the network. To use this option you will need to use [RADIUS attributes](https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary "Manual:RADIUS Client/vendor dictionary").
+您可以配置RADIUS认证服务器，以便在用户或用户组向网络进行身份验证时将其分配到特定的VLAN。要使用此选项，需要 [RADIUS attributes](https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary“Manual:RADIUS Client/vendor dictionary”)。
 
-**Note:** In case to use this option you must enable wireless-fp or wireless-cm2 package for RouterOS version up to 6.37. Starting from RouterOS v6.37 you can do that with regular wireless package.
+**注意:** 如果要使用此选项，必须在RouterOS 6.37版本之前启用wireless-fp或wireless-cm2包。从RouterOS v6.37开始，可以使用常规的无线包。
 
-  
 
-| Property               | Description      |
-| ---------------------- | ---------------- |
-| **vlan-mode** (_no tag | user service tag | use tag_; Default: **no tag**) | Three VLAN modes are available: |
 
--   _no-tag_ - AP don't use VLAN tagging
--   _use-service-tag_ - VLAN ID use 802.1ad tag type
--   _use-tag_ - VLAN ID use 802.1q tag type
+| 属性                                                                         | 说明                                                                                                                                            |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **vlan-mode** (_no tag \| user service tag \| use tag_; Default: **no tag**) | VLAN模式有三种:<br>- _no-tag_ - AP不使用VLAN标签<br>- _use-service-tag_ - VLAN ID使用802.1ad标签类型<br>- _use-tag_ - VLAN ID使用802.1q标签类型 |
+| **vlan-id** (_integer [1..4095]_; Default: **1**)                            | VLAN标识号                                                                                                                                      |
 
- |
-| **vlan-id** (_integer [1..4095]_; Default: **1**) | VLAN identification number |
+### Vlan标签重写
 
-### Vlan tag override
+通过访问列表和RADIUS属性(对于常规无线控制器和无线控制器)，可以在每个客户端基础上覆盖每个接口VLAN标签。
 
-Per-interface VLAN tag can be overridden on per-client basis by means of access-list and RADIUS attributes (for both - regular wireless and wireless controller).
-
-This way traffic can be separated between wireless clients even on the same interface, but must be used with care - only "interface VLAN" broadcast/multicast traffic will be sent out. If working broadcast/multicast is necessary for other (overridden) VLANs as well, multicast-helper can be used for now (this changes every multicast packet to unicast and then it is only sent to clients with matching VLAN ids).
+这样，即使在同一接口上，流量也可以在无线客户端之间分离，但必须谨慎使用-只有“接口VLAN”广播/多播流量将被发送出去。如果其他(覆盖的)VLAN也需要工作广播/组播，那么现在可以使用multicast-helper(这会将每个组播数据包更改为单播，然后仅将其发送到具有匹配VLAN id的客户端)。
 
   
 
 ## Winbox
 
-[Winbox](https://help.mikrotik.com/docs/display/ROS/Winbox) is a small utility that allows the administration of Mikrotik RouterOS using a fast and simple GUI.
+[Winbox](https://help.mikrotik.com/docs/display/ROS/Winbox) 是一个小实用程序，可以用快速简单的GUI管理microtik RouterOS。
 
-**Note:** Current Tx Power gives you information about transmit power currently used at specific data rate. Currently not supported for Atheros 802.11ac chips (e.g. QCA98xx).
+**注:** 当前Tx功率为您提供有关当前在特定数据速率下使用的传输功率的信息。目前不支持Atheros 802.11ac芯片(例如QCA98xx)。
 
-  
 
-## Interworking Realms setting
 
-For more information about interworking-profiles see the [manual](https://help.mikrotik.com/docs/display/ROS/Interworking+Profiles).
+## 互通领域设置
 
-**realms-raw** - list of strings with hex values. Each string specifies contents of "NAI Realm Tuple", excluding "NAI Realm Data Field Length" field.
+有关交互配置文件的更多信息，请参阅 [manual](https://help.mikrotik.com/docs/display/ROS/Interworking+Profiles)。
 
-Each hex encoded string must consist of the following fields:
+**realms-raw** -十六进制值的字符串列表。每个字符串指定“NAI Realm Tuple”的内容，不包括“NAI Realm Data Field Length”字段。
+
+每个十六进制编码字符串必须包含以下字段:
 
 ```
 - NAI Realm Encoding (1 byte)
@@ -1241,7 +1235,7 @@ Each hex encoded string must consist of the following fields:
 
 ```
 
-For example, value "00045465737401020d00" decodes as:
+例如，值“00045465737401020d00”解码为:
 
 ```
 - NAI Realm Encoding: 0 (rfc4282)
@@ -1253,6 +1247,6 @@ For example, value "00045465737401020d00" decodes as:
 
 ```
 
-Note, that setting "realms-raw=00045465737401020d00" produces the same advertisement contents as setting "realms=Test:eap-tls".
+注意，设置“realms-raw=00045465737401020d00”会产生与设置“realms=Test:eap-tls”相同的通告内容。
 
-Refer to 802.11-2016, section 9.4.5.10 for full NAI Realm encoding.
+有关完整的NAI Realm编码，请参阅802.11-2016，第9.4.5.10节。
