@@ -18,28 +18,28 @@ OpenVPN用户名不超过27个字符，密码不超过233个字符。
 
 # OVPN客户端
 
-| 属性                                                         | 说明                                                                       |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| **add-default-route** (_yes_ \| _no_; Default: **no**)       | 是否添加OVPN远端地址作为缺省路由。                                         |
-| **auth** (_md5_ \                                            | _sha1_ \                                                                   | _null_ \                                 | _sha256_ \   | _sha512_;Default:**sha1**) | 允许的认证方式。 |
-| **certificate** (_string_ \| _none_;Default:**none**)        | 客户端证书名称                                                             |
-| **cipher** (_null_ \                                         | _aes128-cbc_ \                                                             | _aes128-gcm_ \                           | _aes192-cbc_ | _aes192-gcm_ \             | _aes256-cbc_ \   | _aes256-gcm_ \ | _blowfish128_;Default:**blowfish128**) | 允许的密码。为了使用GCM类型的密码，“auth”参数必须设置为“null”，因为如果使用GCM密码，也负责“auth”。 |
-| **comment** (_string_;Default:)                              | 项目的描述性名称                                                           |
-| **connect-to** (_IP_;Default:)                               | OVPN服务器的远程地址。                                                     |
-| **disabled** (_yes_ \| _no_; Default: **yes**)               | 接口是否被禁用。缺省情况下是关闭的。                                       |
-| **mac-address** (_MAC_;Default:)                             | OVPN接口的Mac地址。如果未指定，将自动生成。                                |
-| **max-mtu** (_integer_;Default:**1500**)                     | 最大传输单元。OVPN接口在不产生数据包碎片的情况下能够发送的最大数据包大小。 |
-| **mode** (_ip_                                               | _ethernet_;Default:**ip**)                                                 | Layer3或layer2隧道模式(也可选择tun、tap) |
-| **name** (_string_;Default:)                                 | 接口的描述性名称。                                                         |
-| **password** (_string_;Default:**""**)                       | 鉴权密码。                                                                 |
-| **port** (_integer_;Default:**1194**)                        | 要连接的端口。                                                             |
-| **profile** (_name_; Default: **default**)                   | 指定建立隧道时使用哪一种PPP配置文件。                                      |
-| **protocol** (_tcp_ \| _udp_;Default:**tcp**)                | 表示与远程端点连接时使用的协议。                                           |
-| **verify-server-certificate** (_yes_ \| _no_;Default:**no**) | 根据“connect-to”参数检查证书CN或SAN。IP或主机名必须出现在服务器的证书中。  |
-| **tls-version** (_any_ \| _only-1.2_;Default:**any**)        | 指定允许的TLS版本                                                          |
-| **use-peer-dns** (_yes_ \| _no_;Default:**no**)              | 是否将OVPN服务器提供的DNS服务器添加到IP/DNS配置中。                        |
-| **route-nopull** (_yes_ \| _no_;Default:**no**)              | 是否允许OVPN服务器向OVPN客户端实例路由表中添加路由。                       |
-| **user** (_string_;Default:)                                 | 用于鉴权的用户名。                                                         |
+| 属性                                                                                                                                                         | 说明                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **add-default-route** (_yes_ \| _no_; Default: **no**)                                                                                                       | 是否添加OVPN远端地址作为缺省路由。                                                                 |
+| **auth** (_md5_ \| _sha1_ \| _null_ \| _sha256_ \| _sha512_;Default:**sha1**)                                                                                | 允许的认证方式。                                                                                   |
+| **certificate** (_string_ \| _none_;Default:**none**)                                                                                                        | 客户端证书名称                                                                                     |
+| **cipher** (_null_ \| _aes128-cbc_ \| _aes128-gcm_ \| _aes192-cbc_ \| _aes192-gcm_ \| _aes256-cbc_ \| _aes256-gcm_ \| _blowfish128_;Default:**blowfish128**) | 允许的密码。为了使用GCM类型的密码，“auth”参数必须设置为“null”，因为如果使用GCM密码，也负责“auth”。 |
+| **comment** (_string_;Default:)                                                                                                                              | 项目的描述性名称                                                                                   |
+| **connect-to** (_IP_;Default:)                                                                                                                               | OVPN服务器的远程地址。                                                                             |
+| **disabled** (_yes_ \| _no_; Default: **yes**)                                                                                                               | 接口是否被禁用。缺省情况下是关闭的。                                                               |
+| **mac-address** (_MAC_;Default:)                                                                                                                             | OVPN接口的Mac地址。如果未指定，将自动生成。                                                        |
+| **max-mtu** (_integer_;Default:**1500**)                                                                                                                     | 最大传输单元。OVPN接口在不产生数据包碎片的情况下能够发送的最大数据包大小。                         |
+| **mode** (_ip_\| _ethernet_;Default:**ip**)                                                                                                                  | Layer3或layer2隧道模式(也可选择tun、tap)                                                           |
+| **name** (_string_;Default:)                                                                                                                                 | 接口的描述性名称。                                                                                 |
+| **password** (_string_;Default:**""**)                                                                                                                       | 鉴权密码。                                                                                         |
+| **port** (_integer_;Default:**1194**)                                                                                                                        | 要连接的端口。                                                                                     |
+| **profile** (_name_; Default: **default**)                                                                                                                   | 指定建立隧道时使用哪一种PPP配置文件。                                                              |
+| **protocol** (_tcp_ \| _udp_;Default:**tcp**)                                                                                                                | 表示与远程端点连接时使用的协议。                                                                   |
+| **verify-server-certificate** (_yes_ \| _no_;Default:**no**)                                                                                                 | 根据“connect-to”参数检查证书CN或SAN。IP或主机名必须出现在服务器的证书中。                          |
+| **tls-version** (_any_ \| _only-1.2_;Default:**any**)                                                                                                        | 指定允许的TLS版本                                                                                  |
+| **use-peer-dns** (_yes_ \| _no_;Default:**no**)                                                                                                              | 是否将OVPN服务器提供的DNS服务器添加到IP/DNS配置中。                                                |
+| **route-nopull** (_yes_ \| _no_;Default:**no**)                                                                                                              | 是否允许OVPN服务器向OVPN客户端实例路由表中添加路由。                                               |
+| **user** (_string_;Default:)                                                                                                                                 | 用于鉴权的用户名。                                                                                 |
 
 此外，还可以从OVPN配置文件导入OVPN客户机配置。这样的文件通常由OVPN服务器端提供，并且已经包含了配置，因此您只需要担心几个参数。
 

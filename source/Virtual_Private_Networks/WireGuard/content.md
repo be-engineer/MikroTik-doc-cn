@@ -1,22 +1,22 @@
 # 介绍
 
--   1[Introduction](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Introduction)
--   2[Properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Properties)
-    -   2.1[Read-only properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Read-onlyproperties)
--   3[Peers](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Peers)
-    -   3.1[Read-only properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Read-onlyproperties.1)
--   4[Application examples](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Applicationexamples)
-    -   4.1[Site to Site WireGuard tunnel](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-SitetoSiteWireGuardtunnel)
-        -   4.1.1[WireGuard interface configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-WireGuardinterfaceconfiguration)
-        -   4.1.2[Peer configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Peerconfiguration)
-        -   4.1.3[IP and routing configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-IPandroutingconfiguration)
-        -   4.1.4[Firewall considerations](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Firewallconsiderations)
--   5[RoadWarrior WireGuard tunnel](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-RoadWarriorWireGuardtunnel)
-    -   5.1[RouterOS configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-RouterOSconfiguration)
-    -   5.2[iOS configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-iOSconfiguration)
-    -   5.3[Windows 10 configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Windows10configuration)
+-   1 [Introduction](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Introduction)
+-   2 [Properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Properties)
+    -   2.1 [Read-only properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Read-onlyproperties)
+-   3 [Peers](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Peers)
+    -   3.1 [Read-only properties](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Read-onlyproperties.1)
+-   4 [Application examples](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Applicationexamples)
+    -   4.1 [Site to Site WireGuard tunnel](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-SitetoSiteWireGuardtunnel)
+        -   4.1.1 [WireGuard interface configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-WireGuardinterfaceconfiguration)
+        -   4.1.2 [Peer configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Peerconfiguration)
+        -   4.1.3 [IP and routing configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-IPandroutingconfiguration)
+        -   4.1.4 [Firewall considerations](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Firewallconsiderations)
+-   5 [RoadWarrior WireGuard tunnel](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-RoadWarriorWireGuardtunnel)
+    -   5.1 [RouterOS configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-RouterOSconfiguration)
+    -   5.2 [iOS configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-iOSconfiguration)
+    -   5.3 [Windows 10 configuration](https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Windows10configuration)
 
-WireGuard<sup>®</sup>是一个非常简单但快速和现代的VPN，利用最先进的加密技术。它的目标是比IPsec更快、更简单、更精简和更有用，同时避免大量的麻烦。它打算比OpenVPN性能更好。WireGuard被设计为一种通用的VPN，可以在嵌入式接口和超级计算机上运行，适合许多不同的情况。它最初是为Linux内核发布的，现在是跨平台的(Windows, macOS, BSD, iOS, Android)，并且可以广泛部署。
+WireGuard是一个非常简单但快速和现代的VPN，利用最先进的加密技术。它的目标是比IPsec更快、更简单、更精简和更有用，同时避免大量的麻烦。它打算比OpenVPN性能更好。WireGuard被设计为一种通用的VPN，可以在嵌入式接口和超级计算机上运行，适合许多不同的情况。它最初是为Linux内核发布的，现在是跨平台的(Windows, macOS, BSD, iOS, Android)，并且可以广泛部署。
 
 **属性**
 
@@ -43,7 +43,7 @@ WireGuard<sup>®</sup>是一个非常简单但快速和现代的VPN，利用最�
 | **allowed-address** (_IP/IPv6 prefix_; Default: )         | 带有CIDR掩码的IP地址(v4或v6)列表，允许该对等体的入方向流量，也允许该对等体的出方向流量。可以指定_0.0.0.0/0_来匹配所有IPv4地址，也可以指定_::/0_来匹配所有IPv6地址。                                                                  |
 | **comment** (_string_;Default:)                           | 对等体的简短描述。                                                                                                                                                                                                                   |
 | **disabled** (_yes \| no_; Default: **no**)               | 启用/禁用对等体。                                                                                                                                                                                                                    |
-| **endpoint-address** (_IP/主机名_;Default:)               | 端点IP或主机名可以留空以允许从任何地址进行远程连接。                                                                                                                                                                                 |
+| **endpoint-address** (_IP/host_;Default:)                 | 端点IP或主机名可以留空以允许从任何地址进行远程连接。                                                                                                                                                                                 |
 | **endpoint-port** (_integer:0..65535_;  Default:)         | 端点端口可以留空，允许从任何端口进行远程连接。                                                                                                                                                                                       |
 | **interface** (_string;Default:_)                         | 对端所属的WireGuard接口名称。                                                                                                                                                                                                        |
 | **persistent-keepalive** (_integer:0..65535; Default: 0_) | 一个秒间隔，在1到65535之间，为保持有状态防火墙或NAT映射持续有效的目的，向对等端发送经过身份验证的空数据包的频率。例如，如果接口很少发送流量，但它可能随时从对等体接收流量，并且它在NAT之后，接口可能会受益于25秒的持久保持时间间隔。 |
@@ -56,7 +56,7 @@ WireGuard<sup>®</sup>是一个非常简单但快速和现代的VPN，利用最�
 | ---------------------------------------- | ------------------------------------------ |
 | **current-endpoint-address** (_IP/IPv6_) | 从对端收到的正确认证报文的最近的源IP地址。 |
 | **current-endpoint-port** (_integer_)    | 从对端收到正确认证报文的最近的源IP端口。   |
-| **last-handshake** (i_integer_)          | 最后一次成功握手后的秒数。                 |
+| **last-handshake** (_integer_)           | 最后一次成功握手后的秒数。                 |
 | **rx** (_integer_)                       | 从对端接收到的总字节数。                   |
 | **tx** (_integer_)                       | 向对端发送的总字节数。                     |
 

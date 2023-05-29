@@ -24,15 +24,15 @@ PPPoE有两个不同的阶段:
 探索阶段有四个步骤。当它完成时，两个对等体都知道PPPoE 
  SESSION_ID 和对等体的以太网地址，它们一起唯一地定义了PPPoE会话:
 
-1。**PPPoE Active Discovery Initialization (PADI) -** PPPoE client向广播地址发送一个_padi报文。如果在PPPoE client的拨号网络属性中已经输入了服务名称，该报文也可以填充service-name字段。如果没有输入服务名称，则不填充此字段
-2.  **PPPoE Active Discovery Offer (PADO) -** 如果Access Concentrator能够服务PADI包中列出的“service-name”字段，PPPoE server或Access Concentrator应该用PADO响应PADI。如果没有列出“service-name”字段，则访问集中器将使用一个_PADO_包进行响应，该包具有“service-name”字段，其中填充了访问集中器可以服务的服务名称。PADO报文发送到PPPoE client的单播地址
-3.**PPPoE Active Discovery Request (PADR) -** 当PPPoE client收到PADO报文时，将返回一个PADR报文。该报文被发送到接入集中器的单播地址。客户端可以接收多个PADO包，但是客户端会响应接收到的第一个有效的PADO包。如果初始的PADR包有一个空白的“service-name”字段，客户机将使用PADR包中返回的第一个服务名称填充PADR包的“service-name”字段。
-4.  **PPPoE Active Discovery Session Confirmation (PADS) -** 当接收到PADR时，Access Concentrator会生成一个唯一的PPP会话ID (Session identification)，并在PADR报文中返回给PPPoE client。该报文被发送到客户端的单播地址。
+1. **PPPoE Active Discovery Initialization (PADI)** PPPoE client向广播地址发送一个_padi报文。如果在PPPoE client的拨号网络属性中已经输入了服务名称，该报文也可以填充service-name字段。如果没有输入服务名称，则不填充此字段
+2.  **PPPoE Active Discovery Offer (PADO)** 如果Access Concentrator能够服务PADI包中列出的“service-name”字段，PPPoE server或Access Concentrator应该用PADO响应PADI。如果没有列出“service-name”字段，则访问集中器将使用一个_PADO_包进行响应，该包具有“service-name”字段，其中填充了访问集中器可以服务的服务名称。PADO报文发送到PPPoE client的单播地址
+3. **PPPoE Active Discovery Request (PADR)** 当PPPoE client收到PADO报文时，将返回一个PADR报文。该报文被发送到接入集中器的单播地址。客户端可以接收多个PADO包，但是客户端会响应接收到的第一个有效的PADO包。如果初始的PADR包有一个空白的“service-name”字段，客户机将使用PADR包中返回的第一个服务名称填充PADR包的“service-name”字段。
+4.  **PPPoE Active Discovery Session Confirmation (PADS)** 当接收到PADR时，Access Concentrator会生成一个唯一的PPP会话ID (Session identification)，并在PADR报文中返回给PPPoE client。该报文被发送到客户端的单播地址。
     
 
 PPPoE会话终止:
 
--** PPPoE Active Discovery Terminate (PADT) -** 可以在PPPoE会话建立后的任何时间发送，表示PPPoE会话的结束。它可以由服务器或客户端发送。
+- **PPPoE Active Discovery Terminate (PADT)** 可以在PPPoE会话建立后的任何时间发送，表示PPPoE会话的结束。它可以由服务器或客户端发送。
 
 ## 会话阶段
 
@@ -81,7 +81,7 @@ TCP栈试图避免碎片，因此它们使用MSS(最大段大小)。缺省情况
 
 ## 状态
 
-命令`/interface PPPoE -client monitor`将显示当前PPPoE的状态。
+命令 `/interface PPPoE -client monitor` 将显示当前PPPoE的状态。
 
 可用的只读属性:
 
@@ -119,7 +119,7 @@ TCP栈试图避免碎片，因此它们使用MSS(最大段大小)。缺省情况
 
 # PPPoE Server
 
-PPPoE server配置的接口(隧道)项分为静态用户和动态连接两种。为每一条与给定服务器建立的隧道创建一个接口。如果需要引用为特定用户创建的特定接口名称(在防火墙规则或其他地方)，则可以通过管理方式添加静态接口。动态接口将自动添加到此列表中，只要用户连接并且其用户名与任何现有的静态表项不匹配(或者如果表项已经激活，因为不能有两个单独的隧道接口被相同的名称引用-如果这是一个问题，请设置_one-session-per-host_ value)。动态接口在用户连接时出现，一旦用户断开连接就消失，因此不可能在路由器配置(例如防火墙)中引用为该用途创建的隧道，因此如果您需要为该用户创建持久规则，请为他/她创建静态条目。否则，使用动态配置是安全的。
+PPPoE server配置的接口(隧道)项分为静态用户和动态连接两种。为每一条与给定服务器建立的隧道创建一个接口。如果需要引用为特定用户创建的特定接口名称(在防火墙规则或其他地方)，则可以通过管理方式添加静态接口。动态接口将自动添加到此列表中，只要用户连接并且其用户名与任何现有的静态表项不匹配(或者如果表项已经激活，因为不能有两个单独的隧道接口被相同的名称引用-如果这是一个问题，请设置one-session-per-host)。动态接口在用户连接时出现，一旦用户断开连接就消失，因此不可能在路由器配置(例如防火墙)中引用为该用途创建的隧道，因此如果您需要为该用户创建持久规则，请为他/她创建静态条目。否则，使用动态配置是安全的。
 
 在这两种情况下，都必须正确配置PPP用户，静态表项不能替代PPP配置。
 

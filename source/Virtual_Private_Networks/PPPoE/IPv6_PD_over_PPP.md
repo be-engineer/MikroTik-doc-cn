@@ -2,7 +2,7 @@
 
 本示例介绍PPPoE server和client使用IPv6 Prefix Delegation的配置过程。
 
-IPv6前缀可以通过PPP接口进行委派。当客户端连接时，PPP会自动添加动态[DHCPv6-PD服务器](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPv6Server)。这允许在PPP接口上运行DHCPv6客户端。
+IPv6前缀可以通过PPP接口进行委派。当客户端连接时，PPP会自动添加动态 [DHCPv6-PD服务器](https://help.mikrotik.com/docs/display/ROS/DHCP#DHCP-DHCPv6Server) 。这允许在PPP接口上运行DHCPv6客户端。
 
 ## 配置
 

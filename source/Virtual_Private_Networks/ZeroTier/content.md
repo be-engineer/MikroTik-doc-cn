@@ -194,7 +194,7 @@ Columns: NAME, PORT, IDENTITY.PUBLIC
 
 现在我们通过控制器部分创建一个新的网络，该网络将在 **VL2** 级别上运行。每个网络都有自己的控制器，每个网络ID由控制器地址和控制器ID组合生成。
 
-注意，我们使用 **_private=yes_** 选项来获得更安全的网络:
+注意，我们使用 **private=yes** 选项来获得更安全的网络:
 
 ```shell
 [admin@Home] /zerotier> controller/add name=ZT-private instance=zt1 ip-range=172.27.27.10-172.27.27.20 private=yes routes=172.27.27.0/24
