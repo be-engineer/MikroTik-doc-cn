@@ -83,7 +83,7 @@ HWMP+是microtik专用于无线网状网络的第二层路由协议。它基于I
  wds-address=<;MAC address of remote end>
 ```
 
-这里的WDS接口是手动添加的，因为使用的是静态WDS模式。如果你使用的是 ** WDS -mode**\=**dynamic-mesh**，所有的WDS接口都会自动创建。这里指定频率和频带参数只是为了产生有效的示例配置;Mesh协议操作绝不限于或优化这些特定的值。
+这里的WDS接口是手动添加的，因为使用的是静态WDS模式。如果你使用的是WDS-mode=dynamic-mesh，所有的WDS接口都会自动创建。这里指定频率和频带参数只是为了产生有效的示例配置;Mesh协议操作绝不限于或优化这些特定的值。
 
 您可能需要增加disconnect-timeout无线接口选项，以使协议更稳定。
 
@@ -189,7 +189,8 @@ ADDRESS TIME STATUS
 ## 反应模式
 
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/520px-Hwmp_reactive_a.jpg?version=1&modificationDate=1612788675602&api=v2)  
-Router A wants to discover a path to C
+
+路由器A想要发现一条到C的路径
 
   
 ![](https://help.mikrotik.com/docs/download/attachments/8978441/520px-Hwmp_reactive_b.jpg?version=1&modificationDate=1612788683515&api=v2)
