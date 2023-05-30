@@ -30,11 +30,11 @@
 | 属性                                  | 说明                                             |
 | ------------------------------------- | ------------------------------------------------ |
 | **contents** (_string_; Default: )    | 文件的实际内容                                   |
-| ** create -time** (_time_)            | 文件创建的时间                                   |
+| **create-time** (_time_)            | 文件创建的时间                                   |
 | **name** (_string_)                   | 文件名称                                         |
-| **package- Architecture ** (_string_) | 构建包的架构。只适用于RouterOS“.Npk”文件         |
+| **package-Architecture** (_string_) | 构建包的架构。只适用于RouterOS“.Npk”文件         |
 | **package- build -time** (_string_)   | 包被构建的时间。只适用于RouterOS".Npk”文件       |
-| **package- Name ** (_string_)         | 配置文件的可安装包名。只适用于RouterOS".Npk”文件 |
+| **package-Name** (_string_)         | 配置文件的可安装包名。只适用于RouterOS".Npk”文件 |
 | **package-version** (_string_)        | 可安装包的版本。只适用于RouterOS".Npk”文件       |
 | **size** (_integer_)                  | 文件大小                                         |
 | **file type** (_string_)              | 文件类型。对于文件夹，文件类型为 _directory_     |

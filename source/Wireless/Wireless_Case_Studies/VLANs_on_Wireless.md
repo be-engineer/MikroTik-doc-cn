@@ -8,9 +8,10 @@ vlan提供了将设备隔离到不同的Layer2段的可能性，同时仍然使�
 
 [网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 自RouterOS v6.41起，在网桥内提供VLAN感知的二层转发和VLAN标签修改功能。
 
-** R1: **
+**R1:**
 
 - 在以太网接口上添加必要的VLAN接口，使其成为VLAN trunk端口。在VLAN接口上添加ip地址。
+
 ```shell
 [admin@R1] >
 /interface vlan

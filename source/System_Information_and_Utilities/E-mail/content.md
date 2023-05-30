@@ -1,8 +1,8 @@
 # E-mail
 
--   [Properties](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Properties)
--   2[Sending Email](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-SendingEmail)
--   3[Basic examples](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Basicexamples)
+- 1 [Properties](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Properties)
+- 2 [Sending Email](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-SendingEmail)
+- 3 [Basic examples](https://help.mikrotik.com/docs/display/ROS/E-mail#Email-Basicexamples)
 
 电子邮件工具是允许从路由器发送电子邮件的实用程序。该工具可用于向网络管理员发送常规配置备份和导出。
 
@@ -54,19 +54,19 @@ Send命令接受以下参数:
 
 1. 配置SMTP服务器
 
-`[admin@MikroTik] /tool e-mail> set server=10.1.1.1 port=25 from="router@mydomain.com"`
+    `[admin@MikroTik] /tool e-mail> set server=10.1.1.1 port=25 from="router@mydomain.com"`
 
-2. 添加一个名为export-send的新脚本:
+2. 添加一个名为export-send的新脚本
 
-```shell
-/export file=export
-/tool e-mail send to="config@mydomain.com" subject="$[/system identity get name] export" \
-body="$[/system clock get date] configuration file" file=export.rsc
-```
+    ```shell
+    /export file=export
+    /tool e-mail send to="config@mydomain.com" subject="$[/system identity get name] export" \
+    body="$[/system clock get date] configuration file" file=export.rsc
+    ```
 
-3. 添加计划运行我们的脚本:
+3. 添加计划运行我们的脚本
 
-·/system scheduler add on-event="export-send" start-time=00:00:00 interval=24h
+    `/system scheduler add on-event="export-send" start-time=00:00:00 interval=24h`
 
   
 
@@ -77,20 +77,20 @@ body="$[/system clock get date] configuration file" file=export.rsc
 - 启用两步验证
 - 生成App密码
 
-在如下所示的set password=**mypassword** 设置中使用新生成的App密码。
+在如下所示的set password=mypassword 设置中使用新生成的App密码。
 
-1. 配置客户端连接到正确的服务器:
+1. 配置客户端连接到正确的服务器
 
-```shell
-/tool e-mail
-set address=smtp.gmail.com
-set port=465
-set tls=yes
-set from=myuser@gmail.com
-set user=myuser
-set password=mypassword
-```
+    ```shell
+    /tool e-mail
+    set address=smtp.gmail.com
+    set port=465
+    set tls=yes
+    set from=myuser@gmail.com
+    set user=myuser
+    set password=mypassword
+    ```
 
-2. 使用Send命令发送电子邮件:
+2. 使用Send命令发送电子邮件
 
-`/tool e-mail send to=myuser@anotherdomain.com subject="email test" body="email test"`
+    `/tool e-mail send to=myuser@anotherdomain.com subject="email test" body="email test"`
