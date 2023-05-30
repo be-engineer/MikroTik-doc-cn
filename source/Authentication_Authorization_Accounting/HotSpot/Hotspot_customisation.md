@@ -268,7 +268,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，\$(link-status) = [http://hotspot.mt.lv/lv/status](http://hotspot.mt.lv/lv/status)。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
+选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，\$(link-status) = [http://hotspot.mt.lv/lv/status](http://hotspot.mt.lv/lv/status) 。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
 
 ### 杂项
 
@@ -286,14 +286,14 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 - 要提供预定义值作为用户名，请在 login.html 中更改：
 
-```
+```html
 <type="text" value="$(username)>
 
 ```
 
 到此行:
 
-```
+```html
 <input type="hidden" name="username" value="hsuser">
 
 ```
@@ -302,14 +302,14 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 - 要提供预定义值作为密码，请在 login.html 中更改：
 
-```
+```html
 <input type="password">
 
 ```
 
 到此行:
 
-```
+```html
 <input type="hidden" name="password" value="hspass">
 
 ```
@@ -318,11 +318,11 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 - 以下形式将客户端的 MAC 地址发送到注册服务器：
 
-[https://www.example.com/register.html\?mac=XX:XX:XX:XX:XX:XX](https://www.example.com/register.html\?mac=XX:XX:XX:XX:XX:XX)
+[https://www.example.com/register.html?mac=XX:XX:XX:XX:XX:XX](https://www.example.com/register.html?mac=XX:XX:XX:XX:XX:XX)
 
 将 login.html 中的登录按钮链接更改为：
 
-```
+```html
 https://www.example.com/register.html?mac=$(mac)
 
 ```
@@ -333,7 +333,7 @@ https://www.example.com/register.html?mac=$(mac)
 
 \$(if popup == 'true') add the following line:
 
-```
+```html
 open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 ```
@@ -342,14 +342,14 @@ open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 - 要选择登录后显示的不同页面，请在 login.html 中更改：
 
-```
+```html
 <input type="hidden" name="dst" value="$(link-orig)">
 
 ```
 
 到此行:
 
-```
+```html
 <input type="hidden" name="dst" value="http://www.example.com">
 
 ```
@@ -358,28 +358,28 @@ open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 - 要在注销时删除 cookie，请在包含注销链接的页面（例如，在 status.html 中）更改：
 
-```
+```html
 open('$(link-logout)', 'hotspot_logout', ...
 
 ```
 
 到这里:
 
-```
+```html
 open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
 或者添加这一行：
 
-```
+```html
 <input type="hidden" name="erase-cookie" value="on">
 
 ```
 
 在此之前:
 
-```
+```html
 <input type="submit" value="log off">
 
 ```
@@ -586,7 +586,7 @@ $(endif)
 
 ```
 
-在 **hs-unauth** 链中，首先将影响 TCP 协议的所有内容放入 `/ip hotspot walled-garden ip` Submenu中（即，未设置协议或设置为 TCP 的所有内容）。 在这里，我们将 [www.mikrotik.com](http://www.mikrotik.com/) 排除在重定向到登录页面之外。
+在 **hs-unauth** 链中，首先将影响 TCP 协议的所有内容放入 `/ip hotspot walled-garden ip` Submenu中（即，未设置协议或设置为 TCP 的所有内容）。 这里将 [www.mikrotik.com](http://www.mikrotik.com/) 排除在重定向到登录页面之外。
 
 ```
  9 D chain=hs-unauth action=redirect to-ports=64874 dst-port=80 protocol=tcp
