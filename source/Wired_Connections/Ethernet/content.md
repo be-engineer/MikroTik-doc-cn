@@ -248,7 +248,7 @@ cable-pairs: open:4,open:4,open:4,open:4
 | **rx-multicast** (_integer_)                | 接收到的组播帧总数                                        |
 | **rx-overflow** (_integer_)                 | 当设备资源不足以接收某个帧时，会导致接收到的溢出帧总数    |
 | **rx-pause** (_integer_)                    | 接收到的暂停帧总数                                        |
-| **rx-runt** (_integer_)                     | 接收帧总数小于最小64字节，通常是由碰撞引起的              |
+| **rx-runt** (_integer_)                     | 接收帧总数小于最小64字节，通常是由冲突引起的              |
 | **rx-tcp-checksum-error** (_integer_)       | 接收到的TCP报头校验和错误帧总数                           |
 | **rx-too-long** (_integer_)                 | 超过网络设备支持的最大帧长的接收帧总数，参见max-l2mtu属性 |
 | **rx-too-short** (_integer_)                | 接收帧小于最小64字节的总数                                |
@@ -265,25 +265,25 @@ cable-pairs: open:4,open:4,open:4,open:4
 | **tx-align-error** (_integer_)              | 传输的对齐错误事件总数-位不沿八位边界对齐的数据包         |
 | **tx-broadcast** (_integer_)                | 传输的广播帧总数                                          |
 | **tx-bytes** (_integer_)                    | 传输字节总数                                              |
-| **tx-collision** (_integer_)                | 产生碰撞的传输帧总数                                      |
+| **tx-collision** (_integer_)                | 产生冲突的传输帧总数                                      |
 | **tx-control** (_integer_)                  | 传输控制帧或暂停帧的总数                                  |
 | **tx-deferred** (_integer_)                 | 由于介质繁忙导致第一次传输尝试延迟的传输帧总数            |
 | **tx-drop** (_integer_)                     | 由于输出队列已满而丢弃的传输帧总数                        |
-| **tx-excess -collision** (_integer_)        | 已经发生多次碰撞但从未成功传输的帧总数                    |
+| **tx-excess -collision** (_integer_)        | 已经发生多次冲突但从未成功传输的帧总数                    |
 | **tx-excessive-deferred** (_integer_)       | 由于介质已经很忙而延迟了一段时间的传输帧总数              |
 | **tx-fc -error** (_integer_)                | 校验和错误的传输帧总数                                    |
 | **tx-fragment** (_integer_)                 | 传输的分片帧总数(与IP分片无关)                            |
 | **tx-carrier-sense-error** (_integer_)      | 带有载波感知错误的传输帧总数                              |
-| **tx-late-collision** (_integer_)           | 传输帧中发生碰撞的总数                                    |
+| **tx-late-collision** (_integer_)           | 传输帧中发生冲突的总数                                    |
 | **tx-multicast** (_integer_)                | 传输的组播帧总数                                          |
-| **tx-multiple-collision** (_integer_)       | 产生多个碰撞并随后成功传输的传输帧总数                    |
+| **tx-multiple-collision** (_integer_)       | 产生多个冲突并随后成功传输的传输帧总数                    |
 | **tx-overflow** (_integer_)                 | 传输溢出帧总数                                            |
 | **tx-pause** (_integer_)                    | 传输暂停帧总数                                            |
 | **tx-all-queue-drop-byte** (_integer_)      | 所有输出队列丢弃的传输字节总数                            |
 | **tx-all-queue-drop-packet** (_integer_)    | 所有输出队列丢弃的传输数据包总数                          |
 | **tx-queueX-byte** (_integer_)              | 某个队列上传输的字节总数，**X** 应替换为队列号            |
 | **tx-queueX-packet** (_integer_)            | 在某个队列上传输帧的总数，**X** 应替换为队列号            |
-| **tx-runt** (_integer_)                     | 小于最小64字节的传输帧总数，通常是由碰撞引起的            |
+| **tx-runt** (_integer_)                     | 小于最小64字节的传输帧总数，通常是由冲突引起的            |
 | **tx-too short** (_integer_)                | 小于最小64字节的传输帧总数                                |
 | **tx-rx-64** (_integer_)                    | 发送和接收的64字节帧总数                                  |
 | **tx-rx-64-127** (_integer_)                | 发送和接收64到127字节帧的总数                             |
@@ -291,7 +291,7 @@ cable-pairs: open:4,open:4,open:4,open:4
 | **tx-rx-256-511** (_integer_)               | 发送和接收的256到511字节帧的总数                          |
 | **tx-rx-512-1023** (_integer_)              | 发送和接收512到1023字节帧的总数                           |
 | **tx-rx-1024-max** (_integer_)              | 发送和接收大于1024字节的帧总数                            |
-| **tx-single-collision** (_integer_)         | 仅发生一次碰撞而随后传输成功的传输帧总数                  |
+| **tx-single-collision** (_integer_)         | 仅发生一次冲突而随后传输成功的传输帧总数                  |
 | **tx-too-long** (_integer_)                 | 大于最大数据包大小的传输总数                              |
 | **tx-underrun** (_integer_)                 | 传输欠运行包总数                                          |
 | **tx-unicast** (_integer_)                  | 发送的单播帧总数                                          |
