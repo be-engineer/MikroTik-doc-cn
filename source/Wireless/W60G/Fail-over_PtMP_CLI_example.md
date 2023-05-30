@@ -40,9 +40,9 @@
 
 所有前面解释的步骤与桥和站设备相同。在配置无线接口时，需要使用不同的模式。
 
-**适用于ap桥装置**
+**适用于ap桥设备**
 
-- 选择SSID，密码，频率，并选择桥接模式选项，将作为 **ap-桥接** 的设置，请参见示例。
+- 选择SSID，密码，频率，并选择桥接模式选项，将作为 **ap桥接** 的设置，请参见示例。
 - 参数设置完成后，使能W60G接口。
 
     ```shell
@@ -95,8 +95,7 @@
 在这个例子中，它只显示了2台设备，但是可以添加多达8台设备
 
 对于ap-bridge设备，请设置如下配置:
-    
-    
+
 ```shell
 [admin@MikroTik] >/interface bridge portadd bridge=bridge hw=no interface=ether1add bridge=bridge interface=wlan1add bridge=bridge interface=wlan60-station-1add bridge=bridge interface=wlan60-station-2
 [admin@MikroTik] > interface/bridge/port/pr# INTERFACE         BRIDGE  HW  PVID  PRIORITY  PATH-COST  INTERNAL-PATH-COST  HORIZON0 ether1            bridge      no     1  0x80             10                  10  none   1 wlan1             bridge             1  0x80             10                  10  none   2 wlan60-station-1  bridge             1  0x80             10                  10  none   3 wlan60-station-2  bridge             1  0x80             10                  10  none
