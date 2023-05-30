@@ -268,7 +268,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，\$(link-status) = "[http://hotspot.mt.lv/lv/status](http://hotspot.mt.lv/lv/status)”。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
+选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，\$(link-status) = [http://hotspot.mt.lv/lv/status](http://hotspot.mt.lv/lv/status)。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
 
 ### 杂项
 
@@ -318,7 +318,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 - 以下形式将客户端的 MAC 地址发送到注册服务器：
 
-[https://www.example.com/register.html?mac=XX:XX:XX:XX:XX:XX](https://www.example.com/register.html?mac=XX:XX:XX:XX:XX:XX)
+[https://www.example.com/register.html\?mac=XX:XX:XX:XX:XX:XX](https://www.example.com/register.html\?mac=XX:XX:XX:XX:XX:XX)
 
 将 login.html 中的登录按钮链接更改为：
 
@@ -391,7 +391,7 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 - 允许直接访问围墙花园中的外部服务器（基于 HTTP 或基于 IP）
 - 修改 HotSpot servlet 的登录页面以重定向到外部认证服务器。 外部服务器应根据需要修改 RADIUS 数据库
 
-这是放置在 HotSpot 路由器上的此类登录页面的示例(重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php) ) ，替换为外部认证服务器的实际地址）：
+这是放置在HotSpot路由器上的此类登录页面的示例,重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php) ，替换为外部认证服务器的实际地址）：
 
 ```html
 <html>
@@ -418,7 +418,7 @@ document.redirect.submit();
 
 - 外部服务器可以通过将 HotSpot 客户端重定向回原始 HotSpot servlet 登录页面并指定正确的用户名和密码来登录 HotSpot 客户端
 
-下面是这样一个页面的示例(它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login) )，替换为 HotSpot 路由器的实际地址； 此外，成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/) ，替换为需要的内容：
+下面是一个页面的示例,重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login) ，替换为HotSpot路由器的实际地址； 此外，成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/) ，替换为需要的内容：
 
 ```html
 <html>
