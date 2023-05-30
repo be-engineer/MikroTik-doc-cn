@@ -12,7 +12,7 @@ PPP是由三个主要部分组成的：
 2.   用于建立、配置和测试数据链路连接的链路控制协议（LCP）。 
 3.  用于建立和配置不同网络层协议的网络控制协议（NCP）系列。
 
-在RouterOS中详细的PPP数据包处理，可以在 [数据包流程图](https://help.mikrotik.com/docs/display/ROS/Packet+流程+in+RouterOS) 中看到。
+在RouterOS中详细的PPP数据包处理，可以在 [数据包流程图](https://help.mikrotik.com/docs/display/ROS/Packet+Flow+in+RouterOS) 中查看。
 
 ## PPP客户端
 

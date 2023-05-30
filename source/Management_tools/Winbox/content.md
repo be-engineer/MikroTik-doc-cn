@@ -241,7 +241,7 @@ Winbox允许建立一个过滤器的堆栈。例如，如果需要按目标地�
 Winbox允许为每个单独的窗口定制显示列。例如，要添加BGP AS路径栏：
 
 - 点击列标题右侧的小箭头按钮（1）或在路由列表上点击鼠标右键。
-- 从弹出的菜单中移到 **显示列**（2），从子菜单中选择所需的列，在我们的例子中点击 **BGP AS路径**（3）。
+- 从弹出的菜单中移到 **显示列** （2），从子菜单中选择所需的列，在我们的例子中点击  **BGP AS路径** （3）。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328129/Winbox-window-field.png?version=1&modificationDate=1570717546327&api=v2)
 
@@ -315,6 +315,6 @@ Winbox可以作为一个工具，实时监控每个接口、队列或防火墙�
 
 除非主机设备有一个IP配置，否则大多数网络驱动不会启用IP堆栈。需要在主机设备上设置IPv4。
 
-_有时设备会因为缓存而被发现，但MAC连接仍然会失败，"ERROR: could not connect to XX:XX:XX:XX:XX"_。
+_有时设备会因为缓存而被发现，但MAC连接仍然会失败，"ERROR: could not connect to XX:XX:XX:XX:XX"_
 
 Winbox的MAC-ADDRESS连接要求MTU值设置为1500，不分片。其他值可能表现不佳，会出现连接丢失。
