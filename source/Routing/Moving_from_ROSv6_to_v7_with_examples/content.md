@@ -165,11 +165,11 @@ add chain=bgp_in rule="set bgp-local-pref -1; set bgp-igp-metric ospf-ext-metric
 
 路由过滤链的默认动作是 "丢弃"
 
-## 监控广告
+## 监控通告
 
 RouterOS v7默认关闭了对BGP输出的监控。可以大大减少具有大型路由表的设置中的资源使用。
 
-为了能够看到输出广告，应该采取几个步骤：
+为了能够看到输出通告，应该采取几个步骤：
 
 - 在BGP连接配置中启用 "output.keep-sent-attributes"。
 - 从BGP会话菜单中运行 "dump-saved-advertisements"。

@@ -91,5 +91,6 @@ set discover-interface-list=only-ether5
 - 系统功能(启用的系统功能，例如网桥或路由器)
 - LLDP-MED媒体功能(MED功能列表)
 - LLDP-MED网络策略(为语音流量分配VLAN ID)
-- 端口扩展(端口扩展器和控制器桥广告)
+- 端口扩展(端口扩展器和控制器桥通告)
 - LLDPDU结束
+  

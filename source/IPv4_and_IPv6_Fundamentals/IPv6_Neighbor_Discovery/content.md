@@ -2,7 +2,7 @@
 
 **标准：** RFC 2462，RFC 2461，RFC 4861
 
-Routeros使用路由器广告守护程序（RADVD）具有IPv6邻居发现和无状态地址自动配置支持。
+Routeros使用路由器通告守护程序（RADVD）具有IPv6邻居发现和无状态地址自动配置支持。
 
 ## 节点描述
 
@@ -17,7 +17,7 @@ Routeros使用路由器广告守护程序（RADVD）具有IPv6邻居发现和无
 
 有几种类型的自动配置：
 
- -  _stateless_ -地址配置是通过接收路由器广告消息来完成的。 这些消息包括无状态地址前缀，并要求主机不使用状态地址配置协议。
+ -  _stateless_ -地址配置是通过接收路由器通告消息来完成的。 这些消息包括无状态地址前缀，并要求主机不使用状态地址配置协议。
 -  _stateful_ -地址配置是通过使用状态地址配置协议（DHCPV6）完成的。 如果RA消息不包括地址前缀，则使用状态协议。
  -  _BOTH_ - RA消息包括无状态地址前缀，并要求主机使用状态地址配置协议。
 
@@ -31,7 +31,7 @@ IPv6的一个非常有用的功能是能够在不使用诸如DHCP之类的状态
 
 然后主机捕获广播，配置全局IPv6地址和默认路由器。 全局IPv6地址是由广播 [子网前缀](https://wiki.mikrotik.com/wiki/Manual:IPv6/Address#Prefix"Manual:IPv6/Address") 生成和eui-64 [界面标识符](https://wiki.mikrotik.com/wiki/Manual:IPv6/Address#Interface_Identifier "Manual:IPv6/Address")。
 
-主机可以通过发送ICMPV6“路由器广告”数据包来询问路由器的广播，这是可选的。 在Linux **rtsol** 实用程序传输路由器请求数据包。 如果正在运行移动节点，则可能需要定期发送路由器请求。
+主机可以通过发送ICMPV6“路由器通告”数据包来询问路由器的广播，这是可选的。 在Linux **rtsol** 实用程序传输路由器请求数据包。 如果正在运行移动节点，则可能需要定期发送路由器请求。
 
 ### 地址状态
 
@@ -109,7 +109,7 @@ ND被主机用：
 | **autonomous** (_yes\| no_; Default: **yes**)                             | 设置时，表示此前缀可用于自治地址配置。否则，前缀信息将沉默忽略。                                                                                                                                                                 |
 | **comment** (_string_; Default: )                                         | 一个项目的描述名称。                                                                                                                                                                                                             |
 | **disabled** (_yes \| no_; Default: **no**)                               | 项目是否被禁用。默认情况下是启用的。                                                                                                                                                                                             |
-| **on-link** (_yes\| no_; Default: **yes**)                                | 设置时表示该前缀可用于确定on-link。未设置时，广告不对前缀的链路上或链路下的属性做任何说明。例如，该前缀可能被用于地址配置，其中一些属于该前缀的地址是链路上的，而另一些则是链路外的。                                            |
+| **on-link** (_yes\| no_; Default: **yes**)                                | 设置时表示该前缀可用于确定on-link。未设置时，通告不对前缀的链路上或链路下的属性做任何说明。例如，该前缀可能被用于地址配置，其中一些属于该前缀的地址是链路上的，而另一些则是链路外的。                                            |
 | **preferred-lifetime** (_infinity              \| time_; Default: **1w**) | 时间框架（相对于数据包的发送时间），在这之后，生成的地址会变成 "废弃的"。废弃的只用于已经存在的连接，并且在有效期限到期之前可以使用。 [阅读全文](https://wiki.mikrotik.com/wiki/Manual:IPv6/ND#Address_states)                   |
 | **prefix** (_ipv6 prefix_; Default: **::/64**)                            | 一个前缀，无状态地址自动配置由此产生有效地址。                                                                                                                                                                                   |
 | **valid-lifetime** (_infinity \| time_; Default: **4w2d**)                | 地址保持有效状态的时间长度（相对于数据包的发送时间）。有效寿命必须大于或等于首选寿命。 [阅读全文](https://wiki.mikrotik.com/wiki/Manual:IPv6/ND#Address_states)                                                                  |

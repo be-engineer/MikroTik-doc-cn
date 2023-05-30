@@ -517,11 +517,9 @@ B - blackhole, U - unreachable, P - prohibit
 
 从远端BGP对等体接收到10.1.1.0/24路由，并安装在两个VRF路由表中。
 
-路由10.3.3.0/24和10.4.4.0/24也安装在两个VRF路由表中。每条路由在一个表中是一条连接路由，在另一个表中是一条BGP路由。这与他们通过BGP发布广告无关。它们只是被“发布”到本地VPNv4路由表，然后在本地重新引入。Import和export **route-targets** 决定它们将在哪个表中结束。
+路由10.3.3.0/24和10.4.4.0/24也安装在两个VRF路由表中。每条路由在一个表中是一条连接路由，在另一个表中是一条BGP路由。这与他们通过BGP发布通告无关。它们只是被“发布”到本地VPNv4路由表，然后在本地重新引入。Import和export **route-targets** 决定它们将在哪个表中结束。
 
 这可以从它的属性中推断出来——它们不具有通常的BGP属性。(路线10.4.4.0/24。)
-
-  
 
 `[admin@PE2] /routing/route> print detail where routing-table=cust-one
 ...`

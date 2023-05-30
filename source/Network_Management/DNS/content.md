@@ -58,7 +58,7 @@ DNS设施用于为路由器本身以及连接到它的客户提供域名解析�
                    cache-used: 48KiB
 ```
 
-动态DNS服务器是通过RouterOS中的不同设施获得的，例如，DHCP客户端、VPN客户端、IPv6路由器广告等。 
+动态DNS服务器是通过RouterOS中的不同设施获得的，例如，DHCP客户端、VPN客户端、IPv6路由器通告等。
 
 ## DNS缓存
 

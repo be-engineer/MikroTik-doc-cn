@@ -124,7 +124,7 @@ CAPsMAN有以下证书设置:
 
 当CAPsMAN自动生成证书时，这将反映如下:
 
-```
+```shell
 [admin@CM] /caps-man manager> pr
                    enabled: yes
                certificate: auto
@@ -137,7 +137,7 @@ CAPsMAN有以下证书设置:
 
 证书:
 
-```
+```shell
 [admin@CM] /certificate> print detail
 Flags: K - private-key, D - dsa, L - crl, C - smart-card-key, 
 A - authority, I - issued, R - revoked, E - expired, T - trusted 
@@ -159,7 +159,7 @@ CAP可以配置为从CAPsMAN请求证书。为了使其工作，CAP必须配置�
 
 CAP将首先生成私钥和证书请求，其CommonName形式为“CAP-<mac地址>”。当CAP与CAPsMAN建立连接时，CAP将要求CAPsMAN签署其证书请求。如果成功，CAPsMAN将向CAP发送CA证书和新颁发的证书。CAP将在其证书存储库中导入这些证书:
 
-```
+```shell
 [admin@CAP] > /interface wireless cap print
 ...
               requested-certificate: cert_2
@@ -183,15 +183,11 @@ A - authority, I - issued, R - revoked, E - expired, T - trusted
 
 On subsequent connections to CAPsMAN, CAP will use generated certificate.
 
-
-
 # CAP配置
 
 当AP配置为CAPsMAN控制时，忽略AP上被管理的无线接口的配置(天线增益、天线模式除外)。相反，AP接受来自CAPsMAN的管理接口的配置。
 
-由CAPsMAN管理的CAP无线接口，其流量被转发给CAPsMAN(即CAPsMAN)。它们不是在本地转发模式)，显示为disabled，并注明Managed by CAPsMAN。那些处于“本地转发”模式的接口(流量在本地由CAP管理，仅由CAPsMAN管理)不显示为禁用，但显示“managed by CAPsMAN”
-
-  
+由CAPsMAN管理的CAP无线接口，其流量被转发给CAPsMAN(即CAPsMAN)。它们不是在本地转发模式，显示为disabled，并注明Managed by CAPsMAN。那些处于“本地转发”模式的接口(流量在本地由CAP管理，仅由CAPsMAN管理)不显示为禁用，但显示“managed by CAPsMAN”
 
 AP的CAP行为在/interface wireless CAP菜单中配置。那里可以:
 
@@ -320,7 +316,7 @@ Flags: X - disabled
 
 CAPsMAN接口在/caps-man接口菜单中管理:
 
-```
+```shell
 [admin@CM] > /caps-man interface print          
 Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - running 
  #      NAME                                 RADIO-MAC         MASTER-INTERFACE                               
@@ -344,13 +340,13 @@ Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - runni
 | **channel.extension-channel** (_Ce\| Ceee\| eC\| eCee\| eeCe\| eeeC   \| xx       \| xxxx       \| disabled_; Default: )                                                                                                                                                                                                                                                                                                                                                                           | 扩展通道配置。(如Ce =扩展通道在控制通道上方，eC =扩展通道在控制通道下方)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **channel.frequency** (_integer [0..4294967295]_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                         | 以MHz为单位的信道频率值，AP将在其上工作。如果留空，CAPsMAN将自动确定占用最少的最佳频率。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **channel.reselect-interval** (_time [00:00:00]_; _[00:00:00..00:00:00];_ Default: )                                                                                                                                                                                                                                                                                                                                                                                                               | 选择占用频率最小的间隔可以定义为一个随机间隔，例如“30m..60m”。仅当**channel.frequency**为空时有效。                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **channel. save-selected** (_yes \| no_;Default:**no**)                                                                                                                                                                                                                                                                                                                                                                                                                                            | 如果自动选择通道频率和**通道。使用Reselect-interval **，然后保存最后选择的频率。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **channel. save-selected** (_yes \| no_;Default:**no**)                                                                                                                                                                                                                                                                                                                                                                                                                                            | 如果自动选择通道频率和通道。使用Reselect-interval，然后保存最后选择的频率。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **channel. secondary-frequency** (_integer [0..4294967295]_;  Default: **auto**)                                                                                                                                                                                                                                                                                                                                                                                                                   | 用于80+80MHz配置的第二个频率。将其设置为Disabled以禁用80+80MHz能力。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **channel. skip-dfs-channels** (_yes \| no_;Default:**no**)                                                                                                                                                                                                                                                                                                                                                                                                                                        | 如果**channel.frequency**为空，选择将跳过DFS通道                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **channel. tx-power** (_integer [-30..40]_;Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                              | CAP接口的TX功率(用于整个接口，而不是单个链)，以dBm为单位。不可能设置高于国家法规或接口允许的值。缺省情况下，使用国家或接口允许的最大值。                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **channel.width** (; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 以MHz为单位设置信道宽度。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **comment** (_string_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | 配置文件的简短描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **country**(_name of the country )\| no_country_set_;Default:**no_country_set**                                                                                                                                                                                                                                                                                                                                                                                                                    | 限制每个频率的可用频带，频率和最大发射功率。还指定 **scan-list** 的默认值。no_country_set是FCC兼容的通道集合。                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **country**(_name of the country )\| no_country_set_;Default:**no_country_set**                                                                                                                                                                                                                                                                                                                                                                                                                    | 限制每个频率的可用频带，频率和最大发射功率。指定 **scan-list** 的默认值。no_country_set是FCC兼容的通道集合。                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **datapath** (_list_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | 用户自定义的数据路径名称列表(/caps-man Datapath )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **datapath.bridge** (_list_;Default:)                                                                                                                                                                                                                                                                                                                                                                                                                                                              | 桥接，特定的接口应自动添加为端口                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **datapath.bridge-cost** (_integer [0..4294967295]_; Default: )                                                                                                                                                                                                                                                                                                                                                                                                                                    | 添加为桥接端口时使用的桥接端口费用                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -558,7 +554,7 @@ CAPsMAN上的访问列表是一个有序的规则列表，用于允许/拒绝客
 - 在配置中指定WPA2密码
 - 在配置中指定通道设置:
 
-```
+```shell
 [admin@CM] /caps-man configuration> add name=master-cfg ssid=master security=wpa2psk
 security.passphrase=12345678 channel.frequency=5180 channel.width=20 channel.band=5ghz-a
 
@@ -642,7 +638,7 @@ Flags: M - master, D - dynamic, B - bound, X - disabled, I - inactive, R - runni
 
 在CAPsMAN Manager菜单中设置Certificate和CA Certificate为auto:
 
-```
+```shell
 /caps-man manager
 set ca-certificate=auto certificate=auto
 
@@ -669,7 +665,7 @@ CAPsMAN设备首先生成CA-Certificate，然后生成Certificate，这取决于
 
 在CAP配置中设置为 _request_ 证书:
 
-```
+```shell
 /interface wireless cap
 set certificate=request
 
@@ -722,7 +718,7 @@ Flags: K - private-key, D - dsa, L - crl, C - smart-card-key, A - authority, I -
 
 另外,如果您想只允许具有有效证书的CAPs连接到此CAPsMAN，您可以将CAPsMAN设备上的 _Require Peer Certificate_ 设为 _yes_:
 
-```
+```shell
 /caps-man manager
 set require-peer-certificate=yes
 
@@ -747,7 +743,7 @@ set caps-man-certificate-common-names=CAPsMAN-D4CA6D987C26
 
 在 _Certificate_ 菜单中添加CA证书和CAPsMAN服务器证书的证书模板:
 
-```
+```shell
 /certificate
 add name=CA-temp common-name=CA
 add name=CAPsMAN-temp common-name=CAPsMAN
@@ -756,7 +752,7 @@ add name=CAPsMAN-temp common-name=CAPsMAN
 
 现在对证书模板进行签署。首先签署CA证书，并使用CAPsMAN设备IP作为 _CA CRL Host_ :
 
-```
+```shell
 /certificate
 sign CA-temp ca-crl-host=10.5.138.157 name=CA
 sign CAPsMAN-temp ca=CA name=CAPsMAN
@@ -767,7 +763,7 @@ sign CAPsMAN-temp ca=CA name=CAPsMAN
 
 _Export_ CA证书。必须在CAP设备上Import。可以使用 _Download -> Drag&Drop_ 到CAP设备，在本例中，_fetch_ 命令稍后从CAP设备使用。建议使用较长的密码短语——如果密码落入坏人之手，较长的密码短语将花费更长的时间来破解:
 
-```
+```shell
 /certificate
 export-certificate CA export-passphrase=thelongerthebetterpassphrase
 
@@ -775,7 +771,7 @@ export-certificate CA export-passphrase=thelongerthebetterpassphrase
 
 创建 _SCEP server_ ，用于向CAP设备颁发和授予证书:
 
-```
+```shell
 /certificate scep-server
 add ca-cert=CA path=/scep/CAPsMAN
 
@@ -783,7 +779,7 @@ add ca-cert=CA path=/scep/CAPsMAN
 
 在CAPsMAN Manager菜单中设置证书，并将 _Require Peer certifate_ 设置为yes:
 
-```
+```shell
 /caps-man manager
 set ca-certificate=CA certificate=CAPsMAN
 set require-peer-certificate=yes
@@ -796,21 +792,21 @@ set require-peer-certificate=yes
 
 下载从CAPsMAN设备导出CA证书到CAP设备。在这个例子中使用了 _fetch_ ，但是，还有多种其他方法:
 
-```
+```shell
 /tool fetch address=10.5.138.157 src-path=cert_export_CA.crt user=admin password="123" mode=ftp
 
 ```
 
 在 _Certificate_ 菜单中从CAPsMAN设备导入CA证书:
 
-```
+```shell
 /certificate> import file-name=cert_export_CA.crt passphrase=thelongerthebetterpassphrase
 
 ```
 
 为CAP添加证书模板:
 
-```
+```shell
 /certificate
 add name=CAP1 common-name=CAP1
 
@@ -818,7 +814,7 @@ add name=CAP1 common-name=CAP1
 
 要求CAPsMAN设备使用SCEP使用密钥授予此证书:
 
-```
+```shell
 /certificate
 add-scep template=CAP1 scep-url="https://10.5.138.157/scep/CAPsMAN"
 
@@ -828,7 +824,7 @@ add-scep template=CAP1 scep-url="https://10.5.138.157/scep/CAPsMAN"
 
 在CAP菜单中设置刚刚创建的证书:
 
-```
+```shell
 /interface wireless cap
 set certificate=CAP1
 
@@ -838,7 +834,7 @@ set certificate=CAP1
 
 返回到CAPsMAN设备，在 _Certificate Request_ 菜单中授予CAP证书密钥:
 
-```
+```shell
 /certificate scep-server requests
 grant numbers=0
 

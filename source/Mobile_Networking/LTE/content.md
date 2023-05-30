@@ -42,11 +42,11 @@
 | **authentication** (_pap\| chap\| none_; Default: **none**)         | 允许使用的认证协议                                                                                                                           |
 | **default-route-distance** (_integer_; Default: **2**)              | 设置应用于自动创建的默认路由的距离值，如果也选择了add-default-route。默认情况下，LTE路由的距离为2，以使有线路由优先于LTE                     |
 | **ip-type** (_ipv4 \| ipv4-ipv6\| ipv6_; Default: )                 | 要求的PDN类型                                                                                                                                |
-| **ipv6-interface** (; Default: )                                    | 在其上发布IPv6前缀广告的接口                                                                                                                 |
+| **ipv6-interface** (; Default: )                                    | 在其上发布IPv6前缀通告的接口                                                                                                                 |
 | **name** (_string_; Default: )                                      | APN配置文件名称                                                                                                                              |
 | **number** (_integer_; Default: )                                   | APN配置文件名称                                                                                                                              |
 | **passthrough-interface** (; Default: )                             | 直通IP配置的接口（激活直通）                                                                                                                 |
-| **passthrough-mac** (_MAC_; Default: **auto*)                       | 如果设置为自动，那么将从第一个数据包中学习MAC                                                                                                |
+| **passthrough-mac** (_MAC_; Default: **auto**)                       | 如果设置为自动，那么将从第一个数据包中学习MAC                                                                                                |
 | **passthrough-subnet-selection** (_auto \| p2p_; Default: **auto**) | "auto "选择最小的子网，用于直通接口。"p2p "将直通接口的子网设置为/32，并从10.177.0.0/16范围内选择网关地址。网关地址保持不变，直到改变apn配置 |
 | **password** (_string_; Default: )                                  | 如果任何认证协议处于活动状态，则使用密码                                                                                                     |
 | **use-network-apn** (_yes\| no_; Default: **yes**)                  | 参数从RouterOS v7开始可用，仅用于MBIM调制解调器。如果设置为是，则使用网络提供的APN                                                           |

@@ -24,7 +24,7 @@ SMIPS设备(hAP lite、hAP lite TC和hAP mini)不支持该特性。
   -  IPv4和IPv6的静态本地标签绑定
   -  IPv4和IPv6的静态远程标签绑定
 - IPv4和IPv6的标签分销协议（RFC 3036，RFC 5036和RFC 7552）
-    - 下游未经请求的标签广告
+    - 下游未经请求的标签通告
     - 独立标签分布控制
     - 自由标签保留
     - 有针对性的会议建立
@@ -57,7 +57,7 @@ SMIPS设备(hAP lite、hAP lite TC和hAP mini)不支持该特性。
 **routeros还没有的MPLS功能：**
 
 - LDP功能：
-      - 按需标签广告
+      - 按需标签通告
       - 订购的标签分布控制
       - 保守标签保留率
 - TE功能

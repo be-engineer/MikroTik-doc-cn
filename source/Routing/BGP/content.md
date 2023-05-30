@@ -18,7 +18,7 @@ SMIPS设备（hAP lite、hAP lite TC和hAP mini）不支持该功能。
 - [RFC 8092](https://tools.ietf.org/html/rfc8092) BGP大型社区
 - [RFC 4360](https://tools.ietf.org/html/rfc4360), [5668](https://tools.ietf.org/html/rfc5668) BGP扩展社区
 - [RFC 2385](https://tools.ietf.org/html/rfc2385) BGPv4的TCP MD5认证
-- [RFC 5492](https://tools.ietf.org/html/rfc5492) BGP-4的能力广告
+- [RFC 5492](https://tools.ietf.org/html/rfc5492) BGP-4的能力通告通告
 - [RFC 2918](https://tools.ietf.org/html/rfc2918) 路线刷新能力
 - [RFC 4760](https://tools.ietf.org/html/rfc4760) BGP-4的多协议扩展
 - [RFC 2545](https://tools.ietf.org/html/rfc2545) 在IPv6域间路由中使用BGP-4多协议扩展
@@ -27,8 +27,6 @@ SMIPS设备（hAP lite、hAP lite TC和hAP mini）不支持该功能。
 - [RFC 4761](https://tools.ietf.org/html/rfc4761) 使用BGP进行自动发现和信令的虚拟专用局域网服务(VPLS)
 - [RFC 6286](https://tools.ietf.org/html/rfc6286) - BGP-4的AS范围唯一BGP标识符
 
-  
-
 # BGP术语
 
 - AS - 自治系统
@@ -36,7 +34,7 @@ SMIPS设备（hAP lite、hAP lite TC和hAP mini）不支持该功能。
 - NLRI - 网络层可达性信息，是BGP对等体之间交换的内容，表示如何到达前缀。
 - IGP - 内部网关协议
 - EGP--外部网关协议
-- RR--路由反射器是BGP网络中的路由器，它向所有邻居反射广告，避免了对BGP全网的要求。 
+- RR--路由反射器是BGP网络中的路由器，它向所有邻居反射通告，避免了对BGP全网的要求。 
 - 路由服务器 - 是不参与流量转发的BGP路由器。路由通常甚至不安装在FIB中。
 - 环回地址 - 配置在假桥接口上的一个/32地址，可以作为环回。
 
@@ -535,7 +533,7 @@ Flags: E - established
 | 命令                          | 说明                                                                                                                                                                                                                                 |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **clear**                     | 清除会话标志。例如，为了能够在达到前缀限制后重新建立一个会话，必须清除 "limit-exceeded "标志。可以通过指定"flag"参数来实现，该参数可以取以下值：<br>- 输入-最后通知  <br>- 超限  <br>- 输出-最后通知  <br>- 被拒绝的上限  <br>- 停止 |
-| **dump-saved-advertisements** | 将指定BGP会话中保存的广告转储到*.pcap文件中。存储数据的文件名由"save-to"参数设置。                                                                                                                                                   |
+| **dump-saved-advertisements** | 将指定BGP会话中保存的通告转*.pcap文件中。存储数据的文件名由"save-to"参数设置。                                                                                                                                                   |
 | **refresh**                   | 向指定的BGP会话发送路由刷新。用于触发重新发送来自远程对等体的所有路由。"address-family "参数允许指定为哪个地址族发送路由刷新。                                                                                                       |
 | **resend**                    | 向指定的BGP会话发送前缀。该命令需要两个参数：<br>- "address-family" - 参数允许指定为哪个地址族重新发送前缀。<br>- "save-to" - 转载重新发送的信息的pcap文件名，可用于调试目的。                                                       |
 | **reset**                     | 重置指定的BGP会话。                                                                                                                                                                                                                  |
@@ -1131,9 +1129,9 @@ add name=inst2_peer remote.address=192.168.1.2 as=5678 local.role=ebgp router-id
 | **local-pref** (_integer[0..4294967295]_)             |                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **name** (_string_; Default: )                        |                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **pw-control-word** (_default \| disabled\| enabled_) | 启用禁用控制词的使用。在 [VPLS Control Word](https://help.mikrotik.com/docs/display/ROS/VPLS+Control+Word) 文章中阅读更多内容。                                                                                                                                                                                                                                                                     |
-| **pw-l2mtu** (_integer[32..65535]_)                   | 广告中的伪MTU值。                                                                                                                                                                                                                                                                                                                                                                                   |
+| **pw-l2mtu** (_integer[32..65535]_)                   | 通告中的伪MTU值。                                                                                                                                                                                                                                                                                                                                                                                   |
 | **pw-type** (_raw-ethernet\| tagged-ethernet\| vpls_) | 该参数从v5.16开始可用。允许在NLRI中选择公布的封装方式，只用于比较。它并不影响隧道的功能。 [见pw-type使用例子](https://wiki.mikrotik.com/wiki/Manual:MPLS_L2VPN_vs_Juniper "Manual:MPLS L2VPN vs Juniper")                                                                                                                                                                                           |
-| **rd** (_string_)                                     | 指定附加在VPLS NLRI上的值，以便接收的路由器能够区分可能看起来相同的广告。这意味着必须为每个VPLS使用一个独特的路由区分器。没有必要在所有路由器上为某些VPLS使用相同的路由区分器，因为区分器不用于确定某些BGP NLRI是否与特定的VPLS有关（路由目标属性用于此），但必须为不同的VPLS设置不同的区分器。接受3种类型的格式。[阅读更多](https://help.mikrotik.com/docs/display/ROS/BGP#BGP-RouteDistinguisher) |
+| **rd** (_string_)                                     | 指定附加在VPLS NLRI上的值，以便接收的路由器能够区分可能看起来相同的通告。这意味着必须为每个VPLS使用一个独特的路由区分器。没有必要在所有路由器上为某些VPLS使用相同的路由区分器，因为区分器不用于确定某些BGP NLRI是否与特定的VPLS有关（路由目标属性用于此），但必须为不同的VPLS设置不同的区分器。接受3种类型的格式。[阅读更多](https://help.mikrotik.com/docs/display/ROS/BGP#BGP-RouteDistinguisher) |
 | **site-id** (_integer [0..65535]_)                    | 唯一的网站标识符。每个站点必须有一个唯一的站点ID。必须为RFC 4761风格的VPLS信令设置一个参数。                                                                                                                                                                                                                                                                                                        |
 | **vrf** (_name_)                                      | VRF表名称。                                                                                                                                                                                                                                                                                                                                                                                         |
 
