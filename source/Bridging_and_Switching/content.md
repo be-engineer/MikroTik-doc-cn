@@ -1,6 +1,5 @@
 # 概述
 
-___
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/bridge_diagram.png?version=1&modificationDate=1639739272010&api=v2)
 
@@ -10,7 +9,6 @@ ___
 
 # 网桥接口设置
 
-___
 
 要将多个网络合并到一个网桥中，应创建一个网桥接口(随后，所有需要的接口都应设置为其端口)。从属(辅助)端口的一个MAC地址将被分配给网桥接口，MAC地址将根据 "port-number "自动选择，并且在重启后可能会发生变化。为了避免不必要的MAC地址变化，建议禁用 "auto-mac"，并通过 "admin-mac "手动指定MAC。
 
@@ -110,7 +108,6 @@ dhcp-snooping=no
 
 # 生成树协议
 
-___
 
 RouterOS 网桥接口能够运行生成树协议以确保无环路和冗余拓扑。对于只有 2 个网桥的小型网络，STP 不会带来很多好处，但对于较大的网络，正确配置 STP 非常重要，将 STP 相关值保留为默认值可能会导致网络完全无法访问，即使是单个网桥发生故障。为了实现适当的无环路和冗余拓扑，有必要正确设置网桥优先级、端口路径成本和端口优先级。
 
@@ -193,7 +190,6 @@ add bridge=bridge1 interface=ether2
 
 # 网桥设置
 
-___
 
 在网桥设置菜单下，可以控制所有网桥接口的某些功能并监控全局网桥计数器。
 
@@ -215,7 +211,6 @@ ___
 
 # 端口设置
 
-___
 
 端口Submenu用于在特定网桥中添加接口。
 
@@ -335,7 +330,7 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 | **point-to-point-port** (_yes       \| no_)                                                                                                                                                                                                                                                                                                                       | 端口使用全双工（是）还是半双工（否）连接到桥接端口。                                                                                                                                                                                                                                                                                    |
 | **role** (_designated               \| root port                                                                                                                                                                   \| alternate                                                                                                           \| backup \| disabled_) | (R/M)STP 算法分配端口的角色：<br>- `disabled-port` \- 严格来说不是 STP 的一部分，网络管理员可以手动禁用端口<br>- `root-port` \-一个转发端口，它是面向根网桥的最佳端口<br>- `alternative-port` \- 到根网桥的备用路径<br>- `designated-port` \- 每个 LAN 段的转发端口<br>- `backup-port` \- 到另一个网桥端口已经连接的段的备份/冗余路径。 |
 | **sending-rstp** (_yes \| no_)                                                                                                                                                                                                                                                                                                                                    | 端口使用的是 RSTP 还是 MSTP BPDU 类型。当启用 RSTP/MSTP 的端口收到 STP BPDU 时，端口将转换为 STP 类型。此设置并不表示是否实际发送了 BDPU。                                                                                                                                                                                              |
-| **status** (_in-bridge                                                                                                                                                                                                                                                                                                                                            | inactive_)                                                                                                                                                                                                                                                                                                                              | 端口状态:<br>- `in-bridge` \- 端口已启用<br>- `inactive` \- 端口已禁用 |
+| **status** (_in-bridge \| inactive_)                                                                                                                                                                                                                                                                                                                              | 端口状态:<br>- `in-bridge` - 端口已启用<br>- `inactive` - 端口已禁用 |
 
 ```shell
 [admin@MikroTik] /interface bridge port monitor [find interface=ether1]
@@ -356,7 +351,6 @@ Flags: X - disabled, I - inactive, D - dynamic, H - hw-offload
 
 # 主机表
 
-___
 
 可以在主机菜单中查看在桥接接口上学习到的 MAC 地址。下面是可以查看的参数和标志表。
 
@@ -412,7 +406,6 @@ add bridge=bridge interface=ether2 mac-address=4C:5E:0C:4D:12:43
 
 # 组播表
 
-___
 
 当启用 [IGMP/MLD snooping](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 时，网桥将开始监听IGMP/MLD通信，创建组播数据库（MDB） )条目并根据收到的信息做出转发决定。具有链路本地组播目标地址 224.0.0.0/24 和 ff02::1 的数据包不受限制，并且始终在所有端口和 VLAN 上泛洪。要查看学习到的多播数据库条目，请使用 `print` 命令。
 
@@ -505,7 +498,6 @@ Columns: GROUP, VID, ON-PORTS, BRIDGE
 
 # 网桥硬件卸载
 
-___
 
 自 RouterOS v6.41 起，如果设备具有内置交换芯片，则可以同时交换多个端口。虽然网桥是一种会消耗 CPU 资源的软件功能，但网桥硬件卸载功能将允许你使用内置交换芯片转发数据包，如果配置正确，这将使你获得更高的吞吐量。
 
@@ -590,7 +582,6 @@ RouterOS v6.41 和更新版本中的端口交換是使用网桥配置完成的�
 
 # 网桥VLAN过滤
 
-___
 
 自 RouterOS v6.41 起的网桥 VLAN 过滤在网桥内提供 VLAN 感知的第 2 层转发和 VLAN 标记修改。 这组功能使桥接操作更像传统的以太网交换机，并且与桥接 VLAN 接口时的配置相比，可以克服生成树兼容性问题。 强烈建议桥接 VLAN 过滤配置符合 STP (IEEE 802.1D)、RSTP (IEEE 802.1W) 标准，并且必须在 RouterOS 中启用 MSTP (IEEE 802.1s) 支持。
 
@@ -989,7 +980,6 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ## 快速转发
 
-___
 
 快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 你可以在下面找到要激活快进必须满足的条件列表：
 
@@ -1047,13 +1037,11 @@ ___
 
 ## IGMP/MLD 侦听
 
-___
 
 从 RouterOS 版本 6.41 开始，网桥支持 IGMP/MLD 侦听。 它控制多播流并防止不必要端口上的多播泛滥。 它的设置位于桥接菜单中，并且在每个桥接界面中独立工作。 软件驱动的实现适用于所有带有 RouterOS 的设备，但 CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片也支持 IGMP/MLD 侦听和硬件卸载。 请参阅 [IGMP/MLD 侦听手册](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 的更多详细信息。
 
 ## DHCP 侦听和 DHCP 选项 82
 
-___
 
 从 RouterOS 版本 6.43 开始，网桥支持 DHCP Snooping 和 DHCP Option 82。DHCP Snooping 是一种第 2 层安全功能，可限制未经授权的 DHCP 服务器向用户提供恶意信息。 在 RouterOS 中，你可以指定哪些桥接端口是可信的（已知 DHCP 服务器所在的位置，应该转发 DHCP 消息），哪些是不可信的（通常用于访问端口，收到的 DHCP 服务器消息将被丢弃）。 DHCP 选项 82 是由支持 DHCP 侦听的设备提供的附加信息（代理电路 ID 和代理远程 ID），允许识别设备本身和 DHCP 客户端。
 
@@ -1098,13 +1086,11 @@ set [find where name="bridge"] dhcp-snooping=yes add-dhcp-option82=yes
 
 ## 控制器网桥和端口扩展器
 
-___
 
 控制器网桥 (CB) 和端口扩展器 (PE) 是 RouterOS 中用于 CRS3xx、CRS5xx 系列交换机和 CCR2116、CCR2216 路由器的 IEEE 802.1BR 标准实施。 它允许使用 PE 设备虚拟扩展 CB 端口，并从单个控制设备管理这些扩展接口。 这样的配置提供了简化的网络拓扑结构、灵活性、增加的端口密度和易管理性。 请参阅 [Controller Bridge and Port Extender 手册](https://help.mikrotik.com/docs/display/ROS/Controller+Bridge+and+Port+Extender) 了解更多详情。
 
 ## 网桥防火墙
 
-___
 
 网桥防火墙实现数据包过滤，从而提供用于管理进出网桥和通过网桥的数据流的安全功能。
 
@@ -1214,7 +1200,6 @@ ___
 
 ## 参考文档
 
-___
 
 - [CRS1xx/2xx series switches](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=103841835)
 - [CRS3xx, CRS5xx series switches, and CCR2116, CCR2216 routers](https://help.mikrotik.com/docs/display/ROS/CRS3xx%2C+CRS5xx%2C+CCR2116%2C+CCR2216+switch+chip+features)
