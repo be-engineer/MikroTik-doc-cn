@@ -78,7 +78,7 @@ RADIUS 属性是在 RADIUS 服务器和客户端之间传递的已定义授权�
 
  | 属性                              | 说明                                                  |
  | --------------------------------- | ----------------------------------------------------- |
- | **db-path** (_string_; Default: ) | Path to location where database files will be stored. |
+ | **db-path** (_string_; Default: ) | 数据库文件存储位置的路径。|
 
 **只读属性**
 
@@ -228,7 +228,7 @@ Profile-Limitations 表将 Limitations 和 Profiles 链接在一起并定义其�
  | **nas-port-id** (_string_)              | 对用户进行身份验证的 NAS 端口的标识符。                                                                                                                                          |
  | **nas-port-type** (_string_)            | 对用户进行身份验证的端口类型（_physical_ 或 _virtual_）。                                                                                                                        |
  | **started** (_datetime_)                | 建立会话的日期和时间。                                                                                                                                                           |
- | **status** (_list of statuses_)         | 会话的可用状态：_start -_accounting message_Start_已收到，_stop -_accounting message_Stop_已收到，_interim -Interim update_已收到，_close-acked_ - session已成功关闭，_expired._ |
+ | **status** (_list of statuses_)         | 会话的可用状态：_start -_accounting message_Start_ 已收到， _stop -_accounting message_Stop_ 已收到， _interim -Interim update_ 已收到， _close-acked_ - session已成功关闭，_expired._ |
  | **terminate-cause** (_string_)          | 会话关闭原因。                                                                                                                                                                   |
  | **upload** (_Bytes_)                    | 上传的流量。                                                                                                                                                                     |
  | **uptime** (_time_)                     | 会话中记录的总正常运行时间。                                                                                                                                                     |
@@ -527,7 +527,7 @@ generate-report report-template=report_default.html columns=username,uptime,down
 
 付款完成后，用户经理会要求 PayPal 批准交易。 批准后，配置文件将分配给用户使用。
 
-！[](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
+![](https://help.mikrotik.com/docs/download/attachments/2555940/purchase_complete.PNG?version=1&modificationDate=1657107833111&api=v2)
 
 ### 从RouterOS v6 迁移
 
