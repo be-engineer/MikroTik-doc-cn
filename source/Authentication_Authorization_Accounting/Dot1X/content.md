@@ -167,11 +167,11 @@ Flags: X - disabled, D - dynamic
 
 在某些网络配置中，特定请求者需要额外的访问规则来限制或允许某些网络服务。 可以使用 Mikrotik-Switching-Filter 属性来完成，请参阅 [RADIUS 供应商词典](https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary "Manual:RADIUS Client/vendor dictionary")。 当客户端成功通过身份验证服务器的验证时，服务器可以传回 Mikrotik-Switching-Filter 属性。 根据接收到的信息，身份验证器将在客户端所在的交换机端口上创建动态访问规则。 只要客户端会话处于活动状态并且接口正在运行，这些规则就会处于活动状态。关于正确的交换规则实施有一定的顺序和限制：
 
-- `mac-protocol`、`src-mac-address`（自 RouterOS 7.2 版本起可用）、`src-address`（IPv4/掩码，自 RouterOS 7.2 版本起可用）、`dst-address`（IPv4/ mask), `protocol` (IPv4) `src-port` (L4, RouterOS 7.2 版本后可用), `dst-port` (L4) 支持条件参数
+- `mac-protocol` 、 `src-mac-address` （自 RouterOS 7.2 版本起可用）、`src-address` （IPv4/掩码，自 RouterOS 7.2 版本起可用）、 `dst-address`(IPv4/ mask), `protocol` (IPv4) `src-port` (L4, RouterOS 7.2 版本后可用), `dst-port` (L4) 支持条件参数
 - 十六进制或十进制表示法可用于 `mac-protocol` 和 `protocol` 参数（例如 `protocol 17` 或 `protocol 0x11`）
 - `src-port` 和 `dst-port` 支持单个或范围值（例如 `src-port 10` 或 `src-port 10-20`）
-- `src-mac-address` 支持 "xx:xx:xx:xx:xx:xx" 或 "xxxxxxxxxxxx" 格式，并且可以使用 "none" 关键字设置没有任何源 MAC 地址的交換规则（例如 `src-mac-address none`)
-- `src-mac-address`（如果属性尚未设置）、`switch` 和 `ports` 条件参数会自动为每个规则设置
+- `src-mac-address` 支持 "xx:xx:xx:xx:xx:xx" 或 "xxxxxxxxxxxx" 格式，并且可以使用 "none" 关键字设置没有任何源 MAC 地址的交換规则(例如 `src-mac-address none`)
+- `src-mac-address` （如果属性尚未设置）、 `switch` 和 `ports` 条件参数会自动为每个规则设置
 - 每条规则都应以操作属性结尾，支持的值为 **drop** 或 **allow**。 如果未设置操作属性，将使用默认的 **allow** 值。
 - 单个请求者支持多个规则，它们必须用逗号“,”分隔
 

@@ -44,32 +44,32 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 1. **request for a remote host**
 
-- 如果用户已登录并且要显示通告，则显示 radvert.html。 此页面重定向到预定的通告页面
-- 如果用户已登录且没有为该用户安排通告，则提供请求的页面
-- 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
-- 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
+   - 如果用户已登录并且要显示通告，则显示 radvert.html。 此页面重定向到预定的通告页面
+   - 如果用户已登录且没有为该用户安排通告，则提供请求的页面
+   - 如果用户未登录，但围墙花园允许目标主机，则请求也会被处理
+   - 如果用户未登录，且围墙花园不允许目标主机，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
 
 2. **在HotSpot主机上请求“/”**
 
-- 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
-- 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
+   - 如果用户已登录，则显示 rstatus.html； 如果没有找到 rstatus.html，则使用 redirect.html 重定向到状态页面
+   - 如果用户未登录，则显示 rlogin.html； 如果没有找到 rlogin.html，则使用 redirect.html 重定向到登录页面
   
 3. **请求“/login”页面**
 
-- 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
-- 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
-- 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
-- 如果出现致命错误，则显示 error.html
+   - 如果用户已成功登录（或已经登录），则显示 alogin.html； 如果未找到 alogin.html，则使用 redirect.html 重定向到最初请求的页面或状态页面（以防未给出原始目标页面）
+   - 如果用户未登录（未提供用户名，未出现错误消息），则显示 login.html
+   - 如果登录程序失败（提供错误消息），则显示 flogin.html； 如果找不到 flogin.html，则使用 login.html
+   - 如果出现致命错误，则显示 error.html
 
 4. **请求“/status”页面**
 
-- 如果用户已登录，则显示 status.html
-- 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
+   - 如果用户已登录，则显示 status.html
+   - 如果用户未登录，则显示 fstatus.html； 如果找不到 fstatus.html，则使用 redirect.html 重定向到登录页面
 
 5. **请求“/logout”页面**
 
-- 如果用户已登录，则显示 logout.html
-- 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面
+   - 如果用户已登录，则显示 logout.html
+   - 如果用户未登录，则显示 flogout.html； 如果找不到 flogout.html，则使用 redirect.html 重定向到登录页面
 
 **注意：** 如果使用存储在路由器 FTP 服务器上的页面无法满足请求，则会显示错误 404
 
@@ -79,7 +79,7 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 - 通过更改客户端发送到 HotSpot 小服务程序的变量，可以将关键字计数减少到一个（用户名或密码；例如，客户端的 MAC 地址可以用作其他值）甚至为零（许可协议 ; 一些对所有用户通用的预定义值或客户端的 MAC 地址可以用作用户名和密码）
 - 注册可能发生在不同的服务器上（例如，在能够对信用卡收费的服务器上）。 客户端的 MAC 地址可以传递给它，因此不需要手动写入此信息。 注册后，服务器应更改 RADIUS 数据库，使客户端能够登录一段时间。
 
-要在 HTML 文件的某个地方插入变量，使用 $(var\_name) 语法，其中“var\_name”是变量的名称（不带引号）。 此结构可用于任何以“/”、“/login”、“/status”或“/logout”访问的 HotSpot HTML 文件，以及存储在 HotSpot 服务器上的任何文本或 HTML（.txt、.htm 或 .html）文件 （流量计数器除外，它们仅在状态页面中可用，以及 **error**、**error-orig**、**chap-id**、**chap-challenge** 和 **popup** 变量，仅在登录页面中可用）。 例如，要显示登录页面的链接，可以使用以下结构：
+要在 HTML 文件的某个地方插入变量，使用 $(var_name) 语法，其中“var_name”是变量的名称（不带引号）。 此结构可用于任何以“/”、“/login”、“/status”或“/logout”访问的 HotSpot HTML 文件，以及存储在 HotSpot 服务器上的任何文本或 HTML（.txt、.htm 或 .html）文件 （流量计数器除外，它们仅在状态页面中可用，以及 **error**、**error-orig**、**chap-id**、**chap-challenge** 和 **popup** 变量，仅在登录页面中可用）。 例如，要显示登录页面的链接，可以使用以下结构：
 
 ```
 <a href="$(link-login)">login</a>
@@ -92,7 +92,7 @@ HotSpot 小服务程序识别 5 种不同的请求类型：
 
 #### 可用变量列表
 
-**注意：** 一些变量使用硬编码的http URL，如果你用https，可以用其他方式构造链接，例如$link-status，你可以使用https://$(hostname )/$(target-dir)状态
+**注意：** 一些变量使用硬编码的http URL，如果用https，可以用其他方式构造链接，例如$link-status，可以使用https://$(hostname)/$(target-dir)状态
 
 **常用服务器变量：**
 
@@ -268,7 +268,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，$(link-status) = "[http://hotspot.mt.lv/lv/ 状态](http://hotspot.mt.lv/lv/status)”)。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
+选择首选目录后（例如，“lv”），所有指向本地 HotSpot 页面的链接都将包含该路径（例如，\$(link-status) = "[http://hotspot.mt.lv/lv/status](http://hotspot.mt.lv/lv/status)”。 因此，如果所有 HotSpot 页面都使用“$(link-xxx)”变量引用链接，则不再需要进行任何更改 - 每个客户端将一直停留在所选目录中。
 
 ### 杂项
 
@@ -278,7 +278,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 如果要直接在链接中使用变量，则必须相应地对它们进行转义。 例如，登录页面 **\<a href="https://login.example.com/login?mac=\$(mac)&user=\$(username)"\>link\</a\>** 如果用户名是“123\&456=1 2”，不会 按预期工作。 因此，必须使用其转义版本而不是 \$(user)：\$(user-esc): **\<a href="https://login.server.serv/login?mac=\$(mac-esc )\&user=\$(user-esc)"\>link\</a\>**。 现在相同的用户名将转换为“123%26456%3D1+2”，这是 URL 中“123&456=1 2”的有效表示。 这个技巧可以用于任何变量，而不仅仅是 $(username)。
 
-注销页面有一个布尔参数“erase-cookie”，它可以是“on”或“true”以在注销时删除用户cookie（这样用户在打开浏览器时就不会自动登录 )。
+注销页面有一个布尔参数“erase-cookie”，它可以是“on”或“true”以在注销时删除用户cookie(这样用户在打开浏览器时就不会自动登录)。
 
 ### 例子
 
@@ -331,7 +331,7 @@ https://www.example.com/register.html?mac=$(mac)
 
 - 在用户登录后显示横幅，在 alogin.html 之后
 
-$(if popup == 'true') add the following line:
+\$(if popup == 'true') add the following line:
 
 ```
 open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
@@ -384,14 +384,14 @@ open('$(link-logout)?erase-cookie=on', 'hotspot_logout', ...
 
 ```
 
-外部认证 [Edit section](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13)
+外部认证 [Edit](https://wiki.mikrotik.com/index.php?title=Manual:Customizing_Hotspot&action=edit&section=13)
 
 另一个例子是让 HotSpot 在远程服务器上进行身份验证（例如，可以执行信用卡收费）：
 
 - 允许直接访问围墙花园中的外部服务器（基于 HTTP 或基于 IP）
 - 修改 HotSpot servlet 的登录页面以重定向到外部认证服务器。 外部服务器应根据需要修改 RADIUS 数据库
 
-这是放置在 HotSpot 路由器上的此类登录页面的示例（重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php)） ，替换为外部认证服务器的实际地址）：
+这是放置在 HotSpot 路由器上的此类登录页面的示例(重定向到 [https://auth.example.com/login.php](https://auth.example.com/login.php) ) ，替换为外部认证服务器的实际地址）：
 
 ```html
 <html>
@@ -418,7 +418,7 @@ document.redirect.submit();
 
 - 外部服务器可以通过将 HotSpot 客户端重定向回原始 HotSpot servlet 登录页面并指定正确的用户名和密码来登录 HotSpot 客户端
 
-下面是这样一个页面的示例（它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login) ，替换为 HotSpot 路由器的实际地址； 此外，成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/) ，替换为需要的内容：
+下面是这样一个页面的示例(它重定向到 [https://hotspot.example.com/login](https://hotspot.example.com/login) )，替换为 HotSpot 路由器的实际地址； 此外，成功登录后显示 [www.mikrotik.com](http://www.mikrotik.com/) ，替换为需要的内容：
 
 ```html
 <html>
