@@ -67,7 +67,7 @@ Flags: X - disabled, R - running
   1  R ether2              1500  00:30:4F:06:62:12 proxy-arp
 ```
 
-## 只回复
+## Reply only
 
 如果接口上的ARP属性被设置为 "只回复"，那么路由器只回复ARP请求。邻居的MAC地址只能通过"/ip arp "菜单中静态配置的条目来解决，但不需要像禁用ARP那样将路由器的MAC地址添加到其他主机的ARP表中。
 

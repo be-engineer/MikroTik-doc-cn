@@ -162,13 +162,11 @@ DUT与模拟的上游对等体建立连接，接收路由并将其放入FIB中�
 | RB450G (in/out affinity=main)        |                                                          | 1:54              |         |
 | RB450G (affinity in=alone out=input) |                                                          | 2:12              |         |
 
-  
-
-### Two Peers Receive Only
+### 只有两个对等体接收
 
 ![](https://help.mikrotik.com/docs/download/attachments/28606515/BGP_T2.png?version=1&modificationDate=1599129407331&api=v2)
 
-DUT establishes a connection to two simulated upstream peers, receives routes, picks the best route, and installs in FIB. On ROSv7 affinity settings are set to "alone".
+DUT与两个模拟的上游对等体建立连接，接收路由，选择最佳路由，并安装FIB。在ROSv7设置为“单独”。
 
 |                 | v6.44       | FRR                 | v7.1beta3 | v7.1rc7 (846k routes per peer) |
 | --------------- | ----------- | ------------------- | --------- | ------------------------------ |
@@ -180,9 +178,6 @@ DUT establishes a connection to two simulated upstream peers, receives routes, p
 | x86 (virtual)   |             | 0:26(4cores)        |           |                                |
 |                 |             | 0:46(2cores)        |           |                                |
 |                 |             | 0:30(2cores no LDP) |           |                                |
-
-
-  
 
 ### 多Sim卡
 

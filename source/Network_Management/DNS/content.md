@@ -20,8 +20,8 @@ DNS设施用于为路由器本身以及连接到它的客户提供域名解析�
 
 | 属性                                                               | 说明                                                                                                                  |
 | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| **allow-remote-requests** (_yes_                                   | _no_; Default: **no**)                                                                                                | 指定是否允许路由器作为远程客户端的DNS缓存使用。否则只有路由器本身会使用DNS配置。 |
-| **cache-max-ttl* (_time_; Default: **1w**)                         | 缓存记录的最长生存时间。换句话说，缓存记录将在cache-max-TTL时间后无条件过期。从DNS服务器收到的较短的TTL会被尊重。     |
+| **allow-remote-requests** (_yes_ \| _no_; Default: **no**)                                                                                                | 指定是否允许路由器作为远程客户端的DNS缓存使用。否则只有路由器本身会使用DNS配置。 |
+| **cache-max-ttl** (_time_; Default: **1w**)                         | 缓存记录的最长生存时间。换句话说，缓存记录将在cache-max-TTL时间后无条件过期。从DNS服务器收到的较短的TTL会被尊重。     |
 | **cache-size** (_integer[64..4294967295]_; Default: **2048**)      | 指定DNS缓存的大小，KiB。                                                                                              |
 | **max-current-queries** (_integer_; Default: **100**)              | 指定允许多少个并发的查询。                                                                                            |
 | **max-concurrent-tcp-sessions** (_integer_; Default: **20**)       | 指定允许多少个并发的TCP会话。                                                                                         |
