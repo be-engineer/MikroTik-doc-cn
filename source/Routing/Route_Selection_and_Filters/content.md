@@ -362,7 +362,7 @@ BGP/OSPF配置中可引用的过滤规则链动态列表。
 | 属性                        | 说明 |
 | --------------------------- | ---- |
 | **dynamic** (_yes   \| no_) |      |
-| **inactive** (yes _ \| no_) |      |
+| **inactive** (_yes\| no_) |      |
 | **name** (_string_)         |      |
 
 `/routing/filter/select-chain`
@@ -375,5 +375,5 @@ BGP/OSPF配置中可以引用的过滤选择链动态列表。
 | 属性                        | 说明 |
 | --------------------------- | ---- |
 | **dynamic** (_yes   \| no_) |      |
-| **inactive** (yes _ \| no_) |      |
+| **inactive** (_yes \| no_) |      |
 | **name** (_string_)         |      |
