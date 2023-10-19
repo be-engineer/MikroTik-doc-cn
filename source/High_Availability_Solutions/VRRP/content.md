@@ -165,7 +165,7 @@ VRRP连接跟踪同步需要RouterOS的 [连接跟踪](https://help.mikrotik.com
 
 连接跟踪条目只从主设备同步到备份设备。
 
-当 ***同步连接跟踪** 和 **抢占模式** 都启用时，如果一个具有较高VRRP优先级的路由器上线，连接会先被同步，然后有较高优先级的路由器才会成为VRRP主设备。
+当 **同步连接跟踪** 和 **抢占模式** 都启用时，如果一个具有较高VRRP优先级的路由器上线，连接会先被同步，然后有较高优先级的路由器才会成为VRRP主设备。
 
 如果两个单元之间配置了多个VRRP接口，只需在一个（最好是主）VRRP接口上启用sync-connection-tracking=yes即可。
 
@@ -183,7 +183,7 @@ VRRP连接跟踪同步需要RouterOS的 [连接跟踪](https://help.mikrotik.com
 
 `/ip address add address =192.168.1.1/32 interface =vrrp1`
 
-注意，在添加VRRP时只指定了 "接口 "参数。这是唯一需要手动设置的参数，其他参数如果没有指定将被设置为默认值。`vrid=1, priority=100` 和`authentication=none` 。
+注意，在添加VRRP时只指定了 "接口 "参数。这是唯一需要手动设置的参数，其他参数如果没有指定将被设置为默认值。`vrid=1, priority=100` 和 `authentication=none` 。
 
 如果在VRRP上配置的地址与路由器的其他接口上的地址来自同一个子网，那么VRRP接口上的地址必须有/32的掩码。
 
