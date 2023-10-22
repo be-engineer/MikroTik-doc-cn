@@ -1,4 +1,13 @@
+<!--
+ * @Author: be-engineer 41234995@qq.com
+ * @Date: 2023-10-22 16:39:13
+ * @LastEditors: be-engineer 41234995@qq.com
+ * @LastEditTime: 2023-10-22 18:39:53
+ * @FilePath: /MikroTik-doc-cn/source/Authentication_Authorization_Accounting/Dot1X/content.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # 概述
+
 ___
 
 Dot1X 是 IEEE 802.1X 标准在 RouterOS 中的实现。 主要目的是使用 EAP over LAN（也称为 EAPOL）提供基于端口的网络访问控制。 802.1X 由请求者（客户端）、认证者（服务器）和认证服务器（RADIUS 服务器）组成。 目前，RouterOS 支持验证方和请求方。 请求者支持的 EAP 方法是 EAP-TLS、EAP-TTLS、EAP-MSCHAPv2 和 PEAPv0/EAP-MSCHAPv2。

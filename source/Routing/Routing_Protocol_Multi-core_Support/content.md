@@ -1,3 +1,11 @@
+<!--
+ * @Author: be-engineer 41234995@qq.com
+ * @Date: 2023-10-22 16:39:13
+ * @LastEditors: be-engineer 41234995@qq.com
+ * @LastEditTime: 2023-10-22 18:52:34
+ * @FilePath: /MikroTik-doc-cn/source/Routing/Routing_Protocol_Multi-core_Support/content.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 # 概述
 
 RouterOS v7支持在多个进程之间拆分任务。
@@ -25,8 +33,6 @@ BGP最多可以有100个唯一的进程。
 
 `/routing/stats/process/print`
 
- 
-
 示例输出:
 
 ```shell
@@ -52,7 +58,6 @@ Columns: TASKS, PRIVATE-MEM-BLOCKS, SHARED-MEM-BLOCKS, PSS, RSS, VMS, RETIRED, I
       BGP Output 10.155.101.232                                                                                                                             
   10  Global memory                            256.0KiB                                  global     0  0
 ```
-
 
 路由表更新机制
 

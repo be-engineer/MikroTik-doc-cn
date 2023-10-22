@@ -2,6 +2,6 @@
 =====================
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 1
    
    content.md
