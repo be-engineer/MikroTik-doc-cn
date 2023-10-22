@@ -32,7 +32,7 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
 .. toctree::
    :maxdepth: 1
 
-   Getting_started/index.rst
+   source/Getting_started/index.rst
    Authentication_Authorization_Accounting/index.rst
    Bridging_and_Switching/index.rst
    Diagnostics_monitoring_and_troubleshooting/index.rst
