@@ -1,3 +1,4 @@
+sphinx==7.1.2
 sphinx_markdown_tables == 0.0.17
 markdown >= 3.0.1
 recommonmark == 0.7.1
