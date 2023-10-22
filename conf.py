@@ -1,3 +1,11 @@
+'''
+Author: be-engineer 41234995@qq.com
+Date: 2023-10-22 16:39:13
+LastEditors: be-engineer 41234995@qq.com
+LastEditTime: 2023-10-22 19:19:21
+FilePath: /MikroTik-doc-cn/conf.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -18,8 +26,12 @@ extensions = [
     # 'myst_parser',
     # 'recommonmark',
     'sphinx_mdinclude',
-    #'sphinxcontrib-markdown',
+    # 'sphinxcontrib-markdown',
     # 'sphinx.ext.mathjax',
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx_markdown_tables'
     # 'sphinxnotes.strike'
 ]
@@ -34,4 +46,4 @@ language = 'zh_CN'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+# html_static_path = ['_static']
