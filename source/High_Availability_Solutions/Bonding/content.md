@@ -8,28 +8,28 @@ ___
 
 CRS3xx、CRS5xx系列交换机和CCR2116、CCR2216路由器支持带有绑定接口的网桥硬件卸载。只有 "802.3ad "和 "balance-xor"绑定模式是硬件卸载的，其他绑定模式会使用CPU的资源。内置交换芯片始终使用Layer2+Layer3+Layer4的传输散列策略，手动改变传输散列策略没有效果。更多详情请见 [CRS3xx、CRS5xx、CCR2116、CCR2216交换芯片特性](https://help.mikrotik.com/docs/display/ROS/CRS3xx,+CRS5xx,+CCR2116,+CCR2216+switch+chip+features#CRS3xx,CRS5xx,CCR2116,CCR2216switchchipfeatures-Bonding)
 
-## Quick Setup Guide
+## 快速设置指南
 
 ___
 
-Let us assume that we have two Ethernet interfaces on each router (Router1 and Router2) and want to get the maximum data rate between these two routers. To make this possible, follow these steps:
+假设每个路由器上有两个以太网接口（Router1 和 Router2），希望获得这两个路由器之间的最大速率。 按照下列步骤操作：
 
-1. Make sure that you do not have IP addresses on interfaces that will be enslaved for bonding interface.
-2. Add bonding interface and IP address on the Router1:
+1.确保作为绑定接口从属的接口上没有 IP 地址。
+2.在Router1上添加bonding接口和IP地址：
 
 ```shell
 /interface bonding add slaves=ether1,ether2 name=bond1
 /ip address add address=172.16.0.1/24 interface=bond1
 ```
 
-3. 在Router2上做同样的事:
+3.在Router2上同样:
 
 ```shell
 /interface bonding add slaves=ether1,ether2 name=bond1
 /ip address add address=172.16.0.2/24 interface=bond1
 ```
 
-4. 从Router1测试连接:
+4.从Router1测试连接:
 
 ```shell
 [admin@Router1] > ping 172.16.0.2
@@ -38,7 +38,7 @@ Let us assume that we have two Ethernet interfaces on each router (Router1 and R
     1 172.16.0.2                             56  64 0ms 
     2 172.16.0.2                             56  64 0ms 
     sent=3 received=3 packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms
-```
+  ```
 
 绑定接口需要几秒钟的时间来获得与对等点的连接。
 
@@ -99,7 +99,7 @@ ___
 
 LACP根据散列的协议头信息在活动端口之间均衡出站流量，并接受来自任何活动端口的入站流量。哈希值包括以太网源和目标地址，如果有的话，还包括VLAN标签，以及IPv4/IPv6源和目标地址。如何计算取决于传输哈希策略参数。不建议使用ARP链路监控，因为LACP对等设备上的发送散列策略，ARP回复可能只到达一个从属端口。可能导致不平衡的传输流量，推荐使用MII链路监控。
 
-第3和第4层的传输散列模式与LACP不完全兼容。更多细节可以在[https://www.kernel.org/doc/Documentation/networking/bonding.txt](https://www.kernel.org/doc/Documentation/networking/bonding.txt) 中找到。
+第3和第4层的传输散列模式与LACP不完全兼容。更多细节可以在 [https://www.kernel.org/doc/Documentation/networking/bonding.txt](https://www.kernel.org/doc/Documentation/networking/bonding.txt) 中找到。
 
 ### balance-xor
 
