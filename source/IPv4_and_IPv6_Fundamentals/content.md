@@ -108,7 +108,7 @@ Flags: X - disabled, R - running, S - slave
 
 尽管IP数据包是使用IP地址寻址的，但必须使用硬件地址来实际地将数据从一台主机传输到另一台主机。
 
-这就引出了地址解析协议(ARP)，它用于将主机的IP地址映射到硬件地址(MAC)。ARP协议在 [RFC 826](https://tools.ietf.org/html/rfc826)中被引用。
+这就引出了地址解析协议(ARP)，它用于将主机的IP地址映射到硬件地址(MAC)。ARP协议在 [RFC 826](https://tools.ietf.org/html/rfc826) 中被引用。
 
 每个网络设备都有一个当前使用的ARP表项。通常表是动态构建的，但为了提高网络安全性，可以通过添加静态表项来部分或完全静态构建表。
 

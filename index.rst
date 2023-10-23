@@ -46,6 +46,7 @@ RouterOS官网文档非常齐全，而且详细，但是只有英文版本，为
    source/Mobile_Networking/index.rst
    source/Network_Management/index.rst
    source/Routing/index.rst
+   source/Scripts/index.rst
    source/Multi_Protocol_Label_Switching/index.rst
    source/System_Information_and_Utilities/index.rst
    source/Virtual_Private_Networks/index.rst
