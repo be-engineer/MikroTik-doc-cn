@@ -6,13 +6,13 @@
 
 开放系统互连(OSI)模型是一个7层模型，目前被用作教学工具。OSI模型最初被设想为构建网络系统的标准体系结构，但在现实世界中，网络的定义比OSI模型所建议的要少得多。
 
-- **第七层(应用层)**  定义服务器端与客户端通信的协议，如HTTP协议。如果web浏览器想要下载图像，协议将组织并执行请求;
+- **第七层(应用层)** -定义服务器端与客户端通信的协议，如HTTP协议。如果web浏览器想要下载图像，协议将组织并执行请求;
 - **第6层(表示)** -确保以可用的格式接收数据。加密在这里完成(但实际上可能不是这样，例如IPSec);
 - **第5层(会话)** -负责在客户端和服务器之间建立、管理和关闭会话;
 - **第4层(传输)** -传输层主要负责组装和重组，数据流被分成块(段)，分配序列号并封装成协议头(TCP, UDP等);
 - **第3层(网络)** -负责逻辑设备寻址，数据被封装在IP头中，现在称为“包”;
 - **第2层(数据链路)** -数据封装在自定义报头中，802.3(以太网)或802.11(无线)，称为“帧”，处理流量控制;
-- **第一层(物理)** -通信介质，负责发送和接收比特、电信号和硬件接口;
+- **第1层(物理)** -通信介质，负责发送和接收比特、电信号和硬件接口;
 
 ## TCP/IP模型
 
@@ -23,15 +23,15 @@
 - **Internet层(2)** -与OSI模型中的网络层相同(包括ARP, IP协议);
 - **链路层(1)** -也称为网络接入层。包括OSI模型的第1层和第2层，因此它主要关注网络节点之间的物理数据交换;
 
-| TCP/IP | OSI模型 | 协议 |
-| --- | --- | --- |
-| Application Layer | Application Layer | DNS, DHCP,HTTP,SSH etc. |
-| Presentation Layer | JPEG,MPEG,PICT etc. |
-| Session Layer | PAP, SCP, ZIP etc. |
-| Transport Layer | Transport Layer | TCP, UDP |
-| Internet Layer | Network Layer | ICMP, IGMP, IPv4, IPv6, IPSec |
-| Link Layer | Data Link Layer | ARP, CDP, MPLS, PPP etc. |
-| Physical Layer | Bluetooth, Ethernet, Wi-Fi etc. |
+| TCP/IP             | OSI模型                         | 协议                          |
+| ------------------ | ------------------------------- | ----------------------------- |
+| Application Layer  | Application Layer               | DNS, DHCP,HTTP,SSH etc.       |
+| Presentation Layer | JPEG,MPEG,PICT etc.             |
+| Session Layer      | PAP, SCP, ZIP etc.              |
+| Transport Layer    | Transport Layer                 | TCP, UDP                      |
+| Internet Layer     | Network Layer                   | ICMP, IGMP, IPv4, IPv6, IPSec |
+| Link Layer         | Data Link Layer                 | ARP, CDP, MPLS, PPP etc.      |
+| Physical Layer     | Bluetooth, Ethernet, Wi-Fi etc. |
 
 # 以太网
 
