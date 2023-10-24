@@ -200,7 +200,7 @@ syntax error (line 1 column 7)
 以下词语为关键字，不能用作变量名和函数名:
 
 ```
-and       or       in
+and  or   in
 
 ```
 
@@ -268,14 +268,14 @@ RouterOS脚本语言的数据类型如下:
 
 RouterOS脚本语言支持常用的算术运算符
 
-| 运算符 | 描述                  | 示例                           |
-| ------ | --------------------- | ------------------------------ |
-| **+**  | binary addition       | `:put (3+4);`                  |
-| **-**  | binary subtraction    | `:put (1-6);`                  |
-| **\*** | binary multiplication | `:put (4*5);`                  |
-| **/**  | binary division       | `:put (10 / 2); :put ((10)/2)` |
-| **%**  | modulo operation      | `:put (5 % 3);`                |
-| **-**  | unary negation        | `{ :local a 1; :put (-a); }`   |
+| 运算符 | 描述     | 示例                           |
+| ------ | -------- | ------------------------------ |
+| **+**  | 二进制加 | `:put (3+4);`                  |
+| **-**  | 二进制减 | `:put (1-6);`                  |
+| **\*** | 二进制乘 | `:put (4*5);`                  |
+| **/**  | 二进制除 | `:put (10 / 2); :put ((10)/2)` |
+| **%**  | 取模操作 | `:put (5 % 3);`                |
+| **-**  | 一元否定 | `{ :local a 1; :put (-a); }`   |
 
 注意: 为了运行除法，必须使用大括号或者除数周围加空格，这样就不会被误认为是一个 IP 地址
 
@@ -303,14 +303,14 @@ RouterOS脚本语言支持常用的算术运算符
 
 位运算符处理数字、IP和IPv6地址 [数据类型](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-Datatypes)。
 
-| 运算符 | 描述                                                                                                                                                                              | 示例                                                             |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **~**  | bit inversion                                                                                                                                                                     | :put (~0.0.0.0) <br> :put (~::ffff)                              |
-| **\|** | bitwise OR. Performs logical OR operation on each pair of corresponding bits. In each pair the result is “1” if one of the bits or both bits is “1”, otherwise the result is “0”. | :put (192.168.88.0                                               | 0.0.0.255)  <br> :put (2001::1 | ::ffff) |
-| **^**  | bitwise XOR. The same as OR, but the result in each position is “1” if two bits are not equal, and “0” if the bits are equal.                                                     | :put (1.1.1.1^255.255.0.0) <br>:put (2001::ffff:1^::ffff:0)      |
-| **&**  | bitwise AND. In each pair, the result is “1” if the first and second bit is “1”. Otherwise, the result is “0”.                                                                    | :put (192.168.88.77&255.255.255.0)  <br>:put (2001::1111&ffff::) |
-| **<<** | left shift by a given amount of bits, not supported for IPv6 address data type                                                                                                    | :put (192.168.88.77<<8)                                          |
-| **>>** | right shift by a given amount of bits, not supported for IPv6 address data type                                                                                                   | :put (192.168.88.77>>24)                                         |
+| 运算符 | 描述                                                                                                | 示例                                                             |
+| ------ | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **~**  | 位反转                                                                                              | :put (~0.0.0.0) <br> :put (~::ffff)                              |
+| **\|** | 位或。对每一对应的位进行逻辑或运算。在每一对中，如果其中一位或两位为“1”，结果为“1”，否则结果为“0”。 | :put (192.168.88.0                                               | 0.0.0.255)  <br> :put (2001::1 | ::ffff) |
+| **^**  | 按位异或。与OR相同，但如果两位不相等，则结果为“1”，如果两位相等，则为“0”。                          | :put (1.1.1.1^255.255.0.0) <br>:put (2001::ffff:1^::ffff:0)      |
+| **&**  | 位与。在每一对中，如果第一个和第二个位都是“1”，则结果为“1”。否则，结果为“0”。                       | :put (192.168.88.77&255.255.255.0)  <br>:put (2001::1111&ffff::) |
+| **<<** | 左移给定数量的位，不支持IPv6地址数据类型                                                            | :put (192.168.88.77<<8)                                          |
+| **>>** | 右移给定数量的位，不支持IPv6地址数据类型                                                            | :put (192.168.88.77>>24)                                         |
 
 使用“&”运算符从给定的IP和CIDR Netmask计算子网地址:
 
@@ -427,7 +427,9 @@ add name=myLeaseScript policy=\
 :global "my-var";
 ```
 
-如果变量最初定义时没有值，则将 [变量数据类型](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-Datatypes) 设置为 _nil_ ，否则，脚本引擎将自动确定数据类型。有时需要从一种数据类型转换为另一种数据类型。可以使用 [数据转换命令](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-Globalcommands) 实现。例子:
+如果变量最初定义时没有值，则将 [变量数据类型](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-Datatypes) 设置为 _nil_ ，否则，脚本引擎将自动确定数据类型。有时需要从一种数据类型转换为另一种数据类型。可以使用 [数据转换命令](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-Globalcommands) 实现。
+
+例子:
 
 ```shell
 #convert string to array
@@ -491,43 +493,43 @@ add name=myLeaseScript policy=\
 
 每个全局命令都应该以 _":"_ 标记开头，否则将被视为一个变量。
 
-| 命令            | 语法                                                            | 说明                                                                                                                                                                                                                                                                                                                                                                                                  | 示例                                                                                                                                                                                           |
-| --------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **/**           |                                                                 | go to the root menu                                                                                                                                                                                                                                                                                                                                                                                   |                                                                                                                                                                                                |
-| **..**          |                                                                 | go back by one menu level                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                |
-| **?**           |                                                                 | list all available menu commands and brief descriptions                                                                                                                                                                                                                                                                                                                                               |                                                                                                                                                                                                |
-| **global**      | `:global <var> [<value>]`                                       | define a global variable                                                                                                                                                                                                                                                                                                                                                                              | `:global myVar "something"; :put $myVar;`                                                                                                                                                      |
-| **local**       | `:local <var> [<value>]`                                        | define the local variable                                                                                                                                                                                                                                                                                                                                                                             | `{ :local myLocalVar "I am local"; :put $myVar; }`                                                                                                                                             |
-| **beep**        | `:beep <freq> <length>`                                         | beep built-in speaker                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                |
-| **convert**     | `:convert from=[arg] to=[arg]`                                  | <br>Converts specified value from one format to another. By default uses an automatically parsed value, if the "from" format is not specified (for example, "001" becomes "1", "10.1" becomes "10.0.0.1", etc.).<br>**from** specifies the format of the value - _base32, base64, hex, raw, rot13, url_.<br>**to** specifies the format of the output value - _base32, base64, hex, raw, rot13, url_. | <br>`:put [:convert 001 to=hex ]`<br>`31`<br>`:put [:convert [/ip dhcp-client/option/get hostname raw-value] from=hex to=raw ]`<br>`MikroTik`                                                  |
-| **delay**       | `:delay <time>`                                                 | do nothing for a given period of time                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                |
-| **environment** | `:environment print <start>`                                    | print initialized variable information                                                                                                                                                                                                                                                                                                                                                                | `:global myVar true; :environment print;`                                                                                                                                                      |
-| **error**       | `:error <output>`                                               | Generate console error and stop executing the script                                                                                                                                                                                                                                                                                                                                                  |                                                                                                                                                                                                |
-| **execute**     | `:execute <expression>`                                         | <br>Execute the script in the background. The result can be written in the file by setting a "file" parameter or printed to the CLI by setting "as-string"<br>When using the "as-string" parameter executed script is blocked (not executed in the background).                                                                                                                                       | <br>{<br>:local j [:execute {/interface print follow where [:log info ~Sname~]}];<br>:delay 10s;<br>:do { /system script job remove $j } on-error={}<br>}                                      |
-| **find**        | `:find <arg> <arg> <start>`                                     | return position of a substring or array element                                                                                                                                                                                                                                                                                                                                                       | `:put [:find "abc" "a" -1];`                                                                                                                                                                   |
-| **jobname**     | :jobname                                                        | return current script name                                                                                                                                                                                                                                                                                                                                                                            | **Limit script execution to single instance** <br>:if ([/system script job print count-only as-value where script=[:jobname] ] > 1) do={<br>  :error "script instance already running"<br>  }` |
-| **len**         | `:len <expression>`                                             | return string length or array element count                                                                                                                                                                                                                                                                                                                                                           | `:put [:len "length=8"];`                                                                                                                                                                      |
-| **log**         | `:log <topic> <message>`                                        | write a message to the [system log](https://help.mikrotik.com/docs/display/ROS/Log). Available topics are `"debug, error, info and warning"`                                                                                                                                                                                                                                                          | `:log info "Hello from script";`                                                                                                                                                               |
-| **parse**       | `:parse <expression>`                                           | parse the string and return parsed console commands. Can be used as a function.                                                                                                                                                                                                                                                                                                                       | `:global myFunc [:parse ":put hello!"];   $myFunc;`                                                                                                                                            |
-| **pick**        | `:pick <var> <start>[<count>]`                                  | return range of elements or substring. If the count is not specified, will return only one element from an array.<br>- var - value to pick elements from<br>- start - element to start picking from (the first element index is 0)<br>- count - number of elements to pick starting from the first element with index=0                                                                               | [admin@MikroTik] > :put [:pick "abcde" 1 3]<br>bc                                                                                                                                              |
-| **put**         | `:put <expression>`                                             | put the supplied argument into the console                                                                                                                                                                                                                                                                                                                                                            | :put "Hello world"                                                                                                                                                                             |
-| **resolve**     | `:resolve <arg>`                                                | return the IP address of the given DNS name                                                                                                                                                                                                                                                                                                                                                           | `:put [:resolve "[www.mikrotik.com](http://www.mikrotik.com)"];`                                                                                                                               |
-| **retry**       | :retry command=<expr> delay=\[num\] max=\[num\] on-error=<expr> | Try to execute the given command "max" amount of times with a given "delay" between tries. On failure, execute the expression given in the "on-error" block                                                                                                                                                                                                                                           | :retry command={abc} delay=1 max=2 on-error={:put "got error"}  <br>got error                                                                                                                  |
-| **typeof**      | `:typeof <var>`                                                 | the return data type of variable                                                                                                                                                                                                                                                                                                                                                                      | `:put [:typeof 4];`                                                                                                                                                                            |
-| **rndnum**      | `:rndnum from=[num] to=[num]`                                   | random number generator                                                                                                                                                                                                                                                                                                                                                                               | `:put [:rndnum from=1 to=99];`                                                                                                                                                                 |
-| **rndstr**      | `:rndstr from=[str] length=[num]`                               | Random string generator.<br>**from** specifies characters to construct the string from and defaults to all ASCII letters and numerals.  <br> **length** specifies the length of the string to create and defaults to 16.                                                                                                                                                                              | `:put [:rndnum from="abcdef%^&``" length=33];`                                                                                                                                                 |
-| **set**         | `:set <var> [<value>]`                                          | assign value to a declared variable.                                                                                                                                                                                                                                                                                                                                                                  | `:global a; :set a true;`                                                                                                                                                                      |
-| **terminal**    | :terminal                                                       | terminal related commands                                                                                                                                                                                                                                                                                                                                                                             |                                                                                                                                                                                                |
-| **time**        | `:time <expression>`                                            | return interval of time needed to execute the command                                                                                                                                                                                                                                                                                                                                                 | `:put [:time {:for i from=1 to=10 do={ :delay 100ms }}];`                                                                                                                                      |
-| **timestamp**   | `:timestamp`                                                    | returns the time since epoch, where epoch is January 1, 1970 (Thursday), not counting leap seconds                                                                                                                                                                                                                                                                                                    | <br>[admin@MikroTik] > :put [:timestamp]<br>2735w21:41:43.481891543<br>or<br>[admin@MikroTik] > :put [:timestamp]<br>2735w1d21:41:43.481891543<br>with the day offset                          |
-| **toarray**     | `:toarray <var>`                                                | convert a variable to the array                                                                                                                                                                                                                                                                                                                                                                       |                                                                                                                                                                                                |
-| **tobool**      | `:tobool <var>`                                                 | convert a variable to boolean                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                |
-| **toid**        | `:toid <var>`                                                   | convert a variable to internal ID                                                                                                                                                                                                                                                                                                                                                                     |                                                                                                                                                                                                |
-| **toip**        | `:toip <var>`                                                   | convert a variable to IP address                                                                                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                |
-| **toip6**       | `:toip6 <var>`                                                  | convert a variable to IPv6 address                                                                                                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                                |
-| **tonum**       | `:tonum <var>`                                                  | convert a variable to an integer                                                                                                                                                                                                                                                                                                                                                                      |                                                                                                                                                                                                |
-| **tostr**       | `:tostr <var>`                                                  | convert a variable to a string                                                                                                                                                                                                                                                                                                                                                                        |                                                                                                                                                                                                |
-| **totime**      | `:totime <var>`                                                 | convert a variable to time                                                                                                                                                                                                                                                                                                                                                                            |                                                                                                                                                                                                |
+| 命令            | 语法                                                        | 说明                                                                                                                                                                                                                                                                                       | 示例                                                                                                                                                                          |
+| --------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **/**           |                                                             | 返回根菜单                                                                                                                                                                                                                                                                                 |                                                                                                                                                                               |
+| **..**          |                                                             | 返回到一个菜单级                                                                                                                                                                                                                                                                           |                                                                                                                                                                               |
+| **?**           |                                                             | 列出所有可用的菜单命令和简要说明                                                                                                                                                                                                                                                           |                                                                                                                                                                               |
+| **global**      | `:global <var> [<value>]`                                   | 定义全局变量                                                                                                                                                                                                                                                                               | `:global myVar "something"; :put $myVar;`                                                                                                                                     |
+| **local**       | `:local <var> [<value>]`                                    | 定义局部变量                                                                                                                                                                                                                                                                               | `{ :local myLocalVar "I am local"; :put $myVar; }`                                                                                                                            |
+| **beep**        | `:beep <freq> <length>`                                     | 内置扬声器响铃                                                                                                                                                                                                                                                                             |                                                                                                                                                                               |
+| **convert**     | `:convert from=[arg] to=[arg]`                              | <br>将指定的值从一种格式转换为另一种格式。默认情况，如果没有指定"from"格式，则使用自动解析的值(例如，"001"变成"1"，"10.1"变成"10.0.0.1"，等等)。<br>**from** 指定值的格式- _base32, base64, hex, raw, rot13, url_ 。<br>**to** 指定输出值的格式- _base32, base64, hex, raw, rot13, url_ 。 | <br>`:put [:convert 001 to=hex ]`<br>`31`<br>`:put [:convert [/ip dhcp-client/option/get hostname raw-value] from=hex to=raw ]`<br>`MikroTik`                                 |
+| **delay**       | `:delay <time>`                                             | 在一段时间内什么都不做                                                                                                                                                                                                                                                                     |                                                                                                                                                                               |
+| **environment** | `:environment print <start>`                                | 打印初始化变量信息                                                                                                                                                                                                                                                                         | `:global myVar true; :environment print;`                                                                                                                                     |
+| **error**       | `:error <output>`                                           | 生成控制台错误并停止执行脚本                                                                                                                                                                                                                                                               |                                                                                                                                                                               |
+| **execute**     | `:execute <expression>`                                     | <br>在后台执行脚本。可以通过设置“file”参数将结果写入文件，也可以通过设置“as-string”参数将结果打印到CLI <br>当使用“as-string”参数时，执行的脚本会被阻塞(不在后台执行)。                                                                                                                     | <br>{<br>:local j [:execute {/interface print follow where [:log info ~Sname~]}];<br>:delay 10s;<br>:do { /system script job remove $j } on-error={}<br>}                     |
+| **find**        | `:find <arg> <arg> <start>`                                 | 返回子字符串或数组元素的位置                                                                                                                                                                                                                                                               | `:put [:find "abc" "a" -1];`                                                                                                                                                  |
+| **jobname**     | :jobname                                                    | 返回当前脚本名称                                                                                                                                                                                                                                                                           | **将脚本执行限制为单个实例** <br>:if ([/system script job print count-only as-value where script=[:jobname] ] > 1) do={<br>  :error "script instance already running"<br>  }` |
+| **len**         | `:len <expression>`                                         | 返回字符串长度或数组元素计数值                                                                                                                                                                                                                                                             | `:put [:len "length=8"];`                                                                                                                                                     |
+| **log**         | `:log <topic> <message>`                                    | 写一条消息到 [系统日志](https://help.mikrotik.com/docs/display/ROS/Log) 。可用的主题是“调试、错误、信息和警告”。                                                                                                                                                                           | `:log info "Hello from script";`                                                                                                                                              |
+| **parse**       | `:parse <expression>`                                       | 解析字符串并返回解析后的控制台命令。可以作为函数使用。                                                                                                                                                                                                                                     | `:global myFunc [:parse ":put hello!"];   $myFunc;`                                                                                                                           |
+| **pick**        | `:pick <var> <start>[<count>]`                              | 返回元素或子字符串的范围。如果未指定计数，则只返回数组中的一个元素。<br>- start -开始选择的元素(第一个元素索引为0)<br>- count -从索引为0的第一个元素开始选择的元素数量                                                                                                                     | [admin@MikroTik] > :put [:pick "abcde" 1 3]<br>bc                                                                                                                             |
+| **put**         | `:put <expression>`                                         | 将提供的参数放入控制台中                                                                                                                                                                                                                                                                   | :put "Hello world"                                                                                                                                                            |
+| **resolve**     | `:resolve <arg>`                                            | 返回指定DNS名称的IP地址                                                                                                                                                                                                                                                                    | `:put [:resolve "[www.mikrotik.com](http://www.mikrotik.com)"];`                                                                                                              |
+| **retry**       | :retry command=<expr> delay=[num] max=[num] on-error=<expr> | 在两次尝试之间以指定的“延迟”执行命令的次数为“max”。如果失败，执行"On -error"块中给出的表达式                                                                                                                                                                                               | :retry command={abc} delay=1 max=2 on-error={:put "got error"}  <br>got error                                                                                                 |
+| **typeof**      | `:typeof <var>`                                             | 变量的返回数据类型                                                                                                                                                                                                                                                                         | `:put [:typeof 4];`                                                                                                                                                           |
+| **rndnum**      | `:rndnum from=[num] to=[num]`                               | 随机数发生器                                                                                                                                                                                                                                                                               | `:put [:rndnum from=1 to=99];`                                                                                                                                                |
+| **rndstr**      | `:rndstr from=[str] length=[num]`                           | 随机字符串生成器。<br> **from** 指定要构造字符串from的字符，默认为所有ASCII字母和数字。<br> **length** 指定要创建的字符串的长度，默认为16。                                                                                                                                                | `:put [:rndnum from="abcdef%^&``" length=33];`                                                                                                                                |
+| **set**         | `:set <var> [<value>]`                                      | 为声明的变量赋值。                                                                                                                                                                                                                                                                         | `:global a; :set a true;`                                                                                                                                                     |
+| **terminal**    | :terminal                                                   | 终端相关命令                                                                                                                                                                                                                                                                               |                                                                                                                                                                               |
+| **time**        | `:time <expression>`                                        | 返回执行命令所需的时间间隔                                                                                                                                                                                                                                                                 | `:put [:time {:for i from=1 to=10 do={ :delay 100ms }}];`                                                                                                                     |
+| **timestamp**   | `:timestamp`                                                | 返回自epoch以来的时间，其中epoch为1970年1月1日(星期四)，不包括闰秒                                                                                                                                                                                                                         | <br>[admin@MikroTik] > :put [:timestamp]<br>2735w21:41:43.481891543<br>or<br>[admin@MikroTik] > :put [:timestamp]<br>2735w1d21:41:43.481891543<br>with the day offset         |
+| **toarray**     | `:toarray <var>`                                            | 将变量转换为数组                                                                                                                                                                                                                                                                           |                                                                                                                                                                               |
+| **tobool**      | `:tobool <var>`                                             | 将变量转换为布尔值                                                                                                                                                                                                                                                                         |                                                                                                                                                                               |
+| **toid**        | `:toid <var>`                                               | 将变量转换为内部ID                                                                                                                                                                                                                                                                         |                                                                                                                                                                               |
+| **toip**        | `:toip <var>`                                               | 将变量转换为IP地址                                                                                                                                                                                                                                                                         |                                                                                                                                                                               |
+| **toip6**       | `:toip6 <var>`                                              | 将变量转换为IPv6地址                                                                                                                                                                                                                                                                       |                                                                                                                                                                               |
+| **tonum**       | `:tonum <var>`                                              | 将变量转换为整数                                                                                                                                                                                                                                                                           |                                                                                                                                                                               |
+| **tostr**       | `:tostr <var>`                                              | 将变量转换为字符串                                                                                                                                                                                                                                                                         |                                                                                                                                                                               |
+| **totime**      | `:totime <var>`                                             | 将变量转换为时间                                                                                                                                                                                                                                                                           |                                                                                                                                                                               |
 
 ### 菜单特定命令
 
@@ -535,18 +537,18 @@ add name=myLeaseScript policy=\
 
 以下命令在大多数子菜单中可用:
 
-| 命令        | 语法                                        | 说明                                                                                                                                                                                                                                                                                                                                                          |
-| ----------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **add**     | `add <param>=<value>..<param>=<value>`      | add new item                                                                                                                                                                                                                                                                                                                                                  |
-| **remove**  | `remove <id>`                               | remove selected item                                                                                                                                                                                                                                                                                                                                          |
-| **enable**  | `enable <id>`                               | enable selected item                                                                                                                                                                                                                                                                                                                                          |
-| **disable** | `disable <id>`                              | disable selected item                                                                                                                                                                                                                                                                                                                                         |
-| **set**     | `set <id> <param>=<value>..<param>=<value>` | change selected items parameter, more than one parameter can be specified at the time. The parameter can be unset by specifying '!' before the parameter.<br>Example:  <br>`/ip firewall filter add chain=blah action=accept protocol=tcp port=123 nth=4,2   print   set 0 !port chain=blah2 !nth protocol=udp`                                               |
-| **get**     | `get <id> <param>=<value>`                  | get the selected item's parameter value                                                                                                                                                                                                                                                                                                                       |
-| **print**   | `print <param><param>=[<value>]`            | print menu items. Output depends on the print parameters specified. The most common print parameters are described [here](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-printparameters)                                                                                                                                                     |
-| **export**  | `export [file=<value>]`                     | export configuration from the current menu and its sub-menus (if present). If the file parameter is specified output will be written to the file with the extension '.rsc', otherwise the output will be printed to the console. Exported commands can be imported by [import command](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-import) |
-| **edit**    | `edit <id> <param>`                         | edit selected items property in the built-in text editor                                                                                                                                                                                                                                                                                                      |
-| **find**    | `find <expression>`                         | Returns list of internal numbers for items that are matched by given expression. For example:  `:put [/interface find name~"ether"]`                                                                                                                                                                                                                          |
+| 命令        | 语法                                        | 说明                                                                                                                                                                                                                                      |
+| ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **add**     | `add <param>=<value>..<param>=<value>`      | 添加新项                                                                                                                                                                                                                                  |
+| **remove**  | `remove <id>`                               | 删除选中项                                                                                                                                                                                                                                |
+| **enable**  | `enable <id>`                               | 启用已选项                                                                                                                                                                                                                                |
+| **disable** | `disable <id>`                              | 禁止已选项                                                                                                                                                                                                                                |
+| **set**     | `set <id> <param>=<value>..<param>=<value>` | 更改所选项目参数时，可以同时指定多个参数。该参数可以通过指定'!'来取消设置。<br>示例:  <br>`/ip firewall filter add chain=blah action=accept protocol=tcp port=123 nth=4,2   print   set 0 !port chain=blah2 !nth protocol=udp`            |
+| **get**     | `get <id> <param>=<value>`                  | 获取所选项的参数值                                                                                                                                                                                                                        |
+| **print**   | `print <param><param>=[<value>]`            | 打印菜单项。输出取决于指定的打印参数。最常见的打印参数描述见 [这里](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-printparameters)                                                                                       |
+| **export**  | `export [file=<value>]`                     | 从当前菜单及其子菜单(如果存在)导出配置。如果指定了file参数，输出将被写入扩展名为".rsc"的文件。否则输出将被打印到控制台。导出的命令可以通过 [import command](https://help.mikrotik.com/docs/display/ROS/Scripting#Scripting-import) 导入。 |
+| **edit**    | `edit <id> <param>`                         | 在内置文本编辑器中编辑选定项属性                                                                                                                                                                                                          |
+| **find**    | `find <expression>`                         | 返回与给定表达式匹配项的内部数字列表。例如:  `:put [/interface find name~"ether"]`                                                                                                                                                        |
 
 #### 导入
 
@@ -556,22 +558,22 @@ import命令可从根菜单中使用，从 [export](https://help.mikrotik.com/do
 
 print命令有几个参数:
 
-| 参数               | 说明                                                                                                                 | 例子                                       |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| **append**         |                                                                                                                      |                                            |
-| **as-value**       | print output as an array of parameters and its values                                                                | `:put [/ip address print as-value]`        |
-| **brief**          | print brief description                                                                                              |                                            |
-| **detail**         | print detailed description, the output is not as readable as brief output but may be useful to view all parameters   |
-| **count-only**     | print only count of menu items                                                                                       |                                            |
-| **file**           | print output to a file                                                                                               |
-| **follow**         | print all current entries and track new entries until ctrl-c is pressed, very useful when viewing log entries        | `/log print follow`                        |
-| **follow-only**    | print and track only new entries until ctrl-c is pressed, very useful when viewing log entries                       | `/log print follow-only`                   |
-| **from**           | print parameters only from specified item                                                                            | `/user print from=admin`                   |
-| **interval**       | continuously print output in a selected time interval, useful to track down changes where `follow` is not acceptable | `/interface print interval=2`              |
-| **terse**          | show details in a compact and machine-friendly format                                                                |                                            |
-| **value-list**     | show values single per line (good for parsing purposes)                                                              |                                            |
-| **without-paging** | If the output does not fit in the console screen then do not stop, print all information in one piece                |                                            |
-| **where**          | expressions followed by where parameters can be used to filter outmatched entries                                    | `/ip route print where interface="ether1"` |
+| 参数               | 说明                                                                     | 例子                                       |
+| ------------------ | ------------------------------------------------------------------------ | ------------------------------------------ |
+| **append**         |                                                                          |                                            |
+| **as-value**       | 输出数组的参数和值                                                       | `:put [/ip address print as-value]`        |
+| **brief**          | 打印主要说明                                                             |                                            |
+| **detail**         | 打印详细描述，不如简短输出可读，但有助于查看所有参数                     |
+| **count-only**     | 只打印菜单项的计数                                                       |                                            |
+| **file**           | 打印到文件                                                               |
+| **follow**         | 打印所有当前条目并跟踪新条目，直到按下ctrl-c，这在查看日志条目时非常有用 | `/log print follow`                        |
+| **follow-only**    | 只打印和跟踪新条目，直到按下ctrl-c，这在查看日志条目时非常有用           | `/log print follow-only`                   |
+| **from**           | 仅从指定项打印参数                                                       | `/user print from=admin`                   |
+| **interval**       | 在选定的时间间隔内连续打印输出，对跟踪不接受“follow”的更改非常有用       | `/interface print interval=2`              |
+| **terse**          | 以紧凑和机器友好的格式显示详细信息                                       |                                            |
+| **value-list**     | 每行显示一个值(有利于解析)                                               |                                            |
+| **without-paging** | 如果输出不适合控制台屏幕，则将所有信息打印在一起                         |                                            |
+| **where**          | 表达式后面的参数可用于过滤不匹配的项                                     | `/ip route print where interface="ether1"` |
 
 一次可以指定多个参数，例如: /ip route print count-only interval=1 where interface="ether1"
 
@@ -579,17 +581,17 @@ print命令有几个参数:
 
 ### 循环
 
-| 命令          | 语法                                                                                    | 说明                                               |
-| ------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **do..while** | `:do { <commands> } while=( <conditions> ); :while ( <conditions> ) do={ <commands> };` | execute commands until a given condition is met.   |
-| **for**       | `:for <var> from=<int> to=<int> step=<int> do={ <commands> }`                           | execute commands over a given number of iterations |
-| **foreach**   | `:foreach <var> in=<array> do={ <commands> };`                                          | execute commands for each element in a list        |
+| 命令          | 语法                                                                                    | 说明                           |
+| ------------- | --------------------------------------------------------------------------------------- | ------------------------------ |
+| **do..while** | `:do { <commands> } while=( <conditions> ); :while ( <conditions> ) do={ <commands> };` | 执行命令，直到满足给定的条件。 |
+| **for**       | `:for <var> from=<int> to=<int> step=<int> do={ <commands> }`                           | 执行给定的迭代次数             |
+| **foreach**   | `:foreach <var> in=<array> do={ <commands> };`                                          | 对列表中的每个元素执行命令     |
 
 ### 条件语句
 
-| 命令   | 语法                                                               | 说明                                                                                                                                 |
-| ------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **if** | `:if (<condition>) do={<commands>} else={<commands>} <expression>` | If a given condition is `true` then execute commands in the `do` block, otherwise execute commands in the `else` block if specified. |
+| 命令   | 语法                                                               | 说明                                                                         |
+| ------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **if** | `:if (<condition>) do={<commands>} else={<commands>} <expression>` | 如果给定条件为“true”，则在“do”块中执行命令，否则在指定的“else”块中执行命令。 |
 
 例子:
 
@@ -644,7 +646,7 @@ output:
 
 ```shell
 #add script
-/system script add name=myScript source=":put \"Hello $myVar !\""
+/system script add name=myScript source=":put "Hello $myVar !""
  
 :global myFunc [:parse [/system script get myScript source]]
 $myFunc myVar=world
@@ -716,29 +718,46 @@ resolver failed
 lala
 ```
 
-## Operations with Arrays
+## 数组操作
 
-**Warning:** Key name in the array contains any character other than a lowercase character, it should be put in quotes
+**警告:** 数组中的键名包含非小写字符，需要用引号括起来
 
-For example:
+例如:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ce0] &gt; {</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">a { </code><code class="ros string">"aX"</code><code class="ros plain">=1&nbsp;</code><code class="ros plain">;; </code><code class="ros value">ay</code><code class="ros plain">=2</code> <code class="ros plain">};&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(</code><code class="ros keyword">$a</code><code class="ros plain">-&gt;</code><code class="ros string">"aX"</code><code class="ros plain">)}</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">1</code></div></div></td></tr></tbody></table>
-
-**Loop through keys and values**
-
-"foreach" command can be used to loop through keys and elements:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ce0] &gt;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">k,v </code><code class="ros value">in</code><code class="ros plain">=</code><code class="ros plain">{2; </code><code class="ros string">"aX"</code><code class="ros plain">=1&nbsp;</code><code class="ros plain">;; </code><code class="ros value">y</code><code class="ros plain">=2</code><code class="ros plain">; 5} </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(</code><code class="ros string">"$k=$v"</code><code class="ros plain">)}</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros value">0</code><code class="ros plain">=2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros value">1</code><code class="ros plain">=5</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros value">aX</code><code class="ros plain">=1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros value">y</code><code class="ros plain">=2</code></div></div></td></tr></tbody></table>
-
-If the "foreach" command is used with one argument, then the element value will be returned:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@ce0] &gt;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">k </code><code class="ros value">in</code><code class="ros plain">=</code><code class="ros plain">{2; </code><code class="ros string">"aX"</code><code class="ros plain">=1&nbsp;</code><code class="ros plain">;; </code><code class="ros value">y</code><code class="ros plain">=2</code><code class="ros plain">; 5} </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(</code><code class="ros string">"$k"</code><code class="ros plain">)}</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">2</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros plain">5</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros plain">1</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros plain">2</code></div></div></td></tr></tbody></table>
-
-**Note:** If the array element has a key then these elements are sorted in alphabetical order, elements without keys are moved before elements with keys and their order is not changed (see example above).
-
-**Change the value of a single array element**
-
+```shell
+[admin@ce0] > {:local a { "aX"=1 ;; ay=2 }; :put ($a->"aX")}
+1
 ```
+
+**循环键和值**
+
+"foreach"命令可用于遍历键和元素:
+
+```shell
+[admin@ce0] > :foreach k,v in={2; "aX"=1 ;; y=2; 5} do={:put ("$k=$v")}
+ 
+0=2
+1=5
+aX=1
+y=2
+```
+
+如果"foreach"命令只带一个参数，则返回元素值:
+
+```shell
+[admin@ce0] > :foreach k in={2; "aX"=1 ;; y=2; 5} do={:put ("$k")}
+ 
+2
+5
+1
+2
+```
+
+**注意:** 如果数组元素有键，则这些元素按字母顺序排序，没有键的元素在有键的元素之前移动，并且它们的顺序不会改变(参见上面的例子)。
+
+**修改单个数组元素的值**
+
+```shell
 [admin@MikroTik] > :global a {x=1; y=2}
 [admin@MikroTik] > :set ($a->"x") 5 
 [admin@MikroTik] > :environment print 
@@ -746,179 +765,80 @@ a={x=5; y=2}
 
 ```
 
-# Script repository
+# 脚本仓库
 
-**Sub-menu level:** `/system script`
+**子菜单:** `/system script`
 
-Contains all user-created scripts. Scripts can be executed in several different ways:
+包含所有用户创建的脚本。脚本可以通过几种不同的方式执行:
 
-- **on event** \- scripts are executed automatically on some facility events ( [scheduler](https://help.mikrotik.com/docs/display/ROS/Scheduler), [netwatch](https://help.mikrotik.com/docs/display/ROS/Netwatch), [VRRP](https://help.mikrotik.com/docs/display/ROS/VRRP))
-- **by another script** \- running script within the script is allowed
-- **manually** \- from console executing a run command or in winbox
+- **on event** -脚本在一些设施事件 ([scheduler](https://help.mikrotik.com/docs/display/ROS/Scheduler)， [netwatch](https://help.mikrotik.com/docs/display/ROS/Netwatch)， [VRRP](https://help.mikrotik.com/docs/display/ROS/VRRP)) 上自动执行。
+- **by another script** -允许在脚本中运行脚本
+- **manually** -从控制台执行运行命令或在winbox中
 
-**Note:** Only scripts (including schedulers, netwatch, etc) with equal or higher permission rights can execute other scripts.
+**注:** 具有同等或更高权限的脚本(包括scheduler, netwatch等)才能执行其他脚本。
 
-| 
-Property
+| 属性                                                                                             | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **comment** (_string_; Default: )                                                                | 脚本的注释                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **dont-require-permissions** (_yes \| no_; Default: _no_)                                        | 当脚本被执行时绕过权限检查，当脚本从权限有限的服务执行时很有用，例如 [Netwatch](https://wiki.mikrotik.com/wiki/Manual:Tools/Netwatch "Manual:Tools/Netwatch")                                                                                                                                                                                                                                                                                         |
+| **name** (_string_; Default: _"Script[num]"_)                                                    | 脚本名称                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **policy** (_string_; Default: ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon) | 适用政策一览表:<br>- **ftp** -可以通过ftp远程登录并从路由器发送和检索文件<br>- **password** -更改密码<br>- **policy** -管理用户策略，添加和删除用户<br>- **read** -可以检索配置<br>- **reboot** -可以重启路由器<br>- **sensitive** -允许更改“隐藏敏感”参数<br>- **sniff** -运行嗅探器，torch等<br>- **test** -可以运行ping, traceroute，带宽测试<br>- **write** -改变配置<br> [阅读更详细的策略说明](https://help.mikrotik.com/docs/display/ROS/User) |
+| **source** (_string_;)                                                                           | 脚本源码                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
- | 
+只读状态属性:
 
-Description
+| 属性                      | 说明                       |
+| ------------------------- | -------------------------- |
+| **last-started** (_date_) | 上次调用脚本的日期和时间。 |
+| **owner** (_string_)      | 创建脚本的用户             |
+| **run-count** (_integer_) | 脚本执行次数计数器         |
 
- |     |
- | --- |  |
- |     |
+菜单特定命令
 
-Property
+| 命令                         | 说明                     |
+| ---------------------------- | ------------------------ |
+| **run** (_run [id \| name]_) | 按ID或名称执行指定的脚本 |
 
- | 
+## 环境
 
-Description
-
- |                                                                                                  |
- | ------------------------------------------------------------------------------------------------ | ---------------------------------- |
- | **comment** (_string_; Default: )                                                                | Descriptive comment for the script |
- | **dont-require-permissions** (_yes                                                               | no_; Default: _no_)                | Bypass permissions check when the script is being executed, useful when scripts are being executed from services that have limited permissions, such as [Netwatch](https://wiki.mikrotik.com/wiki/Manual:Tools/Netwatch "Manual:Tools/Netwatch") |
- | **name** (_string_; Default: _"Script\[num\]"_)                                                  | name of the script                 |
- | **policy** (_string_; Default: ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon) | list of applicable policies:       |
-
-- **ftp** \- can log on remotely via FTP and send and retrieve files from the router
-- **password** \- change passwords
-- **policy** \- manage user policies, add and remove user
-- **read** \- can retrieve the configuration
-- **reboot** \- can reboot the router
-- **sensitive** \- allows changing "hide sensitive" parameter
-- **sniff** \- can run sniffer, torch, etc
-- **test** \- can run ping, traceroute, bandwidth test
-- **write** \- can change the configuration
-
-Read more detailed policy descriptions [here](https://help.mikrotik.com/docs/display/ROS/User)
-
- |
-| **source** (_string_;) | Script source code |
-
-Read-only status properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                           |
- | ------------------------- | --------------------------------------------------------------- |
- | **last-started** (_date_) | Date and time when the script was last invoked.                 |
- | **owner** (_string_)      | The user who created the script                                 |
- | **run-count** (_integer_) | Counter that counts how many times the script has been executed |
-
-Menu specific commands
-
-| 
-Command
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Command
-
- | 
-
-Description
-
- |                    |
- | ------------------ | -------- |
- | **run** (_run \[id | name\]_) | Execute the specified script by ID or name |
-
-## Environment
-
-**Sub-menu level:**
+**子菜单级别:**
 
 - `/system script environment`
 - `/environment`
 
-Contains all user-defined variables and their assigned values.
+包含所有用户定义的变量及其分配的值。
 
-```
+```shell
 [admin@MikroTik] > :global example;
 [admin@MikroTik] > :set example 123
 [admin@MikroTik] > /environment print  
 "example"=123
 
 ```
-
   
-Read-only status properties:
+只读状态属性:
 
-| 
-Property
+| 属性                | 说明           |
+| ------------------- | -------------- |
+| **name** (_string_) | 变量名         |
+| **user** (_string_) | 定义变量的用户 |
+| **value**()         | 变量的值       |
 
- | 
+## 任务
 
-Description
+**子菜单级别:** `/system script job`
 
- |     |
- | --- |  |
- |     |
+包含所有当前正在运行的脚本的列表。
 
-Property
+只读状态属性:
 
- | 
+| 属性                 | 说明                     |
+| -------------------- | ------------------------ |
+| **owner** (_string_) | 运行脚本的用户           |
+| **policy** (_array_) | 应用于脚本的所有策略列表 |
+| **started** (_date_) | 启动脚本的本地日期和时间 |
 
-Description
-
- |                     |
- | ------------------- | -------------------------------- |
- | **name** (_string_) | Variable name                    |
- | **user** (_string_) | The user who defined variable    |
- | **value** ()        | The value assigned to a variable |
-
-## Job
-
-**Sub-menu level:** `/system script job`
-
-Contains a list of all currently running scripts.  
-Read-only status properties:
-
-| 
-Property
-
- | 
-
-Description
-
- |     |
- | --- |  |
- |     |
-
-Property
-
- | 
-
-Description
-
- |                      |
- | -------------------- | ----------------------------------------------- |
- | **owner** (_string_) | The user who is running the script              |
- | **policy** (_array_) | List of all policies applied to the script      |
- | **started** (_date_) | Local date and time when the script was started |
-
-# See also
+# 另见
 
 - [Scripting Examples](https://help.mikrotik.com/docs/display/ROS/Scripting+examples)
 - [Manual: Scripting Tips and Tricks](https://wiki.mikrotik.com/wiki/Manual:Scripting_Tips_and_Tricks "Manual:Scripting Tips and Tricks")

@@ -1,176 +1,414 @@
-# Introduction
+# 介绍
 
-This section contains some useful scripts and shows all available scripting features. Script examples used in this section were tested with the latest 3.x version.
+本节包含一些有用的脚本，展示了所有可用的脚本特性。本节中使用的脚本示例使用最新的3.x版本。
 
-# Create a file
+# 创建文件
 
-it is not possible to create a file directly, however, there is a workaround:
+不能直接创建文件，但是有一个解决方案:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">print </code><code class="ros value">file</code><code class="ros plain">=myFile</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">set </code><code class="ros plain">myFile.txt </code><code class="ros value">contents</code><code class="ros plain">=</code><code class="ros string">""</code></div></div></td></tr></tbody></table>
+```shell
+/file print file=myFile
+/file set myFile.txt contents=""
+```
 
-# Check if IP on the interface has changed
+# 检查接口上的IP是否改变
 
-Sometimes provider gives dynamic IP addresses. This script will compare if a dynamic IP address is changed.
+有些提供商提供动态IP地址。此脚本将比较动态IP地址是否更改。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">currentIP;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">newIP [</code><code class="ros constants">/ip address </code><code class="ros functions">get </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=</code><code class="ros string">"ether1"</code><code class="ros plain">] address];</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros keyword">$newIP</code>&nbsp;<code class="ros plain">!</code><code class="ros plain">=</code> <code class="ros keyword">$currentIP</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"ip address $currentIP changed to $newIP"</code><code class="ros plain">;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">currentIP </code><code class="ros keyword">$newIP</code><code class="ros plain">;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
+```shell
+:global currentIP;
+ 
+:local newIP [/ip address get [find interface="ether1"] address];
+ 
+:if ($newIP != $currentIP) do={
+    :put "ip address $currentIP changed to $newIP";
+    :set currentIP $newIP;
+}
+```
 
+# 剥离掩码
+
+如果需要一个没有子网掩码的IP地址(例如在防火墙中使用它)，而" / IP address get [id] address"会返回IP地址和子网掩码，因此这个脚本很有用。
+
+```shell
+:global ipaddress 10.1.101.1/24
+ 
+:for i from=( [:len $ipaddress] - 1) to=0 do={
+    :if ( [:pick $ipaddress $i] = "/") do={
+        :put [:pick $ipaddress 0 $i]
+    }
+}
+```
+
+另一种更简单的方法:
+
+```shell
+:global ipaddress 10.1.101.1/24
+:put [:pick $ipaddress 0 [:find $ipaddress "/"]]
+```
+
+# 解析主机名
+
+许多用户要求在radius服务器、防火墙规则等方面使用DNS名称而不是IP地址。
+
+下面是一个如何解析RADIUS服务器IP的示例。
+
+假设已经配置了radius服务器:
+
+````shell
+/radius
+add address=3.4.5.6 comment=myRad
+````
+
+下面是一个解析IP地址的脚本，将解析的IP地址与配置的IP地址进行比较，如果不相等，则替换它:
+
+```shell
+/system script add name="resolver" source= {
+ 
+:local resolvedIP [:resolve "server.example.com"];
+:local radiusID [/radius find comment="myRad"];
+:local currentIP [/radius get $radiusID address];
+ 
+:if ($resolvedIP != $currentIP) do={
+   /radius set $radiusID address=$resolvedIP;
+   /log info "radius ip updated";
+}
+ 
+}
+```
+
+将此脚本添加到调度器中，例如每5分钟运行一次
+
+```shell
+/system scheduler add name=resolveRadiusIP on-event="resolver" interval=5m
+```
+
+# 在多个文件中写入简单的队列统计
+
+考虑队列命名是“一些文本”。可以通过“."后面的最后一个数字来搜索队列。
+
+```shell
+:local entriesPerFile 10;
+:local currentQueue 0;
+:local queuesInFile 0;
+:local fileContent "";
+#determine needed file count
+:local numQueues [/queue simple print count-only] ;
+:local fileCount ($numQueues / $entriesPerFile);
+:if ( ($fileCount * $entriesPerFile) != $numQueues) do={
+   :set fileCount ($fileCount + 1);
+}
+ 
+#remove old files
+/file remove [find name~"stats"];
+ 
+:put "fileCount=$fileCount";
+ 
+:for i from=1 to=$fileCount do={
+#create file
+   /file print file="stats$i.txt";
+#clear content
+   /file set [find name="stats$i.txt"] contents="";
+ 
+   :while ($queuesInFile < $entriesPerFile) do={
+     :if ($currentQueue < $numQueues) do={
+         :set currentQueue ($currentQueue +1);
+         :put $currentQueue ;
+         /queue simple
+         :local internalID [find name~"\\.$currentQueue\$"];
+         :put "internalID=$internalID";
+         :set fileContent ($fileContent . [get $internalID target-address] . \
+           " " . [get $internalID total-bytes] . "\r\n");
+     }
+     :set queuesInFile ($queuesInFile +1);
+      
+   }
+   /file set "stats$i.txt" contents=$fileContent;
+   :set fileContent "";
+   :set queuesInFile 0;
+ 
+}
+```
+
+# 生成备份并通过电子邮件发送
+
+该脚本生成一个备份文件并将其发送到指定的电子邮件地址。邮件主题包含路由器的名称、当前日期和时间。
+
+注意，在使用此脚本之前，必须先配置SMTP服务器。有关配置选项，请参见 [/tool e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail) 。
+  
+```shell
+/system backup save name=email_backup
+/tool e-mail send file=email_backup.backup to="me@test.com" body="See attached file" \
+   subject="$[/system identity get name] $[/system clock get time] $[/system clock get date] Backup")
+```
+
+备份文件中包含密码等敏感信息。因此，要访问生成的备份文件，脚本或调度程序必须具有“敏感”策略。
+
+使用string作为函数
+
+```shell
+:global printA [:parse ":local A; :put \$A;" ];  
+$printA
+```
+
+# 检查带宽并添加限制
+
+该脚本检查接口上的下载是否超过512kbps，如果是，则添加队列以将速度限制为256kbps。
+
+```shell
+:foreach i in=[/interface find] do={
+    /interface monitor-traffic $i once do={
+        :if ($"received-bits-per-second" > 0 ) do={
+            :local tmpIP [/ip address get [/ip address find interface=$i] address] ;
+#            :log warning $tmpIP ;
+            :for j from=( [:len $tmpIP] - 1) to=0 do={
+                :if ( [:pick $tmpIP $j] = "/") do={
+                    /queue simple add name=$i max-limit=256000/256000 dst-address=[:pick $tmpIP 0 $j] ;
+                }
+            }
+        }
+    }
+}
+```
   
 
-# Strip netmask
+# 阻止访问特定网站
 
-This script is useful if you need an IP address without a netmask (for example to use it in a firewall), but "`/ip address get [id] address`" returns the IP address and netmask.
+如果想阻止某些网站，但不想使用web代理，可以用这个脚本。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">ipaddress </code><code class="ros color1">10.1.101.1/24</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">for </code><code class="ros plain">i </code><code class="ros value">from</code><code class="ros plain">=(</code> <code class="ros plain">[</code><code class="ros constants">:</code><code class="ros functions">len </code><code class="ros keyword">$ipaddress</code><code class="ros plain">] - 1) </code><code class="ros value">to</code><code class="ros plain">=0</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( [</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$ipaddress</code> <code class="ros keyword">$i</code><code class="ros plain">] </code><code class="ros plain">=</code> <code class="ros string">"/"</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">[</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$ipaddress</code> <code class="ros plain">0 </code><code class="ros keyword">$i</code><code class="ros plain">]</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
+本例查看DNS缓存中的“Rapidshare”和“youtube”条目，并将ip添加到名为“restricted”的地址列表中。在开始之前，必须设置一个路由器来捕获所有DNS请求:
 
-  
+```shell
+/ip firewall nat
+add action=redirect chain=dstnat comment=DNS dst-port=53 protocol=tcp to-ports=53
+add action=redirect chain=dstnat dst-port=53 protocol=udp to-ports=53
+```
 
-  
-Another much more simple way:
+添加防火墙
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">ipaddress </code><code class="ros color1">10.1.101.1/24</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">[</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$ipaddress</code> <code class="ros plain">0 [</code><code class="ros constants">:</code><code class="ros functions">find </code><code class="ros keyword">$ipaddress</code> <code class="ros string">"/"</code><code class="ros plain">]]</code></div></div></td></tr></tbody></table>
+```shell
+/ip firewall filter
+add chain=forward dst-address-list=restricted action=drop
+```
 
-# Resolve host-name
+现在可以编写一个脚本每30秒运行一次。
 
-Many users are asking features to use DNS names instead of IP addresses for radius servers, firewall rules, etc.
+脚本代码:
 
-So here is an example of how to resolve the RADIUS server's IP.
+```shell
+:foreach i in=[/ip dns cache find] do={
+    :local bNew "true";
+    :local cacheName [/ip dns cache all get $i name] ;
+#    :put $cacheName;
+ 
+    :if (([:find $cacheName "rapidshare"] >= 0) || ([:find $cacheName "youtube"] >= 0)) do={
+ 
+        :local tmpAddress [/ip dns cache get $i address] ;
+#   :put $tmpAddress;
+ 
+# if address list is empty do not check
+        :if ( [/ip firewall address-list find list="restricted" ] = "") do={
+            :log info ("added entry: $[/ip dns cache get $i name] IP $tmpAddress");
+            /ip firewall address-list add address=$tmpAddress list=restricted comment=$cacheName;
+        } else={
+            :foreach j in=[/ip firewall address-list find list="restricted"] do={
+                :if ( [/ip firewall address-list get $j address] = $tmpAddress ) do={
+                    :set bNew "false";
+                }
+            }
+            :if ( $bNew = "true" ) do={
+                :log info ("added entry: $[/ip dns cache get $i name] IP $tmpAddress");
+                /ip firewall address-list add address=$tmpAddress list=restricted comment=$cacheName;
+            }
+        }
+    }
+}
+```
 
-Let's say we have the radius server configured:
+# 解析文件添加ppp
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/radius</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=3.4.5.6</code> <code class="ros value">comment</code><code class="ros plain">=myRad</code></div></div></td></tr></tbody></table>
-
-  
-
-And here is a script that will resolve the IP address, compare resolved IP with configured one, and replace it if not equal:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system script </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"resolver"</code> <code class="ros value">source</code><code class="ros plain">=</code> <code class="ros plain">{</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">resolvedIP [</code><code class="ros constants">:</code><code class="ros functions">resolve </code><code class="ros string">"server.example.com"</code><code class="ros plain">];</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">radiusID [</code><code class="ros constants">/radius </code><code class="ros functions">find </code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"myRad"</code><code class="ros plain">];</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">currentIP [</code><code class="ros constants">/radius </code><code class="ros functions">get </code><code class="ros keyword">$radiusID</code> <code class="ros plain">address];</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros keyword">$resolvedIP</code>&nbsp;<code class="ros plain">!</code><code class="ros plain">=</code> <code class="ros keyword">$currentIP</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/radius </code><code class="ros functions">set </code><code class="ros keyword">$radiusID</code> <code class="ros value">address</code><code class="ros plain">=$resolvedIP</code><code class="ros plain">;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">info </code><code class="ros string">"radius ip updated"</code><code class="ros plain">;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
-
-  
-
-Add this script to the scheduler to run for example every 5 minutes
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system scheduler </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=resolveRadiusIP</code> <code class="ros value">on-event</code><code class="ros plain">=</code><code class="ros string">"resolver"</code> <code class="ros value">interval</code><code class="ros plain">=5m</code></div></div></td></tr></tbody></table>
-
-  
-
-# Write simple queue stats in multiple files
-
-Let's consider queue namings are "some text.1" so we can search queues by the last number right after the dot.
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">entriesPerFile 10;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">currentQueue 0;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">queuesInFile 0;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">fileContent </code><code class="ros string">""</code><code class="ros plain">;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments">#determine needed file count</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">numQueues [</code><code class="ros constants">/queue simple </code><code class="ros functions">print </code><code class="ros plain">count-only]&nbsp;;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">fileCount (</code><code class="ros keyword">$numQueues</code> <code class="ros constants">/ $entriesPerFile);</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( (</code><code class="ros keyword">$fileCount</code> <code class="ros plain">* </code><code class="ros keyword">$entriesPerFile</code><code class="ros plain">)&nbsp;!</code><code class="ros plain">=</code> <code class="ros keyword">$numQueues</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">fileCount (</code><code class="ros keyword">$fileCount</code> <code class="ros plain">+ 1);</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number11 index10 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros comments">#remove old files</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">remove </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros plain">name~</code><code class="ros string">"stats"</code><code class="ros plain">];</code></div><div class="line number14 index13 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"fileCount=$fileCount"</code><code class="ros plain">;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">for </code><code class="ros plain">i </code><code class="ros value">from</code><code class="ros plain">=1</code> <code class="ros value">to</code><code class="ros plain">=$fileCount</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros comments">#create file</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">print </code><code class="ros value">file</code><code class="ros plain">=</code><code class="ros string">"stats$i.txt"</code><code class="ros plain">;</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros comments">#clear content</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">set </code><code class="ros plain">[</code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"stats$i.txt"</code><code class="ros plain">] </code><code class="ros value">contents</code><code class="ros plain">=</code><code class="ros string">""</code><code class="ros plain">;</code></div><div class="line number22 index21 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">while </code><code class="ros plain">(</code><code class="ros keyword">$queuesInFile</code> <code class="ros plain">&lt; </code><code class="ros keyword">$entriesPerFile</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros keyword">$currentQueue</code> <code class="ros plain">&lt; </code><code class="ros keyword">$numQueues</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">currentQueue (</code><code class="ros keyword">$currentQueue</code> <code class="ros plain">+1);</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros keyword">$currentQueue</code>&nbsp;<code class="ros plain">;</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/queue simple</code></div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">internalID [</code><code class="ros functions">find </code><code class="ros plain">name~</code><code class="ros string">"\\.$currentQueue\$"</code><code class="ros plain">];</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"internalID=$internalID"</code><code class="ros plain">;</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">fileContent (</code><code class="ros keyword">$fileContent</code> <code class="ros plain">. [</code><code class="ros functions">get </code><code class="ros keyword">$internalID</code> <code class="ros plain">target-address] . \</code></div><div class="line number31 index30 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros string">" "</code> <code class="ros plain">. [</code><code class="ros functions">get </code><code class="ros keyword">$internalID</code> <code class="ros plain">total-bytes] . </code><code class="ros string">"\r\n"</code><code class="ros plain">);</code></div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">queuesInFile (</code><code class="ros keyword">$queuesInFile</code> <code class="ros plain">+1);</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>&nbsp;</div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">set </code><code class="ros string">"stats$i.txt"</code> <code class="ros value">contents</code><code class="ros plain">=$fileContent</code><code class="ros plain">;</code></div><div class="line number37 index36 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">fileContent </code><code class="ros string">""</code><code class="ros plain">;</code></div><div class="line number38 index37 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">queuesInFile 0;</code></div><div class="line number39 index38 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number40 index39 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
-
-  
-
-# Generate backup and send it by e-mail
-
-This script generates a backup file and sends it to a specified e-mail address. The mail subject contains the router's name, current date, and time.
-
-Note that the SMTP server must be configured before this script can be used. See [/tool e-mail](https://help.mikrotik.com/docs/display/ROS/E-mail) for configuration options.
-
-  
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system backup save name=email_backup</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">/tool e-mail </code><code class="ros functions">send </code><code class="ros value">file</code><code class="ros plain">=email_backup.backup</code> <code class="ros value">to</code><code class="ros plain">=</code><code class="ros string">"me@test.com"</code> <code class="ros value">body</code><code class="ros plain">=</code><code class="ros string">"See attached file"</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;</code><code class="ros value">subject</code><code class="ros plain">=</code><code class="ros string">"$[/system identity get name] $[/system clock get time] $[/system clock get date] Backup"</code><code class="ros plain">)</code></div></div></td></tr></tbody></table>
-
-  
-
-  
-
-The backup file contains sensitive information like passwords. So to get access to generated backup files, the script or scheduler must have a 'sensitive' policy.
-
-Use string as a function
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">printA [</code><code class="ros constants">:</code><code class="ros functions">parse </code><code class="ros string">":local A; :put \$A;"</code> <code class="ros plain">];&nbsp;&nbsp;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros keyword">$printA</code></div></div></td></tr></tbody></table>
-
-  
-
-# Check bandwidth and add limitations
-
-This script checks if the download on an interface is more than 512kbps if true then the queue is added to limit the speed to 256kbps.
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/interface</code> <code class="ros plain">find] </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/interface monitor-traffic $i once do={</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">($</code><code class="ros string">"received-bits-per-second"</code> <code class="ros plain">&gt; 0 ) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">tmpIP [</code><code class="ros constants">/ip address </code><code class="ros functions">get </code><code class="ros plain">[</code><code class="ros constants">/ip address </code><code class="ros functions">find </code><code class="ros value">interface</code><code class="ros plain">=$i]</code> <code class="ros plain">address]&nbsp;;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :log warning $tmpIP&nbsp;;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">for </code><code class="ros plain">j </code><code class="ros value">from</code><code class="ros plain">=(</code> <code class="ros plain">[</code><code class="ros constants">:</code><code class="ros functions">len </code><code class="ros keyword">$tmpIP</code><code class="ros plain">] - 1) </code><code class="ros value">to</code><code class="ros plain">=0</code> <code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( [</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$tmpIP</code> <code class="ros keyword">$j</code><code class="ros plain">] </code><code class="ros plain">=</code> <code class="ros string">"/"</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/queue simple </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=$i</code> <code class="ros value">max-limit</code><code class="ros plain">=256000/256000</code> <code class="ros value">dst-address</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpIP</code> <code class="ros plain">0 </code><code class="ros keyword">$j</code><code class="ros plain">]&nbsp;;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
-
-  
-
-# Block access to specific websites
-
-This script is useful if you want to block certain websites but you don't want to use a web proxy.
-
-This example looks at entries "Rapidshare" and "youtube" in the DNS cache and adds IPs to the address list named "restricted". Before you begin, you must set up a router to catch all DNS requests:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall nat</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=redirect</code> <code class="ros value">chain</code><code class="ros plain">=dstnat</code> <code class="ros value">comment</code><code class="ros plain">=DNS</code> <code class="ros value">dst-port</code><code class="ros plain">=53</code> <code class="ros value">protocol</code><code class="ros plain">=tcp</code> <code class="ros value">to-ports</code><code class="ros plain">=53</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=redirect</code> <code class="ros value">chain</code><code class="ros plain">=dstnat</code> <code class="ros value">dst-port</code><code class="ros plain">=53</code> <code class="ros value">protocol</code><code class="ros plain">=udp</code> <code class="ros value">to-ports</code><code class="ros plain">=53</code></div></div></td></tr></tbody></table>
-
-  
-
-and add firewall
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/ip firewall filter</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">chain</code><code class="ros plain">=forward</code> <code class="ros value">dst-address-list</code><code class="ros plain">=restricted</code> <code class="ros value">action</code><code class="ros plain">=drop</code></div></div></td></tr></tbody></table>
-
-  
-
-Now we can write a script and schedule it to run, let's say, every 30 seconds.
-
-Script Code:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">i </code><code class="ros value">in</code><code class="ros plain">=[/ip</code> <code class="ros plain">dns cache find] </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">bNew </code><code class="ros string">"true"</code><code class="ros plain">;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">cacheName [</code><code class="ros constants">/ip dns cache all </code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">name]&nbsp;;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp;&nbsp; :put $cacheName;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(([</code><code class="ros constants">:</code><code class="ros functions">find </code><code class="ros keyword">$cacheName</code> <code class="ros string">"rapidshare"</code><code class="ros plain">] &gt;</code><code class="ros plain">=</code> <code class="ros plain">0) || ([</code><code class="ros constants">:</code><code class="ros functions">find </code><code class="ros keyword">$cacheName</code> <code class="ros string">"youtube"</code><code class="ros plain">] &gt;</code><code class="ros plain">=</code> <code class="ros plain">0)) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">tmpAddress [</code><code class="ros constants">/ip dns cache </code><code class="ros functions">get </code><code class="ros keyword">$i</code> <code class="ros plain">address]&nbsp;;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros comments">#&nbsp;&nbsp; :put $tmpAddress;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># if address list is empty do not check</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( [</code><code class="ros constants">/ip firewall address-list </code><code class="ros functions">find </code><code class="ros value">list</code><code class="ros plain">=</code><code class="ros string">"restricted"</code> <code class="ros plain">] </code><code class="ros plain">=</code> <code class="ros string">""</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">log </code><code class="ros functions">info </code><code class="ros plain">(</code><code class="ros string">"added entry: $[/ip dns cache get $i name] IP $tmpAddress"</code><code class="ros plain">);</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/ip firewall address-list </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=$tmpAddress</code> <code class="ros value">list</code><code class="ros plain">=restricted</code> <code class="ros value">comment</code><code class="ros plain">=$cacheName</code><code class="ros plain">;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">} </code><code class="ros value">else</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">foreach </code><code class="ros plain">j </code><code class="ros value">in</code><code class="ros plain">=[/ip</code> <code class="ros plain">firewall address-list </code><code class="ros functions">find </code><code class="ros value">list</code><code class="ros plain">=</code><code class="ros string">"restricted"</code><code class="ros plain">] </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( [</code><code class="ros constants">/ip firewall address-list </code><code class="ros functions">get </code><code class="ros keyword">$j</code> <code class="ros plain">address] </code><code class="ros plain">=</code> <code class="ros keyword">$tmpAddress</code> <code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">bNew </code><code class="ros string">"false"</code><code class="ros plain">;</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( </code><code class="ros keyword">$bNew</code> <code class="ros plain">=</code> <code class="ros string">"true"</code> <code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">log </code><code class="ros functions">info </code><code class="ros plain">(</code><code class="ros string">"added entry: $[/ip dns cache get $i name] IP $tmpAddress"</code><code class="ros plain">);</code></div><div class="line number23 index22 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/ip firewall address-list </code><code class="ros functions">add </code><code class="ros value">address</code><code class="ros plain">=$tmpAddress</code> <code class="ros value">list</code><code class="ros plain">=restricted</code> <code class="ros value">comment</code><code class="ros plain">=$cacheName</code><code class="ros plain">;</code></div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number27 index26 alt2" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
-
-  
-
-# Parse file to add ppp secrets
-
-This script requires that entries inside the file are in the following format:
+该脚本要求文件中的条目采用以下格式:
 
 username,password,local\_address,remote\_address,profile,service
 
-For example:
+例如:
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">janis,123,1.1.1.1,2.2.2.1,ppp_profile,myService</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">juris,456,1.1.1.1,2.2.2.2,ppp_profile,myService</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros plain">aija,678,1.1.1.1,2.2.2.3,ppp_profile,myService</code></div></div></td></tr></tbody></table>
+```shell
+janis,123,1.1.1.1,2.2.2.1,ppp_profile,myService
+juris,456,1.1.1.1,2.2.2.2,ppp_profile,myService
+aija,678,1.1.1.1,2.2.2.3,ppp_profile,myService
+```
 
-  
+```shell
+:global content [/file get [/file find name=test.txt] contents] ;
+:global contentLen [ :len $content ] ;
+ 
+:global lineEnd 0;
+:global line "";
+:global lastEnd 0;
+ 
+ 
+:do {
+       :set lineEnd [:find $content "\r\n" $lastEnd ] ;
+       :set line [:pick $content $lastEnd $lineEnd] ;
+       :set lastEnd ( $lineEnd + 2 ) ;
+ 
+       :local tmpArray [:toarray $line] ;
+    :if ( [:pick $tmpArray 0] != "" ) do={
+    :put $tmpArray;
+         /ppp secret add name=[:pick $tmpArray 0] password=[:pick $tmpArray 1] \
+             local-address=[:pick $tmpArray 2] remote-address=[:pick $tmpArray 3] \
+             profile=[:pick $tmpArray 4] service=[:pick $tmpArray 5];
+}
+} while ($lineEnd < $contentLen)
+```
 
-  
+# 检测新日志条目
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">content [</code><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">get </code><code class="ros plain">[</code><code class="ros constants">/</code><code class="ros functions">file </code><code class="ros functions">find </code><code class="ros value">name</code><code class="ros plain">=test.txt]</code> <code class="ros plain">contents]&nbsp;;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">contentLen [ </code><code class="ros constants">:</code><code class="ros functions">len </code><code class="ros keyword">$content</code> <code class="ros plain">]&nbsp;;</code></div><div class="line number3 index2 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">lineEnd 0;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">line </code><code class="ros string">""</code><code class="ros plain">;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">lastEnd 0;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">do </code><code class="ros plain">{</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">lineEnd [</code><code class="ros constants">:</code><code class="ros functions">find </code><code class="ros keyword">$content</code> <code class="ros string">"\r\n"</code> <code class="ros keyword">$lastEnd</code> <code class="ros plain">]&nbsp;;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">line [</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$content</code> <code class="ros keyword">$lastEnd</code> <code class="ros keyword">$lineEnd</code><code class="ros plain">]&nbsp;;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">lastEnd ( </code><code class="ros keyword">$lineEnd</code> <code class="ros plain">+ 2 )&nbsp;;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">tmpArray [</code><code class="ros constants">:</code><code class="ros functions">toarray </code><code class="ros keyword">$line</code><code class="ros plain">]&nbsp;;</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( [</code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$tmpArray</code> <code class="ros plain">0]&nbsp;!</code><code class="ros plain">=</code> <code class="ros string">""</code> <code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros keyword">$tmpArray</code><code class="ros plain">;</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/ppp secret </code><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">0] </code><code class="ros value">password</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">1] \</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">local-address</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">2] </code><code class="ros value">remote-address</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">3] \</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">profile</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">4] </code><code class="ros value">service</code><code class="ros plain">=[:pick</code> <code class="ros keyword">$tmpArray</code> <code class="ros plain">5];</code></div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros plain">} </code><code class="ros functions">while </code><code class="ros plain">(</code><code class="ros keyword">$lineEnd</code> <code class="ros plain">&lt; </code><code class="ros keyword">$contentLen</code><code class="ros plain">)</code></div></div></td></tr></tbody></table>
+这个脚本检查一个新的日志条目是否被添加到一个特定的缓冲区。
 
-  
+在这个例子中使用PPPoE日志:
 
-# Detect new log entry
+```shell
+/system logging action
+add name="pppoe"
+/system logging
+add action=pppoe topics=pppoe,info,!ppp,!debug
+```
 
-This script is checking if a new log entry is added to a particular buffer.
+日志缓冲区看起来类似这样:
 
-In this example we will use PPPoE logs:
+```shell
+[admin@mainGW] > /log print where buffer=pppoe
+13:11:08 pppoe,info PPPoE connection established from 00:0C:42:04:4C:EE
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system logging action</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">name</code><code class="ros plain">=</code><code class="ros string">"pppoe"</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">/system logging</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros functions">add </code><code class="ros value">action</code><code class="ros plain">=pppoe</code> <code class="ros value">topics</code><code class="ros plain">=pppoe,info,!ppp,!debug</code></div></div></td></tr></tbody></table>
+现在可以编写一个脚本来检测是否添加了新条目。
 
-  
+```shell
+:global lastTime;
+ 
+:global currentBuf [ :toarray [ /log find buffer=pppoe  ] ] ;
+:global currentLineCount [ :len $currentBuf ] ;
+:global currentTime [ :totime [/log get [ :pick $currentBuf ($currentLineCount -1) ] time   ] ];
+ 
+:global message "";
+ 
+:if ( $lastTime = "" ) do={
+    :set lastTime $currentTime ;
+    :set message [/log get [ :pick $currentBuf ($currentLineCount-1) ] message];
+ 
+} else={
+    :if ( $lastTime < $currentTime ) do={
+        :set lastTime $currentTime ;
+        :set message [/log get [ :pick $currentBuf ($currentLineCount-1) ] message];
+    }
+}
+```
 
-Log buffer will look similar to this one:
+检测到新项后，将其保存在message变量中，以后可以使用该变量解析日志消息，例如获取PPPoE client的mac地址。
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros plain">[admin@mainGW] &gt; </code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">print </code><code class="ros plain">where </code><code class="ros value">buffer</code><code class="ros plain">=pppoe</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros plain">13</code><code class="ros constants">:11:08 pppoe,</code><code class="ros functions">info </code><code class="ros plain">PPPoE connection established from 00</code><code class="ros constants">:0C:42:04:4C:EE</code></div></div></td></tr></tbody></table>
+# 允许使用 [ntp.org](http://ntp.org) 池服务作为NTP
 
-  
+此脚本解析两个NTP服务器的主机名，将结果与当前NTP设置进行比较，如果不一致则更改地址。由于RouterOS不允许在NTP配置中使用主机名，所以要使用该脚本。用了两个脚本，第一个定义了一些在其他脚本中使用的系统变量，第二个完成基本工作:
 
-Now we can write a script to detect if a new entry is added.
+```shell
+# System configuration script - "GlobalVars"
+ 
+:put "Setting system globals";
+ 
+# System name
+:global SYSname [/system identity get name];
+ 
+# E-mail address to send notifications to
+:global SYSsendemail "mail@my.address";
+ 
+# E-mail address to send notifications from
+:global SYSmyemail "routeros@my.address";
+ 
+# Mail server to use
+:global SYSemailserver "1.2.3.4";
+ 
+# NTP pools to use (check www.pool.ntp.org)
+:global SYSntpa "0.uk.pool.ntp.org";
+:global SYSntpb "1.uk.pool.ntp.org";
+```
 
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">lastTime;</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">currentBuf [ </code><code class="ros constants">:</code><code class="ros functions">toarray </code><code class="ros plain">[ </code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">find </code><code class="ros value">buffer</code><code class="ros plain">=pppoe</code>&nbsp; <code class="ros plain">] ]&nbsp;;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">currentLineCount [ </code><code class="ros constants">:</code><code class="ros functions">len </code><code class="ros keyword">$currentBuf</code> <code class="ros plain">]&nbsp;;</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">currentTime [ </code><code class="ros constants">:</code><code class="ros functions">totime </code><code class="ros plain">[</code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">get </code><code class="ros plain">[ </code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$currentBuf</code> <code class="ros plain">(</code><code class="ros keyword">$currentLineCount</code> <code class="ros plain">-1) ] </code><code class="ros functions">time </code>&nbsp; <code class="ros plain">] ];</code></div><div class="line number6 index5 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">message </code><code class="ros string">""</code><code class="ros plain">;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( </code><code class="ros keyword">$lastTime</code> <code class="ros plain">=</code> <code class="ros string">""</code> <code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">lastTime </code><code class="ros keyword">$currentTime</code>&nbsp;<code class="ros plain">;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">message [</code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">get </code><code class="ros plain">[ </code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$currentBuf</code> <code class="ros plain">(</code><code class="ros keyword">$currentLineCount</code><code class="ros plain">-1) ] message];</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros plain">} </code><code class="ros value">else</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">( </code><code class="ros keyword">$lastTime</code> <code class="ros plain">&lt; </code><code class="ros keyword">$currentTime</code> <code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">lastTime </code><code class="ros keyword">$currentTime</code>&nbsp;<code class="ros plain">;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">message [</code><code class="ros constants">/</code><code class="ros functions">log </code><code class="ros functions">get </code><code class="ros plain">[ </code><code class="ros constants">:</code><code class="ros functions">pick </code><code class="ros keyword">$currentBuf</code> <code class="ros plain">(</code><code class="ros keyword">$currentLineCount</code><code class="ros plain">-1) ] message];</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros plain">}</code></div></div></td></tr></tbody></table>
+```shell
+# Check and set NTP servers - "setntppool"
+ 
+# We need to use the following globals which must be defined here even
+# though they are also defined in the script we call to set them.
+:global SYSname;
+:global SYSsendemail;
+:global SYSmyemail;
+:global SYSmyname;
+:global SYSemailserver;
+:global SYSntpa;
+:global SYSntpb;
+ 
+# Load the global variables with the system defaults
+/system script run GlobalVars
+ 
+# Resolve the two ntp pool hostnames
+:local ntpipa [:resolve $SYSntpa];
+:local ntpipb [:resolve $SYSntpb];
+ 
+# Get the current settings
+:local ntpcura [/system ntp client get primary-ntp];
+:local ntpcurb [/system ntp client get secondary-ntp];
+ 
+# Define a variable so we know if anything's changed.
+:local changea 0;
+:local changeb 0;
+ 
+# Debug output
+:put ("Old: " . $ntpcura . " New: " . $ntpipa);
+:put ("Old: " . $ntpcurb . " New: " . $ntpipb);
+ 
+# Change primary if required
+:if ($ntpipa != $ntpcura) do={
+    :put "Changing primary NTP";
+    /system ntp client set primary-ntp="$ntpipa";
+    :set changea 1;
+    }
+ 
+# Change secondary if required
+:if ($ntpipb != $ntpcurb) do={
+    :put "Changing secondary NTP";
+    /system ntp client set secondary-ntp="$ntpipb";
+    :set changeb 1;
+    }
+ 
+# If we've made a change, send an e-mail to say so.
+:if (($changea = 1) || ($changeb = 1)) do={
+    :put "Sending e-mail.";
+    /tool e-mail send \
+        to=$SYSsendemail \
+        subject=($SYSname . " NTP change") \
+        from=$SYSmyemail \
+        server=$SYSemailserver \
+        body=("Your NTP servers have just been changed:\n\nPrimary:\nOld: " . $ntpcura . "\nNew: " \
+          . $ntpipa . "\n\nSecondary\nOld: " . $ntpcurb . "\nNew: " . $ntpipb);
+    }
+```
 
-  
+调度器条目:
 
-After a new entry is detected, it is saved in the "message" variable, which you can use later to parse log messages, for example, to get the PPPoE client's mac addresses.
+```shell
+/system scheduler add \
+  comment="Check and set NTP servers" \
+  disabled=no \
+  interval=12h \
+  name=CheckNTPServers \
+  on-event=setntppool \
+  policy=read,write,test \
+  start-date=jan/01/1970 \
+  start-time=16:00:00
+```
 
-# Allow use of [ntp.org](http://ntp.org) pool service for NTP
+# 其他脚本
 
-This script resolves the hostnames of two NTP servers, compares the result with the current NTP settings, and changes the addresses if they're different. This script is required as RouterOS does not allow hostnames to be used in the NTP configuration. Two scripts are used. The first defines some system variables which are used in other scripts and the second does the grunt work:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># System configuration script - "GlobalVars"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"Setting system globals"</code><code class="ros plain">;</code></div><div class="line number4 index3 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros comments"># System name</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSname [</code><code class="ros constants">/system identity </code><code class="ros functions">get </code><code class="ros plain">name];</code></div><div class="line number7 index6 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros comments"># E-mail address to send notifications to</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSsendemail </code><code class="ros string">"mail@my.address"</code><code class="ros plain">;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros comments"># E-mail address to send notifications from</code></div><div class="line number12 index11 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSmyemail </code><code class="ros string">"routeros@my.address"</code><code class="ros plain">;</code></div><div class="line number13 index12 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros comments"># Mail server to use</code></div><div class="line number15 index14 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSemailserver </code><code class="ros string">"1.2.3.4"</code><code class="ros plain">;</code></div><div class="line number16 index15 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros comments"># NTP pools to use (check www.pool.ntp.org)</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSntpa </code><code class="ros string">"0.uk.pool.ntp.org"</code><code class="ros plain">;</code></div><div class="line number19 index18 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSntpb </code><code class="ros string">"1.uk.pool.ntp.org"</code><code class="ros plain">;</code></div></div></td></tr></tbody></table>
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros comments"># Check and set NTP servers - "setntppool"</code></div><div class="line number2 index1 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros comments"># We need to use the following globals which must be defined here even</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros comments"># though they are also defined in the script we call to set them.</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSname;</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSsendemail;</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSmyemail;</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSmyname;</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSemailserver;</code></div><div class="line number10 index9 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSntpa;</code></div><div class="line number11 index10 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">global </code><code class="ros plain">SYSntpb;</code></div><div class="line number12 index11 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number13 index12 alt2" data-bidi-marker="true"><code class="ros comments"># Load the global variables with the system defaults</code></div><div class="line number14 index13 alt1" data-bidi-marker="true"><code class="ros constants">/system script run GlobalVars</code></div><div class="line number15 index14 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number16 index15 alt1" data-bidi-marker="true"><code class="ros comments"># Resolve the two ntp pool hostnames</code></div><div class="line number17 index16 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">ntpipa [</code><code class="ros constants">:</code><code class="ros functions">resolve </code><code class="ros keyword">$SYSntpa</code><code class="ros plain">];</code></div><div class="line number18 index17 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">ntpipb [</code><code class="ros constants">:</code><code class="ros functions">resolve </code><code class="ros keyword">$SYSntpb</code><code class="ros plain">];</code></div><div class="line number19 index18 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number20 index19 alt1" data-bidi-marker="true"><code class="ros comments"># Get the current settings</code></div><div class="line number21 index20 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">ntpcura [</code><code class="ros constants">/system ntp client </code><code class="ros functions">get </code><code class="ros plain">primary-ntp];</code></div><div class="line number22 index21 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">ntpcurb [</code><code class="ros constants">/system ntp client </code><code class="ros functions">get </code><code class="ros plain">secondary-ntp];</code></div><div class="line number23 index22 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number24 index23 alt1" data-bidi-marker="true"><code class="ros comments"># Define a variable so we know if anything's changed.</code></div><div class="line number25 index24 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">changea 0;</code></div><div class="line number26 index25 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">local </code><code class="ros plain">changeb 0;</code></div><div class="line number27 index26 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number28 index27 alt1" data-bidi-marker="true"><code class="ros comments"># Debug output</code></div><div class="line number29 index28 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(</code><code class="ros string">"Old: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpcura</code> <code class="ros plain">. </code><code class="ros string">" New: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpipa</code><code class="ros plain">);</code></div><div class="line number30 index29 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros plain">(</code><code class="ros string">"Old: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpcurb</code> <code class="ros plain">. </code><code class="ros string">" New: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpipb</code><code class="ros plain">);</code></div><div class="line number31 index30 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number32 index31 alt1" data-bidi-marker="true"><code class="ros comments"># Change primary if required</code></div><div class="line number33 index32 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros keyword">$ntpipa</code>&nbsp;<code class="ros plain">!</code><code class="ros plain">=</code> <code class="ros keyword">$ntpcura</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number34 index33 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"Changing primary NTP"</code><code class="ros plain">;</code></div><div class="line number35 index34 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/system ntp client </code><code class="ros functions">set </code><code class="ros value">primary-ntp</code><code class="ros plain">=</code><code class="ros string">"$ntpipa"</code><code class="ros plain">;</code></div><div class="line number36 index35 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">changea 1;</code></div><div class="line number37 index36 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number38 index37 alt1" data-bidi-marker="true">&nbsp;</div><div class="line number39 index38 alt2" data-bidi-marker="true"><code class="ros comments"># Change secondary if required</code></div><div class="line number40 index39 alt1" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">(</code><code class="ros keyword">$ntpipb</code>&nbsp;<code class="ros plain">!</code><code class="ros plain">=</code> <code class="ros keyword">$ntpcurb</code><code class="ros plain">) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number41 index40 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"Changing secondary NTP"</code><code class="ros plain">;</code></div><div class="line number42 index41 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/system ntp client </code><code class="ros functions">set </code><code class="ros value">secondary-ntp</code><code class="ros plain">=</code><code class="ros string">"$ntpipb"</code><code class="ros plain">;</code></div><div class="line number43 index42 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">set </code><code class="ros plain">changeb 1;</code></div><div class="line number44 index43 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div><div class="line number45 index44 alt2" data-bidi-marker="true">&nbsp;</div><div class="line number46 index45 alt1" data-bidi-marker="true"><code class="ros comments"># If we've made a change, send an e-mail to say so.</code></div><div class="line number47 index46 alt2" data-bidi-marker="true"><code class="ros constants">:</code><code class="ros functions">if </code><code class="ros plain">((</code><code class="ros keyword">$changea</code> <code class="ros plain">=</code> <code class="ros plain">1) || (</code><code class="ros keyword">$changeb</code> <code class="ros plain">=</code> <code class="ros plain">1)) </code><code class="ros value">do</code><code class="ros plain">=</code><code class="ros plain">{</code></div><div class="line number48 index47 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">:</code><code class="ros functions">put </code><code class="ros string">"Sending e-mail."</code><code class="ros plain">;</code></div><div class="line number49 index48 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros constants">/tool e-mail </code><code class="ros functions">send </code><code class="ros plain">\</code></div><div class="line number50 index49 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">to</code><code class="ros plain">=$SYSsendemail</code> <code class="ros plain">\</code></div><div class="line number51 index50 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">subject</code><code class="ros plain">=($SYSname</code> <code class="ros plain">. </code><code class="ros string">" NTP change"</code><code class="ros plain">) \</code></div><div class="line number52 index51 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">from</code><code class="ros plain">=$SYSmyemail</code> <code class="ros plain">\</code></div><div class="line number53 index52 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">server</code><code class="ros plain">=$SYSemailserver</code> <code class="ros plain">\</code></div><div class="line number54 index53 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros value">body</code><code class="ros plain">=(</code><code class="ros string">"Your NTP servers have just been changed:\n\nPrimary:\nOld: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpcura</code> <code class="ros plain">. </code><code class="ros string">"\nNew: "</code> <code class="ros plain">\</code></div><div class="line number55 index54 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">. </code><code class="ros keyword">$ntpipa</code> <code class="ros plain">. </code><code class="ros string">"\n\nSecondary\nOld: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpcurb</code> <code class="ros plain">. </code><code class="ros string">"\nNew: "</code> <code class="ros plain">. </code><code class="ros keyword">$ntpipb</code><code class="ros plain">);</code></div><div class="line number56 index55 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="ros plain">}</code></div></div></td></tr></tbody></table>
-
-Scheduler entry:
-
-<table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="code"><div class="container" title="Hint: double-click to select code"><div class="line number1 index0 alt2" data-bidi-marker="true"><code class="ros constants">/system scheduler </code><code class="ros functions">add </code><code class="ros plain">\</code></div><div class="line number2 index1 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">comment</code><code class="ros plain">=</code><code class="ros string">"Check and set NTP servers"</code> <code class="ros plain">\</code></div><div class="line number3 index2 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">disabled</code><code class="ros plain">=no</code> <code class="ros plain">\</code></div><div class="line number4 index3 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">interval</code><code class="ros plain">=12h</code> <code class="ros plain">\</code></div><div class="line number5 index4 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">name</code><code class="ros plain">=CheckNTPServers</code> <code class="ros plain">\</code></div><div class="line number6 index5 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">on-event</code><code class="ros plain">=setntppool</code> <code class="ros plain">\</code></div><div class="line number7 index6 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">policy</code><code class="ros plain">=read,write,test</code> <code class="ros plain">\</code></div><div class="line number8 index7 alt1" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">start-date</code><code class="ros plain">=jan/01/1970</code> <code class="ros plain">\</code></div><div class="line number9 index8 alt2" data-bidi-marker="true"><code class="ros spaces">&nbsp;&nbsp;</code><code class="ros value">start-time</code><code class="ros plain">=16:00:00</code></div></div></td></tr></tbody></table>
-
-# Other scripts
-
--   [Dynamic\_DNS\_Update\_Script\_for\_EveryDNS](https://wiki.mikrotik.com/wiki/Dynamic_DNS_Update_Script_for_EveryDNS "Dynamic DNS Update Script for EveryDNS")
--   [Dynamic\_DNS\_Update\_Script\_for\_ChangeIP.com](https://wiki.mikrotik.com/wiki/Dynamic_DNS_Update_Script_for_ChangeIP.com "Dynamic DNS Update Script for ChangeIP.com")
--   [UPS Script](https://wiki.mikrotik.com/wiki/UPS_scripts#version_for_ROS_3.x "UPS scripts")
+- [Dynamic_DNS_Update_Script_for_EveryDNS](https://wiki.mikrotik.com/wiki/Dynamic_DNS_Update_Script_for_EveryDNS "Dynamic DNS Update Script for EveryDNS")
+- [Dynamic_DNS_Update_Script_for_ChangeIP.com](https://wiki.mikrotik.com/wiki/Dynamic_DNS_Update_Script_for_ChangeIP.com "Dynamic DNS Update Script for ChangeIP.com")
+- [UPS Script](https://wiki.mikrotik.com/wiki/UPS_scripts#version_for_ROS_3.x "UPS scripts")
