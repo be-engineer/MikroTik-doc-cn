@@ -838,7 +838,7 @@ a={x=5; y=2}
 | **policy** (_array_) | 应用于脚本的所有策略列表 |
 | **started** (_date_) | 启动脚本的本地日期和时间 |
 
-# 另见
+# 另外参见
 
 - [Scripting Examples](https://help.mikrotik.com/docs/display/ROS/Scripting+examples)
 - [Manual: Scripting Tips and Tricks](https://wiki.mikrotik.com/wiki/Manual:Scripting_Tips_and_Tricks "Manual:Scripting Tips and Tricks")
