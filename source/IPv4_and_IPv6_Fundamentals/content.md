@@ -188,7 +188,7 @@ ARP将被自动发现，新的动态表项将被添加到ARP表中。这是Route
 [admin@host_a] > /ip arp add mac-address=08:00:27:3C:79:3A address=10.155.101.217 interface=ether1
 ```
 
-### 只回复
+### reply-only
 
 如果接口的ARP属性设置为 _reply-only_ ，表示只响应ARP请求。邻居MAC地址将使用 _/ip arp_ 静态解析，但是在ARP被禁用的情况下，不需要将路由器的MAC地址添加到其他主机的ARP表中。
 

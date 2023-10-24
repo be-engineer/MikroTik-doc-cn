@@ -110,7 +110,7 @@ RouterOS控制台的命令格式如下:
 }
 ```
 
-不允许使用空白字符
+不允许使用空白字符的地方
 
 - between '<parameter>='
 - between 'from=' 'to=' 'step=' 'in=' 'do=' 'else='
@@ -369,13 +369,13 @@ RouterOS脚本语言支持常用的算术运算符
 
 ### 其他运算符
 
-| 运算符 | 描述                                                                             | 示例                                                                                                                        |
-| ------ | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **[]** | command substitution. Can contain only a single command line                     | `:put [ :len "my test string"; ];`                                                                                          |
-| **()** | subexpression or grouping operator                                               | `:put ( "value is " . (4+5));`                                                                                              |
-| **$**  | substitution operator                                                            | `:global a 5; :put $a;`                                                                                                     |
-| **~**  | the binary operator that matches value against POSIX extended regular expression | Print all routes whose gateway ends with 202  <br>`/ip route print where gateway~"^[0-9 \\.]*202\$"`                        |
-| **->** | Get an array element by key                                                      | [admin@x86] >:global aaa {a=1;b=2} <br>[admin@x86] >:put (\$aaa->"a") <br> 1 <br>[admin@x86] > :put ($aaa->"b") <br> 2 <br> |
+| 运算符 | 描述                                        | 示例                                                                                                                        |
+| ------ | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **[]** | 命令替换。只能包含一个命令行                | `:put [ :len "my test string"; ];`                                                                                          |
+| **()** | 子表达式或分组操作符                        | `:put ( "value is " . (4+5));`                                                                                              |
+| **$**  | 替换操作符                                  | `:global a 5; :put $a;`                                                                                                     |
+| **~**  | 根据POSIX扩展正则表达式匹配值的二进制运算符 | 打印网关以202结尾的所有路由  <br>`/ip route print where gateway~"^[0-9 \\.]*202\$"`                                         |
+| **->** | 根据关键字获取数组元素                      | [admin@x86] >:global aaa {a=1;b=2} <br>[admin@x86] >:put (\$aaa->"a") <br> 1 <br>[admin@x86] > :put ($aaa->"b") <br> 2 <br> |
 
 ## 变量
 
@@ -767,7 +767,7 @@ a={x=5; y=2}
 
 # 脚本仓库
 
-**子菜单:** `/system script`
+**Sub-menu:** `/system script`
 
 包含所有用户创建的脚本。脚本可以通过几种不同的方式执行:
 
@@ -801,7 +801,7 @@ a={x=5; y=2}
 
 ## 环境
 
-**子菜单级别:**
+**Sub-menu:**
 
 - `/system script environment`
 - `/environment`
@@ -826,7 +826,7 @@ a={x=5; y=2}
 
 ## 任务
 
-**子菜单级别:** `/system script job`
+**Sub-menu:** `/system script job`
 
 包含所有当前正在运行的脚本的列表。
 
