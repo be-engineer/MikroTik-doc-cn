@@ -35,7 +35,7 @@ RADIUS 是 Remote Authentication Dial-In User Service 的缩写，是一种远�
 | **src-address** (_ipv4/ipv6 address_; Default: **0.0.0.0**)                                                                                                                                                                                                                                                                                              | 发送到RADIUS服务器的报文的源IP/IPv6地址                                                                                                                                                                                                   |
 | **timeout** (_time_; Default: **100ms**)                                                                                                                                                                                                                                                                                                                 | 应重新发送请求的超时时间，例如 radius set timeout=300ms numbers=0                                                                                                                                                                         |
 
-当 RADIUS 服务器使用 CHAP、MS-CHAPv1、MS-CHAPv2 对用户进行身份验证时，它不使用共享密钥，该密钥仅在身份验证回复中使用，路由器正在对其进行验证。 因此，如果你的共享密钥有误，RADIUS 服务器将接受请求，但路由器不会接受回复。 你可以看到，使用 /radius monitor 命令，只要有人尝试连接，“错误回复”数量就会增加。
+当 RADIUS 服务器使用 CHAP、MS-CHAPv1、MS-CHAPv2 对用户进行身份验证时，它不使用共享密钥，该密钥仅在身份验证回复中使用，路由器正在对其进行验证。 因此，如果共享密钥有误，RADIUS 服务器将接受请求，但路由器不会接受回复。 可以看到，使用 /radius monitor 命令，只要有人尝试连接，“错误回复”数量就会增加。
 
 如果启用了 RadSec，请确保你的 RADIUS 服务器使用“**radsec**”作为共享密钥，否则，RADIUS 服务器将无法正确解密数据（不可打印的字符）。 使用 RadSec RouterOS 强制将共享机密设置为“radsec”，而不管手动设置的是什么 (RFC6614)。
 

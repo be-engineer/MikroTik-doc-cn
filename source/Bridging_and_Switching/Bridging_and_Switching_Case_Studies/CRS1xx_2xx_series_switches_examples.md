@@ -45,7 +45,7 @@ add address=192.168.88.1/24 interface=bridge1
 
 如果未启用无效VLAN过滤，则允许从任何端口使用有标记或无标记（**VLAN 0**）流量对设备进行管理访问，但这不是一个好的做法，可能导致安全问题，并在某些情况下导致设备的CPU过载（最常见的是广播类型的流量）。
 
-如果你打算使用无效的VLAN过滤（你应该这样做），那么你要访问的交换机端口必须添加到VLAN表中，以获得未标记的（**VLAN 0**）流量，例如，如果你想从 **ether2** 访问交换机。
+如果打算使用无效的VLAN过滤（应该这样做），那么要访问的交换机端口必须添加到VLAN表中，以获得未标记的（**VLAN 0**）流量，例如如果想从 **ether2** 访问交换机。
 
 ```shell
 /interface ethernet switch vlan
@@ -55,7 +55,7 @@ add vlan-id=0 ports=ether2,switch1-cpu
 
 ## 标签
 
-只允许被标记的流量通过特定的端口对设备进行管理访问是一个更好的做法。例如，如果只允许 **VLAN99** 通过 **ether2** 访问设备，你应该首先在VLAN表中添加一个项，允许选定的端口和CPU端口（**switch1-cpu**）转发选定的VLAN ID，由此启用管理访问。
+只允许被标记的流量通过特定的端口对设备进行管理访问是一个更好的做法。例如，如果只允许 **VLAN99** 通过 **ether2** 访问设备，应该首先在VLAN表中添加一个项，允许选定的端口和CPU端口（**switch1-cpu**）转发选定的VLAN ID，由此启用管理访问。
 
 ```shell
 /interface ethernet switch vlan
@@ -63,7 +63,7 @@ add ports=ether2,switch1-cpu vlan-id=99
 
 ```
 
-从CPU发出的数据包，例如，PING回复将没有VLAN标签，为了解决这个问题，你需要指定哪些端口应该总是为特定的VLAN ID发出带有VLAN标签的数据包。
+从CPU发出的数据包，例如，PING回复将没有VLAN标签，为了解决这个问题，需要指定哪些端口应该总是为特定的VLAN ID发出带有VLAN标签的数据包。
 
 ```shell
 /interface ethernet switch egress-vlan-tag
@@ -71,7 +71,7 @@ add tagged-ports=ether2,switch1-cpu vlan-id=99
 
 ```
 
-在设置了有效的VLAN99配置后，你可以启用未知/无效VLAN过滤，这将禁止通过与VLAN表中指定的不同端口进行管理访问。
+在设置了有效的VLAN99配置后，可以启用未知/无效VLAN过滤，这将禁止通过与VLAN表中指定的不同端口进行管理访问。
 
 ```shell
 /interface ethernet switch
@@ -101,7 +101,7 @@ ___
 
 ## 基于端口的VLAN
 
-对于CRS3xx系列设备，你必须使用桥接VLAN过滤，你可以在 [桥接VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分阅读更多信息。
+对于CRS3xx系列设备，必须使用桥接VLAN过滤，可以在 [桥接VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeVLANFiltering) 部分阅读更多信息。
 
 ### 示例 1 (主干和接入端口)
 
@@ -152,7 +152,7 @@ add ports=ether2,ether8 vlan-id=400
 
 ```
 
-在设置了有效的VLAN配置后，你可以启用未知/无效VLAN过滤。
+在设置了有效的VLAN配置后，可以启用未知/无效VLAN过滤。
 
 ```shell
 /interface ethernet switch
@@ -631,7 +631,7 @@ add name=bonding1 slaves=ether2,ether3,ether4 mode=balance-xor transmit-hash-pol
 
 ```
 
-你可以在 [CRS VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS_VLANs_with_Trunks "Manual:CRS VLANs with Trunks") 页面找到聚合和基于端口的VLAN的工作实例。
+可以在 [CRS VLANs with Trunks](https://wiki.mikrotik.com/wiki/Manual:CRS_VLANs_with_Trunks "Manual:CRS VLANs with Trunks") 页面找到聚合和基于端口的VLAN的工作实例。
 
 网桥(R)STP不知道底层交换机的聚合配置，一些聚合端口可以移动到丢弃或阻塞状态。当聚合成员端口连接到其他网桥时，应该禁用(R)STP或过滤掉集群设备之间的任何BPDU（例如，用ACL规则）。
 

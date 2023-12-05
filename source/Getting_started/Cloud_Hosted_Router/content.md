@@ -139,7 +139,7 @@ _free_ 许可级别允许 CHR 无限期运行。 每个接口的上传速度限�
 
 ### 从免费许可升级到 p1 或更高版本
 
-从 _free_ 级别升级到任何更高层会导致在 [帐户服务器](https://mikrotik.com/client) 上注册 CHR 实例。 为此，你必须输入你的 [MikroTik.com](https://www.mikrotik.com/client/) 用户名和密码以及你想要获得的许可级别。 因此，将在帐户服务器上为你的帐户分配一个 CHR ID 号，并为该 ID 创建一个 60 天的试用期。 有 2 种方法可以获得许可证 - 使用 WinBox 或 RouterOS 命令行界面:
+从 _free_ 级别升级到任何更高层会导致在 [帐户服务器](https://mikrotik.com/client) 上注册 CHR 实例。 为此，你必须输入 [MikroTik.com](https://www.mikrotik.com/client/) 用户名和密码以及想要获得的许可级别。 因此，将在帐户服务器上为你的帐户分配一个 CHR ID 号，并为该 ID 创建一个 60 天的试用期。 有 2 种方法可以获得许可证 - 使用 WinBox 或 RouterOS 命令行界面:
 
 **使用WinBox (Sytem -> License menu):**
 
@@ -174,7 +174,7 @@ level: p1
 
 ![](https://help.mikrotik.com/docs/download/attachments/18350234/CHR_keys_01.png?version=1&modificationDate=1596783162188&api=v2)
 
-你将看到你的 CHR 机器和许可证列表:
+你将看到CHR机器和许可证列表:
 
 ![](https://help.mikrotik.com/docs/download/attachments/18350234/CHR_keys_02a.PNG?version=1&modificationDate=1596783162146&api=v2)
 
@@ -206,7 +206,7 @@ RouterOS v6 不支持Fast Path。
 
 ### 改变MTU
 
-VMware ESXi 支持最大 9000 字节的 MTU。 要从中获益，必须调整 ESXi 安装允许更高的 MTU。 ESXi 服务器正确允许 ESXi 服务器在 MTU **更改后**添加虚拟以太网接口以传输巨型帧。 在 ESXi 服务器上的 MTU 更改之前添加的接口将被 ESXi 服务器禁止（它仍将旧 MTU 报告为最大可能大小）。 如果有这个，你必须重新添加接口到虚拟客户机。
+VMware ESXi 支持最大 9000 字节的 MTU。 要从中获益，必须调整 ESXi 安装允许更高的 MTU。 ESXi 服务器正确允许 ESXi 服务器在 MTU **更改后**添加虚拟以太网接口以传输巨型帧。 在 ESXi 服务器上的 MTU 更改之前添加的接口将被 ESXi 服务器禁止（它仍将旧 MTU 报告为最大可能大小）。 如果有这个，必须重新添加接口到虚拟客户机。
 
 **示例** 有 2 个接口添加到 ESXi 客户机，接口上自动检测到 MTU 显示添加接口时的 MTU 大小:
 
@@ -232,7 +232,7 @@ echo -n 0 > /sys/class/net/vmbr0/bridge/multicast_snooping
 
 问题:在访客 CHR 上配置软件接口（VLAN、EoIP、网桥等）后，它会停止把数据传递到路由器之外。
 
-解决方法:检查你的VMS（Virtualization Management System）安全设置，是否允许其他MAC地址通过，是否允许带有VLAN标签的数据包通过。 根据需要调整安全设置，例如允许 MAC 欺骗或某个 MAC 地址范围。 对于 VLAN 接口，通常可以定义允许的 VLAN 标签或 VLAN 标签范围。
+解决方法:检查VMS（Virtualization Management System）安全设置，是否允许其他MAC地址通过，是否允许带有VLAN标签的数据包通过。 根据需要调整安全设置，例如允许 MAC 欺骗或某个 MAC 地址范围。 对于 VLAN 接口，通常可以定义允许的 VLAN 标签或 VLAN 标签范围。
 
 ### 在各种管理程序中使用 CHR 上的 VLAN
 

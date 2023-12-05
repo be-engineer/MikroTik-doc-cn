@@ -36,7 +36,7 @@ add bridge=bridge tagged=ether1,wlan1,bridge vlan-ids=99
 
 ```
   
-你可以限制允许从哪些接口访问设备。例如， 如果你不希望设备从 `wlan1` 被访问， 那么你可以从相应的网桥 VLAN 项中删除该接口。
+可以限制允许从哪些接口访问设备。例如， 如果不希望设备从 `wlan1` 被访问， 那么可以从相应的网桥 VLAN 项中删除该接口。
 
 对于有 [硬件卸载VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 和无线接口支持的设备(如RB4011带RTL8367交换芯片，或LtAP带MT7621交换芯片)，需要更加注意。如果不允许VLAN访问CPU，从HW卸载端口到无线的数据包可以被过滤掉。可以通过将网桥接口添加为VLAN成员（类似于VLAN99的例子）或禁用网桥端口的HW卸载来允许某个VLAN的CPU访问。
   
@@ -50,7 +50,7 @@ add address=192.168.99.X/24 interface=MGMT
 
 ```
 
-对于 **R1** 和 **R2** 做同样的事情，但创建VLAN接口的接口可能会改变，这取决于你的设置。
+对于 **R1** 和 **R2** 做同样的事情，但创建VLAN接口的接口可能会改变，这取决于设置。
 
 ```shell
 /interface vlan
@@ -60,7 +60,7 @@ add address=192.168.99.X/24 interface=MGMT
 
 ```
   
-要允许更多的VLAN被转发，你只需要在网桥VLAN表中指定更多的VLAN ID，可以指定多个用coma甚至VLAN范围划分的VLAN。
+要允许更多的VLAN被转发，只需要在网桥VLAN表中指定更多的VLAN ID，可以指定多个用coma甚至VLAN范围划分的VLAN。
   
 在 **AP** 上设置无线链接。
 
@@ -82,9 +82,9 @@ set wlan1 band=5ghz-a/n/ac channel-width=20/40/80mhz-Ceee disabled=no mode=stati
 
 ```
   
-对于每一种类型的设置，都有不同的要求，对于PtP链接，通常使用NV2无线协议。你可以在 [NV2手册](https://wiki.mikrotik.com/wiki/Manual:Nv2 "Manual:Nv2") 上阅读更多关于NV2的信息。
+对于每一种类型的设置，都有不同的要求，对于PtP链接，通常使用NV2无线协议。可以在 [NV2手册](https://wiki.mikrotik.com/wiki/Manual:Nv2 "Manual:Nv2") 上阅读更多关于NV2的信息。
 
-当链接设置好后，你可以在 **AP** 和 **ST** 上启用网桥VLAN过滤。
+当链接设置好后，可以在 **AP** 和 **ST** 上启用网桥VLAN过滤。
 
 ```shell
 /interface bridge

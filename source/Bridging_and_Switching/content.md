@@ -117,9 +117,9 @@ STP 有多种变体，目前，RouterOS支持STP、RSTP和MSTP。根据需要，
 
 ## 每个端口的STP
 
-在某些情况下，你可能希望限制单个或多个端口上的 STP 功能。你可以在下面找到一些针对不同用例的示例。
+在某些情况下可能希望限制单个或多个端口上的 STP 功能。可以在下面找到一些针对不同用例的示例。
 
-更改默认 (R/M)STP 功能时要小心，确保你了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
+更改默认 (R/M)STP 功能时要小心，确保了解 STP 和 BPDU 的工作原理。 (R/M)STP 配置错误会导致意外行为。
 
 ### 创建边缘端口
 
@@ -149,7 +149,7 @@ add action=drop chain=output dst-mac-address=01:80:C2:00:00:00/FF:FF:FF:FF:FF:FF
 
 ```
 
-你可以使用接口列表来指定多个接口。
+可以使用接口列表来指定多个接口。
 
 ### 丢弃已接收的BPDU包
 
@@ -173,11 +173,11 @@ add action=drop mac-dst-address=01:80:C2:00:00:00 src-ports=ether1
 
 在此示例中，所有在 **ether1** 上收到的 BPDU 都被丢弃。
 
-如果你打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果你仅在一侧阻塞了 BPDU，则端口将不断摆动。
+如果打算丢弃端口上收到的 BPDU，请确保防止 BPDU 从该端口所连接的接口发出。根网桥总是发出 BPDU，并且在正常情况下等待更高级的 BPDU（来自具有较低网桥 ID 的网桥），但是网桥在从根网桥过渡到指定网桥时必须暂时禁用新的根端口.如果仅在一侧阻塞了 BPDU，则端口将不断摆动。
 
 ### 启用BPDU防护
 
-在此示例中，如果 **ether1** 收到 BPDU，它将阻止端口并要求你手动重新启用它。
+在此示例中，如果 **ether1** 收到 BPDU，将阻止端口并要求手动重新启用它。
 
 ```shell
 /interface bridge
@@ -207,7 +207,7 @@ add bridge=bridge1 interface=ether2
 | **bridge-fast-forward-packets** (_integer_; Default: _)_                           | 显示由网桥 Fast Forward 转发的数据包计数。                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **bridge-fast-forward-bytes** (_integer_; Default: _)_                             | 显示由网桥 Fast Forward 转发的字节数。                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-如果你想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，你还应该启用适当的属性。
+如果想将简单队列或全局队列树分配给由网桥转发的流量，则需要启用 `use-ip-firewall` 属性。如果不使用此属性，网桥流量将永远不会到达路由postrouting chain，简单队列和全局队列树在路由postrouting chain中工作。要为网桥中的 VLAN 或 PPPoE 流量分配简单队列或全局队列树，还应该启用适当的属性。
 
 # 端口设置
 
@@ -605,11 +605,11 @@ RouterOS v6.41 和更新版本中的端口交換是使用网桥配置完成的�
 
 `vlan-ids` 参数可用于指定一组或范围的 VLAN，但在单个网桥 VLAN 表条目中指定多个 VLAN 应仅用于标记端口的端口。 如果为访问端口指定了多个 VLAN，则无论 PVID 值如何，标记的数据包都可能通过错误的访问端口作为未标记的数据包发送出去。
 
-使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，你需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，这会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），这可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，你需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
+使用桥接 VLAN 过滤时，确保已将所有需要的接口添加到桥接 VLAN 表。 为了使路由功能通过使用网桥 VLAN 过滤的端口在同一设备上正常工作，需要允许访问网桥接口（当使用 HW 卸载 vlan 过滤时，会自动包括一个 switch-cpu 端口，例如在 CRS3xx 系列上 交换机），可以通过将网桥接口本身添加到 VLAN 表来完成，对于标记流量，需要将网桥接口添加为标记端口并在网桥接口上创建 VLAN 接口。 可以在 VLAN 间路由和管理端口部分找到示例。
 
-当允许访问 CPU 时，你允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保实施适当的防火墙过滤规则以保护你的设备，使用防火墙过滤规则仅允许访问某些服务。
+当允许访问 CPU 时，允许从某个端口访问实际的路由器/交换机，这并不总是可取的。 当允许从某个 VLAN ID 和端口访问 CPU 时，请确保适当的防火墙过滤规则以保护设备，使用防火墙过滤规则仅允许访问某些服务。
 
-桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保你完全了解 [桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table) 的工作原理。
+桥接 VLAN 过滤配置不当会导致安全问题，在将设备部署到生产环境之前，请确保完全了解 [桥接 VLAN 表](https://help.mikrotik.com/docs/display/ROS/Bridge+VLAN+Table) 的工作原理。
 
 ## 桥接端口设置
 
@@ -720,7 +720,7 @@ add bridge=bridge1 tagged=ether2,ether6,ether7 vlan-ids=400
 
 `/interface bridge set bridge1 frame-types=admit-only-vlan-tagged`
 
-你不必将访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，你可以仅将中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 你必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 你可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的 `pvid` ，或者将`frame-type` 设置为 `accept-only-vlan-tagged` 来规避此行为。
+不必把访问端口添加为未标记端口，因为它们将动态添加为未标记端口，并具有在 `pvid` 中指定的 VLAN ID，可以仅把中继端口指定为标记端口。 具有相同 `pvid` 集的所有端口都将添加为单个条目中的未标记端口。 必须考虑到网桥本身是一个端口并且它也有一个 `pvid` 值，这意味着网桥端口也将被添加为具有相同 `pvid` 的端口的未标记端口。 可以通过在所有端口（甚至是中继端口和网桥本身）上设置不同的 `pvid` ，或者将`frame-type` 设置为 `accept-only-vlan-tagged` 来规避此行为。
 
 ## VLAN 示例 - 通过网桥进行 VLAN 间路由
 
@@ -824,7 +824,7 @@ add address=192.168.99.1/24 interface=MGMT
 
 ```
 
-例如，如果你希望允许使用标记的 VLAN 99 流量从端口 **ether3**、**ether4**、**sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
+例如，如果希望允许使用标记的 VLAN 99 流量从端口 **ether3**、**ether4**、**sfp-sfpplus1** 访问设备，则必须将此条目添加到 VLAN 表中。 请注意，**bridge1** 接口也包含在标记的端口列表中：
 
 ```shell
 /interface bridge vlan
@@ -832,7 +832,7 @@ add bridge=bridge1 tagged=bridge1,ether3,ether4,sfp-sfpplus1 vlan-ids=99
 
 ```
 
-此后你可以启用VLAN过滤:  
+此后可以启用VLAN过滤:  
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
@@ -848,7 +848,7 @@ add interface=bridge1 name=MGMT vlan-id=99
 add address=192.168.99.1/24 interface=MGMT
 ```
 
-例如，未标记的端口 **ether2** 和 **ether3** 应该能够使用未标记的流量与 VLAN 99 接口通信。 为了实现这一点，这些端口应该配置与管理 VLAN 上的 VLAN ID 相匹配的“pvid”。 请注意，**bridge1** 接口是标记端口成员，如有必要，你可以配置其他标记端口（参见前面的示例）。
+例如，未标记的端口 **ether2** 和 **ether3** 应该能够使用未标记的流量与 VLAN 99 接口通信。 为了实现这一点，这些端口应该配置与管理 VLAN 上的 VLAN ID 相匹配的“pvid”。 请注意，**bridge1** 接口是标记端口成员，如有必要，可以配置其他标记端口（参见前面的示例）。
 
 ```shell
 /interface bridge port
@@ -859,7 +859,7 @@ add bridge=bridge1 tagged=bridge1 untagged=ether2,ether3 vlan-ids=99
 
 ```
 
-此后你可以启用VLAN过滤:  
+此后可以启用VLAN过滤:  
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
@@ -888,7 +888,7 @@ add bridge=bridge1 tagged=sfp-sfpplus1 untagged=bridge1,ether2,ether3 vlan-ids=9
 
 ```
 
-此后你可以启用VLAN过滤:  
+此后可以启用VLAN过滤:  
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
@@ -927,11 +927,11 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，在 **SW1** 和 **SW2** 上使用这些命令：
+配置桥接 VLAN 表后，可以启用桥接 VLAN 过滤，在 **SW1** 和 **SW2** 上使用这些命令：
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你应该确保设置管理端口。 使用不同 EtherType 的区别在于你必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
+通过启用 vlan 过滤，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，应该确保设置管理端口。 使用不同 EtherType 的区别在于必须使用服务 VLAN 接口。 服务 VLAN 接口可以创建为常规 VLAN 接口，但如果接口将使用服务 VLAN 标签，则 `use-service-tag` 参数会切换。
 
 配置 `ether-type=0x8100` 时，网桥会检查外部 VLAN 标记并查看它是否使用 EtherType `0x8100` 。 如果网桥接收到带有不同 EtherType 的外部标签的数据包，它将将该数据包标记为“未标记”。 由于 RouterOS 仅检查数据包的外部标记，因此在使用 802.1ad 协议时无法过滤 802.1Q 数据包。
 
@@ -972,16 +972,16 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ```
 
-配置桥接 VLAN 表后，你可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在 **SW1** 和 **SW2** 上使用这些命令：
+配置桥接 VLAN 表后，可以启用桥接 VLAN 过滤，这是使 pvid 参数生效所必需的，请在 **SW1** 和 **SW2** 上使用这些命令：
 
 `/interface bridge set bridge1 vlan-filtering=yes`
 
-通过启用 vlan 过滤，你将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，你要确保设置了一个管理端口。
+通过启用 vlan 过滤，将过滤掉发往 CPU 的流量，在启用 VLAN 过滤之前，要确保设置了一个管理端口。
 
 ## 快速转发
 
 
-快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 你可以在下面找到要激活快进必须满足的条件列表：
+快速转发允许在特殊条件下更快地转发数据包。 启用快速转发后，网桥可以更快地处理数据包，因为它可以跳过多个与网桥相关的检查，包括 MAC 学习。 可以在下面找到要激活快进必须满足的条件列表：
 
 - Bridge 已将 `fast-forward` 设置为 `yes`
 - Bridge 只有 2 个运行端口
@@ -1098,15 +1098,15 @@ set [find where name="bridge"] dhcp-snooping=yes add-dhcp-option82=yes
 
 有两个网桥防火墙表：
 
-- **filter** \- 具有三个预定义链的桥接防火墙：
-  - **input** \- 过滤数据包，其中目的地是网桥（包括那些将被路由的数据包，因为它们无论如何都注定要到达网桥 MAC 地址）
-  - **output** \- 过滤来自网桥的数据包（包括那些已正常路由的数据包）
-  - **forward** \- 过滤要桥接的数据包（注意：此链不适用于应通过路由器路由的数据包，仅适用于在同一网桥的端口之间传输的数据包）
-- **nat** \- 网桥网络地址转换提供了更改通过网桥的数据包的源/目标 MAC 地址的方法。 有两个内置链：
-  - **srcnat** \- 用于将主机或网络“隐藏”在不同的 MAC 地址后面。 此链适用于通过桥接接口离开路由器的数据包
-  - **dstnat** \- 用于将一些数据包重定向到其他目的地
+- **filter** - 具有三个预定义链的桥接防火墙：
+  - **input** - 过滤数据包，其中目的地是网桥（包括那些将被路由的数据包，因为它们无论如何都注定要到达网桥 MAC 地址）
+  - **output** - 过滤来自网桥的数据包（包括那些已正常路由的数据包）
+  - **forward** - 过滤要桥接的数据包（注意：此链不适用于应通过路由器路由的数据包，仅适用于在同一网桥的端口之间传输的数据包）
+- **nat** - 网桥网络地址转换提供了更改通过网桥的数据包的源/目标 MAC 地址的方法。 有两个内置链：
+  - **srcnat** - 用于将主机或网络“隐藏”在不同的 MAC 地址后面。 此链适用于通过桥接接口离开路由器的数据包
+  - **dstnat** - 用于将一些数据包重定向到其他目的地
 
-你可以在网桥防火墙（过滤器和NAT）中放置数据包标记，这与`'/ip firewall mangle'`配置的IP防火墙中的数据包标记相同。 这样，桥接防火墙放置的数据包标记就可以在`IP防火墙`中使用，反之亦然。
+可以在网桥防火墙（过滤器和NAT）中放置数据包标记，这与 `/ip firewall mangle` 配置的IP防火墙中的数据包标记相同。 这样，桥接防火墙放置的数据包标记就可以在`IP防火墙`中使用，反之亦然。
 
 本节介绍了一般的网桥防火墙属性。 nat 和 filter 规则之间的一些不同参数将在后续部分中介绍。
 

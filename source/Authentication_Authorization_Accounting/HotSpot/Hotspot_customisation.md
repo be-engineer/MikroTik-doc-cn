@@ -4,7 +4,7 @@
 
 ## 介绍
 
-你可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，你需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
+你可以为每个 HotSpot 服务器创建一组完全不同的小服务程序页面，在 HotSpot 服务器配置文件 /ip hotspot配置文件的“html-override-directory”属性中指定目录。 创建服务器配置文件后，默认的小服务程序页面会立即复制到目录“hotspot”目录中。 可以使用 FTP 客户端连接到路由器来访问该目录。 可以使用手册这一部分中的信息复制此目录并根据需要修改页面。 建议手动编辑文件，因为自动 HTML 编辑工具可能会通过删除变量或其他重要部分来破坏页面。 完成内容修改后，需要将此修改后的内容上传到hotspot路由器上的某个自定义目录，并将前面提到的属性“html-override-directory”值作为此新自定义 HTML 目录的路径。
 
 **注意：** 如果“html-override-directory”值路径丢失或为空，则热点服务器将恢复为默认 HTML 文件。
 
@@ -272,7 +272,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ### 杂项
 
-如果你想使用 HTTP-CHAP 身份验证方法，则应该在 **提交** 之前包含 **doLogin()** 函数（它引用必须已经加载的 **md5.js**） 登录表单的操作。 否则，CHAP 登录将失败。
+如果想使用 HTTP-CHAP 身份验证方法，应该在 **提交** 之前包含 **doLogin()** 函数（它引用必须已经加载的 **md5.js**） 登录表单的操作。 否则，CHAP 登录将失败。
 
 在 HTTP-CHAP 方法的情况下，要发送到 HotSpot 网关的结果密码由以下内容的 MD5 散列连接组成：chap-id、用户密码和 chap-challenge（按给定顺序）
 
@@ -298,7 +298,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-（其中 hsuser 是你提供的用户名）
+（其中 hsuser 是用户名）
 
 - 要提供预定义值作为密码，请在 login.html 中更改：
 
@@ -314,7 +314,7 @@ HTTP\_HEADER\_VALUE 和 HTTP\_STATUS\_MESSAGE 中的所有变量和条件表达�
 
 ```
 
-（其中 hspass 是你提供的密码）
+（其中 hspass 是密码）
 
 - 以下形式将客户端的 MAC 地址发送到注册服务器：
 
@@ -338,7 +338,7 @@ open('http://www.example.com/your-banner-page.html', 'my-banner-name','');
 
 ```
 
-（应该修改链接指向你要显示的页面）
+（应该修改链接指向要显示的页面）
 
 - 要选择登录后显示的不同页面，请在 login.html 中更改：
 
@@ -462,7 +462,7 @@ $(endif)
 
 在不需要用户或密码的情况下，可以创建修改后的强制门户以实现快速一键登录。
 
-你需要做的是：
+需要做的是：
 
 - 为此创建用户。 例如，它是“notsosecretuser”，密码为“notsosecretpass”
 - 将此用户分配给允许特定/无限数量的同时活动用户的用户配置文件。
@@ -633,7 +633,7 @@ HTTPS 代理监听64875端口.
 
 ### 数据包过滤
 
-从 **/ip firewall filter print dynamic** 命令，你可以得到（注释跟在每条规则之后）：
+从 **/ip firewall filter print dynamic** 命令可以得到（注释跟在每条规则之后）：
 
 ```
  0 D chain=forward action=jump jump-target=hs-unauth hotspot=from-client,!auth

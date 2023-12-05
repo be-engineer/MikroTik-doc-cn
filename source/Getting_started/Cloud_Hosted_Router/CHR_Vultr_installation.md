@@ -8,7 +8,7 @@ Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/dat
 在此步骤中，用 SystemRescue（一个可启动的 Linux ISO）在 Vultr 上部署一个新服务器。
 
 1. [部署](https://my.vultr.com/deploy/) 一个新的[云计算](https://www.vultr.com/products/cloud-compute/)实例。
-2. 根据你的需要选择性能最佳的位置。 你可以使用 Vultr 的 [network-looking glass](https://nj-us-ping.vultr.com/) 来测试任何位置的速率和延迟。
+2. 根据需要选择性能最佳的位置。 可以使用 Vultr 的 [network-looking glass](https://nj-us-ping.vultr.com/) 来测试任何位置的速率和延迟。
 3. 在 **Server Image** 中选择 **ISO Library** 选项卡。
 4. 选择 **SystemRescue x64**。
 5. 根据要求选择具有[足够带宽限额](https://www.vultr.com/resources/faq/?query=bandwidth#bandwidthcalculation) 的服务器。
@@ -26,7 +26,7 @@ Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/dat
 4. 导航至 [Vultr 客户门户](https://my.vultr.com/) 中的服务器信息页面。
 5. 连接到 [网络控制台](https://www.vultr.com/docs/vultr-web-console-faq/)。
     ![](https://help.mikrotik.com/docs/download/attachments/146997259/ViewConsole.png?version=1&modificationDate=1662979233108&api=v2)
-6. 在 Web 控制台中，使用 wget 将 CHR 映像下载到服务器。 如果你把下载 URL 复制到剪贴板，则可以用 Web 控制台 [发送到服务器](https://www.vultr.com/docs/vultr-web-console-faq/)。
+6. 在 Web 控制台中，使用 wget 将 CHR 映像下载到服务器。 如果把下载 URL 复制到剪贴板，则可以用 Web 控制台 [发送到服务器](https://www.vultr.com/docs/vultr-web-console-faq/)。
 
     在以下示例中用你的版本替换 x.x.x。
 
@@ -40,7 +40,7 @@ Vultr 拥有超过 [20 个数据中心位置](https://www.vultr.com/features/dat
 
     `# dd if=chr-x.x.x.img of=/dev/vda`
 
-     - **if** 是你在上一步中解压缩的映像。
+     - **if** 是上一步中解压缩的映像。
      - **of** 是服务器的磁盘：/dev/vda。
 
 这个过程需要几分钟； 完成后继续下一步。

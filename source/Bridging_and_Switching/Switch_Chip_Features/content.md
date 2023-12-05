@@ -699,7 +699,7 @@ add ports=ether1,ether2,switch1-cpu switch=switch1 vlan-id=100
 
 最常见的是一个接入（无标记）端口与一个聚合（有标记）端口一起使用。在无标记访问CPU的情况下，你要同时指定访问端口和聚合端口，这样也可以从聚合端口访问CPU。但并非都需要这样，可能要在VLAN过滤的基础上设置防火墙。
 
-当配置了VLAN表后，你可以启用 `vlan-mode=secure` 来限制对CPU的访问。
+当配置了VLAN表后，可以启用 `vlan-mode=secure` 来限制对CPU的访问。
 
 ```shell
 /interface ethernet switch port
@@ -729,7 +729,7 @@ add ports=ether1,switch1-cpu switch=switch1 vlan-id=1
 
 ```
 
-当配置了VLAN表后，你可以启用 `vlan-mode=secure` 来限制对CPU的访问。
+当配置了VLAN表后，可以启用 `vlan-mode=secure` 来限制对CPU的访问。
 
 ```shell
 /interface ethernet switch port
@@ -805,7 +805,7 @@ set switch1-cpu vlan-mode=secure
 
 在 **QCA8337** 和 **Atheros8327** 交换芯片上，应该使用默认的 `vlan-header=leave-as-is` 属性。交换芯片将通过使用 `default-vlan-id` 属性来确定哪些端口是接入端口。`default-vlan-id` 只应在接入/混合端口上使用以指定未标记的入站流量被分配到哪个VLAN。
 
-如果你的设备有一个交换规则表，那么你可以在硬件层面上限制VLAN之间的访问。只要你在VLAN接口上添加一个IP地址，你就会启用VLAN间的路由，但这可以在硬件层面上进行限制，同时保留DHCP服务器和其他与路由器有关的服务。要实现这一点，请使用这些ACL规则。通过这种配置，你可以使用VLAN实现孤立的端口组。
+如果备有一个交换规则表，那么可以在硬件层面上限制VLAN之间的访问。只要在VLAN接口上添加一个IP地址，就会启用VLAN间的路由，但这可以在硬件层面上进行限制，同时保留DHCP服务器和其他与路由器有关的服务。要实现这一点，请使用这些ACL规则。通过这种配置可以用VLAN实现孤立的端口组。
 
 ```shell
 /interface ethernet switch rule

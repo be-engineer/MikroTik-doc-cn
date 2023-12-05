@@ -4,7 +4,7 @@
 
 ## RouterOS版本
 
-首先要升级你的RouterOS版本。一些旧版本有某些弱点或漏洞已经被修复。保持设备最新以确保安全。在Winbox或Webfig中点击 "检查更新"进行升级。建议关注 [安全公告博客](https://blog.mikrotik.com/) 上的公告了解新的安全问题。
+首先要升级RouterOS版本。一些旧版本有某些弱点或漏洞已经被修复。保持设备最新以确保安全。在Winbox或Webfig中点击 "检查更新"进行升级。建议关注 [安全公告博客](https://blog.mikrotik.com/) 上的公告了解新的安全问题。
 
 ## 访问路由器
 

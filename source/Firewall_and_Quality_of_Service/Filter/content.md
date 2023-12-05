@@ -193,4 +193,4 @@ Flags : X - disabled, I - invalid, D - dynamic
 
 ## 示例
 
-关于如何正确保护你的设备的例子，可以在 [建立第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 中找到!
+关于如何正确保护设备的例子，可以在 [建立第一个防火墙](https://help.mikrotik.com/docs/display/ROS/Building+Your+First+Firewall) 中找到!

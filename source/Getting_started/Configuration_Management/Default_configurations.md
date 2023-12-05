@@ -1,7 +1,7 @@
 ## 默认配置
 所有 MikroTik 设备都带有某种默认配置。 根据电路板类型，有几种不同的配置：
 
-你可以运行命令“/system default-configuration print”来查看确切应用的默认配置命令。
+可以运行命令“/system default-configuration print”来查看确切应用的默认配置命令。
 
 ### CPE 路由器
 

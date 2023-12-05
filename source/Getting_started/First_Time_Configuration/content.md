@@ -91,13 +91,13 @@
 
 同样的设置工具也可以在 WinBox/WeBfig 中使用：
 
-- 打开 **Ip -> DHCP 服务器** 窗口，选择 **DHCP** 选项卡；
-- 点击 **DHCP 设置** 按钮，将打开一个新对话框，输入 DHCP 服务器接口 **local** 并点击 **Next** 按钮；
+- 打开 **Ip -> DHCP server** 窗口，选择 **DHCP** 选项卡；
+- 点击 **DHCP setup** 按钮，打开一个新对话框，输入 DHCP 服务器接口 **local** 并点击 **Next** 按钮；
 - 按照向导完成设置。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328151/winbox_dhcp_setup.png?version=1&modificationDate=1569856096203&api=v2&effects=drop-shadow)
 
-现在连接的 PC 应该能够获得一个动态 IP 地址。 关闭 Winbox 并使用 IP 地址 (192.168.88.1) 重新连接到路由器。
+现在连接的 PC 应该能获得一个动态 IP 地址。 关闭 Winbox 并使用 IP 地址 (192.168.88.1) 重新连接到路由器。
 
 ## 配置互联网连接
 
@@ -109,7 +109,7 @@
 
 ## 动态公共IP地址
 
-动态地址配置是最简单的一种。 你只需要在公共接口上设置一个 DHCP 客户端。 DHCP 客户端将接收来自互联网服务提供商 (ISP) 的信息，并为你设置 IP 地址、DNS、NTP 服务器和默认路由。
+动态地址配置是最简单的一种。 只需要在公共接口上设置一个 DHCP 客户端。 DHCP 客户端将接收来自互联网服务提供商 (ISP) 的信息，并为你设置 IP 地址、DNS、NTP 服务器和默认路由。
 
 `/ip dhcp-client add disabled=no interface=ether1`
 
@@ -124,10 +124,10 @@
 
 ## 静态公共IP地址
 
-在静态地址配置的情况下，你的 ISP 会为你提供参数，例如：
+在静态地址配置的情况下，ISP 会提供参数，例如：
 
 - IP：1.2.3.100/24
-- 网关：1.2.3.1
+- gateway：1.2.3.1
 - DNS：8.8.8.8
 
 这些是让互联网连接正常工作所需的三个基本参数
@@ -142,7 +142,7 @@
 
 ## PPPoE连接
 
-PPPoE 连接也为你提供一个动态 IP 地址，并可以动态配置 DNS 和默认网关。 通常服务提供商 (ISP) 会为你提供连接的用户名和密码
+PPPoE 连接也提供一个动态 IP 地址，并可以动态配置 DNS 和默认网关。 通常服务提供商 (ISP) 会提供连接的用户名和密码
 
 `/interface pppoe-client`
 
