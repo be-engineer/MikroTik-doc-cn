@@ -17,7 +17,7 @@ RouterOS Ping工具可以配置额外的参数，例如：
 - size;
 - ttl;
 
-让我们看看这个简单的例子。
+看看这个简单的例子。
 
 ```shell
 [admin@MikroTik] > /tool/ping address=10.155.126.252 count=5 interval=200ms 

@@ -217,7 +217,7 @@ add bridge=bridge2 interface=ether3
 
 ### 问题
 
-为了更好地理解根本问题，让我们先看看桥接主机表。
+为了更好地理解根本问题，先看看桥接主机表。
 
 ```shell
 [admin@switch] /interface bridge host print where !local

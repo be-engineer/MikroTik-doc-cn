@@ -19,7 +19,7 @@ RouterOS实现了 [RFC8210](https://tools.ietf.org/html/rfc8210) 中定义的到
 `/routing/bgp/rpki
 add group=myRpkiGroup address=192.168.1.1 port=8282 refresh-interval=20`
 
-如果连接建立，并且从验证器接收到数据库，我们可以检查前缀的有效性:
+如果连接建立，并且从验证器接收到数据库，可以检查前缀的有效性:
 
 ```shell
 [admin@rack1_b33_CCR1036] /routing> rpki-check group=myRpkiGroup prfx=70.132.18.0/24 origin-as=16509

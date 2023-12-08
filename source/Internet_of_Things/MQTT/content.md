@@ -63,7 +63,7 @@ c) [MQTT and ThingsBoard configuration](https://help.mikrotik.com/docs/display/R
 
 在这种情况下的broker是 [AWS](https://aws.amazon.com/iot/)。
 
-为了看到显示的消息，需要事先订阅该主题（在我们的例子中，**my/test/topic**）。
+为了看到显示的消息，需要事先订阅该主题（例子，**my/test/topic**）。
 
 一旦订阅了该主题，就可以发布消息了。AWS（或任何其他broker）应该显示该消息：
 

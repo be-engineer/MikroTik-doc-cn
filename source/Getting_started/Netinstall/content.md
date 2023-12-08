@@ -8,7 +8,7 @@ Netinstall 是用来安装或重装 RouterOS 的 MikroTik 设备的工具。 如
 
 ## 适用于 Windows 的说明
 
-- 从 [下载](https://mikrotik.com/download) 页面下载 **Netinstall**。 如果不确定需要哪个版本，可以选择标记为 **Current**（稳定）的版本；
+- 从 [下载](https://mikrotik.com/download) 页面下载 **Netinstall**。 如果不确定需要哪个版本，可以选择标记为 **Current** （稳定）的版本；
 - 从 [下载](https://mikrotik.com/download) 页面下载 RouterOS **主软件包**；
 
 > 必须选择 RouterOS 版本。 始终可以选择标记为 **Current** 的版本。 还必须选择架构（ARM、MIPS、SMIPS、TILE 等...），但如果不确定，那么你可以下载适用于 **所有** 架构的 RouterOS 包，Netinstall 将为你选择正确的架构。
@@ -93,7 +93,7 @@ Netinstall 是用来安装或重装 RouterOS 的 MikroTik 设备的工具。 如
 
 Linux 版本是一个命令行工具，它提供和 Windows 版本几乎相同的参数。
 
-从我们的下载页面下载该工具：
+从下载页面下载该工具：
 
 ```shell
 wget https://download.mikrotik.com/routeros/[VERSION]/netinstall-[VERSION].tar.gz

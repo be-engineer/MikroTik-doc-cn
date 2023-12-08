@@ -47,7 +47,7 @@ site2的路由器:
 
 在本例中，由于没有配置keepalive，所以即使远端隧道不可达，tunnel接口也会有一个 **running** 标志
 
-现在我们只需要设置隧道地址和正确的路由。站点1的路由器:
+现在只需要设置隧道地址和正确的路由。站点1的路由器:
 
 ```shell
 /ip address add address=172.16.1.1/30 interface=myGre

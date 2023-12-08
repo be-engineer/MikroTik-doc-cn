@@ -22,7 +22,7 @@ Values: **limit-at=1M** , **max-limit=2M** , **burst-threshold=1500k** , 
 
 ![](https://help.mikrotik.com/docs/download/attachments/137986091/Burst_time.16.part1.jpg?version=1&modificationDate=1658488555129&api=v2)![](https://help.mikrotik.com/docs/download/attachments/137986091/Burst_time.16.part2.jpg?version=2&modificationDate=1658488571361&api=v2)
 
-正如我们所见，一旦客户端请求带宽，就能在 6 秒内获得 4Mpbs 的突发流量。 这是具有给定值的最长可能突发 _(longest-burst-time = burst-threshold \* burst-time / burst-limit)_。 一旦突发用完，其余数据将以 2Mbps 的速度下载。 这样，数据块在 9 秒内下载完毕—如果没有突发，则需要 16 秒。 在下一次下载开始之前，突发有 7 秒的充电时间。
+一旦客户端请求带宽，就能在 6 秒内获得 4Mpbs 的突发流量。 这是具有给定值的最长可能突发 _(longest-burst-time = burst-threshold \* burst-time / burst-limit)_。 一旦突发用完，其余数据将以 2Mbps 的速度下载。 这样，数据块在 9 秒内下载完毕—如果没有突发，则需要 16 秒。 在下一次下载开始之前，突发有 7 秒的充电时间。
 
 注意，在下载开始时不允许突发，只会在之后开始 - 在下载过程中。 通过这个例子证明了在下载过程中可能会发生突发。 突发大约 4 秒长，第二个块的下载速度比没有突发时快 4 秒。
 

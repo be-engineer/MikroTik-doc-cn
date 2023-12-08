@@ -116,7 +116,7 @@ ___
 
 MikroTik 设备预装了许可证，无需购买。
 
-要获得更高级别的许可证，或获得 x86 PC 安装的许可证，必须注册一个 [我们网页上的帐户](https://www.mikrotik.com/client)，然后在其中选择“ Purchase a RouterOS license key”。
+要获得更高级别的许可证，或获得 x86 PC 安装的许可证，必须注册一个 [网页上的帐户](https://www.mikrotik.com/client)，然后在其中选择“ Purchase a RouterOS license key”。
 
 ### 如果我在别处购买了密钥
 

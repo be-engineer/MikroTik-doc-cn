@@ -49,7 +49,7 @@ Cloud Hosted Router (CHR) 是一个 RouterOS 版本，支持虚拟机运行。 �
 
 ## 如何使用 CHR 映像安装虚拟 RouterOS 系统
 
-我们提供 4 种不同的虚拟磁盘映像供选择。 注意，它们只是磁盘映像，不能简单地运行。
+这里提供 4 种不同的虚拟磁盘映像供选择。 注意，它们只是磁盘映像，不能简单地运行。
 
 - RAW disk image (.img file)
 - VMWare disk image (.vmdk file)

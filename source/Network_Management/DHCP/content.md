@@ -306,7 +306,7 @@ add address=::1/64 from-pool=my-ipv6 interface=to-clients advertise=yes
   
 **检查状态**
 
-配置完成后，我们可以验证每个CE路由器是否收到自己的前缀
+配置完成后可以验证每个CE路由器是否收到自己的前缀
 
 服务器设置：
 

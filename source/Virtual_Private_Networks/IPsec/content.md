@@ -935,7 +935,7 @@ add dst-address=192.168.99.1/32 group=ike2-gre proposal=ike2-gre src-address=192
 add address=n.mynetname.net exchange-mode=ike2 name=p1.ez profile=ike2-gre
 ```
 
-最后，为我们新创建的对等体创建一个身份。
+最后，为新创建的对等体创建一个身份。
 
 ```shell
 /ip ipsec身份
@@ -1174,7 +1174,7 @@ installed-sa print
 
 #### 启用动态源NAT规则生成
 
-如果我们看一下生成的动态策略，我们会发现只有具有特定（由模式配置接收的）源地址的流量才会通过隧道发送。但是，在大多数情况下，路由器需要通过隧道路由一个特定的设备或网络。在这种情况下，可以使用源NAT来改变数据包的源地址以匹配模式配置地址。由于模式配置地址是动态的，所以不可能创建一个静态的源NAT规则。在RouterOS中，可以为模式配置客户端生成动态源NAT规则。
+如果看一下生成的动态策略，会发现只有具有特定（由模式配置接收的）源地址的流量才会通过隧道发送。但是，在大多数情况下，路由器需要通过隧道路由一个特定的设备或网络。在这种情况下，可以使用源NAT来改变数据包的源地址以匹配模式配置地址。由于模式配置地址是动态的，所以不可能创建一个静态的源NAT规则。在RouterOS中，可以为模式配置客户端生成动态源NAT规则。
 
 ![](https://help.mikrotik.com/docs/download/attachments/11993097/Ipsec-road-warrior-client.png?version=1&modificationDate=1617263807501&api=v2)
 
@@ -1183,13 +1183,12 @@ installed-sa print
 `/ip firewall address-list
 add address=192.168.88.0/24 list=local`
 
-当它完成后，我们可以将新创建的IP/防火墙/地址列表分配给模式配置。
+当它完成后，可以将新创建的IP/防火墙/地址列表分配给模式配置。
 
 `/ip ipsec mode-config
 set [ find name=ike2-rw ] src-address-list=local`
 
 验证正确的源NAT规则是在隧道建立时动态生成的。
-
 
 ```shell
 [admin@MikroTik] > /ip firewall nat print

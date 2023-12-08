@@ -2,7 +2,7 @@
 
 可以为家庭或办公环境创建可扩展到许多接入点的集中式接入点管理设置，这种设置非常容易配置，并在 [简单CAPsMAN设置](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-SimplesetupofaCAPsMANsystem) 指南中进行了说明，但对于更复杂的设置，可能需要vlan。CAPsMAN具有在特定条件下分配特定VLAN ID的功能。本指南将举例说明如何根据无线客户端所连接的AP为无线报文分配VLAN ID。具有vlan的CAPsMAN可以通过使用 [本地转发模式](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-LocalForwardingMode) 或 [CAPsMAN转发模式](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=1409149#APController(CAPsMAN)-ManagerForwardingMode) 来实现，本地转发模式将提供在ap和CAPsMAN路由器之间使用交换机来交换数据包的可能性(以实现更大的吞吐量)。而CAPsMAN转发模式应用于所有流量都应始终转发到CAPsMAN路由器(在大多数情况下过滤数据包)。
 
-在本例中，如果无线客户端连接到WiFi_WORK，我们将把所有无线客户端分配到VLAN10，如果无线客户端连接到WiFi_GUEST，我们将把无线客户端分配到VLAN20。我们将使用Virtual ap和CAPsMAN为我们的无线客户端创建多个ssid，以便在使用单个物理设备时连接到它们。还将通过使用CAPsMAN配置规则展示如何为单个物理设备使用单个SSID的示例。
+在本例中，如果无线客户端连接到WiFi_WORK，把所有无线客户端分配到VLAN10，如果无线客户端连接到WiFi_GUEST，把无线客户端分配到VLAN20。用Virtual ap和CAPsMAN为无线客户端创建多个ssid，以便在使用单个物理设备时连接到它们。还将通过使用CAPsMAN配置规则展示如何为单个物理设备使用单个SSID的示例。
 
 # 使用本地转发模式
 
@@ -23,7 +23,7 @@ add country=latvia datapath.local-forwarding=yes datapath.vlan-id=20 datapath.vl
 
 ```
 
-- 我们将创建一个单一的CAPsMAN配置规则来创建WiFi_WORK和WiFi_GUEST ssid在单个设备上，每个连接的CAP将自动创建这些ssid
+- 创建一个单一的CAPsMAN配置规则来创建WiFi_WORK和WiFi_GUEST ssid在单个设备上，每个连接的CAP将自动创建这些ssid
 
 ```shell
 /caps-man provisioning
@@ -71,7 +71,7 @@ add address=192.168.20.0/24 dns-server=8.8.8.8 gateway=192.168.20.1
 
 ## 交换
 
-在这个例子中，我们将使用 [网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-VLANExample-TrunkandAccessPorts) 来过滤未知的VLAN，并将其他设备分配到相同的网络。 有些设备能够将其卸载到内置的交换芯片，请查看 [基本VLAN交换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南，了解如何在不同类型的设备上配置它。
+在这个例子中使用 [网桥VLAN过滤](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-VLANExample-TrunkandAccessPorts) 来过滤未知的VLAN，并将其他设备分配到相同的网络。 有些设备能够将其卸载到内置的交换芯片，请查看 [基本VLAN交换](https://help.mikrotik.com/docs/display/ROS/Basic+VLAN+switching) 指南，了解如何在不同类型的设备上配置它。
 
 - 设置网桥VLAN过滤
 
@@ -147,8 +147,6 @@ add bridge=bridge1 tagged=bridge1 untagged=ether2 vlan-ids=20
 
 ```
 
-  
-
 CAPsMAN将把CAP接口附加到网桥上，并自动将适当的条目添加到网桥VLAN表中
 
 **注:**  CAPsMAN将把CAP接口附加到网桥上，并自动将适当的表项添加到网桥VLAN表中。该特性从RouterOS v6.43开始可用
@@ -164,14 +162,12 @@ add country=latvia datapath.bridge=bridge1 datapath.vlan-id=20 datapath.vlan-mod
 
 ```
 
--   我们将创建一个CAPsMAN配置规则来在单个设备上创建WiFi_WORK和WiFi_GUEST ssid，每个连接CAP将自动创建这些ssid
+- 创建一个CAPsMAN配置规则来在单个设备上创建WiFi_WORK和WiFi_GUEST ssid，每个连接CAP将自动创建这些ssid
 
 ```shell
 /caps-man provisioning
 add action=create-dynamic-enabled master-configuration=Config_WORK slave-configurations=Config_GUEST
 ```
-
-  
 
 通过添加多个从配置，可以创建更多的Virtual ap。这需要前面创建的多个CAPsMAN配置。
 
@@ -185,7 +181,7 @@ add disabled=no interface=ether4
 
 ```
 
--   启用CAPsMAN管理器
+- 启用CAPsMAN管理器
 
 ```
 /caps-man manager
@@ -193,7 +189,7 @@ set enabled=yes
 
 ```
 
--   为每个VLAN配置DHCP Server
+- 为每个VLAN配置DHCP Server
 
 ```shell
 /interface vlan
@@ -247,7 +243,7 @@ Flags: X - disabled, D - dynamic
 
 ## 没有虚拟ap
 
-并不是每个人都想创建虚拟ap，因为这会降低总吞吐量。如果您希望使用多个设备创建多个ssid，那么可以根据其标识在CAP上分配特定的配置。要实现这一点，您应该使用CAPsMAN配置规则和RegEx表达式。在本例中，我们将把 **Config_WORK** 配置分配给具有身份设置为 **AP_WORK_** 的CAPs，把 **Config_GUEST** 配置分配给具有身份设置为 **AP_GUEST_** 的CAPs。为此只需要更改CAPsMAN规则。
+并不是每个人都想创建虚拟ap，因为这会降低总吞吐量。如果您希望使用多个设备创建多个ssid，那么可以根据其标识在CAP上分配特定的配置。要实现这一点，您应该使用CAPsMAN配置规则和RegEx表达式。在本例中，把 **Config_WORK** 配置分配给具有身份设置为 **AP_WORK_** 的CAPs，把 **Config_GUEST** 配置分配给具有身份设置为 **AP_GUEST_** 的CAPs。为此只需要更改CAPsMAN规则。
 
 - 删除所有现有的发放规则
 
@@ -256,14 +252,12 @@ Flags: X - disabled, D - dynamic
 
 ```
 
--   创建新的供应规则，根据CAP的标识为其分配适当的配置
+- 创建新的供应规则，根据CAP的标识为其分配适当的配置
 
 ```shell
 /caps-man provisioning
 add action=create-dynamic-enabled identity-regexp=^AP_GUEST_ master-configuration=Config_GUEST
 add action=create-dynamic-enabled identity-regexp=^AP_WORK_ master-configuration=Config_WORK
 ```
-
-  
 
 不要忘记在cap上设置适当的标识，因为CAPsMAN将根据它的标识在ap上分配适当的配置。

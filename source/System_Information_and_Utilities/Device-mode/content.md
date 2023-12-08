@@ -57,7 +57,7 @@ mode: enterprise`
   sniffer: no
 ```
 
-我们看到fetch = yes和email = yes丢失了，因为它们被模式更改覆盖了。指定“per-feature”设置只会改变以下内容:
+这里fetch = yes和email = yes丢失了，因为它们被模式更改覆盖了。指定“per-feature”设置只会改变以下内容:
 
 ```shell
 [admin@MikroTik] > system/device-mode/update hotspot=no

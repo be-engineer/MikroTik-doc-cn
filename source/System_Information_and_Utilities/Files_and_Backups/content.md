@@ -55,7 +55,7 @@ Saving system configuration
 Configuration backup saved
 ```
 
-请注意，在带有闪存的设备上，我们在实际备份名称之前使用“/flash/”。如上所述，保存在flash文件夹外的备份将在重新启动或重新上电后删除:
+请注意，在带有闪存的设备上，在实际备份名称之前使用“/flash/”。如上所述，保存在flash文件夹外的备份将在重新启动或重新上电后删除:
 
 ```shell
 [admin@MikroTik] > system backup save name=backup2 password=StrongPass encryption=aes-sha256        

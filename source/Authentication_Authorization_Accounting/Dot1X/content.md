@@ -219,7 +219,7 @@ Flags: X - disabled, I - invalid; D - dynamic
 
 ```
   
-在我们的示例中，ether2 上的 Supplicant2 仅允许访问具有 UDP 目标端口 50 的 192.168.50.0/24 网络，应丢弃所有其他流量。 首先，确保硬件卸载在桥接端口上正常工作，否则交换规则可能无法正常工作。
+在下面的示例中，ether2 上的 Supplicant2 仅允许访问具有 UDP 目标端口 50 的 192.168.50.0/24 网络，应丢弃所有其他流量。 首先，确保硬件卸载在桥接端口上正常工作，否则交换规则可能无法正常工作。
 
 ```shell
 /interface bridge port print
@@ -257,7 +257,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 
 ## RouterOS 请求者配置
 
-`eap-tls、eap-ttls` 和 `eap-peap` 身份验证方法需要 CA 证书。 `eap-tls` 方法需要客户端证书。此示例我们已经导入了一个包含自签名客户端和 CA 证书的 P12 证书包。 有关如何在 RouterOS 中导入证书的更多信息，请访问 [System/Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates)。
+`eap-tls、eap-ttls` 和 `eap-peap` 身份验证方法需要 CA 证书。 `eap-tls` 方法需要客户端证书。此示例已经导入了一个包含自签名客户端和 CA 证书的 P12 证书包。 有关如何在 RouterOS 中导入证书的更多信息，请访问 [System/Certificates](https://help.mikrotik.com/docs/display/ROS/Certificates)。
 
 ```shell
 /certificate print

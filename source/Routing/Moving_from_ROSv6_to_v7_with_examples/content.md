@@ -9,18 +9,16 @@ v7引入了一个新的菜单/routing route，它显示所有地址族路由以�
 
 # 使用路由表和策略路由
   
-
 与v6的主要区别是，在配置中实际引用路由表之前，必须将其添加到 `/routing table` 菜单中。  如果路由表要推送路由到FIB，应该指定 **fib** 参数。 
 除了菜单的位置外，路由规则的配置是一样的（不是 `/ip route rule` ，现在是 `/routing rule` ）。
 
-让我们考虑一个基本的例子，我们想在名为myTable的路由表中只解析8.8.8.8到网关172.16.1.1：
+考虑一个基本的例子，想在名为myTable的路由表中只解析8.8.8.8到网关172.16.1.1：
 
 ```shell
 /routing table add name=myTable fib
 /routing rule add dst-address=8.8.8.8 action=lookup-only-in-table table=myTable
 /ip route add dst-address=8.8.8.8 gateway=172.16.1.1@main routing-table=myTable
 ```
-
   
 可以用mangle来代替路由规则，用routing-mark标记数据包，与ROSv6中的方式相同。
 
@@ -29,7 +27,6 @@ v7引入了一个新的菜单/routing route，它显示所有地址族路由以�
 OSPFv3和OSPFv2现在合并到一个菜单 `/routing ospf`。在写这篇文章的时候，没有默认的实例和区域。 
 要同时启动OSPFv2和OSPFv3实例，要为每个实例创建一个实体，然后为实例添加一个区域。 
   
-
 ```shell
 /routing ospf instance
 add name=v2inst version=2 router-id=1.2.3.4
@@ -38,7 +35,6 @@ add name=v3inst version=3 router-id=1.2.3.4
 add name=backbone_v2 area-id=0.0.0.0 instance=v2inst
 add name=backbone_v3 area-id=0.0.0.0 instance=v3inst
 ```
-
 
 在这里，已经准备好在网络接口上启动OSPF。在IPv6情况下，可以添加想运行OSPF的接口（与ROSv6相同）或IPv6网络。在第二种情况下，OSPF会自动检测接口。下面是一些接口配置的例子：
 
@@ -54,7 +50,6 @@ ROSv7使用模板将接口与模板进行匹配，并应用匹配模板的配置
 所有的路由分配控制现在纯粹是用路由过滤器选择完成的，在实例中不再有重分配旋钮（由于v7.1beta7的重分配旋钮回来了，需要使用路由过滤器来设置路由成本和类型（如果需要的话）。这具有更大的灵活性，想从哪些协议中重新分配什么路由。 
 例如，假设你只想重新分配192.168.0.0/16网络范围内的静态IPv4路由。 
   
-
 ```shell
 /routing ospf instance
 set backbone_v2 out-filter-chain=ospf_out redistribute=static
@@ -69,7 +64,7 @@ set backbone_v2 out-filter-chain=ospf_out redistribute=static
 与ROSv6相比，BGP的配置有一个完全的重新设计。第一个最大的区别是没有 **instance** 和 **peer** 配置菜单。取而代之的是 **connection**, **template**  和  **session** 菜单。 
 之所以采用这样的结构，是为了严格分割负责连接的参数和BGP协议的特定参数。
 
-让我们从Template开始。它包含所有与BGP协议相关的配置选项。它可以作为动态对等体的模板，对一组对等体应用类似的配置。注意，这与思科设备上的对等体组不一样，在思科设备上，对等体组不仅仅是一个普通的配置。
+从Template开始。它包含所有与BGP协议相关的配置选项。它可以作为动态对等体的模板，对一组对等体应用类似的配置。注意，这与思科设备上的对等体组不一样，在思科设备上，对等体组不仅仅是一个普通的配置。
 
 默认情况下，有一个默认模板，需要设置自己的AS。
 
@@ -98,7 +93,7 @@ set default template=myAsTemplate
 - **main** - 在主进程中运行输入/输出（可能会提高单核的性能，甚至可能在具有少量内核的多核设备上）。
 - **input** - 在与输入相同的进程中运行输出（可以只为输出亲和力设置）。
 
-现在我们已经为模板设置了参数，我们可以添加BGP连接。一组最小的参数是 `remote.address`, `template, connect`, `listen` 和 `local.role`。
+现在已经为模板设置了参数，可以添加BGP连接。一组最小的参数是 `remote.address`, `template, connect`, `listen` 和 `local.role`。
 
 连接和监听参数指定对等体是否将尝试连接和监听远程地址，或者只是连接或只是监听。在对等体使用多跳连接的情况下，`local.address` 也必须配置（类似于ROSv6中的 `update-source`）。
 

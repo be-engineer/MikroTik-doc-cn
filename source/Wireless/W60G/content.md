@@ -162,14 +162,11 @@ tx-packet-error-rate: 5%
 **警告:** 配置前，请确保设备运行的是最新的软件版本: [如何升级](https://wiki.mikrotik.com/wiki/Manual:Upgrading_RouterOS "Manual:Upgrading RouterOS")
 
   
-
 透明无线链路的最小配置是匹配SSID、正确模式(网桥|站桥)以及将无线和以太网接口放在同一个网桥中。
 
-在当前的示例中，我们将看到使用wAP60G AP作为接入点，wAP60G和Wireless Wire kit设备作为站设备，形成4单元网络的使用情况。
+在当前的示例中，可以看到使用wAP60G AP作为接入点，wAP60G和Wireless Wire kit设备作为站设备，形成4单元网络的使用情况。
 
 **警告:** 建议更改默认IP地址，以避免连接到设备
-
-
 
 wAP60G AP 单元预先配置了WISP Bridge [默认配置](https://wiki.mikrotik.com/wiki/Manual:Default_Configurations "Manual: default Configurations")
 
@@ -177,7 +174,7 @@ wAP60G AP 单元预先配置了WISP Bridge [默认配置](https://wiki.mikrotik.
 
 一个行程序完成了前面提到的所有步骤:
 
-```
+```shell
 /interface w60g set wlan60-1 password="put_your_safe_password_here" ssid="put_your_new_ssid_here" disabled=no mode=ap-bridge
 ```
 

@@ -73,7 +73,7 @@ Flags: X - disabled; R - running
 
 ## SSTP服务器
 
-我们将为特定用户配置PPP密码，然后简单地启用SSTP服务器:
+为特定用户配置PPP密码，然后简单地启用SSTP服务器:
 
 ```shell
 [admin@MikroTik] > ppp secret add local-address=10.0.0.1 name=MT-User password=StrongPass remote-address=10.0.0.5 service=sstp

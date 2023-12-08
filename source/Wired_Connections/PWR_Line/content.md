@@ -67,7 +67,7 @@ plc-mac: B8:69:F4:C4:34:68
 
 `/interface pwr-line leave pwr-line1`
 
-然后我们可以发出join命令。这样做时，配对序列将启用60秒，这意味着您必须在60秒内在另一台设备上启用配对模式才能成功配对。
+然后可以发出join命令。这样做时，配对序列将启用60秒，这意味着您必须在60秒内在另一台设备上启用配对模式才能成功配对。
 
 `/interface pwr-line join pwr-line1`
 
@@ -99,4 +99,4 @@ plc-mac: B8:69:F4:C4:34:68
 
 # 支持的硬件
 
-该设备与我们的PWR-LINE AP完全兼容，并且具有microrousb端口的最新版本的产品，如hAP lite, hAP lite塔，hAP mini, mAP和mAP lite具有PWR-LINE接口。一个简单的软件升级到v6.44+就可以启用这个特性(由上述序列号以/9xx结尾的设备支持)。一些以前生产的设备也支持PWR-LINE功能-如果您的设备序列号以/8xx结尾，请升级到6.44+并查看PWR-LINE接口是否显示。
+该设备与的PWR-LINE AP完全兼容，并且具有microrousb端口的最新版本的产品，如hAP lite, hAP lite塔，hAP mini, mAP和mAP lite具有PWR-LINE接口。一个简单的软件升级到v6.44+就可以启用这个特性(由上述序列号以/9xx结尾的设备支持)。一些以前生产的设备也支持PWR-LINE功能-如果您的设备序列号以/8xx结尾，请升级到6.44+并查看PWR-LINE接口是否显示。

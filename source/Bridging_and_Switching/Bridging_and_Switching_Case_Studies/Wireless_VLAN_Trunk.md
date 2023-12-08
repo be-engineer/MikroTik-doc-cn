@@ -1,6 +1,6 @@
 # 无线VLAN聚合
 
-一个非常常见的任务是在无线点对点（PtP）链路上只转发某一组VLAN。自RouterOS v6.41以来，这可以通过网桥VLAN过滤来实现，并且应该用它来代替任何其他方法（包括桥接VLAN接口）。比如，我们需要通过无线链路转发到2个不同的VLAN，所有其他的VLAN ID应该被丢弃。VLAN 10是我们的互联网流量，而VLAN 99是我们的管理流量。下面是网络拓扑结构。
+一个非常常见的任务是在无线点对点（PtP）链路上只转发某一组VLAN。自RouterOS v6.41以来，这可以通过网桥VLAN过滤来实现，并且应该用它来代替任何其他方法（包括桥接VLAN接口）。比如要通过无线链路转发到2个不同的VLAN，所有其他的VLAN ID应该被丢弃。VLAN 10是互联网流量，而VLAN 99是管理流量。下面是网络拓扑结构。
 
 ![](https://help.mikrotik.com/docs/download/attachments/122388482/Wlan_trunk.jpg?version=1&modificationDate=1653919647235&api=v2)
 

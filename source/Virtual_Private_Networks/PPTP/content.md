@@ -1,6 +1,6 @@
 # 概述
 
-PPTP有许多已知的安全问题，我们不建议使用它。然而，该协议被集成到常见的操作系统中，并且易于设置。PPTP在不考虑安全问题的网络中很有用。
+PPTP有许多已知的安全问题，不建议使用。然而，该协议被集成到常见的操作系统中，并且易于设置。PPTP在不考虑安全问题的网络中很有用。
 
 PPTP流量使用TCP端口1723,IP协议GRE (Generic Routing Encapsulation, IP协议ID 47)，由IANA (Internet assigned Numbers Authority)分配。PPTP可以与大多数防火墙和路由器一起使用，它允许发送到TCP端口1723和协议47的流量通过防火墙或路由器。PPTP包括PPP认证和对每个PPTP连接的记帐。每个连接的完整身份验证和记帐可以通过RADIUS客户端或本地完成。
 

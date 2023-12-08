@@ -4,7 +4,7 @@
 
 本文适用于CRS3xx、CRS5xx、CCR2116和CCR2216设备，而不是CRS1xx/CRS2xx。
 
-在这个网络拓扑中，我们将使用两台CRS326-24G-2S+、一台CRS317-1G-16S+和一台CCR1072-1G-8S+，但同样的原则可以应用于任何CRS3xx、CRS5xx系列设备和一台路由器。
+在这个网络拓扑中，用两台CRS326-24G-2S+、一台CRS317-1G-16S+和一台CCR1072-1G-8S+，但同样的原则可以应用于任何CRS3xx、CRS5xx系列设备和一台路由器。
 
 ![](https://help.mikrotik.com/docs/download/attachments/139526180/700px-Crs3xx_vlans_with_bonds.jpg?version=1&modificationDate=1659443322300&api=v2)
   
@@ -34,7 +34,7 @@ add mode=802.3ad name=bond_5-6-7-8 slaves=sfp-sfpplus5,sfp-sfpplus6,sfp-sfpplus7
 
 ```
 
-在我们的案例中，路由器需要一个基于软件的绑定接口，在 **路由器** 上使用这些命令。
+在案例中，路由器需要一个基于软件的绑定接口，在 **路由器** 上使用这些命令。
 
 ```shell
 /interface bonding
@@ -96,7 +96,7 @@ add bridge=bridge interface=bond_5-6-7-8
 
 为了保持对交换机的访问，创建一个管理接口并给它分配一个IP地址是非常有用的。这在更新你的交换机时也非常有用，因为在启用无效的VLAN过滤时，到交换机的这种流量将被阻止。
 
-在 **SwitchA**、**SwitchB、** 和 **SwitchC** 上创建一个可路由的VLAN接口。
+在 **SwitchA** 、**SwitchB、** 和 **SwitchC** 上创建一个可路由的VLAN接口。
 
 ```shell
 /interface vlan
@@ -112,7 +112,7 @@ add interface=bond_1-2-3-4 name=MGMT vlan-id=99
 
 ```
 
-在本指南中，我们将对每个设备使用这些地址。
+在本指南中对每个设备使用这些地址。
 
 | 设备    | 地址         |
 | ------- | ------------ |
@@ -174,14 +174,14 @@ set [ find ] frame-types=admit-only-vlan-tagged
 
 ```
 
-一个可选的步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged`， 以便禁用默认的无标记 VLAN 1 (`pvid=1`)。我们在网桥上使用带标签的 VLAN 来进行管理， 所以没有必要在网桥上接受无标签的流量。在  **SwitchA**, **SwitchB** 和 **SwitchC** 上使用这些命令。
+一个可选的步骤是在网桥接口上设置 `frame-types=admit-only-vlan-tagged`， 以便禁用默认的无标记 VLAN 1 (`pvid=1`)。在网桥上用带标签的 VLAN 来进行管理， 所以没有必要在网桥上接受无标签的流量。在  **SwitchA**, **SwitchB** 和 **SwitchC** 上使用这些命令。
 
 ```shell
 /interface bridge set [find name=bridge] frame-types=admit-only-vlan-tagged
 
 ```
 
-需要设置一个桥接VLAN表。在这个网络设置中，我们需要在ether1-ether8上允许VLAN 10，在ether9-ether16上允许VLAN 20，在ether17-ether24上允许VLAN 30，在bond/_1-2上允许VLAN 10,20,30,99，还有一个特殊情况，就是ether1允许在SwitchA和SwitchC上转发VLAN 99。在 **SwitchA** 和 **SwitchC** 上使用这些命令。
+需要设置一个桥接VLAN表。在这个网络设置中，要在ether1-ether8上允许VLAN 10，在ether9-ether16上允许VLAN 20，在ether17-ether24上允许VLAN 30，在bond/_1-2上允许VLAN 10,20,30,99，还有一个特殊情况，就是ether1允许在SwitchA和SwitchC上转发VLAN 99。在 **SwitchA** 和 **SwitchC** 上使用这些命令。
 
 ```shell
 /interface bridge vlan

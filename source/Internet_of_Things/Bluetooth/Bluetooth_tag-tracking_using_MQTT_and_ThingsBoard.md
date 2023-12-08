@@ -45,7 +45,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 
 此外，标签的输出功率可以通过 [Tx power](https://help.mikrotik.com/docs/display/UM/MikroTik+Beacon+Manager+for+Android+devices#heading-TxPower) 参数来降低。这意味着，即使标签的有效载荷广播得太远，它们被其他不应该看到这些有效载荷的KNOT捕获（距离较远）→可以降低标签的输出功率，减少KNOT能够捕获它的距离。这样可以 "调整 "接收 "范围"，也可以避免 "干扰 "其他区域的信号。
 
-我们准备的脚本允许设置一个过滤器（以后会显示），使KNOT忽略扫描者捕获的有效载荷，除非信号强度（RSSI）高于指定值。在上面的 [简介](https://help.mikrotik.com/docs/display/ROS/Bluetooth+tag-tracking+using+MQTT+and+ThingsBoard#BluetoothtagtrackingusingMQTTandThingsBoard-Introduction) 部分可以看到KNOT看到其中一个标签的 **RSSI** 信号强度为 **-51 dBm** （标签的MAC地址为 **DC： 2C:6E:0F:C0:3D**），另一个的 **RSSI** 信号强度为 **-49 dBm** （标签的MAC地址为 **2C:C8:1B:4B:BB:0A**）。因此，如果 **在脚本中应用一个过滤器来** 忽略 **所有收到的信号强度（RSSI）** 弱于-50 dBm的有效载荷，我们的 **KNOT将报告只有标签 "2C:C8:1B:4B:BB:0A "在蓝牙范围内，因为其RSSI为-49 dBm，而第二个标签（RSSI为-51 dBm）将被忽略。这意味着，它是 "调整 "接收 "范围 "的第二种方式。不同地点的实际信号强度会有所不同（如前所述，因为有干扰和周围的材料），所以需要现场测试。
+我们准备的脚本允许设置一个过滤器（以后会显示），使KNOT忽略扫描者捕获的有效载荷，除非信号强度（RSSI）高于指定值。在上面的 [简介](https://help.mikrotik.com/docs/display/ROS/Bluetooth+tag-tracking+using+MQTT+and+ThingsBoard#BluetoothtagtrackingusingMQTTandThingsBoard-Introduction) 部分可以看到KNOT看到其中一个标签的 **RSSI** 信号强度为 **-51 dBm** （标签的MAC地址为 **DC： 2C:6E:0F:C0:3D**），另一个的 **RSSI** 信号强度为 **-49 dBm** （标签的MAC地址为 **2C:C8:1B:4B:BB:0A**）。因此，如果 **在脚本中应用一个过滤器来** 忽略 **所有收到的信号强度（RSSI）** 弱于-50 dBm的有效载荷， **KNOT** 报告只有标签 "2C:C8:1B:4B:BB:0A "在蓝牙范围内，因为其RSSI为-49 dBm，而第二个标签（RSSI为-51 dBm）将被忽略。这意味着，它是 "调整 "接收 "范围 "的第二种方式。不同地点的实际信号强度会有所不同（如前所述，因为有干扰和周围的材料），所以需要现场测试。
 
 ## 实例1
 
@@ -133,7 +133,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 - `name` 是你希望给broker的名字，这个名字将在后面的脚本中使用；
 - `address` 是broker/ThingsBoard服务器的IP地址；
 - `port` 是broker监听的TCP端口，对于非SSL，通常是TCP 1883；
-- `username` 是由MQTT代理决定的，在我们的例子中，它是一个在ThingsBoard管理门户中生成的 "访问令牌"。
+- `username` 是由MQTT代理决定的，在这个例子中，它是一个在ThingsBoard管理门户中生成的 "访问令牌"。
 
 对于KNOT B → 做同样的步骤。只需将 `用户名` 改为为KNOT B设备（网关）生成的相应访问令牌。
 
@@ -447,7 +447,7 @@ In the second example, we will showcase another topology:
 - `name` 是你希望给broker 的名字，这个名字将在后面的脚本中使用；
 - `address` 是broker /ThingsBoard服务器的IP地址；
 - `port` 是经纪人监听的TCP端口，对于非SSL，通常是TCP 1883；
-- `username` 是由MQTT代理决定的，在我们的例子中，它是在ThingsBoard管理门户中生成的 "访问令牌"。
+- `username` 是由MQTT代理决定的，在这个例子中，它是在ThingsBoard管理门户中生成的 "访问令牌"。
 
 对于KNOT_2和KNOT_3做同样的设置。只需将 "用户名 "改为各自生成的访问令牌。
 

@@ -46,7 +46,7 @@ add action=set-priority chain=output new-priority=2 protocol=icmp
 
 ### 自定义优先级映射
 
-有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。我们可以在IP mangle或网桥防火墙/nat规则中使用 `ingress-priority` 匹配器，只过滤需要的优先级，并使用 `new-priority` 动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
+有时，某些VLAN或WMM的优先级需要被改变或清除为默认值。可以在IP mangle或网桥防火墙/nat规则中使用 `ingress-priority` 匹配器，只过滤需要的优先级，并使用 `new-priority` 动作设置将其改为不同的值。例如，通过网桥转发的VLAN标签数据包的优先级为5，需要将其改为0。
 
 ```shell
 /interface bridge filter
@@ -56,7 +56,7 @@ add action=set-priority chain=forward ingress-priority=5 new-priority=0
 
 ### 在网桥内将 WMM 优先级转换为 VLAN 优先级
 
-当收到一个已经设置了 WMM 优先级的无线数据包时，RouterOS 网桥不会自动将其转换为 VLAN 头。这意味着，收到带有 WMM 优先级的无线数据包，如果被网桥标记为 VLAN，则会以 0 的 VLAN 优先级转发。 然而，我们可以使用带有 `from-ingress` 设置的网桥过滤规则来保持 VLAN 数据包的优先级。例如，我们希望通过 ether2 转发带有 VLAN 10 标头的无线数据包，并保留已经设置的 WMM 优先级（由无线客户端设置）。
+当收到一个已经设置了 WMM 优先级的无线数据包时，RouterOS 网桥不会自动将其转换为 VLAN 头。这意味着，收到带有 WMM 优先级的无线数据包，如果被网桥标记为 VLAN，则会以 0 的 VLAN 优先级转发。 然而，可以使用带有 `from-ingress` 设置的网桥过滤规则来保持 VLAN 数据包的优先级。例如希望通过 ether2 转发带有 VLAN 10 标头的无线数据包，并保留已经设置的 WMM 优先级（由无线客户端设置）。
 
 ```shell
 /interface bridge

@@ -393,7 +393,7 @@ set [find name=username] shared-users=1 attributes=Framed-IP-Address:192.168.1.4
 
 #### 为用户组指定地址池
 
-我们可以将多个相似的用户分组，并同时为所有这些用户分配 RADIUS 属性。 首先，创建一个新组：
+可以将多个相似的用户分组，并同时为所有这些用户分配 RADIUS 属性。 首先创建一个新组：
 
 ```shell
 /user-manager user group

@@ -1037,17 +1037,15 @@ add bridge=bridge1 tagged=ether3 untagged=ether2 vlan-ids=300
 
 ## IGMP/MLD 侦听
 
-
 从 RouterOS 版本 6.41 开始，网桥支持 IGMP/MLD 侦听。 它控制多播流并防止不必要端口上的多播泛滥。 它的设置位于桥接菜单中，并且在每个桥接界面中独立工作。 软件驱动的实现适用于所有带有 RouterOS 的设备，但 CRS3xx、CRS5xx 系列交换机、CCR2116、CR2216 路由器和 88E6393X、88E6191X 交换机芯片也支持 IGMP/MLD 侦听和硬件卸载。 请参阅 [IGMP/MLD 侦听手册](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=59277403) 的更多详细信息。
 
 ## DHCP 侦听和 DHCP 选项 82
-
 
 从 RouterOS 版本 6.43 开始，网桥支持 DHCP Snooping 和 DHCP Option 82。DHCP Snooping 是一种第 2 层安全功能，可限制未经授权的 DHCP 服务器向用户提供恶意信息。 在 RouterOS 中，你可以指定哪些桥接端口是可信的（已知 DHCP 服务器所在的位置，应该转发 DHCP 消息），哪些是不可信的（通常用于访问端口，收到的 DHCP 服务器消息将被丢弃）。 DHCP 选项 82 是由支持 DHCP 侦听的设备提供的附加信息（代理电路 ID 和代理远程 ID），允许识别设备本身和 DHCP 客户端。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328068/Dhcp_snooping.png?version=2&modificationDate=1615372193430&api=v2)
 
-在此示例中，SW1 和 SW2 是 DHCP 侦听和启用选项 82 的设备。 首先，我们需要创建一个网桥，分配接口并标记可信端口。 在 **SW1** 上使用这些命令：
+在此示例中，SW1 和 SW2 是 DHCP 侦听和启用选项 82 的设备。 首先需要创建一个网桥，分配接口并标记可信端口。 在 **SW1** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -1058,7 +1056,7 @@ add bridge=bridge interface=ether2 trusted=yes
 
 ```
 
-对于 SW2，配置类似，但我们还需要将 ether1 标记为受信任，因为该接口将接收已添加选项 82 的 DHCP 消息。 如果所有端口要接收添加了选项 82 的 DHCP 消息，你需要将所有端口标记为可信端口，否则这些消息将被丢弃。 此外，我们将 ether3 添加到同一个网桥并让这个端口不受信任，想象有一个未经授权的（捣乱）DHCP 服务器。 在 **SW2** 上使用这些命令：
+对于 SW2，配置类似，但还需要将 ether1 标记为受信任，因为该接口将接收已添加选项 82 的 DHCP 消息。 如果所有端口要接收添加了选项 82 的 DHCP 消息，你需要将所有端口标记为可信端口，否则这些消息将被丢弃。 此外将 ether3 添加到同一个网桥并让这个端口不受信任，想象有一个未经授权的（捣乱）DHCP 服务器。 在 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge
@@ -1070,7 +1068,7 @@ add bridge=bridge interface=ether3
 
 ```
 
-然后我们需要启用 DHCP Snooping 和 Option 82。如果你的 DHCP 服务器不支持 DHCP Option 82 或者你没有实施任何 Option 82 相关策略，可以禁用此选项。 在 **SW1** 和 **SW2** 上使用这些命令：
+然后需要启用 DHCP Snooping 和 Option 82。如果 DHCP 服务器不支持 DHCP Option 82 或者没有实施任何 Option 82 相关策略，可以禁用此选项。 在 **SW1** 和 **SW2** 上使用这些命令：
 
 ```shell
 /interface bridge

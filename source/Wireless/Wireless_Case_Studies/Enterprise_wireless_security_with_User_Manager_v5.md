@@ -123,7 +123,7 @@ wifiwave2 AP也可以配置为使用更安全的wpa3-eap-192模式，但请注�
 
 ## 安卓
 
-当连接到带有EAP认证的网络时，Android设备会要求用户指定一个“域”。这是指RADIUS服务器的TLS证书中包含的主机名的预期域(microtik)。Test(在我们的例子中)。
+当连接到带有EAP认证的网络时，Android设备会要求用户指定一个“域”。这是指RADIUS服务器的TLS证书中包含的主机名的预期域(microtik)。Test(在这个例子中)。
 
 缺省情况下，Android设备使用设备内置的根CA列表验证RADIUS服务器的证书。当使用自己的CA时，需要在适当的下拉菜单中选择它。
 

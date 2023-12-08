@@ -8,8 +8,6 @@ CAPsMAN允许通过中央配置界面对多个microtik AP设备进行无线设�
 
 根据配置的不同，数据可以转发到CAPsMAN进行集中处理(_default_)，也可以在CAP本身进行本地转发(本地转发模式)。
 
-  
-
 需求
 
 —任何拥有RouterOS 4级以上license的设备都可以成为受控无线接入点(CAP)
@@ -19,12 +17,11 @@ CAPsMAN允许通过中央配置界面对多个microtik AP设备进行无线设�
 -每个主无线电接口最多32个虚拟接口
 -不可能使用Nv2和nstream专有协议
 
-
 简单设置一个CAPsMAN系统
 
 ![](https://help.mikrotik.com/docs/download/attachments/1409149/Simple_capsman_topology.png?version=2&modificationDate=1621329464382&api=v2)
 
-在深入研究CAPsMAN操作的细节之前，让我们快速说明如何设置最基本的系统，这里有一个管理两个MikroTik AP设备的MikroTik路由器。CAPsMAN的好处是不需要配置CAP单元，所有设置都在CAPsMAN服务器中完成。
+在深入研究CAPsMAN操作的细节之前，快速说明如何设置最基本的系统，这里有一个管理两个MikroTik AP设备的MikroTik路由器。CAPsMAN的好处是不需要配置CAP单元，所有设置都在CAPsMAN服务器中完成。
 
 CAPsMAN设置包括定义配置模板，然后将其推送到可控制的AP设备(cap)。假设您的主路由器已经连接到互联网并且工作正常，可以按照以下步骤进行操作。
 

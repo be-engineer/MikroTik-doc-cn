@@ -309,7 +309,7 @@ Hijacking Safe Mode from someone - unroll /release/don't take it [u/r/d]:
 
 如果在安全模式下进行了太多更改，并且历史记录中没有空间容纳所有这些更改（当前历史记录最多保留 100 个最近的操作），则会话会自动退出安全模式，不会自动撤消任何更改。 因此，最好在安全模式下小步更改配置。 按 [Ctrl]+[X] 两次是清空安全模式操作列表的简单方法。
 
-### HotLokc模式
+### HotLok模式
 
 当启用 HotLock 模式时，命令将自动完成。
 

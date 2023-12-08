@@ -149,7 +149,7 @@ Orion Wifi采用RADIUS over TLS (RadSec)技术，保证AAA流量的端到端加�
 
 命令行相当于:“/interface wireless set [find default-name=wlan1] mode=ap-bridge security-profile=dot1x_profile wps-mode=disabled”。
 
-确保配置了正确的国家配置文件。在这个例子中，我们使用的是" wlan1 "，但是同样的命令也可以用于其他接口，或者使用" /interface wireless set wlan1 "。
+确保配置了正确的国家配置文件。在这个例子中用的是" wlan1 "，但是同样的命令也可以用于其他接口，或者使用" /interface wireless set wlan1 "。
 
 5) 配置对接设置(热点2.0)。
 

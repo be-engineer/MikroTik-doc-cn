@@ -64,11 +64,10 @@ Send命令接受以下参数:
     body="$[/system clock get date] configuration file" file=export.rsc
     ```
 
-3. 添加计划运行我们的脚本
+3. 添加计划运行脚本
 
     `/system scheduler add on-event="export-send" start-time=00:00:00 interval=24h`
 
-  
 
 使用TLS/SSL加密发送电子邮件到服务器。例如，谷歌邮件需要这样做
 

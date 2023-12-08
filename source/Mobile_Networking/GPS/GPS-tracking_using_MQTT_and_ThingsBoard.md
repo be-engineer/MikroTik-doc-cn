@@ -12,7 +12,7 @@ ThingsBoard有一个云解决方案和不同的本地安装选项（在不同的
 
 # 配置
 
-在本指南中，我们将演示如何配置一个GPS接收器（MQTT发布器）以及如何设置ThingsBoard。
+在本指南中将演示如何配置一个GPS接收器（MQTT发布器）以及如何设置ThingsBoard。
 
 如果想使用容器功能来运行ThingsBoard实例（MQTT代理），请查看 [指南](https://help.mikrotik.com/docs/pages/viewpage.action?pageId=166920348)。关于ThingsBoard和MQTT配置的一般准则可以在指南中找到 [这里](https://help.mikrotik.com/docs/display/ROS/MQTT+and+ThingsBoard+configuration) 。阅读这两个指南，会有额外的有用信息。
 

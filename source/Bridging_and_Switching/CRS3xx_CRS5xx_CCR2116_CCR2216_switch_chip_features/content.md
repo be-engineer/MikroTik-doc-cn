@@ -164,7 +164,7 @@ add mac-protocol=0x80F3 new-vlan-id=400 ports=ether8 switch=switch1
 
 ## 入站VLAN转换
 
-可以使用入站端口上的 ACL 规则将某个 VLAN ID 转换为不同的 VLAN ID。 在这个例子中，我们创建了两个 ACL 规则，允许双向通信。 这可以通过执行以下操作来完成。
+可以使用入站端口上的 ACL 规则将某个 VLAN ID 转换为不同的 VLAN ID。 在这个例子中创建了两个 ACL 规则，允许双向通信。 这可以通过执行以下操作来完成。
 
 创建一个新网桥并通过硬件卸载向其添加端口：
 

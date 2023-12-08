@@ -634,7 +634,7 @@ add interface=ether2 bridge=bridge1 hw=yes
 
 默认情况下，网桥接口的 "protocol-mode "被配置为 "rstp"。对于某些设备， 这可能会禁用硬件卸载， 因为有些交换芯片不支持这一功能。请参阅 [网桥硬件卸载](https://help.mikrotik.com/docs/display/ROS/Bridging+and+Switching#BridgingandSwitching-BridgeHardwareOffloading) 部分，了解支持的功能。
 
-在这些例子中，我们假设 **ether1** 是聚合端口，**ether2** 是接入端口，配置如下。
+在这些例子中，假设 **ether1** 是聚合端口，**ether2** 是接入端口，配置如下。
 
 ```shell
 /interface ethernet switch port

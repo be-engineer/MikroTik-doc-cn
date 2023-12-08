@@ -177,7 +177,7 @@ Flags: X - disabled, I - invalid, D - dynamic
 
 默认情况下，export 命令只写入用户编辑的配置，RouterOS 默认值被省略。
 
-例如，不会导出 IPSec 默认策略，如果我们更改一个属性，则只会导出更改：
+例如，不会导出 IPSec 默认策略，如果更改一个属性，则只会导出更改：
 
 ```shell
 [admin@rack1_b4] /ip ipsec policy> print

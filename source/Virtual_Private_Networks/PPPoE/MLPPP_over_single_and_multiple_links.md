@@ -45,7 +45,7 @@ MLPPP over multiple links允许在多个物理连接上创建一条PPP链路。�
 
 ![](https://help.mikrotik.com/docs/download/attachments/132350045/Mlppp.jpg?version=1&modificationDate=1657264990603&api=v2)
 
-ISP给它的客户提供两条物理链路(DSL线)，每条1Mbps。为了获得2Mbps的聚合管道，我们必须设置MLPPP。考虑ISP路由器被预配置为支持MLPPP。
+ISP给它的客户提供两条物理链路(DSL线)，每条1Mbps。为了获得2Mbps的聚合管道，必须设置MLPPP。考虑ISP路由器被预配置为支持MLPPP。
 
 路由器R1上的配置如下:
 

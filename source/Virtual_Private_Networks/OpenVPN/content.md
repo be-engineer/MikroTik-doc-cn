@@ -92,7 +92,7 @@ client-certificate=client1.crt client-cert-key=client1.key server-address=192.16
 
 ![](https://help.mikrotik.com/docs/download/attachments/2031655/OpenVPN.png?version=1&modificationDate=1615380050324&api=v2)
 
-假设办公室的公网IP地址为2.2.2.2，我们希望两个远程OVPN客户端能够访问办公室网关后面的10.5.8.20和192.168.55.0/24网络。
+假设办公室的公网IP地址为2.2.2.2，希望两个远程OVPN客户端能够访问办公室网关后面的10.5.8.20和192.168.55.0/24网络。
 
 ## 创建证书
 

@@ -54,7 +54,7 @@ DDNS或动态DNS是一种服务，它定期更新A记录的IPv4地址和AAAA记�
 - 大约时间（精确度为几秒，取决于UDP数据包的延迟）
 - 在重启后和每次DDNS更新期间（当路由器的WAN IP地址改变或使用强制更新命令后）更新时间
 - 使用UDP/15252端口向 [cloud.mikrotik.com](http://cloud.mikrotik.com) 或 [cloud2.mikrotik.com](http://cloud2.mikrotik.com) 发送加密的数据包
-- 根据路由器的公共IP地址和我们的商业数据库来检测时区。
+- 根据路由器的公共IP地址和商业数据库来检测时区。
 
 要启用时间更新服务：
 

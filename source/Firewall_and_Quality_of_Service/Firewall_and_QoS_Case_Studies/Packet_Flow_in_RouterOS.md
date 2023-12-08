@@ -20,7 +20,7 @@ RouterOS数据包流程图和流程实例将试图回答这些问题。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/01c_Routing_concept.png?version=1&modificationDate=1569859502606&api=v2)
 
-让我们看一下另一个例子，说明如果数据包的目的地是路由器会发生什么。例如，in-interface收到ICMP（ping）数据包，它的目的地是路由器本身，所以数据包将进行 _local-in_ 处理。数据包处理后，ICMP（ping）回复在路由器内部产生 _local-out_ 处理，并通过out-interface发送出去。
+看一下另一个例子，说明如果数据包的目的地是路由器会发生什么。例如，in-interface收到ICMP（ping）数据包，它的目的地是路由器本身，所以数据包将进行 _local-in_ 处理。数据包处理后，ICMP（ping）回复在路由器内部产生 _local-out_ 处理，并通过out-interface发送出去。
 
 ![](https://help.mikrotik.com/docs/download/attachments/328227/01d_Communication_with_router.png?version=1&modificationDate=1570627553904&api=v2)
 

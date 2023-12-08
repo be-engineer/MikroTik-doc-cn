@@ -23,25 +23,25 @@
 
 1. 磁盘已连接，并且已经被系统自动挂载。
 
- ```shell
-[admin@MikroTik]  > /disk print
- 0 disk1 usb-flash   ext4   00     7.1GiB     7.2GiB
-[admin@MikroTik] > / file print
- 2 skins                       directory          jan /01/1970 03:00:01
- 3 pub                         directory          feb /04/1970 21:31:40
- 4 disk1                       disk               apr /20/2015 14:05:16 
-```
+    ```shell
+    [admin@MikroTik]  > /disk print
+     0 disk1 usb-flash   ext4   00     7.1GiB     7.2GiB
+    [admin@MikroTik] > / file print
+     2 skins                       directory          jan /01/1970 03:00:01
+     3 pub                         directory          feb /04/1970 21:31:40
+     4 disk1                       disk               apr /20/2015 14:05:16 
+    ```
 
 2. 卸载存储驱动器，以便进行格式化。
 
-`[admin@MikroTik] > /disk eject-drive 0`。
+    `[admin@MikroTik] > /disk eject-drive 0`。
 
 3. 格式化磁盘，在两个支持的文件系统ext4或fat32中选择一个。
 
-```shell
-[admin@MikroTik] > /disk format-drive 0 file-system=ext4 label=flashdrive
-  formatted : 100%
-```
+    ```shell
+    [admin@MikroTik] > /disk format-drive 0 file-system=ext4 label=flashdrive
+      formatted : 100%
+    ```
 
 4. 完成! 驱动器已格式化，格式化过程结束后自动安装。
 
@@ -58,7 +58,7 @@
 
 这里可以看到，系统找到了一个存储驱动器，而且它的格式是已知的文件系统类型。
 
-当运行文件菜单打印输出时，我们也看到它安装了。
+当运行文件菜单打印输出时，可以看到它安装了。
 
 `[admin@MikroTik] > file print`
  `0 disk1    disk         apr /20/2015 13:44:11`

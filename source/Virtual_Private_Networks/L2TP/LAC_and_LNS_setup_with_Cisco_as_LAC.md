@@ -99,7 +99,7 @@ Flags: R - radius
 0 good_worker@mt.lv l2tp 10.155.101.216 192.168.99.2 6h15m57s
 ```
 
-在LAC上，我们还可以看到活跃的客户端会话和LAC与LNS之间活跃的L2TP隧道:
+在LAC上还可以看到活跃的客户端会话和LAC与LNS之间活跃的L2TP隧道:
 
 ```shell
 csrLAC#show vpdn
@@ -117,7 +117,7 @@ Vcid, Circuit
 
 # 会话建立
 
-让我们仔细看看客户端会话是如何通过LAC进行身份验证和建立的。
+仔细看看客户端会话是如何通过LAC进行身份验证和建立的。
 
 ![](https://help.mikrotik.com/docs/download/attachments/9863181/LNS_LAC_Establishment.svg?version=2&modificationDate=1583326052852&api=v2&effects=drop-shadow)
 

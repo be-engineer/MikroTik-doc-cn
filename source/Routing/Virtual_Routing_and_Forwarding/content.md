@@ -112,7 +112,7 @@ Columns: NAME, PORT, CERTIFICATE, VRF
 
 简单的VRF-Lite设置
 
-让我们考虑一个设置，其中我们需要两个需要访问互联网的客户vrf: 
+考虑一个设置，其中需要两个需要访问互联网的客户vrf: 
 
 ```shell
 /ip address
@@ -307,7 +307,7 @@ Columns: DST-ADDRESS, GATEWAY, DISTANCE
 1 ADb 10.3.3.0/24 10.5.5.3              20
 ```
 
-让我们仔细看看单VRF中的IP路由。10.1.1.0/24是已连接的路由，该路由属于已配置为cost - 1 VRF的接口。10.3.3.0/24 IP前缀作为VPNv4路由从PE2通过BGP发布，并被引入到VRF路由表中，因为我们配置的import-route-targets**与发布时的BGP扩展团体属性相匹配。
+仔细看看单VRF中的IP路由。10.1.1.0/24是已连接的路由，该路由属于已配置为cost - 1 VRF的接口。10.3.3.0/24 IP前缀作为VPNv4路由从PE2通过BGP发布，并被引入到VRF路由表中，因为配置的 **import-route-targets** 与发布时的BGP扩展团体属性相匹配。
 
 ```shell
 [admin@PE1] /routing/route> print detail where routing-table="cust-one"
